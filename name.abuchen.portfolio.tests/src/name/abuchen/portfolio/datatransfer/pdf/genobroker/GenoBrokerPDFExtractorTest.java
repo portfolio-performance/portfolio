@@ -36,7 +36,6 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -48,7 +47,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class GenoBrokerPDFExtractorTest
@@ -56,18 +54,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -87,18 +85,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -118,18 +116,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -150,25 +148,25 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierKauf03WithSecurityInEUR()
     {
-        Security security = new Security("LOGAN ENERGY CORP. REGISTERED SHARES O.N.", CurrencyUnit.EUR);
+        var security = new Security("LOGAN ENERGY CORP. REGISTERED SHARES O.N.", "EUR");
         security.setIsin("CA5408991019");
         security.setWkn("A3EMQR");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+        var extractor = new GenoBrokerPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -178,8 +176,76 @@ public class GenoBrokerPDFExtractorTest
                         hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierKauf04()
+    {
+        var extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US75062E1064"), hasWkn("A2JDMF"), hasTicker(null), //
+                        hasName("RAFAEL HOLDINGS INC. REGISTERED SH. CLASS B DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
+                        hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
+                        hasForexGrossValue("USD", 4740.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf04WithSecurityInEUR()
+    {
+        var security = new Security("Rafael Holdings Inc", "EUR");
+        security.setIsin("US75062E1064");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new GenoBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
+                        hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -187,18 +253,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -218,18 +284,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -249,18 +315,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -280,18 +346,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -312,18 +378,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -344,25 +410,25 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        Security security = new Security("EQUINOR ASA NAVNE-AKSJER NK 2,50", CurrencyUnit.EUR);
+        var security = new Security("EQUINOR ASA NAVNE-AKSJER NK 2,50", "EUR");
         security.setIsin("NO0010096985");
         security.setWkn("675213");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+        var extractor = new GenoBrokerPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -372,10 +438,10 @@ public class GenoBrokerPDFExtractorTest
                         hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
                         hasTaxes("EUR", 121.51 + 121.50 + 6.68), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -383,18 +449,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -415,25 +481,25 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende04WithSecurityInEUR()
     {
-        Security security = new Security("EQUINOR ASA NAVNE-AKSJER NK 2,50", CurrencyUnit.USD);
+        var security = new Security("EQUINOR ASA NAVNE-AKSJER NK 2,50", "USD");
         security.setIsin("US1667641005");
         security.setWkn("852552");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+        var extractor = new GenoBrokerPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -443,10 +509,10 @@ public class GenoBrokerPDFExtractorTest
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
                         hasTaxes("EUR", 4.84 + 3.23 + 0.18), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -454,18 +520,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -486,25 +552,25 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        Security security = new Security("VANGUARD S&P 500 UCITS ETF REGISTERED SHARES USD DIS.ON", CurrencyUnit.USD);
+        var security = new Security("VANGUARD S&P 500 UCITS ETF REGISTERED SHARES USD DIS.ON", "USD");
         security.setIsin("IE00B3XXRP09");
         security.setWkn("A1JX53");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+        var extractor = new GenoBrokerPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -514,10 +580,10 @@ public class GenoBrokerPDFExtractorTest
                         hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
                         hasTaxes("EUR", 1.29 + 0.07 + 0.11), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -525,18 +591,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende06()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -556,18 +622,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testDividende07()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -587,18 +653,18 @@ public class GenoBrokerPDFExtractorTest
     @Test
     public void testFusion01()
     {
-        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+        var extractor = new GenoBrokerPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //

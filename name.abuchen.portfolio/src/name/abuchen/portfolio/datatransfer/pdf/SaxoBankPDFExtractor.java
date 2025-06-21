@@ -72,15 +72,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN IE00B4L5Y983 Valuta 09-Dez-2024
                                         // Symbol SWDA:xswx Order-ID 5236807355
                                         // Ordertyp Marktorder Gehandelter Wert -5.480,43 USD
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "tickerSymbol", "currency") //
-                                                        .match("^Instrument (?<name>.*) Handelszeit.*$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        // @formatter:off
+                                        //
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
                                         // ISIN IE00B4L5Y983 Valuta 09-Dez-2024
                                         // Symbol SWDA:xswx Order-ID 5236807355
@@ -91,20 +83,20 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Ordertyp .* (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
                                         // ISIN US26923G8226 Value Date 10-Apr-2025
                                         // Symbol PFFA:arcx Order ID 5276831204
-                                        // Order Type Limit Order Price 20,02 USD
+                                        // Venue Exchange Traded Value -980,98 USD
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Trade time.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Order Type .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.*Traded Value (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -124,10 +116,11 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // B/S Buy Quantity 49,00
+                                        // Order Type Limit Order Quantity 49,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^B\\/S Buy Quantity (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //

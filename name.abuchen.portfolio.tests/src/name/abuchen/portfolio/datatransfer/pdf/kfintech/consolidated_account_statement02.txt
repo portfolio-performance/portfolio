@@ -1,0 +1,968 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.77.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Email Id: paras.desai@outlook.in This Consolidated Account Statement is brought to you as an investor
+friendly initiative by CAMS and KFintech, and lists the transactions,
+Malhar Paras Desai balances and valuation of Mutual Funds in which you are holding
+investments. The consolidation has been carried out based on the email id
+entered by you. If you have not entered a PAN Number and if the email id
+045 zBYTwI YgbGy is common to several members of your family, this statement will
+hliuMj qffgk wNAuK consolidate all those investments as well.
+fZUN hsLMq
+EOrQU - 116393 If you find any folios missing from this consolidation, you have not
+GtFpRfb registered your email id against those folios.
+wz
+Phone Res: 2071039455 This statement may not reflect the complete information on your DEMAT
+Mobile: +257974896221 holdings. Please check with your DP for details on DEMAT holdings.
+PORTFOLIO SUMMARY
+Cost Value Market Value
+Mutual Fund
+(INR) (INR)
+      DSP Mutual Fund 532,000.00 1,590,291.78
+      HDFC Mutual Fund 744,555.58 2,082,830.24
+      Aditya Birla Sun Life Mutual Fund 1,013,551.74 2,032,488.60
+      SBI Mutual Fund 525,000.00 1,052,792.10
+      Tata Mutual Fund 252,748.31 660,425.56
+      HSBC Mutual Fund 252,739.40 726,432.72
+      Mirae Asset Mutual Fund 282,294.11 615,671.91
+      Nippon India Mutual Fund 575,000.00 1,329,311.63
+Total 4,177,889.14 10,090,244.54
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+Aditya Birla Sun Life Mutual Fund
+Folio No: 9323161656 PAN: noxEn6621K KYC: OK  PAN: OK
+nMpTDJ xoBiK zpCIA
+B92-Aditya Birla Sun Life Frontline Equity Fund -Growth-Regular Plan (Non-Demat) - ISIN: INF209K01BR9(Advisor: ARN-0451) Registrar : CAMS
+ Nominee 1: xcqII B yBmuK  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+15-Jan-2016 Purchase 40,000.00 266.347 150.18 266.347
+16-Jan-2016 ***Registration of Nominee***
+18-Jan-2016 Purchase-SIP 4,000.00 27.047 147.89 293.394
+19-Jan-2016 ***KYC Failed - Updated from KRA Data - 1st Joint Holder***
+19-Jan-2016 ***Address Updated from KRA Data***
+19-Jan-2016 ***Change of Contacts***
+22-Jan-2016 ***SIP Registered***
+10-Feb-2016 Purchase-SIP (ECS) - Instalment 2/156 4,000.00 27.582 145.02 320.976
+12-Feb-2016 ***Address Updated from KRA Data***
+10-Mar-2016 Purchase-SIP (ECS) - Instalment 3/156 4,000.00 26.601 150.37 347.577
+11-Apr-2016 Purchase-SIP (ECS) - Instalment 4/156 4,000.00 25.768 155.23 373.345
+10-May-2016 Purchase-SIP (ECS) - Instalment 5/156 4,000.00 25.077 159.51 398.422
+10-Jun-2016 Purchase-SIP (ECS) - Instalment 6/156 4,000.00 24.114 165.88 422.536
+11-Jul-2016 Purchase-SIP (ECS) - Instalment 7/156 4,000.00 23.123 172.99 445.659
+10-Aug-2016 Purchase-SIP (ECS) - Instalment 8/156 4,000.00 22.395 178.61 468.054
+12-Sep-2016 Purchase-SIP (ECS) - Instalment 9/156 4,000.00 21.949 182.24 490.003
+14-Sep-2016 Purchase 40,000.00 218.806 182.81 708.809
+10-Oct-2016 Purchase-SIP (ECS) - Instalment 10/156 4,000.00 21.726 184.11 730.535
+10-Nov-2016 Purchase-SIP (ECS) - Instalment 11/156 4,000.00 22.209 180.11 752.744
+12-Dec-2016 Purchase-SIP (ECS) - Instalment 12/156 4,000.00 23.503 170.19 776.247
+10-Jan-2017 Purchase-SIP (ECS) - Instalment 13/156 4,000.00 23.088 173.25 799.335
+10-Feb-2017 Purchase-SIP (ECS) - Instalment 14/156 4,000.00 21.629 184.94 820.964
+10-Mar-2017 Purchase-SIP (ECS) - Instalment 15/156 4,000.00 21.501 186.04 842.465
+10-Apr-2017 Purchase-SIP (ECS) - Instalment 16/156 4,000.00 20.630 193.89 863.095
+10-May-2017 Purchase-SIP (ECS) - Instalment 17/156 4,000.00 20.042 199.58 883.137
+12-Jun-2017 Purchase-SIP (ECS) - Instalment 18/156 4,000.00 19.880 201.21 903.017
+10-Jul-2017 Purchase-SIP (ECS) - Instalment 19/156 4,000.00 19.488 205.25 922.505
+10-Aug-2017 Purchase-SIP (ECS) - Instalment 20/156 4,000.00 19.309 207.16 941.814
+11-Sep-2017 Purchase-SIP (ECS) - Instalment 21/156 4,000.00 18.736 213.49 960.550
+Page 1 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+10-Oct-2017 Purchase-SIP (ECS) - Instalment 22/156 4,000.00 18.830 212.43 979.380
+10-Nov-2017 Purchase-SIP (ECS) - Instalment 23/156 4,000.00 18.404 217.34 997.784
+11-Dec-2017 Purchase-SIP (ECS) - Instalment 24/156 4,000.00 18.436 216.97 1,016.220
+10-Jan-2018 Purchase-SIP (ECS) - Instalment 25/156 4,000.00 17.825 224.40 1,034.045
+12-Feb-2018 Purchase-SIP (ECS) - Instalment 26/156 4,000.00 18.341 218.09 1,052.386
+12-Mar-2018 Purchase-SIP (ECS) - Instalment 27/156 4,000.00 18.749 213.34 1,071.135
+10-Apr-2018 Purchase-SIP (ECS) - Instalment 28/156 4,000.00 18.561 215.50 1,089.696
+10-May-2018 Purchase-SIP (ECS) - Instalment 29/156 4,000.00 18.340 218.10 1,108.036
+11-Jun-2018 Purchase-SIP (ECS) - Instalment 30/156 4,000.00 18.369 217.76 1,126.405
+10-Jul-2018 Purchase-SIP (ECS) - Instalment 31/156 4,000.00 18.359 217.88 1,144.764
+10-Aug-2018 Purchase-SIP (ECS) - Instalment 32/156 4,000.00 17.673 226.34 1,162.437
+30-Aug-2018 ***CAN Data Updation***
+10-Sep-2018 Purchase-SIP (ECS) - Instalment 33/156 4,000.00 17.698 226.01 1,180.135
+10-Oct-2018 Purchase-SIP (ECS) - Instalment 34/156 4,000.00 19.443 205.73 1,199.578
+12-Nov-2018 Purchase-SIP (ECS) - Instalment 35/156 4,000.00 19.175 208.61 1,218.753
+10-Dec-2018 Purchase-SIP (ECS) - Instalment 36/156 4,000.00 19.262 207.66 1,238.015
+10-Jan-2019 Purchase-SIP (ECS) - Instalment 37/156 4,000.00 18.576 215.33 1,256.591
+11-Feb-2019 Purchase-SIP (ECS) - Instalment 38/156 4,000.00 18.992 210.62 1,275.583
+11-Mar-2019 Purchase-SIP (ECS) - Instalment 39/156 4,000.00 18.325 218.28 1,293.908
+10-Apr-2019 Purchase-SIP (ECS) - Instalment 40/156 4,000.00 17.788 224.87 1,311.696
+10-May-2019 Purchase-SIP (ECS) - Instalment 41/156 4,000.00 18.391 217.50 1,330.087
+10-Jun-2019 Purchase-SIP (ECS) - Instalment 42/156 4,000.00 17.517 228.35 1,347.604
+10-Jul-2019 Purchase-SIP (ECS) - Instalment 43/156 4,000.00 17.995 222.29 1,365.599
+13-Aug-2019 Purchase-SIP (ECS) - Instalment 44/156 4,000.00 19.030 210.19 1,384.629
+11-Sep-2019 Purchase-SIP (ECS) - Instalment 45/156 4,000.00 18.756 213.27 1,403.385
+10-Oct-2019 Purchase-SIP (ECS) - Instalment 46/156 4,000.00 18.619 214.84 1,422.004
+11-Nov-2019 Purchase-SIP (ECS) - Instalment 47/156 4,000.00 17.428 229.51 1,439.432
+10-Dec-2019 Purchase-SIP (ECS) - Instalment 48/156 4,000.00 17.587 227.44 1,457.019
+10-Jan-2020 Purchase-SIP (ECS) - Instalment 49/156 4,000.00 17.103 233.88 1,474.122
+10-Feb-2020 Purchase-SIP (ECS) - Instalment 50/156 4,000.00 17.258 231.77 1,491.380
+11-Mar-2020 Purchase-SIP (ECS) - Instalment 51/156 4,000.00 19.645 203.61 1,511.025
+13-Apr-2020 Purchase-SIP (ECS) - Instalment 52/156 4,000.00 22.886 174.78 1,533.911
+11-May-2020 Purchase-SIP (ECS) - Instalment 53/156 4,000.00 22.536 177.49 1,556.447
+10-Jun-2020 Purchase-SIP (ECS) - Instalment 54/156 4,000.00 20.700 193.24 1,577.147
+24-Jun-2020 ***Change of Contacts***
+10-Jul-2020 Purchase-SIP (ECS) - Instalment 55/156 3,999.80 19.598 204.09 1,596.745
+10-Jul-2020 *** Stamp Duty *** 0.20
+10-Aug-2020 Purchase-SIP (ECS) - Instalment 56/156 3,999.80 18.589 215.17 1,615.334
+10-Aug-2020 *** Stamp Duty *** 0.20
+10-Sep-2020 Purchase-SIP (ECS) - Instalment 57/156 3,999.80 18.493 216.29 1,633.827
+10-Sep-2020 *** Stamp Duty *** 0.20
+12-Oct-2020 Purchase-SIP (ECS) - Instalment 58/156 3,999.80 17.895 223.52 1,651.722
+12-Oct-2020 *** Stamp Duty *** 0.20
+10-Nov-2020 Purchase-SIP (ECS) - Instalment 59/156 3,999.80 16.781 238.35 1,668.503
+10-Nov-2020 *** Stamp Duty *** 0.20
+10-Dec-2020 Purchase-SIP (ECS) - Instalment 60/156 3,999.80 15.622 256.03 1,684.125
+10-Dec-2020 *** Stamp Duty *** 0.20
+11-Jan-2021 Purchase-SIP (ECS) - Instalment 61/156 3,999.80 14.429 277.20 1,698.554
+11-Jan-2021 *** Stamp Duty *** 0.20
+11-Feb-2021 Purchase-SIP (ECS) - Instalment 62/156 3,999.80 13.832 289.18 1,712.386
+11-Feb-2021 *** Stamp Duty *** 0.20
+12-Mar-2021 Purchase-SIP (ECS) - Instalment 63/156 3,999.80 13.882 288.13 1,726.268
+12-Mar-2021 *** Stamp Duty *** 0.20
+15-Apr-2021 Purchase-SIP (ECS) - Instalment 64/156 3,999.80 14.330 279.13 1,740.598
+15-Apr-2021 *** Stamp Duty *** 0.20
+11-May-2021 Purchase-SIP (ECS) - Instalment 65/156 3,999.80 13.971 286.30 1,754.569
+11-May-2021 *** Stamp Duty *** 0.20
+11-Jun-2021 Purchase-SIP (ECS) - Instalment 66/156 3,999.80 13.137 304.47 1,767.706
+11-Jun-2021 *** Stamp Duty *** 0.20
+13-Jul-2021 Purchase-SIP (ECS) - Instalment 67/156 3,999.80 12.959 308.65 1,780.665
+13-Jul-2021 *** Stamp Duty *** 0.20
+11-Aug-2021 Purchase-SIP (ECS) - Instalment 68/156 3,999.80 12.496 320.08 1,793.161
+11-Aug-2021 *** Stamp Duty *** 0.20
+15-Sep-2021 Purchase-SIP (ECS) - Instalment 69/156 3,999.80 11.670 342.74 1,804.831
+15-Sep-2021 *** Stamp Duty *** 0.20
+12-Oct-2021 Purchase-SIP (ECS) - Instalment 70/156 3,999.80 11.456 349.14 1,816.287
+12-Oct-2021 *** Stamp Duty *** 0.20
+12-Nov-2021 Purchase-SIP (ECS) - Instalment 71/156 3,999.80 11.232 356.11 1,827.519
+12-Nov-2021 *** Stamp Duty *** 0.20
+Page 2 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+13-Dec-2021 Purchase-SIP (ECS) 3,999.80 11.738 340.75 1,839.257
+13-Dec-2021 *** Stamp Duty *** 0.20
+12-Jan-2022 Purchase-SIP (ECS) 3,999.80 11.277 354.69 1,850.534
+12-Jan-2022 *** Stamp Duty *** 0.20
+11-Feb-2022 Purchase-SIP (ECS) - Instalment 74/156 3,999.80 11.773 339.73 1,862.307
+11-Feb-2022 *** Stamp Duty *** 0.20
+11-Mar-2022 Purchase-SIP (ECS) - Instalment 75/156 3,999.80 12.371 323.31 1,874.678
+11-Mar-2022 *** Stamp Duty *** 0.20
+12-Apr-2022 Purchase-SIP (ECS) - Instalment 76/156 3,999.80 11.744 340.59 1,886.422
+12-Apr-2022 *** Stamp Duty *** 0.20
+11-May-2022 Purchase-SIP (ECS) - Instalment 77/156 3,999.80 12.804 312.38 1,899.226
+11-May-2022 *** Stamp Duty *** 0.20
+13-Jun-2022 Purchase-SIP (ECS) - Instalment 78/156 3,999.80 13.106 305.19 1,912.332
+13-Jun-2022 *** Stamp Duty *** 0.20
+12-Jul-2022 Purchase-SIP (ECS) - Instalment 79/156 3,999.80 12.684 315.33 1,925.016
+12-Jul-2022 *** Stamp Duty *** 0.20
+12-Aug-2022 Purchase-SIP (ECS) - Instalment 80/156 3,999.80 11.631 343.89 1,936.647
+12-Aug-2022 *** Stamp Duty *** 0.20
+13-Sep-2022 Purchase-SIP (ECS) - Instalment 81/156 3,999.80 11.273 354.82 1,947.920
+13-Sep-2022 *** Stamp Duty *** 0.20
+11-Oct-2022 Purchase-SIP (ECS) - Instalment 82/156 3,999.80 11.963 334.34 1,959.883
+11-Oct-2022 *** Stamp Duty *** 0.20
+11-Nov-2022 Purchase-SIP (ECS) - Instalment 83/156 3,999.80 11.265 355.07 1,971.148
+11-Nov-2022 *** Stamp Duty *** 0.20
+13-Dec-2022 Purchase-SIP (ECS) - Instalment 84/156 3,999.80 11.033 362.54 1,982.181
+13-Dec-2022 *** Stamp Duty *** 0.20
+11-Jan-2023 Purchase-SIP (ECS) - Instalment 85/156 3,999.80 11.473 348.62 1,993.654
+11-Jan-2023 *** Stamp Duty *** 0.20
+14-Feb-2023 Purchase-SIP (ECS) - Instalment 86/156 3,999.80 11.493 348.03 2,005.147
+14-Feb-2023 *** Stamp Duty *** 0.20
+14-Mar-2023 Purchase-SIP (ECS) - Instalment 87/156 3,999.80 12.041 332.19 2,017.188
+14-Mar-2023 *** Stamp Duty *** 0.20
+17-Apr-2023 Purchase-SIP (ECS) - Instalment 88/156 3,999.80 11.656 343.15 2,028.844
+17-Apr-2023 *** Stamp Duty *** 0.20
+11-May-2023 Purchase-SIP (ECS) - Instalment 89/156 3,999.80 11.260 355.22 2,040.104
+11-May-2023 *** Stamp Duty *** 0.20
+13-Jun-2023 Purchase-SIP (ECS) - Instalment 90/156 3,999.80 10.840 368.99 2,050.944
+13-Jun-2023 *** Stamp Duty *** 0.20
+14-Jul-2023 Purchase-SIP (ECS) - Instalment 91/156 3,999.80 10.404 384.43 2,061.348
+14-Jul-2023 *** Stamp Duty *** 0.20
+14-Aug-2023 Purchase-SIP (ECS) - Instalment 92/156 3,999.80 10.388 385.05 2,071.736
+14-Aug-2023 *** Stamp Duty *** 0.20
+13-Sep-2023 Purchase-SIP (ECS) - Instalment 93/156 3,999.80 9.995 400.20 2,081.731
+13-Sep-2023 *** Stamp Duty *** 0.20
+12-Oct-2023 Purchase-SIP (ECS) - Instalment 94/156 3,999.80 10.112 395.55 2,091.843
+12-Oct-2023 *** Stamp Duty *** 0.20
+15-Nov-2023 Purchase-SIP (ECS) - Instalment 95/156 3,999.80 10.129 394.90 2,101.972
+15-Nov-2023 *** Stamp Duty *** 0.20
+13-Dec-2023 Purchase-SIP (ECS) - Instalment 96/156 3,999.80 9.542 419.17 2,111.514
+13-Dec-2023 *** Stamp Duty *** 0.20
+12-Jan-2024 Purchase-SIP (ECS) - Instalment 97/156 3,999.80 9.116 438.77 2,120.630
+12-Jan-2024 *** Stamp Duty *** 0.20
+14-Feb-2024 Purchase-SIP (ECS) - Instalment 98/156 3,999.80 9.098 439.64 2,129.728
+14-Feb-2024 *** Stamp Duty *** 0.20
+14-Mar-2024 Purchase-SIP (ECS) - Instalment 99/156 3,999.80 8.982 445.30 2,138.710
+14-Mar-2024 *** Stamp Duty *** 0.20
+15-Apr-2024 Purchase-SIP (ECS) - Instalment 100/156 3,999.80 8.834 452.79 2,147.544
+15-Apr-2024 *** Stamp Duty *** 0.20
+13-May-2024 Purchase-SIP (ECS) - Instalment 101/156 3,999.80 8.825 453.26 2,156.369
+13-May-2024 *** Stamp Duty *** 0.20
+03-Jun-2024 ***NCT Correction of ARS***
+13-Jun-2024 Purchase-SIP (ECS) - Instalment 102/156 3,999.80 8.188 488.48 2,164.557
+13-Jun-2024 *** Stamp Duty *** 0.20
+12-Jul-2024 Purchase-SIP (ECS) - Instalment 103/156 3,999.80 7.841 510.10 2,172.398
+12-Jul-2024 *** Stamp Duty *** 0.20
+14-Aug-2024 Purchase-SIP (ECS) - Instalment 104/156 3,999.80 7.889 507.03 2,180.287
+14-Aug-2024 *** Stamp Duty *** 0.20
+13-Sep-2024 Purchase-SIP (ECS) - Instalment 105/156 3,999.80 7.488 534.17 2,187.775
+13-Sep-2024 *** Stamp Duty *** 0.20
+Page 3 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+14-Oct-2024 Purchase-SIP (ECS) - Instalment 106/156 3,999.80 7.516 532.18 2,195.291
+14-Oct-2024 *** Stamp Duty *** 0.20
+13-Nov-2024 Purchase-SIP (ECS) - Instalment 107/156 3,999.80 8.068 495.78 2,203.359
+13-Nov-2024 *** Stamp Duty *** 0.20
+12-Dec-2024 Purchase-SIP (ECS) - Instalment 108/156 3,999.80 7.720 518.14 2,211.079
+12-Dec-2024 *** Stamp Duty *** 0.20
+14-Jan-2025 Purchase-SIP (ECS) - Instalment 109/156 3,999.80 8.228 486.13 2,219.307
+14-Jan-2025 *** Stamp Duty *** 0.20
+12-Feb-2025 Purchase-SIP (ECS) - Instalment 110/156 3,999.80 8.378 477.43 2,227.685
+12-Feb-2025 *** Stamp Duty *** 0.20
+12-Mar-2025 Purchase-SIP (ECS) - Instalment 111/156 3,999.80 8.570 466.73 2,236.255
+12-Mar-2025 *** Stamp Duty *** 0.20
+16-Apr-2025 Purchase-SIP (ECS) - Instalment 112/156 3,999.80 8.150 490.76 2,244.405
+16-Apr-2025 *** Stamp Duty *** 0.20
+15-May-2025 Purchase-SIP (ECS) - Instalment 113/156 3,999.80 7.677 520.98 2,252.082
+15-May-2025 *** Stamp Duty *** 0.20
+Closing Unit Balance: 2,252.082 NAV on 09-Jun-2025: INR 528.05 Total Cost Value: 532,000.00 Market Value on 09-Jun-2025: INR 1,189,211.90
+WEF 17-Nov-2020 For redemption/switch out of  units on or before 90 days from the date of allotment: 1.00% of applicable NAV. For redemption/switch out of units
+after 90 days from the date of allotment: Nil  Note: The exit load rate levied at the time of redemption/switch-out of units will be the rate prevailing at the time of
+allotment of the corresponding units. Customers may request for a separate Exit Load Applicability Report by calling our toll free numbers 1800-270-7000  or from any
+of our Investor Service Centers. Important note - The last date to link Aadhaar and Permanent Account Number (PAN) has been extended by the government until 31
+March 2023. Kindly link your Aadhar to your PAN  prior to the aforesaid deadline to avoid for higher TDS on your income distribution or capital withdrawals. Future
+transactions may also be restricted.  For more details, please visit income tax portal. Kindly ignore if your PAN is already linked to Aadhaar.
+Folio No: 0279391425 PAN: SCfaj3481z KYC: OK  PAN: OK
+piGvSh JwjaU fjBfT
+B380B-Aditya Birla Sun Life Credit Risk Fund - Gr. REGULAR (formerly known as Aditya Birla Sun Life Corporate Bond) (Non-Demat) - ISIN: INF Registrar : CAMS
+209KA1K47(Advisor: ARN-1671)
+ Nominee 1: SxrTW OBhpO  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+24-Aug-2018 Purchase 500,000.00 37,788.325 13.2316 37,788.325
+25-Aug-2018 ***Registration of Nominee***
+03-Sep-2018 ***CAN Data Updation***
+29-Jun-2020 ***Change of Contacts***
+03-Jun-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 37,788.325 NAV on 09-Jun-2025: INR 22.3158 Total Cost Value: 481,551.74 Market Value on 09-Jun-2025: INR 843,276.70
+WEF 25-OCT-2019 In respect of each purchase / switch-in of Units, upto 15% of the units may be redeemed / switched out without any exit load from the date of
+allotment. Any redemption in excess of the above limit shall be subject to the following exit load: For redemption / switch-out of units on or before 1 year from the
+date of allotment -3.00% of applicable NAV. For redemption / switch-out of units after 1 year but on or before 2 years from the date of allotment - 2.00% of
+applicable NAV. For redemption / switch-out of units after 2 year but on or before 3 years from the date of allotment - 1.00% of applicable NAV.For redemption /
+switch-out of units after 3 years - Nil.Kindly link your Aadhar to your PAN  before 31 March 2023 to avoid for higher TDS on your income distribution or capital
+withdrawals. Future transactions may also be restricted.  For more details, please visit income tax portal. Kindly ignore if your PAN is already linked to Aadhaar.
+DSP Mutual Fund
+Folio No: 9489763 / 27 PAN: pGCVL3125N KYC: OK  PAN: OK
+BkjzWT KAMwE MmBVa
+D157-DSP Small Cap Fund - Regular Plan - Growth (formerly DSP Micro Cap Fund) (Non-Demat) - ISIN: INF740K01797(Advisor: ARN-2179) Registrar : CAMS
+ Nominee 1: eQHwG itLIF  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+15-Jan-2016 Purchase 40,000.00 978.450 40.881 978.450
+16-Jan-2016 ***Registration of Nominee***
+18-Jan-2016 SIP Purchase 4,000.00 102.075 39.187 1,080.525
+19-Jan-2016 ***KYC Status Deactivated - Updated from KRA Data - 1st Joint Holder***
+20-Jan-2016 ***SIP Registered (From 21/02/2016 to 21/12/2028)***
+21-Jan-2016 ***Address Updated from KRA Data - 1st Joint Holder***
+23-Jan-2016 ***Bank Mandate: Additional Bank registered from purchase transaction***
+03-Feb-2016 ***Address Updated from KRA Data - First Holder***
+03-Feb-2016 ***Change of Contact details***
+12-Feb-2016 ***Address Updated from KRA Data - First Holder***
+22-Feb-2016 SIP Purchase - Instalment 2/156 4,000.00 107.049 37.366 1,187.574
+02-Mar-2016 ***Address Updated from KRA Data - 1st Joint Holder***
+21-Mar-2016 SIP Purchase - Instalment 3/156 4,000.00 99.612 40.156 1,287.186
+21-Apr-2016 SIP Purchase - Instalment 4/156 4,000.00 92.249 43.361 1,379.435
+23-May-2016 SIP Purchase - Instalment 5/156 4,000.00 92.347 43.315 1,471.782
+Page 4 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+21-Jun-2016 SIP Purchase - Instalment 6/156 4,000.00 86.738 46.116 1,558.520
+21-Jul-2016 SIP Purchase - Instalment 7/156 4,000.00 82.650 48.397 1,641.170
+22-Aug-2016 SIP Purchase - Instalment 8/156 - ARN-0910/E029134 4,000.00 79.934 50.041 1,721.104
+14-Sep-2016 Purchase - ARN-0910/E029134 40,000.00 786.627 50.850 2,507.731
+21-Sep-2016 SIP Purchase - Instalment 9/156 - ARN-0910/E029134 4,000.00 77.338 51.721 2,585.069
+21-Oct-2016 SIP Purchase - Instalment 10/156 - ARN-0910/E029134 4,000.00 73.726 54.255 2,658.795
+21-Nov-2016 SIP Purchase - Instalment 11/156 - ARN-0910/E029134 4,000.00 84.248 47.479 2,743.043
+21-Dec-2016 SIP Purchase - Instalment 12/156 - ARN-0910/E029134 4,000.00 80.839 49.481 2,823.882
+23-Jan-2017 SIP Purchase - Instalment 13/156 - ARN-0910/E029134 4,000.00 76.790 52.090 2,900.672
+21-Feb-2017 SIP Purchase - Instalment 14/156 - ARN-0910/E029134 4,000.00 72.993 54.800 2,973.665
+21-Mar-2017 SIP Purchase - Instalment 15/156 - ARN-0910/E029134 4,000.00 71.709 55.781 3,045.374
+21-Apr-2017 SIP Purchase - Instalment 16/156 - ARN-0910/E029134 4,000.00 67.024 59.680 3,112.398
+22-May-2017 SIP Purchase - Instalment 17/156 - ARN-0910/E029134 4,000.00 66.765 59.912 3,179.163
+21-Jun-2017 SIP Purchase - Instalment 18/156 - ARN-0910/E029134 4,000.00 64.338 62.172 3,243.501
+21-Jul-2017 SIP Purchase - Instalment 19/156 - ARN-0910/E029134 4,000.00 64.683 61.840 3,308.184
+02-Aug-2017 ***Address Updated from KRA Data - 1st Joint Holder***
+21-Aug-2017 SIP Purchase - Instalment 20/156 - ARN-0910/E029134 4,000.00 68.840 58.106 3,377.024
+21-Sep-2017 SIP Purchase - Instalment 21/156 - ARN-0910/E029134 4,000.00 65.245 61.307 3,442.269
+23-Oct-2017 SIP Purchase - Instalment 22/156 - ARN-0910/E029134 4,000.00 63.892 62.606 3,506.161
+14-Nov-2017 ***Change of Contact details***
+21-Nov-2017 SIP Purchase - Instalment 23/156 - ARN-0910/E029134 4,000.00 61.397 65.150 3,567.558
+09-Dec-2017 ***Address Updated from KRA Data - 1st Joint Holder***
+21-Dec-2017 SIP Purchase - Instalment 24/156 - ARN-0910/E029134 4,000.00 57.004 70.171 3,624.562
+22-Jan-2018 SIP Purchase - Instalment 25/156 - ARN-0910/E029134 4,000.00 55.644 71.886 3,680.206
+21-Feb-2018 SIP Purchase - Instalment 26/156 - ARN-0910/E029134 4,000.00 61.408 65.138 3,741.614
+21-Mar-2018 SIP Purchase - Instalment 27/156 - ARN-0910/E029134 4,000.00 63.336 63.155 3,804.950
+23-Apr-2018 SIP Purchase - Instalment 28/156 - ARN-0910/E029134 4,000.00 59.813 66.875 3,864.763
+21-May-2018 SIP Purchase - Instalment 29/156 - ARN-0910/E029134 4,000.00 64.542 61.975 3,929.305
+21-Jun-2018 SIP Purchase - Instalment 30/156 - ARN-0910/E029134 4,000.00 67.522 59.240 3,996.827
+23-Jul-2018 SIP Purchase - Instalment 31/156 - ARN-0910/E029134 4,000.00 71.722 55.771 4,068.549
+21-Aug-2018 SIP Purchase - Instalment 32/156 - ARN-0910/E029134 4,000.00 67.155 59.564 4,135.704
+04-Sep-2018 ***MFU: Data Updation***
+18-Sep-2018 ***NCT Change of Permenant Address***
+18-Sep-2018 ***NCT Change of Address***
+21-Sep-2018 SIP Purchase - Instalment 33/156 - ARN-0910/E029134 4,000.00 71.018 56.324 4,206.722
+22-Oct-2018 SIP Purchase - Instalment 34/156 - ARN-0910/E029134 4,000.00 78.508 50.950 4,285.230
+21-Nov-2018 SIP Purchase - Instalment 35/156 - ARN-0910/E029134 4,000.00 75.112 53.254 4,360.342
+21-Dec-2018 SIP Purchase - Instalment 36/156 - ARN-0910/E029134 4,000.00 75.219 53.178 4,435.561
+21-Jan-2019 SIP Purchase - Instalment 37/156 - ARN-0910/E029134 4,000.00 75.679 52.855 4,511.240
+21-Feb-2019 SIP Purchase - Instalment 38/156 - ARN-0910/E029134 4,000.00 80.480 49.702 4,591.720
+22-Mar-2019 SIP Purchase - Instalment 39/156 - ARN-0910/E029134 4,000.00 72.939 54.840 4,664.659
+22-Apr-2019 SIP Purchase - Instalment 40/156 - ARN-0910/E029134 4,000.00 72.402 55.247 4,737.061
+21-May-2019 SIP Purchase - Instalment 41/156 - ARN-0910/E029134 4,000.00 73.658 54.305 4,810.719
+21-Jun-2019 SIP Purchase - Instalment 42/156 - ARN-0910/E029134 4,000.00 73.498 54.423 4,884.217
+22-Jul-2019 SIP Purchase - Instalment 43/156 - ARN-0910/E029134 4,000.00 78.613 50.882 4,962.830
+21-Aug-2019 SIP Purchase - Instalment 44/156 - ARN-0910/E029134 4,000.00 82.643 48.401 5,045.473
+23-Sep-2019 SIP Purchase - Instalment 45/156 - ARN-0910/E029134 4,000.00 76.281 52.438 5,121.754
+22-Oct-2019 SIP Purchase - Instalment 46/156 - ARN-0910/E029134 4,000.00 78.425 51.004 5,200.179
+21-Nov-2019 SIP Purchase - Instalment 47/156 - ARN-0910/E029134 4,000.00 77.257 51.775 5,277.436
+23-Dec-2019 SIP Purchase - Instalment 48/156 - ARN-0910/E029134 4,000.00 77.232 51.792 5,354.668
+21-Jan-2020 SIP Purchase - Instalment 49/156 - ARN-0910/E029134 4,000.00 69.454 57.592 5,424.122
+24-Feb-2020 SIP Purchase - Instalment 50/156 - ARN-0910/E029134 4,000.00 69.620 57.455 5,493.742
+23-Mar-2020 SIP Purchase - Instalment 51/156 - ARN-0910/E029134 4,000.00 107.680 37.147 5,601.422
+21-Apr-2020 SIP Purchase - Instalment 52/156 - ARN-0910/E029134 4,000.00 94.861 42.167 5,696.283
+21-May-2020 SIP Purchase - Instalment 53/156 - ARN-0910/E029134 4,000.00 96.672 41.377 5,792.955
+22-Jun-2020 SIP Purchase - Instalment 54/156 - ARN-0910/E029134 4,000.00 81.833 48.880 5,874.788
+21-Jul-2020 SIP Purchase - Instalment 55/156 - ARN-0910/E029134 3,999.80 78.511 50.946 5,953.299
+21-Jul-2020 *** Stamp Duty *** 0.20
+21-Aug-2020 SIP Purchase - Instalment 56/156 - ARN-0910/E029134 3,999.80 68.053 58.775 6,021.352
+21-Aug-2020 *** Stamp Duty *** 0.20
+21-Sep-2020 SIP Purchase - Instalment 57/156 - ARN-0910/E029134 3,999.80 67.150 59.565 6,088.502
+21-Sep-2020 *** Stamp Duty *** 0.20
+21-Oct-2020 SIP Purchase - Instalment 58/156 - ARN-0910/E029134 3,999.80 66.454 60.189 6,154.956
+21-Oct-2020 *** Stamp Duty *** 0.20
+23-Nov-2020 SIP Purchase - Instalment 59/156 - ARN-0910/E029134 3,999.80 61.142 65.418 6,216.098
+23-Nov-2020 *** Stamp Duty *** 0.20
+06-Dec-2020 ***Change of Contact details***
+21-Dec-2020 SIP Purchase - Instalment 60/156 - ARN-0910/E029134 3,999.80 59.100 67.679 6,275.198
+21-Dec-2020 *** Stamp Duty *** 0.20
+Page 5 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+21-Jan-2021 SIP Purchase - Instalment 61/156 - ARN-0910/E029134 3,999.80 55.010 72.711 6,330.208
+21-Jan-2021 *** Stamp Duty *** 0.20
+23-Feb-2021 SIP Purchase - Instalment 62/156 - ARN-0910/E029134 3,999.80 52.292 76.489 6,382.500
+23-Feb-2021 *** Stamp Duty *** 0.20
+22-Mar-2021 SIP Purchase - Instalment 63/156 - ARN-0910/E029134 3,999.80 51.026 78.388 6,433.526
+22-Mar-2021 *** Stamp Duty *** 0.20
+30-Mar-2021 ***NCT Change of Contact***
+22-Apr-2021 SIP Purchase - Instalment 64/156 - ARN-0910/E029134 3,999.80 50.199 79.679 6,483.725
+22-Apr-2021 *** Stamp Duty *** 0.20
+21-May-2021 SIP Purchase - Instalment 65/156 - ARN-0910/E029134 3,999.80 45.332 88.233 6,529.057
+21-May-2021 *** Stamp Duty *** 0.20
+22-Jun-2021 SIP Purchase - Instalment 66/156 - ARN-0910/E029134 3,999.80 43.094 92.815 6,572.151
+22-Jun-2021 *** Stamp Duty *** 0.20
+22-Jul-2021 SIP Purchase - Instalment 67/156 - ARN-0910/E029134 3,999.80 39.804 100.487 6,611.955
+22-Jul-2021 *** Stamp Duty *** 0.20
+23-Aug-2021 SIP Purchase - Instalment 68/156 - ARN-0910/E029134 3,999.80 41.526 96.320 6,653.481
+23-Aug-2021 *** Stamp Duty *** 0.20
+21-Sep-2021 SIP Purchase - Instalment 69/156 - ARN-0910/E029134 3,999.80 39.051 102.425 6,692.532
+21-Sep-2021 *** Stamp Duty *** 0.20
+21-Oct-2021 SIP Purchase - Instalment 70/156 - ARN-0910/E029134 3,999.80 36.866 108.496 6,729.398
+21-Oct-2021 *** Stamp Duty *** 0.20
+22-Nov-2021 SIP Purchase - ARN-0910/E029134 3,999.80 37.410 106.917 6,766.808
+22-Nov-2021 *** Stamp Duty *** 0.20
+21-Dec-2021 SIP Purchase - Instalment 72/156 - ARN-0910/E029134 3,999.80 36.964 108.209 6,803.772
+21-Dec-2021 *** Stamp Duty *** 0.20
+21-Jan-2022 SIP Purchase - Instalment 73/156 - ARN-0910/E029134 3,999.80 34.711 115.230 6,838.483
+21-Jan-2022 *** Stamp Duty *** 0.20
+21-Feb-2022 SIP Purchase - Instalment 74/156 - ARN-0910/E029134 3,999.80 38.097 104.990 6,876.580
+21-Feb-2022 *** Stamp Duty *** 0.20
+21-Mar-2022 SIP Purchase - Instalment 75/156 - ARN-0910/E029134 3,999.80 36.532 109.487 6,913.112
+21-Mar-2022 *** Stamp Duty *** 0.20
+21-Apr-2022 SIP Purchase - Instalment 76/156 - ARN-0910/E029134 3,999.80 34.600 115.600 6,947.712
+21-Apr-2022 *** Stamp Duty *** 0.20
+23-May-2022 SIP Purchase - Instalment 77/156 - ARN-0910/E029134 3,999.80 37.873 105.612 6,985.585
+23-May-2022 *** Stamp Duty *** 0.20
+21-Jun-2022 SIP Purchase - Instalment 78/156 - ARN-0910/E029134 3,999.80 41.075 97.379 7,026.660
+21-Jun-2022 *** Stamp Duty *** 0.20
+21-Jul-2022 SIP Purchase - Instalment 79/156 - ARN-0910/E029134 3,999.80 36.920 108.337 7,063.580
+21-Jul-2022 *** Stamp Duty *** 0.20
+22-Aug-2022 SIP Purchase - Instalment 80/156 - ARN-0910/E029134 3,999.80 36.431 109.790 7,100.011
+22-Aug-2022 *** Stamp Duty *** 0.20
+21-Sep-2022 SIP Purchase - Instalment 81/156 - ARN-0910/E029134 3,999.80 34.374 116.361 7,134.385
+21-Sep-2022 *** Stamp Duty *** 0.20
+21-Oct-2022 SIP Purchase - Instalment 82/156 - ARN-0910/E029134 3,999.80 35.446 112.842 7,169.831
+21-Oct-2022 *** Stamp Duty *** 0.20
+21-Nov-2022 SIP Purchase - Instalment 83/156 - ARN-0910/E029134 3,999.80 35.784 111.777 7,205.615
+21-Nov-2022 *** Stamp Duty *** 0.20
+21-Dec-2022 SIP Purchase - Instalment 84/156 - ARN-0910/E029134 3,999.80 35.335 113.198 7,240.950
+21-Dec-2022 *** Stamp Duty *** 0.20
+23-Jan-2023 SIP Purchase - Instalment 85/156 - ARN-0910/E029134 3,999.80 35.631 112.256 7,276.581
+23-Jan-2023 *** Stamp Duty *** 0.20
+21-Feb-2023 SIP Purchase - Instalment 86/156 - ARN-0910/E029134 3,999.80 35.772 111.813 7,312.353
+21-Feb-2023 *** Stamp Duty *** 0.20
+21-Mar-2023 SIP Purchase - Instalment 87/156 - ARN-0910/E029134 3,999.80 36.626 109.207 7,348.979
+21-Mar-2023 *** Stamp Duty *** 0.20
+21-Apr-2023 SIP Purchase - Instalment 88/156 - ARN-0910/E029134 3,999.80 35.330 113.212 7,384.309
+21-Apr-2023 *** Stamp Duty *** 0.20
+22-May-2023 SIP Purchase - Instalment 89/156 - ARN-0910/E029134 3,999.80 33.563 119.173 7,417.872
+22-May-2023 *** Stamp Duty *** 0.20
+21-Jun-2023 SIP Purchase - Instalment 90/156 - ARN-0910/E029134 3,999.80 30.710 130.245 7,448.582
+21-Jun-2023 *** Stamp Duty *** 0.20
+21-Jul-2023 SIP Purchase - Instalment 91/156 - ARN-0910/E029134 3,999.80 29.234 136.821 7,477.816
+21-Jul-2023 *** Stamp Duty *** 0.20
+21-Aug-2023 SIP Purchase - Instalment 92/156 - ARN-0910/E029134 3,999.80 28.679 139.470 7,506.495
+21-Aug-2023 *** Stamp Duty *** 0.20
+21-Sep-2023 SIP Purchase - Instalment 93/156 - ARN-0910/E029134 3,999.80 27.863 143.552 7,534.358
+21-Sep-2023 *** Stamp Duty *** 0.20
+23-Oct-2023 SIP Purchase - Instalment 94/156 - ARN-0910/E029134 3,999.80 28.331 141.181 7,562.689
+23-Oct-2023 *** Stamp Duty *** 0.20
+Page 6 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+21-Nov-2023 SIP Purchase - Instalment 95/156 - ARN-0910/E029134 3,999.80 26.223 152.531 7,588.912
+21-Nov-2023 *** Stamp Duty *** 0.20
+21-Dec-2023 SIP Purchase - Instalment 96/156 - ARN-0910/E029134 3,999.80 25.551 156.544 7,614.463
+21-Dec-2023 *** Stamp Duty *** 0.20
+23-Jan-2024 SIP Purchase - Instalment 97/156 - ARN-0910/E029134 3,999.80 25.061 159.603 7,639.524
+23-Jan-2024 *** Stamp Duty *** 0.20
+21-Feb-2024 SIP Purchase - Instalment 98/156 - ARN-0910/E029134 3,999.80 24.395 163.960 7,663.919
+21-Feb-2024 *** Stamp Duty *** 0.20
+21-Mar-2024 SIP Purchase - Instalment 99/156 - ARN-0910/E029134 3,999.80 25.961 154.071 7,689.880
+21-Mar-2024 *** Stamp Duty *** 0.20
+22-Apr-2024 SIP Purchase - Instalment 100/156 - ARN-0910/E029134 3,999.80 24.018 166.530 7,713.898
+22-Apr-2024 *** Stamp Duty *** 0.20
+21-May-2024 SIP Purchase - Instalment 101/156 - ARN-0910/E029134 3,999.80 23.414 170.833 7,737.312
+21-May-2024 *** Stamp Duty *** 0.20
+03-Jun-2024 ***NCT Correction of ARS***
+21-Jun-2024 SIP Purchase - Instalment 102/156 - ARN-0910/E029134 3,999.80 21.823 183.285 7,759.135
+21-Jun-2024 *** Stamp Duty *** 0.20
+22-Jul-2024 SIP Purchase - Instalment 103/156 - ARN-0910/E029134 3,999.80 21.180 188.850 7,780.315
+22-Jul-2024 *** Stamp Duty *** 0.20
+21-Aug-2024 SIP Purchase - Instalment 104/156 - ARN-0910/E029134 3,999.80 19.962 200.367 7,800.277
+21-Aug-2024 *** Stamp Duty *** 0.20
+23-Sep-2024 SIP Purchase - Instalment 105/156 - ARN-0910/E029134 3,999.80 19.581 204.272 7,819.858
+23-Sep-2024 *** Stamp Duty *** 0.20
+21-Oct-2024 SIP Purchase - Instalment 106/156 - ARN-0910/E029134 3,999.80 20.014 199.850 7,839.872
+21-Oct-2024 *** Stamp Duty *** 0.20
+21-Nov-2024 SIP Purchase - Instalment 107/156 - ARN-0910/E029134 3,999.80 21.171 188.928 7,861.043
+21-Nov-2024 *** Stamp Duty *** 0.20
+23-Dec-2024 SIP Purchase - Instalment 108/156 - ARN-0910/E029134 3,999.80 20.046 199.536 7,881.089
+23-Dec-2024 *** Stamp Duty *** 0.20
+21-Jan-2025 SIP Purchase - Instalment 109/156 - ARN-0910/E029134 3,999.80 21.320 187.606 7,902.409
+21-Jan-2025 *** Stamp Duty *** 0.20
+21-Feb-2025 SIP Purchase - Instalment 110/156 - ARN-0910/E029134 3,999.80 23.801 168.051 7,926.210
+21-Feb-2025 *** Stamp Duty *** 0.20
+21-Mar-2025 SIP Purchase - Instalment 111/156 - ARN-0910/E029134 3,999.80 23.170 172.628 7,949.380
+21-Mar-2025 *** Stamp Duty *** 0.20
+21-Apr-2025 SIP Purchase - Instalment 112/156 - ARN-0910/E029134 3,999.80 22.905 174.625 7,972.285
+21-Apr-2025 *** Stamp Duty *** 0.20
+21-May-2025 SIP Purchase - Instalment 113/156 - ARN-0910/E029134 3,999.80 21.501 186.030 7,993.786
+21-May-2025 *** Stamp Duty *** 0.20
+Closing Unit Balance: 7,993.786 NAV on 09-Jun-2025: INR 198.941 Total Cost Value: 532,000.00 Market Value on 09-Jun-2025: INR 1,590,291.78
+Exit Load: 1% if redeemed/switched within 12 months. NIL after 12 months.
+HDFC Mutual Fund
+Folio No: 37596985 / 50 PAN: QCIXQ3778F KYC: OK  PAN: OK
+zdxPNQ CfkzF ZMIlx
+HACGPG-HDFC Small Cap Fund - Regular Plan - Growth Plan (Non-Demat) - ISIN: INF179KA1RZ8(Advisor: ARN-0910) Registrar : CAMS
+ Nominee 1: oLYUb B axvGo  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+15-Jan-2016 Purchase 40,000.00 1,603.271 24.949 1,603.271
+16-Jan-2016 ***Registration of Nominee***
+18-Jan-2016 SIP Purchase 4,000.00 166.868 23.971 1,770.139
+19-Jan-2016 ***KYC Failed - Updated from KRA Data - 1st Joint Holder***
+22-Jan-2016 ***Address Updated from KRA Data***
+25-Jan-2016 ***SIPRegistered - 18/01/2016***
+12-Feb-2016 ***Address Updated from KRA Data***
+22-Feb-2016 SIP Purchase - Instalment 2/156 4,000.00 172.577 23.178 1,942.716
+21-Mar-2016 SIP Purchase - Instalment 3/156 4,000.00 161.394 24.784 2,104.110
+20-Apr-2016 SIP Purchase - Instalment 4/156 4,000.00 151.137 26.466 2,255.247
+20-May-2016 SIP Purchase - Instalment 5/156 4,000.00 152.777 26.182 2,408.024
+20-Jun-2016 SIP Purchase - Instalment 6/156 4,000.00 146.703 27.266 2,554.727
+20-Jul-2016 SIP Purchase - Instalment 7/156 4,000.00 138.956 28.786 2,693.683
+22-Aug-2016 SIP Purchase - Instalment 8/156 4,000.00 133.797 29.896 2,827.480
+20-Sep-2016 SIP Purchase - Instalment 9/156 4,000.00 131.006 30.533 2,958.486
+20-Oct-2016 SIP Purchase - Instalment 10/156 4,000.00 126.494 31.622 3,084.980
+21-Nov-2016 SIP Purchase - Instalment 11/156 4,000.00 142.745 28.022 3,227.725
+20-Dec-2016 SIP Purchase - Instalment 12/156 4,000.00 139.126 28.751 3,366.851
+20-Jan-2017 SIP Purchase - Instalment 13/156 4,000.00 134.008 29.849 3,500.859
+Page 7 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+20-Feb-2017 SIP Purchase - Instalment 14/156 4,000.00 126.626 31.589 3,627.485
+20-Mar-2017 SIP Purchase - Instalment 15/156 4,000.00 122.869 32.555 3,750.354
+20-Apr-2017 SIP Purchase - Instalment 16/156 4,000.00 115.121 34.746 3,865.475
+22-May-2017 SIP Purchase - Instalment 17/156 4,000.00 111.960 35.727 3,977.435
+20-Jun-2017 SIP Purchase - Instalment 18/156 4,000.00 107.446 37.228 4,084.881
+20-Jul-2017 SIP Purchase - Instalment 19/156 4,000.00 104.739 38.190 4,189.620
+21-Aug-2017 SIP Purchase - Instalment 20/156 4,000.00 108.773 36.774 4,298.393
+20-Sep-2017 SIP Purchase - Instalment 21/156 4,000.00 103.114 38.792 4,401.507
+23-Oct-2017 SIP Purchase - Instalment 22/156 4,000.00 99.661 40.136 4,501.168
+14-Nov-2017 ***Change of Contacts***
+20-Nov-2017 SIP Purchase - Instalment 23/156 4,000.00 94.462 42.345 4,595.630
+20-Dec-2017 SIP Purchase - Instalment 24/156 4,000.00 88.990 44.949 4,684.620
+22-Jan-2018 SIP Purchase - Instalment 25/156 4,000.00 84.879 47.126 4,769.499
+20-Feb-2018 SIP Purchase - Instalment 26/156 4,000.00 88.273 45.314 4,857.772
+20-Mar-2018 SIP Purchase - Instalment 27/156 4,000.00 90.565 44.167 4,948.337
+20-Apr-2018 SIP Purchase - Instalment 28/156 4,000.00 84.595 47.284 5,032.932
+21-May-2018 SIP Purchase - Instalment 29/156 4,000.00 88.668 45.112 5,121.600
+20-Jun-2018 SIP Purchase - Instalment 30/156 4,000.00 88.970 44.959 5,210.570
+20-Jul-2018 SIP Purchase - Instalment 31/156 4,000.00 94.018 42.545 5,304.588
+20-Aug-2018 SIP Purchase - Instalment 32/156 4,000.00 89.053 44.917 5,393.641
+23-Aug-2018 ***CAN Change of Bank Mandate***
+23-Aug-2018 ***CAN Change of Address***
+23-Aug-2018 ***CAN Change of Contact***
+23-Aug-2018 ***CAN Change of Permenant Address***
+23-Aug-2018 ***CAN Change of ARS***
+23-Aug-2018 ***CAN Data Updation***
+29-Aug-2018 ***NCT Change of Permenant Address***
+29-Aug-2018 ***NCT Change of Address***
+21-Sep-2018 SIP Purchase - Instalment 33/156 4,000.00 91.825 43.561 5,485.466
+22-Oct-2018 SIP Purchase - Instalment 34/156 4,000.00 98.848 40.466 5,584.314
+20-Nov-2018 SIP Purchase - Instalment 35/156 4,000.00 95.662 41.814 5,679.976
+20-Dec-2018 SIP Purchase - Instalment 36/156 4,000.00 93.835 42.628 5,773.811
+21-Jan-2019 SIP Purchase - Instalment 37/156 4,000.00 94.807 42.191 5,868.618
+20-Feb-2019 SIP Purchase - Instalment 38/156 4,000.00 100.450 39.821 5,969.068
+20-Mar-2019 SIP Purchase - Instalment 39/156 4,000.00 91.519 43.707 6,060.587
+22-Apr-2019 SIP Purchase - Instalment 40/156 4,000.00 91.657 43.641 6,152.244
+20-May-2019 SIP Purchase - Instalment 41/156 4,000.00 94.317 42.410 6,246.561
+20-Jun-2019 SIP Purchase - Instalment 42/156 4,000.00 95.290 41.977 6,341.851
+22-Jul-2019 SIP Purchase - Instalment 43/156 4,000.00 100.857 39.660 6,442.708
+20-Aug-2019 SIP Purchase - Instalment 44/156 4,000.00 105.544 37.899 6,548.252
+20-Sep-2019 SIP Purchase - Instalment 45/156 4,000.00 101.862 39.269 6,650.114
+22-Oct-2019 SIP Purchase - Instalment 46/156 4,000.00 102.817 38.904 6,752.931
+20-Nov-2019 SIP Purchase - Instalment 47/156 4,000.00 104.439 38.300 6,857.370
+20-Dec-2019 SIP Purchase - Instalment 48/156 4,000.00 105.224 38.014 6,962.594
+20-Jan-2020 SIP Purchase - Instalment 49/156 4,000.00 98.469 40.622 7,061.063
+20-Feb-2020 SIP Purchase - Instalment 50/156 4,000.00 100.601 39.761 7,161.664
+20-Mar-2020 SIP Purchase - Instalment 51/156 4,000.00 144.917 27.602 7,306.581
+20-Apr-2020 SIP Purchase - Instalment 52/156 4,000.00 138.074 28.970 7,444.655
+20-May-2020 SIP Purchase - Instalment 53/156 4,000.00 148.143 27.001 7,592.798
+22-Jun-2020 SIP Purchase - Instalment 54/156 4,000.00 125.043 31.989 7,717.841
+20-Jul-2020 SIP Purchase - Instalment 55/156 3,999.80 120.107 33.302 7,837.948
+20-Jul-2020 *** Stamp Duty *** 0.20
+20-Aug-2020 SIP Purchase - Instalment 56/156 3,999.80 106.633 37.510 7,944.581
+20-Aug-2020 *** Stamp Duty *** 0.20
+21-Sep-2020 SIP Purchase - Instalment 57/156 3,999.80 105.661 37.855 8,050.242
+21-Sep-2020 *** Stamp Duty *** 0.20
+20-Oct-2020 SIP Purchase - Instalment 58/156 3,999.80 105.277 37.993 8,155.519
+20-Oct-2020 *** Stamp Duty *** 0.20
+20-Nov-2020 SIP Purchase - Instalment 59/156 3,999.80 97.000 41.235 8,252.519
+20-Nov-2020 *** Stamp Duty *** 0.20
+21-Dec-2020 SIP Purchase - Instalment 60/156 3,999.80 93.170 42.930 8,345.689
+21-Dec-2020 *** Stamp Duty *** 0.20
+20-Jan-2021 SIP Purchase - Instalment 61/156 3,999.80 83.503 47.900 8,429.192
+20-Jan-2021 *** Stamp Duty *** 0.20
+22-Feb-2021 SIP Purchase - Instalment 62/156 3,999.80 77.268 51.765 8,506.460
+22-Feb-2021 *** Stamp Duty *** 0.20
+22-Mar-2021 SIP Purchase - Instalment 63/156 3,999.80 76.373 52.372 8,582.833
+22-Mar-2021 *** Stamp Duty *** 0.20
+08-Apr-2021 ***Change of Contacts***
+Page 8 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+22-Apr-2021 SIP Purchase - Instalment 64/156 3,999.80 74.816 53.462 8,657.649
+22-Apr-2021 *** Stamp Duty *** 0.20
+21-May-2021 SIP Purchase - Instalment 65/156 3,999.80 67.208 59.514 8,724.857
+21-May-2021 *** Stamp Duty *** 0.20
+01-Jun-2021 ***Change of Contacts***
+22-Jun-2021 SIP Purchase - Instalment 66/156 3,999.80 62.163 64.344 8,787.020
+22-Jun-2021 *** Stamp Duty *** 0.20
+22-Jul-2021 SIP Purchase - Instalment 67/156 3,999.80 57.360 69.731 8,844.380
+22-Jul-2021 *** Stamp Duty *** 0.20
+23-Aug-2021 SIP Purchase - Instalment 68/156 3,999.80 60.164 66.482 8,904.544
+23-Aug-2021 *** Stamp Duty *** 0.20
+21-Sep-2021 SIP Purchase - Instalment 69/156 3,999.80 55.506 72.061 8,960.050
+21-Sep-2021 *** Stamp Duty *** 0.20
+21-Oct-2021 SIP Purchase - Instalment 70/156 3,999.80 53.778 74.376 9,013.828
+21-Oct-2021 *** Stamp Duty *** 0.20
+22-Nov-2021 SIP Purchase 3,999.80 55.315 72.309 9,069.143
+22-Nov-2021 *** Stamp Duty *** 0.20
+21-Dec-2021 SIP Purchase - Instalment 72/156 Physical 3,999.80 55.350 72.264 9,124.493
+21-Dec-2021 *** Stamp Duty *** 0.20
+21-Jan-2022 SIP Purchase - Instalment 73/156 Physical 3,999.80 52.088 76.789 9,176.581
+21-Jan-2022 *** Stamp Duty *** 0.20
+21-Feb-2022 SIP Purchase - Instalment 74/156 Physical 3,999.80 57.155 69.982 9,233.736
+21-Feb-2022 *** Stamp Duty *** 0.20
+21-Mar-2022 SIP Purchase - Instalment 75/156 Physical 3,999.80 56.258 71.098 9,289.994
+21-Mar-2022 *** Stamp Duty *** 0.20
+21-Apr-2022 SIP Purchase - Instalment 76/156 Physical 3,999.80 53.887 74.226 9,343.881
+21-Apr-2022 *** Stamp Duty *** 0.20
+23-May-2022 SIP Purchase - Instalment 77/156 Physical 3,999.80 59.624 67.084 9,403.505
+23-May-2022 *** Stamp Duty *** 0.20
+21-Jun-2022 SIP Purchase - Instalment 78/156 Physical 3,999.80 63.915 62.580 9,467.420
+21-Jun-2022 *** Stamp Duty *** 0.20
+21-Jul-2022 SIP Purchase - Instalment 79/156 Physical 3,999.80 56.422 70.891 9,523.842
+21-Jul-2022 *** Stamp Duty *** 0.20
+22-Aug-2022 SIP Purchase - Instalment 80/156 Physical 3,999.80 54.845 72.929 9,578.687
+22-Aug-2022 *** Stamp Duty *** 0.20
+21-Sep-2022 SIP Purchase - Instalment 81/156 Physical 3,999.80 51.453 77.737 9,630.140
+21-Sep-2022 *** Stamp Duty *** 0.20
+21-Oct-2022 SIP Purchase - Instalment 82/156 Physical 3,999.80 52.230 76.581 9,682.370
+21-Oct-2022 *** Stamp Duty *** 0.20
+21-Nov-2022 SIP Purchase - Instalment 83/156 Physical 3,999.80 51.588 77.533 9,733.958
+21-Nov-2022 *** Stamp Duty *** 0.20
+21-Dec-2022 SIP Purchase - Instalment 84/156 Physical 3,999.80 50.824 78.699 9,784.782
+21-Dec-2022 *** Stamp Duty *** 0.20
+23-Jan-2023 SIP Purchase - Instalment 85/156 Physical 3,999.80 50.450 79.282 9,835.232
+23-Jan-2023 *** Stamp Duty *** 0.20
+21-Feb-2023 SIP Purchase - Instalment 86/156 Physical 3,999.80 49.633 80.588 9,884.865
+21-Feb-2023 *** Stamp Duty *** 0.20
+21-Mar-2023 SIP Purchase - Instalment 87/156 Physical 3,999.80 50.530 79.157 9,935.395
+21-Mar-2023 *** Stamp Duty *** 0.20
+21-Apr-2023 SIP Purchase - Instalment 88/156 Physical 3,999.80 49.071 81.511 9,984.466
+21-Apr-2023 *** Stamp Duty *** 0.20
+22-May-2023 SIP Purchase - Instalment 89/156 Physical 3,999.80 45.731 87.464 10,030.197
+22-May-2023 *** Stamp Duty *** 0.20
+21-Jun-2023 SIP Purchase - Instalment 90/156 Physical 3,999.80 42.848 93.348 10,073.045
+21-Jun-2023 *** Stamp Duty *** 0.20
+21-Jul-2023 SIP Purchase - Instalment 91/156 Physical 3,999.80 40.683 98.316 10,113.728
+21-Jul-2023 *** Stamp Duty *** 0.20
+21-Aug-2023 SIP Purchase - Instalment 92/156 Physical 3,999.80 39.559 101.109 10,153.287
+21-Aug-2023 *** Stamp Duty *** 0.20
+21-Sep-2023 SIP Purchase - Instalment 93/156 Physical 3,999.80 38.471 103.969 10,191.758
+21-Sep-2023 *** Stamp Duty *** 0.20
+23-Oct-2023 SIP Purchase - Instalment 94/156 Physical 3,999.80 38.990 102.585 10,230.748
+23-Oct-2023 *** Stamp Duty *** 0.20
+21-Nov-2023 SIP Purchase - Instalment 95/156 Physical 3,999.80 36.697 108.996 10,267.445
+21-Nov-2023 *** Stamp Duty *** 0.20
+21-Dec-2023 SIP Purchase - Instalment 96/156 Physical 3,999.80 35.319 113.247 10,302.764
+21-Dec-2023 *** Stamp Duty *** 0.20
+23-Jan-2024 SIP Purchase - Instalment 97/156 Physical 3,999.80 34.384 116.326 10,337.148
+23-Jan-2024 *** Stamp Duty *** 0.20
+Page 9 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+21-Feb-2024 SIP Purchase - Instalment 98/156 Physical 3,999.80 33.002 121.200 10,370.150
+21-Feb-2024 *** Stamp Duty *** 0.20
+21-Mar-2024 SIP Purchase - Instalment 99/156 Physical 3,999.80 34.477 116.014 10,404.627
+21-Mar-2024 *** Stamp Duty *** 0.20
+22-Apr-2024 SIP Purchase - Instalment 100/156 Physical 3,999.80 32.446 123.277 10,437.073
+22-Apr-2024 *** Stamp Duty *** 0.20
+21-May-2024 SIP Purchase - Instalment 101/156 Physical 3,999.80 31.855 125.561 10,468.928
+21-May-2024 *** Stamp Duty *** 0.20
+31-May-2024 ***NCT Correction of ARS***
+21-Jun-2024 SIP Purchase - Instalment 102/156 Physical 3,999.80 30.136 132.726 10,499.064
+21-Jun-2024 *** Stamp Duty *** 0.20
+22-Jul-2024 SIP Purchase - Instalment 103/156 Physical 3,999.80 29.641 134.940 10,528.705
+22-Jul-2024 *** Stamp Duty *** 0.20
+21-Aug-2024 SIP Purchase - Instalment 104/156 Physical 3,999.80 28.407 140.804 10,557.112
+21-Aug-2024 *** Stamp Duty *** 0.20
+23-Sep-2024 SIP Purchase - Instalment 105/156 Physical 3,999.80 28.102 142.334 10,585.214
+23-Sep-2024 *** Stamp Duty *** 0.20
+21-Oct-2024 SIP Purchase - Instalment 106/156 Physical 3,999.80 28.802 138.872 10,614.016
+21-Oct-2024 *** Stamp Duty *** 0.20
+21-Nov-2024 SIP Purchase - Instalment 107/156 Physical 3,999.80 30.056 133.079 10,644.072
+21-Nov-2024 *** Stamp Duty *** 0.20
+23-Dec-2024 SIP Purchase - Instalment 108/156 Physical 3,999.80 28.919 138.312 10,672.991
+23-Dec-2024 *** Stamp Duty *** 0.20
+21-Jan-2025 SIP Purchase - Instalment 109/156 Physical 3,999.80 30.562 130.877 10,703.553
+21-Jan-2025 *** Stamp Duty *** 0.20
+21-Feb-2025 SIP Purchase - Instalment 110/156 Physical 3,999.80 33.235 120.350 10,736.788
+21-Feb-2025 *** Stamp Duty *** 0.20
+21-Mar-2025 SIP Purchase - Instalment 111/156 Physical 3,999.80 33.177 120.559 10,769.965
+21-Mar-2025 *** Stamp Duty *** 0.20
+21-Apr-2025 SIP Purchase - Instalment 112/156 Physical 3,999.80 32.087 124.655 10,802.052
+21-Apr-2025 *** Stamp Duty *** 0.20
+21-May-2025 SIP Purchase - Instalment 113/156 Physical 3,999.80 30.099 132.888 10,832.151
+21-May-2025 *** Stamp Duty *** 0.20
+Closing Unit Balance: 10,832.151 NAV on 09-Jun-2025: INR 138.282 Total Cost Value: 492,000.00 Market Value on 09-Jun-2025: INR 1,497,891.50
+*Due to change in fundamental attributes of the Scheme w.e.f.  May 23, 2018, the type of the Scheme has been changed to an open-ended equity scheme
+predominantly investing in small cap stocks. Current Load Structure - Entry Load: Not Applicable; Exit Load: 1% if units are redeemed/switched-out within 1 year from
+the allotment date; No Exit Load if units are redeemed /switched-out after 1 year. The rate of exit load levied on units redeemed/switched-out will be the rate
+prevailing at the time of allotment of the units. For further details visit www.hdfcfund.com or contact any of our Investor Service Centre.  GST Identification Number
+: 27AAATH1809A1Z9
+Folio No: 92535739 / 76 PAN: KecFd0587V KYC: OK  PAN: OK
+hlnfOs aczDz ZgRCM
+HPREG-HDFC Hybrid Equity Fund - Regular Plan - Growth (formerly HDFC Premier Multi-Cap Fund, erstwhile HDFC Balanced Fund merged) Registrar : CAMS
+(Non-Demat) - ISIN: INF179K01AS4(Advisor: ARN-3048)
+ Nominee 1: eGoOp HpukZ  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+23-Aug-2018 Purchase 100,000.00 1,892.613 52.837 1,892.613
+24-Aug-2018 ***CAN Change of Bank Mandate***
+24-Aug-2018 ***CAN Change of Address***
+24-Aug-2018 ***CAN Change of Permenant Address***
+24-Aug-2018 ***CAN Data Updation***
+24-Aug-2018 ***CAN Change of ARS***
+24-Aug-2018 ***Registration of Nominee***
+24-Aug-2018 ***Address Updated from KRA Data - 1st Joint Holder***
+03-Sep-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 113.082 53.059 2,005.695
+10-Sep-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 114.397 52.449 2,120.092
+17-Sep-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 114.786 52.271 2,234.878
+24-Sep-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 119.175 50.346 2,354.053
+01-Oct-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 119.168 50.349 2,473.221
+08-Oct-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 124.254 48.288 2,597.475
+15-Oct-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 121.832 49.248 2,719.307
+22-Oct-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 123.193 48.704 2,842.500
+29-Oct-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 122.709 48.896 2,965.209
+05-Nov-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 119.926 50.031 3,085.135
+12-Nov-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 120.262 49.891 3,205.397
+19-Nov-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 118.057 50.823 3,323.454
+26-Nov-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 118.845 50.486 3,442.299
+03-Dec-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 117.686 50.983 3,559.985
+10-Dec-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 120.424 49.824 3,680.409
+Page 10 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+17-Dec-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 117.160 51.212 3,797.569
+24-Dec-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 118.224 50.751 3,915.793
+31-Dec-2018 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 116.759 51.388 4,032.552
+07-Jan-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 117.146 51.218 4,149.698
+14-Jan-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 116.973 51.294 4,266.671
+21-Jan-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 116.550 51.480 4,383.221
+28-Jan-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 118.979 50.429 4,502.200
+04-Feb-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 117.730 50.964 4,619.930
+11-Feb-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 118.516 50.626 4,738.446
+18-Feb-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 6,000.00 120.356 49.852 4,858.802
+25-Feb-2019 Switch-In - From HDFC Low Duration Fund-Retail-Gr 2,555.58 50.379 50.727 4,909.181
+31-May-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 4,909.181 NAV on 09-Jun-2025: INR 119.152 Total Cost Value: 252,555.58 Market Value on 09-Jun-2025: INR 584,938.73
+*Due to change in Scheme Name and  the fundamental attributes of HDFC Premier Multi-Cap Fund and merger of HDFC Balanced Fund therein,  w.e.f.  June 01, 2018
+(close of business hours) , the scheme shall be managed as HDFC Hybrid Equity Fund (erstwhile HDFC Balanced Fund and HDFC Premier Multi-Cap Fund), an open-
+ended hybrid scheme investing predominantly in equity and equity related instruments. Current Load Structure : Entry Load: Not Applicable. Exit Load: In respect of
+each purchase/switch-in of units from allotment date, Nil exit load upto 15% of the units ("the limit") redeemed/switched-out; 1% if units in excess of the limit are
+redeemed/switched-out within  1 year. No Exit Load if units are redeemed /switched-out after 1 year. The rate of exit load levied on units redeemed will be the rate
+prevailing at the time of allotment of the units. For further details visit www.hdfcfund.com (under Investor Corner) or contact any of our Investor Service Centre.
+GST Identification Number : 27AAATH1809A1Z9
+HSBC Mutual Fund
+Folio No: 4557499 / 04 PAN: wZZJB5424l KYC: OK  PAN: OK
+yqfXMb FxmOC Igeys
+O17-HSBC Midcap Fund - Regular Growth (Formerly known as L&T Midcap Fund - Growth ) (Non-Demat) - ISIN: INF917K01254(Advisor: Registrar : CAMS
+ARN-0910)
+ Nominee 1: hGBzy CoFLV  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+23-Aug-2018 Purchase 100,000.00 699.594 142.9400 699.594
+24-Aug-2018 ***Registration of Nominee***
+24-Aug-2018 ***CAN Data Updation***
+28-Aug-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 41.722 143.8100 741.316
+04-Sep-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 42.248 142.0200 783.564
+11-Sep-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 43.116 139.1600 826.680
+18-Sep-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 43.365 138.3600 870.045
+25-Sep-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.256 132.5800 915.301
+03-Oct-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.624 128.6900 961.925
+09-Oct-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 49.120 122.1500 1,011.045
+16-Oct-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.512 129.0000 1,057.557
+23-Oct-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 49.084 122.2400 1,106.641
+30-Oct-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 47.638 125.9500 1,154.279
+06-Nov-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.497 129.0400 1,200.776
+13-Nov-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.157 129.9900 1,246.933
+20-Nov-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.115 130.1100 1,293.048
+27-Nov-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.090 130.1800 1,339.138
+04-Dec-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.568 131.6700 1,384.706
+11-Dec-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.860 128.0400 1,431.566
+18-Dec-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.382 132.2100 1,476.948
+26-Dec-2018 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.725 131.2200 1,522.673
+01-Jan-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.089 133.0700 1,567.762
+08-Jan-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.524 131.8000 1,613.286
+15-Jan-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 45.427 132.0800 1,658.713
+22-Jan-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 46.268 129.6800 1,704.981
+29-Jan-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 47.729 125.7100 1,752.710
+05-Feb-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 47.551 126.1800 1,800.261
+12-Feb-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 6,000.00 48.788 122.9800 1,849.049
+20-Feb-2019 Systematic Switch In - From L&T Ultra Short Term Fund - Reg.  Growth 2,739.40 22.416 122.2100 1,871.465
+28-Jun-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 1,871.465 NAV on 09-Jun-2025: INR 388.1626 Total Cost Value: 252,739.40 Market Value on 09-Jun-2025: INR 726,432.72
+Exit Load :If the units redeemed or switched out are upto 10% of the units purchased or switched in (the limit) within 1 year from the date of allotment Nil. If units
+redeemed or switched out are over and above the limit within 1 year from the date of allotment 1%. If units are redeemed or switched out on or after 1 year from the
+date of allotment Nil. A switch-out or a withdrawal under SWP may also attract an Exit Load like any Redemption.No Exit load will be chargeable in case of switches
+made between different options of the Scheme.No Exit load will be chargeable in case of Units allotted on account of dividend reinvestments, if any.
+Mirae Asset Mutual Fund
+Page 11 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+Folio No: 44714742671 / 0 PAN: STvSE8686z KYC: OK  PAN: OK
+FqUBjk MNBlk CrPnU
+117PFRGG-Mirae Asset Aggressive Hybrid Fund (formerly Mirae Asset Hybrid-Equity Fund ) - Regular Plan - ISIN: INF769K01DE6(Advisor: Registrar :
+ARN-0910) KFINTECH
+ Nominee 1: xSZBj CwKjD  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+23-Aug-2018 Purchase 100,000.00 6,967.670 14.352 6,967.670
+24-Aug-2018 ***Updation of KYC***
+29-Aug-2018 S T P In 6,000.00 415.139 14.453 7,382.809
+05-Sep-2018 S T P In 6,000.00 421.141 14.247 7,803.950
+12-Sep-2018 S T P In 6,000.00 423.849 14.156 8,227.799
+19-Sep-2018 S T P In 6,000.00 426.834 14.057 8,654.633
+26-Sep-2018 S T P In 6,000.00 431.437 13.907 9,086.070
+03-Oct-2018 S T P In 6,000.00 439.464 13.653 9,525.534
+10-Oct-2018 S T P In 6,000.00 449.102 13.360 9,974.636
+17-Oct-2018 S T P In 6,000.00 448.430 13.380 10,423.066
+24-Oct-2018 S T P In 6,000.00 453.378 13.234 10,876.444
+24-Oct-2018 Consolidation In 10,876.444
+31-Oct-2018 S T P In 6,000.00 445.500 13.468 11,321.944
+09-Nov-2018 S T P In 6,000.00 436.872 13.734 11,758.816
+14-Nov-2018 S T P In 6,000.00 436.872 13.734 12,195.688
+22-Nov-2018 S T P In 6,000.00 437.382 13.718 12,633.070
+28-Nov-2018 S T P In 6,000.00 433.182 13.851 13,066.252
+05-Dec-2018 S T P In 6,000.00 432.526 13.872 13,498.778
+12-Dec-2018 S T P In 6,000.00 432.900 13.860 13,931.678
+19-Dec-2018 S T P In 6,000.00 425.080 14.115 14,356.758
+26-Dec-2018 S T P In 6,000.00 431.158 13.916 14,787.916
+02-Jan-2019 S T P In 6,000.00 430.849 13.926 15,218.765
+09-Jan-2019 S T P In 6,000.00 428.327 14.008 15,647.092
+16-Jan-2019 S T P In 6,000.00 428.235 14.011 16,075.327
+23-Jan-2019 S T P In 6,000.00 431.251 13.913 16,506.578
+30-Jan-2019 S T P In 6,000.00 434.688 13.803 16,941.266
+06-Feb-2019 S T P In 6,000.00 427.290 14.042 17,368.556
+13-Feb-2019 S T P In 8,294.11 601.327 13.793 17,969.883
+05-Sep-2023 Purchase 29,998.50 1,200.372 24.991 19,170.255
+05-Sep-2023 *** Stamp Duty *** 1.50
+Closing Unit Balance: 19,170.255 NAV on 09-Jun-2025: INR 32.116 Total Cost Value: 282,294.11 Market Value on 09-Jun-2025: INR 615,671.91
+Entry Load: Nil and Exit Load :  For SWP 15% of the units allotted (including Switch-in/STP-in) on or before completion of 365 days from the date of allotment of units
+is NIL. Any redemption in excess of such limit, on FIFO basis, or other redemptionsof investor who have not opted for SWP(Inc Switch out, STP out) and If redeemed
+within 1 year (365 Days) from the date of allotment Exit load is 1%  and after 365 days from the date of allotment Exit load is NIL .
+Nippon India Mutual Fund
+Folio No: 674275109084 / 0 PAN: MIQri4480c KYC: OK  PAN: OK
+JKTlGK KHNWQ TiavP
+RMFTSGPG-NIPPON INDIA ELSS TAX SAVER FUND - GROWTH PLAN - GROWTH OPTION - ISIN: INF204K01GK4(Advisor: ARN-91755) Registrar :
+KFINTECH
+ Nominee 1: bMUmeVC q LFAyX  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+27-Mar-2018 Purchase 50,000.00 849.645 58.8481 849.645
+Closing Unit Balance: 849.645 NAV on 09-Jun-2025: INR 129.5248 Total Cost Value: 50,000.00 Market Value on 09-Jun-2025: INR 110,050.10
+Entry load - NIL; Exit load - NIL,  Lock in period is 3 years from the date of subscription.
+Folio No: 241742904258 / 0 PAN: HBWHs6976K KYC: OK  PAN: OK
+wNOoSm AfXLM vdWjm
+RMFRWGPG-NIPPON INDIA RETIREMENT FUND - WEALTH CREATION SCHEME - GROWTH PLAN - ISIN: INF204KA1B64(Advisor: ARN-38680) Registrar :
+KFINTECH
+ Nominee 1: AZJxUnS Q mmhzB  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+23-Jun-2016 SIP Insure (1/21) 25,000.00 2,504.659 9.9814 2,504.659
+19-Dec-2016 SIP Insure (2/21) 25,000.00 2,504.182 9.9833 5,008.841
+20-Mar-2017 SIP Insure (3/21) 25,000.00 2,214.310 11.2902 7,223.151
+19-Jun-2017 SIP Insure (4/21) 25,000.00 2,068.595 12.0855 9,291.746
+18-Sep-2017 SIP Insure (5/21) 25,000.00 1,889.502 13.2310 11,181.248
+18-Dec-2017 SIP Insure (6/21) 25,000.00 1,839.534 13.5904 13,020.782
+19-Mar-2018 SIP Insure (7/21) 25,000.00 1,920.905 13.0147 14,941.687
+18-Jun-2018 SIP Insure (8/21) 25,000.00 1,866.006 13.3976 16,807.693
+Page 12 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+18-Sep-2018 SIP Insure (9/21) 25,000.00 1,842.041 13.5719 18,649.734
+18-Dec-2018 SIP Insure (10/21) 25,000.00 1,949.546 12.8235 20,599.280
+18-Mar-2019 SIP Insure (11/21) 25,000.00 1,874.597 13.3362 22,473.877
+18-Jun-2019 SIP Insure (12/21) 25,000.00 1,864.698 13.4070 24,338.575
+18-Sep-2019 SIP Insure (13/21) 25,000.00 2,054.569 12.1680 26,393.144
+18-Dec-2019 SIP Insure (14/21) 25,000.00 1,868.349 13.3808 28,261.493
+18-Mar-2020 SIP Insure (15/21) 25,000.00 2,804.766 8.9134 31,066.259
+18-Jun-2020 SIP Insure (16/21) 25,000.00 2,468.673 10.1269 33,534.932
+18-Sep-2020 SIP Insure (17/21) 24,998.75 2,204.320 11.3408 35,739.252
+18-Sep-2020 *** Stamp Duty *** 1.25
+18-Dec-2020 SIP Insure (18/21) 24,998.75 1,875.234 13.3310 37,614.486
+18-Dec-2020 *** Stamp Duty *** 1.25
+18-Mar-2021 SIP Insure (19/21) 24,998.75 1,746.430 14.3142 39,360.916
+18-Mar-2021 *** Stamp Duty *** 1.25
+18-Jun-2021 SIP Insure (20/21) 24,998.75 1,606.036 15.5655 40,966.952
+18-Jun-2021 *** Stamp Duty *** 1.25
+20-Sep-2021 SIP Insure (21/21) 24,998.75 1,429.905 17.4828 42,396.857
+20-Sep-2021 *** Stamp Duty *** 1.25
+Closing Unit Balance: 42,396.857 NAV on 09-Jun-2025: INR 28.7583 Total Cost Value: 525,000.00 Market Value on 09-Jun-2025: INR 1,219,261.53
+Entry load: Nil. Exit Load for all subscriptions W.E.F June 06, 2018 is Nil.For subscriptions prior to June 06, 2018, Exit load levied on the Units redeemed will be the
+rate prevailing at the time of the allotment of the Units.For Special products registrations, load for each transaction is based on the load structure applicable as on
+the registration date.
+SBI Mutual Fund
+Folio No: 12680088 PAN: wzhSd7381v KYC: OK  PAN: OK
+MByezO HmQsb nyjTr
+L24G-SBI Equity Hybrid Fund Regular Growth (formerly SBI Magnum Balanced Fund) (Non-Demat) - ISIN: INF200K01107(Advisor: ARN0910) Registrar : CAMS
+ Nominee 1: YrfqC BDjzk  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+13-Feb-2020 Purchase 525,000.00 3,487.033 150.5578 3,487.033
+14-Feb-2020 ***Change / Regn of Nominee***
+18-Mar-2020 ***NCT Change of Default Bank Mandate***
+18-Mar-2020 ***CAN Data Updation***
+22-Jun-2020 ***Change of Contacts***
+16-Jul-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 3,487.033 NAV on 09-Jun-2025: INR 301.9163 Total Cost Value: 525,000.00 Market Value on 09-Jun-2025: INR 1,052,792.10
+"Entry Load: N.A;  Exit Load (w.e.f. 16-OCT-2015): NIL for 10% of investment and 1.00% exit load for remaining investment if redeemed/switched within 12 month
+from the date of investment; NIL if redeemed/switched after 12 month from the date of investment.  For applicability of load structure, please refer to SAI/SID/
+KIM/Addendum issued from time to time.**Scheme name of """""""""SBI Magnum Balanced Fund"""""""""  has been changed to """""""""SBI Equity Hybrid Fund"""""""""  with
+effect from 16th May 2018.  W.e.f. 1st July 2020, Stamp Duty @ 0.005% is applicable on allotment of units.  As per SEBI guidelines, w.e.f. February 01, 2021,
+applicable NAV for allotment of units shall be based on time of receipt of transaction and funds available for utilization upto the cut-off time." TDS shall be deducted 
+(wherever applicable) as per rates under New Tax Regime. Differential tax if any, should be evaluated by investor(s), basis relevant tax provisions.
+Tata Mutual Fund
+Folio No: 1392099 / 14 PAN: mQtZc5788J KYC: OK  PAN: OK
+eAgSJS wnBqb QhlLX
+TEPEG-Tata Equity P/E Fund Regular Plan - Growth (Non-Demat) - ISIN: INF277K01451(Advisor: ARN-0910) Registrar : CAMS
+ Nominee 1: rjukC ONwba  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+23-Aug-2018 Purchase 100,000.00 695.248 143.8335 695.248
+24-Aug-2018 ***Registration of Nominee***
+31-Aug-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 41.727 143.7911 736.975
+07-Sep-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 42.152 142.3428 779.127
+14-Sep-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 42.416 141.4548 821.543
+21-Sep-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 44.529 134.7440 866.072
+28-Sep-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.041 130.3177 912.113
+05-Oct-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 49.012 122.4182 961.125
+12-Oct-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 48.191 124.5040 1,009.316
+19-Oct-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 48.695 123.2164 1,058.011
+26-Oct-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 49.365 121.5435 1,107.376
+02-Nov-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.397 126.5908 1,154.773
+09-Nov-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.126 127.3172 1,201.899
+16-Nov-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.957 127.7778 1,248.856
+26-Nov-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.049 127.5265 1,295.905
+30-Nov-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.299 129.5936 1,342.204
+Page 13 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-Jun-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+07-Dec-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.200 127.1199 1,389.404
+14-Dec-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.532 128.9422 1,435.936
+21-Dec-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.168 129.9607 1,482.104
+28-Dec-2018 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 45.847 130.8706 1,527.951
+04-Jan-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.634 128.6618 1,574.585
+11-Jan-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.487 129.0674 1,621.072
+18-Jan-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 46.555 128.8804 1,667.627
+25-Jan-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.377 126.6424 1,715.004
+01-Feb-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.494 126.3312 1,762.498
+08-Feb-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 47.365 126.6751 1,809.863
+15-Feb-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 6,000.00 48.373 124.0358 1,858.236
+22-Feb-2019 Switch In - From Tata Treas Adv Fund Reg Pl - Growth 2,748.31 21.985 125.0077 1,880.221
+20-Jun-2020 ***Change of Pin Investor PIN updated from TATA WS***
+29-Jun-2020 ***Change of Contacts***
+Closing Unit Balance: 1,880.221 NAV on 09-Jun-2025: INR 351.2489 Total Cost Value: 252,748.31 Market Value on 09-Jun-2025: INR 660,425.56
+Allotment of units would be subject to realization of credit. Switch-in will be processed based on the settlement cycle of the switch-out scheme. Current load
+structure(w.e.f.03/05/2019): Exit Load: If redeemed or switched upto 12% of the units within 12 months - Nil; In excess of the 12 % if redeemed on or before expiry
+of 12 months from the date of allotment - 1%. > 12 months - Nil. The Exit load for investment will be as applicable as on the date of allotment / date of registration
+in case of SIP and STP. This scheme is to be considered as Equity oriented for taxation purpose.
+Page 14 of 14
+CAMSCASWS-10062511839 Version:V3.4 Live-1014

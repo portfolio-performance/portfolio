@@ -71,7 +71,8 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
     private void addPurchase(final DocumentType type)
     {
-        Block purchase = new Block("^..-...-.... .*Purchase.*");
+        Block purchase = new Block(
+                        "^..-...-.... .*(Purchase|S T P In|SIP Insure|Systematic Investment|Sys. Investment).*");
         type.addBlock(purchase);
         purchase.setMaxSize(10);
         purchase.set(new Transaction<BuySellEntry>()
@@ -86,7 +87,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                         .optional() //
                         .documentRange("isin1", "isin2", "name") //
                         .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
-                                        + ".*Purchase.* " //
+                                        + ".*(Purchase|S T P In|SIP Insure|Systematic Investment|Sys. Investment).* " //
                                         + "(?<amount>[.,\\d]+) " //
                                         + "(?<units>[.,\\d]+) " //
                                         + "[.,\\d]+ [.,\\d]+$")

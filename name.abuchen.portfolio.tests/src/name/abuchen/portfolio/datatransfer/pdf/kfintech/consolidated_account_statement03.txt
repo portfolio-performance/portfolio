@@ -1,0 +1,1353 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.77.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Email Id: paxxx.xxxxx@outlook.in This Consolidated Account Statement is brought to you as an investor
+friendly initiative by CAMS and KFintech, and lists the transactions,
+gSmODdZ ZyUOp XBGpQ balances and valuation of Mutual Funds in which you are holding
+investments. The consolidation has been carried out based on the email id
+entered by you. If you have not entered a PAN Number and if the email id
+764jzfmiN wRcMFWbnviD heecp is common to several members of your family, this statement will
+WkKwK qvEnVSECS LOohb consolidate all those investments as well.
+jRX qHzSqNU
+VGEqm - 007393 If you find any folios missing from this consolidation, you have not
+lKkZUai registered your email id against those folios.
+YlscA
+Mobile: 2165698629 This statement may not reflect the complete information on your DEMAT
+holdings. Please check with your DP for details on DEMAT holdings.
+PORTFOLIO SUMMARY
+Cost Value Market Value
+Mutual Fund
+(INR) (INR)
+      DSP Mutual Fund 329,000.00 1,036,815.13
+      HDFC Mutual Fund 185,000.00 656,160.65
+      Franklin Templeton Mutual Fund 312,000.00 966,333.39
+      Mirae Asset Mutual Fund 551,000.00 702,200.52
+      Nippon India Mutual Fund 847,000.00 2,559,768.40
+Total 2,224,000.00 5,921,278.09
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+DSP Mutual Fund
+Folio No: 1713710 / 85 PAN: PWInD1006l KYC: OK  PAN: OK
+UXYqqVh rdouy gcTok
+D01-DSP Aggressive Hybrid Fund - Regular Plan - Growth (formerly DSP Balanced Fund) (Non-Demat) - ISIN: INF740K01318(Advisor: ARN-16000) Registrar : CAMS
+ Nominee 1: touue P bYrgd  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+20-Jul-2011 SIP Purchase 2,000.00 29.725 67.283 29.725
+21-Jul-2011 ***Registration of Nominee***
+28-Jul-2011 ***SIP Registered (From 28/08/2011 to 28/08/2021)***
+04-Aug-2011 ***Address Updated from KRA Data - First Holder***
+29-Aug-2011 SIP Purchase - Instalment 2/122 2,000.00 32.040 62.421 61.765
+28-Sep-2011 SIP Purchase - Instalment 3/122 2,000.00 32.106 62.294 93.871
+28-Oct-2011 SIP Purchase - Instalment 4/122 2,000.00 31.291 63.916 125.162
+28-Nov-2011 SIP Purchase - Instalment 5/122 2,000.00 33.141 60.348 158.303
+28-Dec-2011 SIP Purchase - Instalment 6/122 2,000.00 34.756 57.544 193.059
+30-Jan-2012 SIP Purchase - Instalment 7/122 2,000.00 32.182 62.146 225.241
+28-Feb-2012 SIP Purchase - Instalment 8/122 2,000.00 30.518 65.536 255.759
+28-Mar-2012 SIP Purchase - Instalment 9/122 2,000.00 31.275 63.948 287.034
+30-Apr-2012 SIP Purchase - Instalment 10/122 2,000.00 30.514 65.543 317.548
+28-May-2012 SIP Purchase - Instalment 11/122 2,000.00 31.781 62.931 349.329
+28-Jun-2012 SIP Purchase - Instalment 12/122 2,000.00 31.676 63.140 381.005
+30-Jul-2012 SIP Purchase - Instalment 13/122 2,000.00 31.359 63.778 412.364
+28-Aug-2012 SIP Purchase - Instalment 14/122 2,000.00 30.922 64.678 443.286
+28-Sep-2012 SIP Purchase - Instalment 15/122 2,000.00 29.211 68.468 472.497
+29-Oct-2012 SIP Purchase - Instalment 16/122 2,000.00 29.422 67.976 501.919
+29-Nov-2012 SIP Purchase - Instalment 17/122 2,000.00 28.356 70.532 530.275
+28-Dec-2012 SIP Purchase - Instalment 18/122 2,000.00 27.757 72.054 558.032
+28-Jan-2013 SIP Purchase - Instalment 19/122 2,000.00 27.694 72.219 585.726
+28-Feb-2013 SIP Purchase - Instalment 20/122 2,000.00 29.615 67.534 615.341
+28-Mar-2013 SIP Purchase - Instalment 21/122 2,000.00 29.990 66.688 645.331
+29-Apr-2013 SIP Purchase - Instalment 22/122 2,000.00 29.140 68.635 674.471
+28-May-2013 SIP Purchase - Instalment 23/122 2,000.00 28.511 70.148 702.982
+28-Jun-2013 SIP Purchase - Instalment 24/122 2,000.00 29.878 66.938 732.860
+29-Jul-2013 SIP Purchase - Instalment 25/122 2,000.00 30.363 65.869 763.223
+28-Aug-2013 SIP Purchase - Instalment 26/122 2,000.00 32.520 61.500 795.743
+30-Sep-2013 SIP Purchase - Instalment 27/122 2,000.00 30.978 64.562 826.721
+28-Oct-2013 SIP Purchase - Instalment 28/122 2,000.00 29.378 68.078 856.099
+28-Nov-2013 SIP Purchase - Instalment 29/122 2,000.00 29.173 68.557 885.272
+30-Dec-2013 SIP Purchase - Instalment 30/122 2,000.00 27.913 71.650 913.185
+Page 1 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+28-Jan-2014 SIP Purchase - Instalment 31/122 2,000.00 28.882 69.248 942.067
+28-Feb-2014 SIP Purchase - Instalment 32/122 2,000.00 28.073 71.243 970.140
+28-Mar-2014 SIP Purchase - Instalment 33/122 2,000.00 26.905 74.336 997.045
+28-Apr-2014 SIP Purchase - Instalment 34/122 2,000.00 26.336 75.942 1,023.381
+28-May-2014 SIP Purchase - Instalment 35/122 2,000.00 24.099 82.992 1,047.480
+30-Jun-2014 SIP Purchase - Instalment 36/122 2,000.00 22.819 87.648 1,070.299
+28-Jul-2014 SIP Purchase - Instalment 37/122 2,000.00 22.660 88.262 1,092.959
+28-Aug-2014 SIP Purchase - Instalment 38/122 2,000.00 21.704 92.147 1,114.663
+29-Sep-2014 SIP Purchase - Instalment 39/122 2,000.00 21.152 94.554 1,135.815
+28-Oct-2014 SIP Purchase - Instalment 40/122 2,000.00 20.728 96.490 1,156.543
+28-Nov-2014 SIP Purchase - Instalment 41/122 2,000.00 19.418 102.995 1,175.961
+29-Dec-2014 SIP Purchase - Instalment 42/122 2,000.00 19.339 103.420 1,195.300
+28-Jan-2015 SIP Purchase - Instalment 43/122 2,000.00 18.436 108.484 1,213.736
+02-Mar-2015 SIP Purchase - Instalment 44/122 2,000.00 18.432 108.508 1,232.168
+30-Mar-2015 SIP Purchase - Instalment 45/122 2,000.00 18.702 106.939 1,250.870
+28-Apr-2015 SIP Purchase - Instalment 46/122 2,000.00 18.970 105.430 1,269.840
+28-May-2015 SIP Purchase - Instalment 47/122 2,000.00 18.726 106.803 1,288.566
+29-Jun-2015 SIP Purchase - Instalment 48/122 2,000.00 18.592 107.573 1,307.158
+28-Jul-2015 SIP Purchase - Instalment 49/122 2,000.00 17.926 111.572 1,325.084
+28-Aug-2015 SIP Purchase - Instalment 50/122 2,000.00 18.395 108.728 1,343.479
+28-Sep-2015 SIP Purchase - Instalment 51/122 2,000.00 18.929 105.656 1,362.408
+28-Oct-2015 SIP Purchase - Instalment 52/122 2,000.00 18.117 110.395 1,380.525
+30-Nov-2015 SIP Purchase - Instalment 53/122 2,000.00 18.291 109.345 1,398.816
+28-Dec-2015 SIP Purchase - Instalment 54/122 2,000.00 18.297 109.309 1,417.113
+21-Jan-2016 ***Address Updated from KRA Data - First Holder***
+28-Jan-2016 SIP Purchase - Instalment 55/122 2,000.00 19.365 103.279 1,436.478
+29-Feb-2016 SIP Purchase - Instalment 56/122 2,000.00 20.500 97.559 1,456.978
+02-Mar-2016 ***Address Updated from KRA Data - First Holder***
+28-Mar-2016 SIP Purchase - Instalment 57/122 2,000.00 19.168 104.343 1,476.146
+28-Apr-2016 SIP Purchase - Instalment 58/122 2,000.00 18.434 108.498 1,494.580
+30-May-2016 SIP Purchase - Instalment 59/122 2,000.00 17.900 111.734 1,512.480
+28-Jun-2016 SIP Purchase - Instalment 60/122 2,000.00 17.711 112.923 1,530.191
+28-Jul-2016 SIP Purchase - Instalment 61/122 2,000.00 16.689 119.843 1,546.880
+29-Aug-2016 SIP Purchase - Instalment 62/122 - ARN-54846 2,000.00 16.279 122.856 1,563.159
+28-Sep-2016 SIP Purchase - Instalment 63/122 - ARN-54846 2,000.00 15.738 127.080 1,578.897
+28-Oct-2016 SIP Purchase - Instalment 64/122 - ARN-54846 2,000.00 15.615 128.084 1,594.512
+28-Nov-2016 SIP Purchase - Instalment 65/122 - ARN-54846 2,000.00 16.613 120.391 1,611.125
+28-Dec-2016 SIP Purchase - Instalment 66/122 - ARN-54846 2,000.00 17.116 116.849 1,628.241
+30-Jan-2017 SIP Purchase - Instalment 67/122 - ARN-54846 2,000.00 15.764 126.875 1,644.005
+28-Feb-2017 SIP Purchase - Instalment 68/122 - ARN-54846 2,000.00 15.682 127.533 1,659.687
+28-Mar-2017 SIP Purchase - Instalment 69/122 - ARN-54846 2,000.00 15.386 129.989 1,675.073
+28-Apr-2017 SIP Purchase - Instalment 70/122 - ARN-54846 2,000.00 14.695 136.105 1,689.768
+29-May-2017 SIP Purchase - Instalment 71/122 - ARN-54846 2,000.00 14.656 136.460 1,704.424
+28-Jun-2017 SIP Purchase - Instalment 72/122 - ARN-54846 2,000.00 14.814 135.004 1,719.238
+28-Jul-2017 SIP Purchase - Instalment 73/122 - ARN-54846 2,000.00 14.232 140.524 1,733.470
+02-Aug-2017 ***Address Updated from KRA Data - First Holder***
+28-Aug-2017 SIP Purchase - Instalment 74/122 - ARN-54846 2,000.00 14.248 140.373 1,747.718
+28-Sep-2017 SIP Purchase - Instalment 75/122 - ARN-54846 2,000.00 14.432 138.580 1,762.150
+30-Oct-2017 SIP Purchase - Instalment 76/122 - ARN-54846 2,000.00 13.782 145.120 1,775.932
+14-Nov-2017 ***Change of Contact details***
+14-Nov-2017 ***Change of Contact details***
+28-Nov-2017 SIP Purchase - Instalment 77/122 - ARN-54846 2,000.00 13.563 147.459 1,789.495
+09-Dec-2017 ***Address Updated from KRA Data - First Holder***
+28-Dec-2017 SIP Purchase - Instalment 78/122 - ARN-54846 2,000.00 13.249 150.953 1,802.744
+29-Jan-2018 SIP Purchase - Instalment 79/122 - ARN-54846 2,000.00 13.235 151.117 1,815.979
+28-Feb-2018 SIP Purchase - Instalment 80/122 - ARN-54846 2,000.00 13.757 145.382 1,829.736
+28-Mar-2018 SIP Purchase - Instalment 81/122 - ARN-54846 2,000.00 14.042 142.432 1,843.778
+30-Apr-2018 SIP Purchase - Instalment 82/122 - ARN-54846 2,000.00 13.465 148.538 1,857.243
+28-May-2018 SIP Purchase - Instalment 83/122 - ARN-54846 2,000.00 13.599 147.070 1,870.842
+28-Jun-2018 SIP Purchase - Instalment 84/122 - ARN-54846 2,000.00 14.128 141.558 1,884.970
+30-Jul-2018 SIP Purchase - Instalment 85/122 - ARN-54846 2,000.00 13.402 149.235 1,898.372
+28-Aug-2018 SIP Purchase - Instalment 86/122 - ARN-54846 2,000.00 13.003 153.812 1,911.375
+28-Sep-2018 SIP Purchase - Instalment 87/122 - ARN-54846 2,000.00 14.382 139.065 1,925.757
+29-Oct-2018 SIP Purchase - Instalment 88/122 - ARN-54846 2,000.00 14.873 134.476 1,940.630
+28-Nov-2018 SIP Purchase - Instalment 89/122 - ARN-54846 2,000.00 14.168 141.161 1,954.798
+28-Dec-2018 SIP Purchase - Instalment 90/122 - ARN-54846 2,000.00 13.974 143.128 1,968.772
+28-Jan-2019 SIP Purchase - Instalment 91/122 - ARN-54846 2,000.00 14.434 138.557 1,983.206
+28-Feb-2019 SIP Purchase - Instalment 92/122 - ARN-54846 2,000.00 14.146 141.383 1,997.352
+28-Mar-2019 SIP Purchase - Instalment 93/122 - ARN-54846 2,000.00 13.283 150.563 2,010.635
+Page 2 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+30-Apr-2019 SIP Purchase - Instalment 94/122 - ARN-54846 2,000.00 13.165 151.922 2,023.800
+28-May-2019 SIP Purchase - Instalment 95/122 - ARN-54846 2,000.00 12.911 154.907 2,036.711
+28-Jun-2019 SIP Purchase - Instalment 96/122 - ARN-54846 2,000.00 12.941 154.548 2,049.652
+29-Jul-2019 SIP Purchase - Instalment 97/122 - ARN-54846 2,000.00 13.400 149.254 2,063.052
+28-Aug-2019 SIP Purchase - Instalment 98/122 - ARN-54846 2,000.00 13.327 150.073 2,076.379
+30-Sep-2019 SIP Purchase - Instalment 99/122 - ARN-54846 2,000.00 12.648 158.126 2,089.027
+29-Oct-2019 SIP Purchase - Instalment 100/122 - ARN-54846 2,000.00 12.337 162.108 2,101.364
+28-Nov-2019 SIP Purchase - Instalment 101/122 - ARN-54846 2,000.00 12.292 162.705 2,113.656
+30-Dec-2019 SIP Purchase - Instalment 102/122 - ARN-54846 2,000.00 12.193 164.033 2,125.849
+28-Jan-2020 SIP Purchase - Instalment 103/122 - ARN-54846 2,000.00 11.931 167.626 2,137.780
+28-Feb-2020 SIP Purchase - Instalment 104/122 - ARN-54846 2,000.00 12.050 165.973 2,149.830
+30-Mar-2020 SIP Purchase - Instalment 105/122 - ARN-54846 2,000.00 15.327 130.487 2,165.157
+28-Apr-2020 SIP Purchase - Instalment 106/122 - ARN-54846 2,000.00 14.080 142.042 2,179.237
+28-May-2020 SIP Purchase - Instalment 107/122 - ARN-54846 2,000.00 14.074 142.111 2,193.311
+29-Jun-2020 SIP Purchase - Instalment 108/122 - ARN-54846 2,000.00 13.146 152.133 2,206.457
+28-Jul-2020 SIP Purchase - Instalment 109/122 - ARN-54846 1,999.90 12.675 157.778 2,219.132
+28-Jul-2020 *** Stamp Duty *** 0.10
+28-Aug-2020 SIP Purchase - Instalment 110/122 - ARN-54846 1,999.90 12.033 166.203 2,231.165
+28-Aug-2020 *** Stamp Duty *** 0.10
+28-Sep-2020 SIP Purchase - Instalment 111/122 - ARN-54846 1,999.90 12.468 160.399 2,243.633
+28-Sep-2020 *** Stamp Duty *** 0.10
+28-Oct-2020 SIP Purchase - Instalment 112/122 - ARN-54846 1,999.90 12.030 166.247 2,255.663
+28-Oct-2020 *** Stamp Duty *** 0.10
+01-Dec-2020 SIP Purchase - Instalment 113/122 - ARN-54846 1,999.90 10.908 183.340 2,266.571
+01-Dec-2020 *** Stamp Duty *** 0.10
+28-Dec-2020 SIP Purchase - Instalment 114/122 - ARN-54846 1,999.90 10.503 190.412 2,277.074
+28-Dec-2020 *** Stamp Duty *** 0.10
+28-Jan-2021 SIP Purchase - Instalment 115/122 - ARN-54846 1,999.90 10.427 191.807 2,287.501
+28-Jan-2021 *** Stamp Duty *** 0.10
+01-Mar-2021 SIP Purchase   (Reversal - Code I - Cheque Dishonoured) - Instalment No (1,999.90) (9.908) 201.855 2,277.593
+116
+01-Mar-2021 *** Stamp Duty *** (0.10)
+01-Mar-2021 SIP Purchase - Instalment 116/122 - ARN-54846 1,999.90 9.908 201.855 2,287.501
+01-Mar-2021 *** Stamp Duty *** 0.10
+30-Mar-2021 SIP Purchase - Instalment 117/122 - ARN-54846 1,999.90 9.861 202.806 2,297.362
+30-Mar-2021 *** Stamp Duty *** 0.10
+28-Apr-2021 SIP Purchase - Instalment 118/122 - ARN-54846 1,999.90 9.754 205.038 2,307.116
+28-Apr-2021 *** Stamp Duty *** 0.10
+28-May-2021 SIP Purchase - Instalment 119/122 - ARN-54846 1,999.90 9.436 211.936 2,316.552
+28-May-2021 *** Stamp Duty *** 0.10
+28-Jun-2021 SIP Purchase - Instalment 120/122 - ARN-54846 1,999.90 9.086 220.101 2,325.638
+28-Jun-2021 *** Stamp Duty *** 0.10
+28-Jul-2021 SIP Purchase - Instalment 121/122 - ARN-54846 1,999.90 8.886 225.053 2,334.524
+28-Jul-2021 *** Stamp Duty *** 0.10
+30-Aug-2021 SIP Purchase - Instalment 122/122 - ARN-54846 1,999.90 8.562 233.590 2,343.086
+30-Aug-2021 *** Stamp Duty *** 0.10
+28-Sep-2021 ***SIP Registered - via Online***
+09-Nov-2021 ***Invalid Purchase-Credit Not Received- Rs.2000***
+29-Nov-2021 ***Invalid Purchase-Credit Not Received- Rs.2000***
+28-Dec-2021 ***Invalid Purchase-Credit Not Received- Rs.2000***
+28-Jan-2022 ***Invalid Purchase-Credit Not Received- Rs.2000***
+03-Mar-2022 ***Invalid Purchase-Credit Not Received- Rs.2000***
+21-Mar-2022 SIP Purchase - Instalment 6/937 - via Online - ARN-54846 1,999.90 8.879 225.239 2,351.965
+21-Mar-2022 *** Stamp Duty *** 0.10
+18-Apr-2022 SIP Purchase - Instalment 7/937 - via Online - ARN-54846 1,999.90 8.800 227.263 2,360.765
+18-Apr-2022 *** Stamp Duty *** 0.10
+18-May-2022 SIP Purchase - Instalment 8/937 - via Online - ARN-54846 1,999.90 9.394 212.902 2,370.159
+18-May-2022 *** Stamp Duty *** 0.10
+17-Jun-2022 SIP Purchase - Instalment 9/937 - via Online - ARN-54846 1,999.90 9.868 202.665 2,380.027
+17-Jun-2022 *** Stamp Duty *** 0.10
+18-Jul-2022 SIP Purchase - Instalment 10/937 - via Online - ARN-54846 1,999.90 9.228 216.710 2,389.255
+18-Jul-2022 *** Stamp Duty *** 0.10
+18-Aug-2022 SIP Purchase - Instalment 11/937 - via Online - ARN-54846 1,999.90 8.562 233.572 2,397.817
+18-Aug-2022 *** Stamp Duty *** 0.10
+19-Sep-2022 SIP Purchase - Instalment 12/937 - via Online - ARN-54846 1,999.90 8.622 231.948 2,406.439
+19-Sep-2022 *** Stamp Duty *** 0.10
+18-Oct-2022 SIP Purchase - Instalment 13/937 - via Online - ARN-54846 1,999.90 8.725 229.210 2,415.164
+18-Oct-2022 *** Stamp Duty *** 0.10
+17-Nov-2022 SIP Purchase - Instalment 14/937 - via Online - ARN-54846 1,999.90 8.598 232.602 2,423.762
+17-Nov-2022 *** Stamp Duty *** 0.10
+Page 3 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+16-Dec-2022 SIP Purchase - Instalment 15/937 - via Online - ARN-54846 1,999.90 8.572 233.317 2,432.334
+16-Dec-2022 *** Stamp Duty *** 0.10
+17-Jan-2023 SIP Purchase - Instalment 16/937 - via Online - ARN-54846 1,999.90 8.691 230.104 2,441.025
+17-Jan-2023 *** Stamp Duty *** 0.10
+16-Feb-2023 SIP Purchase - Instalment 17/937 - via Online - ARN-54846 1,999.90 8.561 233.612 2,449.586
+16-Feb-2023 *** Stamp Duty *** 0.10
+16-Mar-2023 SIP Purchase - Instalment 18/937 - via Online - ARN-54846 1,999.90 8.938 223.761 2,458.524
+16-Mar-2023 *** Stamp Duty *** 0.10
+18-Apr-2023 SIP Purchase - Instalment 19/937 - ARN-54846 1,999.90 8.618 232.056 2,467.142
+18-Apr-2023 *** Stamp Duty *** 0.10
+17-May-2023 SIP Purchase - Instalment 20/937 - ARN-54846 1,999.90 8.340 239.790 2,475.482
+17-May-2023 *** Stamp Duty *** 0.10
+19-Jun-2023 SIP Purchase - Instalment 21/937 - ARN-54846 1,999.90 7.974 250.807 2,483.456
+19-Jun-2023 *** Stamp Duty *** 0.10
+18-Jul-2023 SIP Purchase - Instalment 22/937 - ARN-54846 1,999.90 7.762 257.658 2,491.218
+18-Jul-2023 *** Stamp Duty *** 0.10
+25-Aug-2023 ***Invalid Purchase-Credit Not Received- Rs.2000***
+18-Sep-2023 SIP Purchase - Instalment 24/937 - via Online - ARN-54846 1,999.90 7.423 269.413 2,498.641
+18-Sep-2023 *** Stamp Duty *** 0.10
+17-Oct-2023 SIP Purchase - Instalment 25/937 - via Online - ARN-54846 1,999.90 7.422 269.446 2,506.063
+17-Oct-2023 *** Stamp Duty *** 0.10
+17-Nov-2023 SIP Purchase - Instalment 26/937 - via Online - ARN-54846 1,999.90 7.382 270.901 2,513.445
+17-Nov-2023 *** Stamp Duty *** 0.10
+18-Dec-2023 SIP Purchase - Instalment 27/937 - via Online - ARN-54846 1,999.90 6.945 287.972 2,520.390
+18-Dec-2023 *** Stamp Duty *** 0.10
+17-Jan-2024 SIP Purchase - Instalment 28/937 - via Online - ARN-54846 1,999.90 6.942 288.074 2,527.332
+17-Jan-2024 *** Stamp Duty *** 0.10
+19-Feb-2024 SIP Purchase - Instalment 29/937 - via Online - ARN-54846 1,999.90 6.879 290.745 2,534.211
+19-Feb-2024 *** Stamp Duty *** 0.10
+18-Mar-2024 SIP Purchase - Instalment 30/937 - via Online - ARN-54846 1,999.90 7.020 284.904 2,541.231
+18-Mar-2024 *** Stamp Duty *** 0.10
+18-Apr-2024 SIP Purchase - Instalment 31/937 - via Online - ARN-54846 1,999.90 6.813 293.550 2,548.044
+18-Apr-2024 *** Stamp Duty *** 0.10
+16-May-2024 SIP Purchase - Instalment 32/937 - via Online - ARN-54846 1,999.90 6.608 302.637 2,554.652
+16-May-2024 *** Stamp Duty *** 0.10
+18-Jun-2024 SIP Purchase - Instalment 33/937 - via Online - ARN-54846 1,999.90 6.194 322.867 2,560.846
+18-Jun-2024 *** Stamp Duty *** 0.10
+18-Jul-2024 SIP Purchase - Instalment 34/937 - via Online - ARN-54846 1,999.90 5.971 334.934 2,566.817
+18-Jul-2024 *** Stamp Duty *** 0.10
+16-Aug-2024 SIP Purchase - Instalment 35/937 - via Online - ARN-54846 1,999.90 5.933 337.086 2,572.750
+16-Aug-2024 *** Stamp Duty *** 0.10
+17-Sep-2024 SIP Purchase - Instalment 36/937 - via Online - ARN-54846 1,999.90 5.695 351.152 2,578.445
+17-Sep-2024 *** Stamp Duty *** 0.10
+17-Oct-2024 SIP Purchase - Instalment 37/937 - via Online - ARN-54846 1,999.90 5.725 349.336 2,584.170
+17-Oct-2024 *** Stamp Duty *** 0.10
+18-Nov-2024 SIP Purchase - Instalment 38/937 - via Online - ARN-54846 1,999.90 5.923 337.661 2,590.093
+18-Nov-2024 *** Stamp Duty *** 0.10
+17-Dec-2024 SIP Purchase - Instalment 39/937 - via Online - ARN-54846 1,999.90 5.755 347.520 2,595.848
+17-Dec-2024 *** Stamp Duty *** 0.10
+16-Jan-2025 SIP Purchase - Instalment 40/937 - via Online - ARN-54846 1,999.90 5.945 336.418 2,601.793
+16-Jan-2025 *** Stamp Duty *** 0.10
+18-Feb-2025 SIP Purchase - Instalment 41/937 - via Online - ARN-54846 1,999.90 6.101 327.786 2,607.894
+18-Feb-2025 *** Stamp Duty *** 0.10
+18-Mar-2025 SIP Purchase - Instalment 42/937 - via Online - ARN-54846 1,999.90 6.027 331.831 2,613.921
+18-Mar-2025 *** Stamp Duty *** 0.10
+16-Apr-2025 SIP Purchase (Reversal) - Instalment No 43 (1,999.90) (5.823) 343.470 2,608.098
+16-Apr-2025 *** Stamp Duty *** (0.10)
+16-Apr-2025 SIP Purchase - Instalment 43/937 - via Online - ARN-54846 1,999.90 5.823 343.470 2,613.921
+16-Apr-2025 *** Stamp Duty *** 0.10
+Closing Unit Balance: 2,613.921 NAV on 09-May-2025: INR 347.465 Total Cost Value: 314,000.00 Market Value on 09-May-2025: INR 908,246.06
+Exit Load: NIL for 10% of units if redeemed/switched within 12 months, 1% for balance units. NIL after 12 months.
+Folio No: 6784816 / 05 PAN: NEshr3896i KYC: OK  PAN: OK
+ZMbeUFT xyneO abFuE
+D110-DSP ELSS Tax Saver Fund - Regular Plan - Growth (Non-Demat) - ISIN: INF740K01185(Advisor: ARN-19702) Registrar : CAMS
+ Nominee 1: dbiSJt kwrYq oLHvm  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+04-Nov-2011 Purchase 15,000.00 965.748 15.532 965.748
+Page 4 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+05-Nov-2011 ***My Target Value : Financial Goal Registered***
+05-Nov-2011 ***Address Updated from KRA Data - First Holder***
+05-Nov-2011 ***Registration of Nominee***
+21-Jan-2016 ***Address Updated from KRA Data - First Holder***
+02-Mar-2016 ***Address Updated from KRA Data - First Holder***
+02-Aug-2017 ***Address Updated from KRA Data - First Holder***
+14-Nov-2017 ***Change of Contact details***
+14-Nov-2017 ***Change of Contact details***
+09-Dec-2017 ***Address Updated from KRA Data - First Holder***
+Closing Unit Balance: 965.748 NAV on 09-May-2025: INR 133.129 Total Cost Value: 15,000.00 Market Value on 09-May-2025: INR 128,569.07
+Investments in DSP Tax Saver Fund (Open ended ELSS) are eligible for tax deduction as per conditions u/s 80C of the Income Tax Act, 1961. Exit Load - Nil.
+Franklin Templeton Mutual Fund
+Folio No: 91221073 / 0 PAN: IgMIU4037y KYC: OK  PAN: OK
+CtoAerK WiJcS TkBgI
+FTI037-Franklin India Flexi Cap Fund - Growth (erstwhile Franklin India Equity Fund) (Non-Demat) - ISIN: INF090I01239(Advisor: ARN-2107) Registrar : CAMS
+ Nominee 1: efoexQ XDHYv AFlcx  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+15-Jan-2016 Purchase 40,000.00 97.549 410.0507 97.549
+17-Jan-2016 ***Registration of Nominee***
+18-Jan-2016 Systematic Investment Purchase -  1/156 4,000.00 9.909 403.6733 107.458
+25-Feb-2016 Systematic Investment Purchase -  2/156 4,000.00 10.271 389.4542 117.729
+28-Mar-2016 Systematic Investment Purchase -  3/156 4,000.00 9.431 424.1456 127.160
+25-Apr-2016 Systematic Investment Purchase -  4/156 4,000.00 9.045 442.2512 136.205
+25-May-2016 Systematic Investment Purchase -  5/156 4,000.00 8.963 446.2763 145.168
+27-Jun-2016 Systematic Investment Purchase -  6/156 4,000.00 8.794 454.8447 153.962
+25-Jul-2016 Systematic Investment Purchase -  7/156 4,000.00 8.282 482.9917 162.244
+25-Aug-2016 Systematic Investment Purchase -  8/156 4,000.00 8.268 483.8036 170.512
+12-Sep-2016 ***Consolidation of Folios - From 30132679***
+14-Sep-2016 Purchase 40,000.00 81.729 489.4206 252.241
+26-Sep-2016 Systematic Investment Purchase -  9/156 4,000.00 8.190 488.4167 260.431
+25-Oct-2016 Systematic Investment Purchase -  10/156 4,000.00 8.028 498.2292 268.459
+25-Nov-2016 Systematic Investment Purchase -  11/156 4,000.00 8.697 459.9432 277.156
+26-Dec-2016 Systematic Investment Purchase -  12/156 4,000.00 9.038 442.5653 286.194
+25-Jan-2017 Systematic Investment Purchase -  13/156 4,000.00 8.297 482.1286 294.491
+27-Feb-2017 Systematic Investment Purchase -  14/156 4,000.00 7.938 503.9121 302.429
+27-Mar-2017 Systematic Investment Purchase -  15/156 4,000.00 7.809 512.2589 310.238
+25-Apr-2017 Systematic Investment Purchase -  16/156 4,000.00 7.562 528.9772 317.800
+25-May-2017 Systematic Investment Purchase -  17/156 4,000.00 7.554 529.5319 325.354
+27-Jun-2017 Systematic Investment Purchase -  18/156 4,000.00 7.561 529.0267 332.915
+25-Jul-2017 Systematic Investment Purchase -  19/156 4,000.00 7.130 560.9980 340.045
+28-Aug-2017 Systematic Investment Purchase -  20/156 4,000.00 7.215 554.3843 347.260
+25-Sep-2017 Systematic Investment Purchase -  21/156 4,000.00 7.272 550.0843 354.532
+25-Oct-2017 Systematic Investment Purchase -  22/156 4,000.00 7.025 569.3823 361.557
+27-Nov-2017 Systematic Investment Purchase -  23/156 4,000.00 6.806 587.6785 368.363
+26-Dec-2017 Systematic Investment Purchase -  24/156 4,000.00 6.703 596.7909 375.066
+25-Jan-2018 Systematic Investment Purchase -  25/156 4,000.00 6.506 614.7962 381.572
+26-Feb-2018 Systematic Investment Purchase -  26/156 4,000.00 6.833 585.4126 388.405
+26-Mar-2018 Systematic Investment Purchase -  27/156 4,000.00 7.084 564.6851 395.489
+25-Apr-2018 Systematic Investment Purchase -  28/156 4,000.00 6.873 582.0177 402.362
+25-May-2018 Systematic Investment Purchase -  29/156 4,000.00 6.980 573.0815 409.342
+25-Jun-2018 Systematic Investment Purchase -  30/156 4,000.00 6.909 578.9222 416.251
+25-Jul-2018 Systematic Investment Purchase -  31/156 4,000.00 6.869 582.3212 423.120
+27-Aug-2018 Systematic Investment Purchase -  32/156 4,000.00 6.446 620.5513 429.566
+25-Sep-2018 Systematic Investment Purchase -  33/156 4,000.00 6.859 583.2128 436.425
+25-Oct-2018 Systematic Investment Purchase -  34/156 4,000.00 7.492 533.9244 443.917
+26-Nov-2018 Systematic Investment Purchase -  35/156 4,000.00 7.144 559.9210 451.061
+26-Dec-2018 Systematic Investment Purchase -  36/156 4,000.00 7.066 566.0652 458.127
+25-Jan-2019 Systematic Investment Purchase -  37/156 4,000.00 7.104 563.0722 465.231
+25-Feb-2019 Systematic Investment Purchase -  38/156 4,000.00 7.096 563.7319 472.327
+25-Mar-2019 Systematic Investment Purchase -  39/156 4,000.00 6.802 588.1046 479.129
+25-Apr-2019 Systematic Investment Purchase -  40/156 4,000.00 6.643 602.1612 485.772
+27-May-2019 Systematic Investment Purchase -  41/156 4,000.00 6.668 599.9136 492.440
+25-Jun-2019 Systematic Investment Purchase -  42/156 4,000.00 6.827 585.9472 499.267
+25-Jul-2019 Systematic Investment Purchase -  43/156 4,000.00 7.127 561.2609 506.394
+26-Aug-2019 Systematic Investment Purchase -  44/156 4,000.00 7.393 541.0641 513.787
+25-Sep-2019 Systematic Investment Purchase -  45/156 4,000.00 7.093 563.9114 520.880
+Page 5 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+25-Oct-2019 Systematic Investment Purchase -  46/156 4,000.00 7.088 564.3078 527.968
+25-Nov-2019 Systematic Investment Purchase -  47/156 4,000.00 6.752 592.4108 534.720
+26-Dec-2019 Systematic Investment Purchase -  48/156 4,000.00 6.830 585.6369 541.550
+27-Jan-2020 Systematic Investment Purchase -  49/156 4,000.00 6.611 605.0629 548.161
+25-Feb-2020 Systematic Investment Purchase -  50/156 4,000.00 6.855 583.4942 555.016
+25-Mar-2020 Systematic Investment Purchase -  51/156 4,000.00 9.939 402.4695 564.955
+27-Apr-2020 Systematic Investment Purchase -  52/156 4,000.00 8.936 447.6406 573.891
+26-May-2020 Systematic Investment Purchase -  53/156 4,000.00 8.957 446.5694 582.848
+25-Jun-2020 Systematic Investment Purchase -  54/156 4,000.00 7.866 508.4993 590.714
+27-Jul-2020 Systematic Investment Purchase -  55/156 3,999.80 7.564 528.8235 598.278
+27-Jul-2020 *** Stamp Duty *** 0.20
+25-Aug-2020 Systematic Investment Purchase -  56/156 3,999.80 7.109 562.6570 605.387
+25-Aug-2020 *** Stamp Duty *** 0.20
+25-Sep-2020 Systematic Investment Purchase -  57/156 3,999.80 7.534 530.8811 612.921
+25-Sep-2020 *** Stamp Duty *** 0.20
+26-Oct-2020 Systematic Investment Purchase -  58/156 3,999.80 7.061 566.4690 619.982
+26-Oct-2020 *** Stamp Duty *** 0.20
+03-Jun-2024 ***NCT Correction of ARS***
+03-Jun-2024 ***NCT Correction of Change of Address***
+03-Jun-2024 ***NCT Correction of Permanent Address***
+12-Dec-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 619.982 NAV on 09-May-2025: INR 1,558.6475 Total Cost Value: 312,000.00 Market Value on 09-May-2025: INR 966,333.39
+W.e.f 24/08/2009 Entry Load - Nil; Exit Load: 1% if redeemed/switched-out within 1 year from the date of allotment: For SIP/STP, basis registration date
+HDFC Mutual Fund
+Folio No: 91498647 / 09 PAN: Beofu5087w KYC: OK  PAN: OK
+tgFtETD dIERM DpzWi
+HACGPG-HDFC Small Cap Fund - Regular Plan - Growth Plan (Non-Demat) - ISIN: INF179KA1RZ8(Advisor: ARN-0910) Registrar : CAMS
+ Nominee 1: aHQIsv v AIcpM  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+15-Jan-2016 SIP Purchase 2,500.00 100.204 24.949 100.204
+16-Jan-2016 ***Registration of Nominee***
+19-Jan-2016 ***KYC Failed - Updated from KRA Data***
+19-Jan-2016 ***Address Updated from KRA Data - 1st Joint Holder***
+21-Jan-2016 ***Address Updated from KRA Data***
+23-Jan-2016 ***SIPRegistered - 15/01/2016***
+15-Feb-2016 SIP Purchase - Instalment 2/156 2,500.00 106.090 23.565 206.294
+02-Mar-2016 ***Address Updated from KRA Data***
+15-Mar-2016 SIP Purchase - Instalment 3/156 2,500.00 103.276 24.207 309.570
+18-Apr-2016 SIP Purchase - Instalment 4/156 2,500.00 94.486 26.459 404.056
+16-May-2016 SIP Purchase - Instalment 5/156 2,500.00 94.379 26.489 498.435
+15-Jun-2016 SIP Purchase - Instalment 6/156 2,500.00 91.699 27.263 590.134
+15-Jul-2016 SIP Purchase - Instalment 7/156 2,500.00 86.869 28.779 677.003
+16-Aug-2016 SIP Purchase - Instalment 8/156 2,500.00 85.182 29.349 762.185
+14-Sep-2016 Purchase 40,000.00 1,313.758 30.447 2,075.943
+15-Sep-2016 SIP Purchase - Instalment 9/156 2,500.00 82.107 30.448 2,158.050
+17-Oct-2016 SIP Purchase - Instalment 10/156 2,500.00 80.775 30.950 2,238.825
+15-Nov-2016 SIP Purchase - Instalment 11/156 2,500.00 87.710 28.503 2,326.535
+15-Dec-2016 SIP Purchase - Instalment 12/156 2,500.00 86.079 29.043 2,412.614
+16-Jan-2017 SIP Purchase - Instalment 13/156 2,500.00 83.150 30.066 2,495.764
+15-Feb-2017 SIP Purchase - Instalment 14/156 2,500.00 80.788 30.945 2,576.552
+15-Mar-2017 SIP Purchase - Instalment 15/156 2,500.00 77.469 32.271 2,654.021
+17-Apr-2017 SIP Purchase - Instalment 16/156 2,500.00 72.273 34.591 2,726.294
+15-May-2017 SIP Purchase - Instalment 17/156 2,500.00 67.806 36.870 2,794.100
+15-Jun-2017 SIP Purchase - Instalment 18/156 2,500.00 67.566 37.001 2,861.666
+17-Jul-2017 SIP Purchase - Instalment 19/156 2,500.00 65.283 38.295 2,926.949
+01-Aug-2017 ***Address Updated from KRA Data***
+16-Aug-2017 SIP Purchase - Instalment 20/156 2,500.00 67.944 36.795 2,994.893
+15-Sep-2017 SIP Purchase - Instalment 21/156 2,500.00 65.466 38.188 3,060.359
+16-Oct-2017 SIP Purchase - Instalment 22/156 2,500.00 62.450 40.032 3,122.809
+14-Nov-2017 ***Change of Contacts***
+15-Nov-2017 SIP Purchase - Instalment 23/156 2,500.00 60.273 41.478 3,183.082
+15-Dec-2017 SIP Purchase - Instalment 24/156 2,500.00 57.085 43.794 3,240.167
+15-Jan-2018 SIP Purchase - Instalment 25/156 2,500.00 52.070 48.012 3,292.237
+15-Feb-2018 SIP Purchase - Instalment 26/156 2,500.00 54.176 46.146 3,346.413
+15-Mar-2018 SIP Purchase - Instalment 27/156 2,500.00 55.221 45.273 3,401.634
+16-Apr-2018 SIP Purchase - Instalment 28/156 2,500.00 53.922 46.363 3,455.556
+Page 6 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+15-May-2018 SIP Purchase - Instalment 29/156 2,500.00 53.788 46.479 3,509.344
+15-Jun-2018 SIP Purchase - Instalment 30/156 2,500.00 54.711 45.695 3,564.055
+16-Jul-2018 SIP Purchase - Instalment 31/156 2,500.00 58.374 42.827 3,622.429
+16-Aug-2018 SIP Purchase - Instalment 32/156 2,500.00 56.294 44.410 3,678.723
+03-Sep-2018 ***CAN Change of Address***
+03-Sep-2018 ***CAN Change of Contact***
+03-Sep-2018 ***CAN Change of Permenant Address***
+03-Sep-2018 ***CAN Change of ARS***
+03-Sep-2018 ***CAN Data Updation***
+17-Sep-2018 SIP Purchase - Instalment 33/156 2,500.00 54.960 45.488 3,733.683
+15-Oct-2018 SIP Purchase - Instalment 34/156 2,500.00 60.602 41.253 3,794.285
+15-Nov-2018 SIP Purchase - Instalment 35/156 2,500.00 59.744 41.845 3,854.029
+17-Dec-2018 SIP Purchase - Instalment 36/156 2,500.00 59.256 42.190 3,913.285
+15-Jan-2019 SIP Purchase - Instalment 37/156 2,500.00 58.606 42.658 3,971.891
+15-Feb-2019 SIP Purchase - Instalment 38/156 2,500.00 62.854 39.775 4,034.745
+15-Mar-2019 SIP Purchase - Instalment 39/156 2,500.00 57.069 43.807 4,091.814
+15-Apr-2019 SIP Purchase - Instalment 40/156 2,500.00 56.215 44.472 4,148.029
+15-May-2019 SIP Purchase - Instalment 41/156 2,500.00 61.162 40.875 4,209.191
+17-Jun-2019 SIP Purchase - Instalment 42/156 2,500.00 59.566 41.970 4,268.757
+15-Jul-2019 SIP Purchase - Instalment 43/156 2,500.00 60.858 41.079 4,329.615
+16-Aug-2019 SIP Purchase - Instalment 44/156 2,500.00 66.054 37.848 4,395.669
+16-Sep-2019 SIP Purchase - Instalment 45/156 2,500.00 64.962 38.484 4,460.631
+15-Oct-2019 SIP Purchase - Instalment 46/156 2,500.00 66.445 37.625 4,527.076
+15-Nov-2019 SIP Purchase - Instalment 47/156 2,500.00 65.431 38.208 4,592.507
+16-Dec-2019 SIP Purchase - Instalment 48/156 2,500.00 66.145 37.796 4,658.652
+15-Jan-2020 SIP Purchase - Instalment 49/156 2,500.00 61.924 40.372 4,720.576
+17-Feb-2020 SIP Purchase - Instalment 50/156 2,500.00 63.628 39.291 4,784.204
+16-Mar-2020 SIP Purchase - Instalment 51/156 2,500.00 81.116 30.820 4,865.320
+15-Apr-2020 SIP Purchase - Instalment 52/156 2,500.00 90.711 27.560 4,956.031
+15-May-2020 SIP Purchase - Instalment 53/156 2,500.00 90.649 27.579 5,046.680
+15-Jun-2020 SIP Purchase - Instalment 54/156 2,500.00 82.538 30.289 5,129.218
+15-Jul-2020 SIP Purchase - Instalment 55/156 2,499.88 76.260 32.781 5,205.478
+15-Jul-2020 *** Stamp Duty *** 0.12
+17-Aug-2020 SIP Purchase - Instalment 56/156 2,499.88 68.829 36.320 5,274.307
+17-Aug-2020 *** Stamp Duty *** 0.12
+15-Sep-2020 SIP Purchase - Instalment 57/156 2,499.88 63.685 39.254 5,337.992
+15-Sep-2020 *** Stamp Duty *** 0.12
+15-Oct-2020 SIP Purchase - Instalment 58/156 2,499.88 66.377 37.662 5,404.369
+15-Oct-2020 *** Stamp Duty *** 0.12
+04-Nov-2020 ***Cancelled SIP Cancelled based on investor's written request***
+31-May-2024 ***NCT Correction of ARS***
+31-May-2024 ***NCT Correction of Change of Address***
+31-May-2024 ***NCT Correction of Permanent Address***
+12-Dec-2024 ***NCT Correction of ARS***
+Closing Unit Balance: 5,404.369 NAV on 09-May-2025: INR 121.413 Total Cost Value: 185,000.00 Market Value on 09-May-2025: INR 656,160.65
+*Due to change in fundamental attributes of the Scheme w.e.f.  May 23, 2018, the type of the Scheme has been changed to an open-ended equity scheme
+predominantly investing in small cap stocks. Current Load Structure - Entry Load: Not Applicable; Exit Load: 1% if units are redeemed/switched-out within 1 year from
+the allotment date; No Exit Load if units are redeemed /switched-out after 1 year. The rate of exit load levied on units redeemed/switched-out will be the rate
+prevailing at the time of allotment of the units. For further details visit www.hdfcfund.com or contact any of our Investor Service Centre.  GST Identification Number
+: 27AAATH1809A1Z9
+Mirae Asset Mutual Fund
+Folio No: 50959920989 / 0 PAN: DDABo5452J KYC: OK  PAN: OK
+SqBmRbg IdFJN tIwTw
+117EBRGG-Mirae Asset Large and Midcap Fund (formerly Mirae Asset Emerging Bluechip Fund) - Regular Plan - ISIN: INF769K01101(Advisor: Registrar :
+ARN-0910) KFINTECH
+ Nominee 1: JteSFj Clegv FMPXR  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+25-Nov-2020 Systematic Investment (1/120) 6,499.68 99.365 65.412 99.365
+25-Nov-2020 *** Stamp Duty *** 0.32
+26-Nov-2020 ***Updation of KYC***
+28-Dec-2020 Systematic Investment (1) 6,499.68 92.792 70.046 192.157
+28-Dec-2020 *** Stamp Duty *** 0.32
+25-Jan-2021 Systematic Investment (1) 6,499.68 88.699 73.278 280.856
+25-Jan-2021 *** Stamp Duty *** 0.32
+25-Feb-2021 Systematic Investment (1) 6,499.68 83.942 77.431 364.798
+25-Feb-2021 *** Stamp Duty *** 0.32
+25-Mar-2021 Systematic Investment (1) 6,499.68 84.155 77.235 448.953
+Page 7 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+25-Mar-2021 *** Stamp Duty *** 0.32
+26-Apr-2021 Systematic Investment (1) 6,499.68 81.912 79.350 530.865
+26-Apr-2021 *** Stamp Duty *** 0.32
+25-May-2021 Systematic Investment (1) 6,499.68 77.254 84.134 608.119
+25-May-2021 *** Stamp Duty *** 0.32
+25-Jun-2021 Systematic Investment (1) 6,499.68 73.933 87.913 682.052
+25-Jun-2021 *** Stamp Duty *** 0.32
+26-Jul-2021 Systematic Investment (1) 6,499.68 72.252 89.958 754.304
+26-Jul-2021 *** Stamp Duty *** 0.32
+25-Aug-2021 Systematic Investment (1) 6,499.68 70.766 91.848 825.070
+25-Aug-2021 *** Stamp Duty *** 0.32
+27-Sep-2021 Systematic Investment (1) 6,499.68 66.545 97.673 891.615
+27-Sep-2021 *** Stamp Duty *** 0.32
+25-Oct-2021 Systematic Investment (1) 6,499.68 64.480 100.801 956.095
+25-Oct-2021 *** Stamp Duty *** 0.32
+25-Nov-2021 Systematic Investment (1) 6,499.68 67.742 95.948 1,023.837
+25-Nov-2021 *** Stamp Duty *** 0.32
+27-Dec-2021 Systematic Investment (1) 6,499.68 66.795 97.308 1,090.632
+27-Dec-2021 *** Stamp Duty *** 0.32
+25-Jan-2022 Systematic Investment (1) 6,499.68 67.414 96.415 1,158.046
+25-Jan-2022 *** Stamp Duty *** 0.32
+25-Feb-2022 Systematic Investment (1) 6,499.68 70.235 92.542 1,228.281
+25-Feb-2022 *** Stamp Duty *** 0.32
+25-Mar-2022 Systematic Investment (1) 6,499.68 69.654 93.314 1,297.935
+25-Mar-2022 *** Stamp Duty *** 0.32
+25-Apr-2022 Systematic Investment (1) 6,499.68 69.409 93.643 1,367.344
+25-Apr-2022 *** Stamp Duty *** 0.32
+25-May-2022 Systematic Investment (1) 6,499.68 74.490 87.256 1,441.834
+25-May-2022 *** Stamp Duty *** 0.32
+27-Jun-2022 Systematic Investment (1) 6,499.68 74.955 86.714 1,516.789
+27-Jun-2022 *** Stamp Duty *** 0.32
+25-Jul-2022 Systematic Investment (1) 6,499.68 70.432 92.283 1,587.221
+25-Jul-2022 *** Stamp Duty *** 0.32
+25-Aug-2022 Systematic Investment (1) 6,499.68 67.706 95.998 1,654.927
+25-Aug-2022 *** Stamp Duty *** 0.32
+26-Sep-2022 Systematic Investment (1) 6,499.68 70.010 92.839 1,724.937
+26-Sep-2022 *** Stamp Duty *** 0.32
+25-Oct-2022 Systematic Investment (1) 6,499.68 68.022 95.553 1,792.959
+25-Oct-2022 *** Stamp Duty *** 0.32
+25-Nov-2022 Systematic Investment (1) 6,499.68 65.982 98.507 1,858.941
+25-Nov-2022 *** Stamp Duty *** 0.32
+26-Dec-2022 Systematic Investment (1) 6,499.68 67.783 95.889 1,926.724
+26-Dec-2022 *** Stamp Duty *** 0.32
+25-Jan-2023 Systematic Investment (1) 6,499.68 68.405 95.017 1,995.129
+25-Jan-2023 *** Stamp Duty *** 0.32
+27-Feb-2023 Systematic Investment (1) 6,499.68 69.749 93.187 2,064.878
+27-Feb-2023 *** Stamp Duty *** 0.32
+27-Mar-2023 Systematic Investment (1) 6,499.68 71.797 90.529 2,136.675
+27-Mar-2023 *** Stamp Duty *** 0.32
+25-Apr-2023 Systematic Investment (1) 6,499.68 68.283 95.188 2,204.958
+25-Apr-2023 *** Stamp Duty *** 0.32
+25-May-2023 Systematic Investment (1) 6,499.68 66.442 97.825 2,271.400
+25-May-2023 *** Stamp Duty *** 0.32
+26-Jun-2023 Systematic Investment (1) 6,499.68 63.024 103.131 2,334.424
+26-Jun-2023 *** Stamp Duty *** 0.32
+25-Jul-2023 Systematic Investment (1) 6,499.68 60.394 107.621 2,394.818
+25-Jul-2023 *** Stamp Duty *** 0.32
+25-Aug-2023 Systematic Investment (1) 6,499.68 59.351 109.512 2,454.169
+25-Aug-2023 *** Stamp Duty *** 0.32
+25-Sep-2023 Systematic Investment (1) 6,499.68 57.928 112.203 2,512.097
+25-Sep-2023 *** Stamp Duty *** 0.32
+25-Oct-2023 Systematic Investment (1) 6,499.68 59.673 108.921 2,571.770
+25-Oct-2023 *** Stamp Duty *** 0.32
+28-Nov-2023 Systematic Investment (1) 6,499.68 56.500 115.039 2,628.270
+28-Nov-2023 *** Stamp Duty *** 0.32
+26-Dec-2023 Systematic Investment (1) 6,499.68 52.776 123.156 2,681.046
+26-Dec-2023 *** Stamp Duty *** 0.32
+25-Jan-2024 Systematic Investment (1) 6,499.68 52.119 124.709 2,733.165
+25-Jan-2024 *** Stamp Duty *** 0.32
+Page 8 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+26-Feb-2024 Systematic Investment (1) 6,499.68 49.890 130.279 2,783.055
+26-Feb-2024 *** Stamp Duty *** 0.32
+26-Mar-2024 Systematic Investment (1) 6,499.68 50.918 127.650 2,833.973
+26-Mar-2024 *** Stamp Duty *** 0.32
+25-Apr-2024 Systematic Investment (1) 6,499.68 48.810 133.162 2,882.783
+25-Apr-2024 *** Stamp Duty *** 0.32
+27-May-2024 Systematic Investment (1) 6,499.68 47.216 137.657 2,929.999
+27-May-2024 *** Stamp Duty *** 0.32
+25-Jun-2024 Systematic Investment (1) 6,499.68 45.043 144.301 2,975.042
+25-Jun-2024 *** Stamp Duty *** 0.32
+25-Jul-2024 Systematic Investment (1) 6,499.68 43.770 148.497 3,018.812
+25-Jul-2024 *** Stamp Duty *** 0.32
+26-Aug-2024 Systematic Investment (1) 6,499.68 42.556 152.731 3,061.368
+26-Aug-2024 *** Stamp Duty *** 0.32
+25-Sep-2024 Systematic Investment (1) 6,499.68 41.674 155.963 3,103.042
+25-Sep-2024 *** Stamp Duty *** 0.32
+25-Oct-2024 Systematic Investment (1) 6,499.68 45.041 144.305 3,148.083
+25-Oct-2024 *** Stamp Duty *** 0.32
+25-Nov-2024 Systematic Investment (1) 6,499.68 44.617 145.678 3,192.700
+25-Nov-2024 *** Stamp Duty *** 0.32
+26-Dec-2024 Systematic Investment (1) 6,499.68 44.673 145.494 3,237.373
+26-Dec-2024 *** Stamp Duty *** 0.32
+27-Jan-2025 Systematic Investment (1) 6,499.68 48.715 133.423 3,286.088
+27-Jan-2025 *** Stamp Duty *** 0.32
+25-Feb-2025 Systematic Investment (1) 6,499.68 50.341 129.114 3,336.429
+25-Feb-2025 *** Stamp Duty *** 0.32
+25-Mar-2025 Systematic Investment (1) 6,499.68 47.663 136.367 3,384.092
+25-Mar-2025 *** Stamp Duty *** 0.32
+25-Apr-2025 Systematic Investment (1) 6,499.68 46.927 138.505 3,431.019
+25-Apr-2025 *** Stamp Duty *** 0.32
+Closing Unit Balance: 3,431.019 NAV on 09-May-2025: INR 137.624 Total Cost Value: 351,000.00 Market Value on 09-May-2025: INR 472,190.56
+Entry Load: Nil and Exit Load :  For SWP 15% of the units allotted (including Switch-in/STP-in) on or before completion of 365 days from the date of allotment of units
+is NIL. Any redemption in excess of such limit, on FIFO basis, or other redemptionsof investor who have not opted for SWP(Inc Switch out, STP out) and If redeemed
+within 1 year (365 Days) from the date of allotment Exit load is 1%  and after 365 days from the date of allotment Exit load is NIL .
+Folio No: 33625896063 / 0 PAN: lmoSS0067T KYC: OK  PAN: OK
+GDllfXs dqSTI MNMse
+117MARGG-Mirae Asset Multi Asset Allocation Fund Regular Plan - ISIN: INF769K01KW3(Advisor: ARN-4343) Registrar :
+KFINTECH
+ Nominee 1: OcSgtT aiUWM DXmNx  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+26-Nov-2020 ***Updation of KYC***
+31-Jan-2024 Initial Purchase 99,995.00 9,999.500 10.000 9,999.500
+31-Jan-2024 *** Stamp Duty *** 5.00
+22-Feb-2024 Purchase 99,995.00 9,897.555 10.103 19,897.055
+22-Feb-2024 *** Stamp Duty *** 5.00
+Closing Unit Balance: 19,897.055 NAV on 09-May-2025: INR 11.560 Total Cost Value: 200,000.00 Market Value on 09-May-2025: INR 230,009.96
+For investors who have opted for SWP: 15% of the units allotted on or before completion of 180 days from the date of allotment of units: Nil.Any redemption in excess
+of such limits in the first 180 days fromthe date of allotment shall be subject to the following exit load :If redeemed within 180 days from the date of allotment: 1% -
+If redeemed after 180 days from the date of allotment: NIL
+Nippon India Mutual Fund
+Folio No: 773079913315 / 0 PAN: VevTa0706O KYC: OK  PAN: OK
+VCHiOSk lWXfR eLmCu
+RMFEOGPG-NIPPON INDIA MULTI CAP FUND - GROWTH PLAN GROWTH OPTION - ISIN: INF204K01489(Advisor: ARN-90748) Registrar :
+KFINTECH
+ Nominee 1: okyMH N SDroO  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+16-Dec-2011 Purchase 1,000.00 32.921 30.3759 32.921
+02-Feb-2012 Sys. Investment (1/213) 1,000.00 28.883 34.6229 61.804
+02-Mar-2012 Sys. Investment (2/213) 1,000.00 27.759 36.0241 89.563
+02-Apr-2012 Sys. Investment (3/213) 1,000.00 27.224 36.7322 116.787
+02-May-2012 Sys. Investment (4/213) 1,000.00 26.851 37.2423 143.638
+04-Jun-2012 Sys. Investment (5/213) 1,000.00 28.526 35.0562 172.164
+02-Jul-2012 Sys. Investment (6/213) 1,000.00 26.707 37.4436 198.871
+02-Aug-2012 Sys. Investment (7/213) 1,000.00 26.575 37.6287 225.446
+03-Sep-2012 Sys. Investment (8/213) 1,000.00 26.512 37.7187 251.958
+Page 9 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+03-Oct-2012 Sys. Investment (9/213) 1,000.00 23.771 42.0689 275.729
+02-Nov-2012 Sys. Investment (10/213) 1,000.00 23.734 42.1342 299.463
+03-Dec-2012 Sys. Investment (11/213) 1,000.00 22.978 43.5205 322.441
+02-Jan-2013 Sys. Investment (12/213) 1,000.00 22.230 44.9837 344.671
+04-Feb-2013 Sys. Investment (13/213) 1,000.00 22.882 43.7026 367.553
+04-Mar-2013 Sys. Investment (14/213) 1,000.00 24.197 41.3273 391.750
+02-Apr-2013 Sys. Investment (15/213) 1,000.00 23.841 41.9452 415.591
+02-May-2013 Sys. Investment (16/213) 1,000.00 23.476 42.5961 439.067
+03-Jun-2013 Sys. Investment (17/213) 1,000.00 24.202 41.3196 463.269
+02-Jul-2013 Sys. Investment (18/213) 1,000.00 24.806 40.3133 488.075
+02-Aug-2013 Sys. Investment (19/213) 1,000.00 26.667 37.4993 514.742
+02-Sep-2013 Sys. Investment (20/213) 1,000.00 26.499 37.7373 541.241
+03-Oct-2013 Sys. Investment (21/213) 1,000.00 25.327 39.4842 566.568
+05-Nov-2013 Sys. Investment (22/213) 1,000.00 23.508 42.5391 590.076
+02-Dec-2013 Sys. Investment (23/213) 1,000.00 22.930 43.6119 613.006
+02-Jan-2014 Sys. Investment (24/213) 1,000.00 21.905 45.6520 634.911
+03-Feb-2014 Sys. Investment (25/213) 1,000.00 22.631 44.1875 657.542
+03-Mar-2014 Sys. Investment (26/213) 1,000.00 21.824 45.8206 679.366
+02-Apr-2014 Sys. Investment (27/213) 1,000.00 19.971 50.0737 699.337
+02-May-2014 Sys. Investment (28/213) 1,000.00 20.067 49.8322 719.404
+02-Jun-2014 Sys. Investment (29/213) 1,000.00 17.307 57.7796 736.711
+02-Jul-2014 Sys. Investment (30/213) 1,000.00 16.041 62.3394 752.752
+04-Aug-2014 Sys. Investment (31/213) 1,000.00 16.427 60.8748 769.179
+02-Sep-2014 Sys. Investment (32/213) 1,000.00 15.541 64.3445 784.720
+07-Oct-2014 Sys. Investment (33/213) 1,000.00 15.282 65.4382 800.002
+03-Nov-2014 Sys. Investment (34/213) 1,000.00 14.405 69.4222 814.407
+02-Dec-2014 Sys. Investment (35/213) 1,000.00 13.421 74.5097 827.828
+02-Jan-2015 Sys. Investment (36/213) 1,000.00 13.466 74.2616 841.294
+02-Feb-2015 Sys. Investment (37/213) 1,000.00 12.994 76.9563 854.288
+02-Mar-2015 Sys. Investment (38/213) 1,000.00 12.777 78.2683 867.065
+06-Apr-2015 Sys. Investment (39/213) 1,000.00 13.039 76.6931 880.104
+04-May-2015 Sys. Investment (40/213) 1,000.00 13.564 73.7232 893.668
+02-Jun-2015 Sys. Investment (41/213) 1,000.00 13.551 73.7965 907.219
+02-Jul-2015 Sys. Investment (42/213) 1,000.00 13.467 74.2569 920.686
+03-Aug-2015 Sys. Investment (43/213) 1,000.00 12.971 77.0976 933.657
+02-Sep-2015 Sys. Investment (44/213) 1,000.00 13.992 71.4719 947.649
+05-Oct-2015 Sys. Investment (45/213) 1,000.00 13.565 73.7168 961.214
+02-Nov-2015 Sys. Investment (46/213) 1,000.00 13.537 73.8741 974.751
+02-Dec-2015 Sys. Investment (47/213) 1,000.00 13.506 74.0388 988.257
+04-Jan-2016 Sys. Investment (48/213) 1,000.00 13.608 73.4887 1,001.865
+02-Feb-2016 Sys. Investment (49/213) 1,000.00 14.953 66.8750 1,016.818
+02-Mar-2016 Sys. Investment (50/213) 1,000.00 15.766 63.4260 1,032.584
+04-Apr-2016 Sys. Investment (51/213) 1,000.00 14.954 66.8699 1,047.538
+02-May-2016 Sys. Investment (52/213) 1,000.00 14.869 67.2547 1,062.407
+02-Jun-2016 Sys. Investment (53/213) 1,000.00 14.509 68.9235 1,076.916
+04-Jul-2016 Sys. Investment (54/213) 1,000.00 13.740 72.7802 1,090.656
+02-Aug-2016 Sys. Investment (55/213) 1,000.00 13.614 73.4528 1,104.270
+02-Sep-2016 Sys. Investment (56/213) 1,000.00 13.153 76.0275 1,117.423
+03-Oct-2016 Sys. Investment (57/213) 1,000.00 13.140 76.1038 1,130.563
+02-Nov-2016 Sys. Investment (58/213) 1,000.00 13.503 74.0579 1,144.066
+02-Dec-2016 Sys. Investment (59/213) 1,000.00 14.344 69.7139 1,158.410
+02-Jan-2017 Sys. Investment (60/213) 1,000.00 14.370 69.5897 1,172.780
+02-Feb-2017 Sys. Investment (61/213) 1,000.00 13.424 74.4918 1,186.204
+02-Mar-2017 Sys. Investment (62/213) 1,000.00 13.204 75.7325 1,199.408
+03-Apr-2017 Sys. Investment (63/213) 1,000.00 12.424 80.4912 1,211.832
+02-May-2017 Sys. Investment (64/213) 1,000.00 12.098 82.6617 1,223.930
+02-Jun-2017 Sys. Investment (65/213) 1,000.00 11.935 83.7873 1,235.865
+03-Jul-2017 Sys. Investment (66/213) 1,000.00 11.914 83.9371 1,247.779
+02-Aug-2017 Sys. Investment (67/213) 1,000.00 11.435 87.4477 1,259.214
+04-Sep-2017 Sys. Investment (68/213) 1,000.00 11.715 85.3628 1,270.929
+03-Oct-2017 Sys. Investment (69/213) 1,000.00 11.611 86.1270 1,282.540
+02-Nov-2017 Sys. Investment (70/213) 1,000.00 10.740 93.1059 1,293.280
+04-Dec-2017 Sys. Investment (71/213) 1,000.00 10.714 93.3351 1,303.994
+02-Jan-2018 Sys. Investment (72/213) 1,000.00 10.329 96.8177 1,314.323
+02-Feb-2018 Sys. Investment (73/213) 1,000.00 10.447 95.7231 1,324.770
+05-Mar-2018 Sys. Investment (74/213) 1,000.00 10.807 92.5317 1,335.577
+02-Apr-2018 Sys. Investment (75/213) 1,000.00 11.030 90.6586 1,346.607
+02-May-2018 Sys. Investment (76/213) 1,000.00 10.595 94.3856 1,357.202
+04-Jun-2018 Sys. Investment (77/213) 1,000.00 11.241 88.9621 1,368.443
+Page 10 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+02-Jul-2018 Sys. Investment (78/213) 1,000.00 11.502 86.9386 1,379.945
+02-Aug-2018 Sys. Investment (79/213) 1,000.00 10.837 92.2807 1,390.782
+03-Sep-2018 Sys. Investment (80/213) 1,000.00 10.268 97.3922 1,401.050
+03-Oct-2018 Sys. Investment (81/213) 1,000.00 11.272 88.7167 1,412.322
+02-Nov-2018 Sys. Investment (82/213) 1,000.00 11.056 90.4469 1,423.378
+03-Dec-2018 Sys. Investment (83/213) 1,000.00 10.710 93.3704 1,434.088
+02-Jan-2019 Sys. Investment (84/213) 1,000.00 10.573 94.5806 1,444.661
+04-Feb-2019 Sys. Investment (85/213) 1,000.00 10.828 92.3512 1,455.489
+05-Mar-2019 Sys. Investment (86/213) 1,000.00 10.529 94.9783 1,466.018
+02-Apr-2019 Sys. Investment (87/213) 1,000.00 9.950 100.5057 1,475.968
+02-May-2019 Sys. Investment (88/213) 1,000.00 10.240 97.6592 1,486.208
+03-Jun-2019 Sys. Investment (89/213) 1,000.00 9.767 102.3851 1,495.975
+02-Jul-2019 Sys. Investment (90/213) 1,000.00 9.921 100.7976 1,505.896
+02-Aug-2019 Sys. Investment (91/213) 1,000.00 11.173 89.5029 1,517.069
+03-Sep-2019 Sys. Investment (92/213) 1,000.00 11.573 86.4099 1,528.642
+03-Oct-2019 Sys. Investment (93/213) 1,000.00 10.857 92.1085 1,539.499
+04-Nov-2019 Sys. Investment (94/213) 1,000.00 10.324 96.8642 1,549.823
+02-Dec-2019 Sys. Investment (95/213) 1,000.00 10.294 97.1451 1,560.117
+02-Jan-2020 Sys. Investment (96/213) 1,000.00 10.076 99.2431 1,570.193
+03-Feb-2020 Sys. Investment (97/213) 1,000.00 10.458 95.6168 1,580.651
+02-Mar-2020 Sys. Investment (98/213) 1,000.00 10.954 91.2879 1,591.605
+03-Apr-2020 Sys. Investment (99/213) 1,000.00 16.439 60.8326 1,608.044
+04-May-2020 Sys. Investment (100/213) 1,000.00 14.902 67.1041 1,622.946
+02-Jun-2020 Sys. Investment (101/213) 1,000.00 14.306 69.9003 1,637.252
+02-Jul-2020 Sys. Investment (102/213) 999.95 13.508 74.0239 1,650.760
+02-Jul-2020 *** Stamp Duty *** 0.05
+03-Aug-2020 Sys. Investment (103/213) 999.95 13.351 74.8969 1,664.111
+03-Aug-2020 *** Stamp Duty *** 0.05
+02-Sep-2020 Sys. Investment (104/213) 999.95 11.880 84.1736 1,675.991
+02-Sep-2020 *** Stamp Duty *** 0.05
+05-Oct-2020 Sys. Investment (105/213) 999.95 12.389 80.7110 1,688.380
+05-Oct-2020 *** Stamp Duty *** 0.05
+02-Nov-2020 Sys. Investment (106/213) 999.95 12.441 80.3751 1,700.821
+02-Nov-2020 *** Stamp Duty *** 0.05
+02-Dec-2020 Sys. Investment (107/213) 999.95 10.786 92.7075 1,711.607
+02-Dec-2020 *** Stamp Duty *** 0.05
+04-Jan-2021 Sys. Investment (108/213) 999.95 9.992 100.0745 1,721.599
+04-Jan-2021 *** Stamp Duty *** 0.05
+02-Feb-2021 Sys. Investment (109/213) 999.95 9.669 103.4193 1,731.268
+02-Feb-2021 *** Stamp Duty *** 0.05
+08-Mar-2021 Sys. Investment (110/213) 999.95 8.483 117.8810 1,739.751
+08-Mar-2021 *** Stamp Duty *** 0.05
+05-Apr-2021 Sys. Investment (111/213) 999.95 8.905 112.2875 1,748.656
+05-Apr-2021 *** Stamp Duty *** 0.05
+03-May-2021 Sys. Investment (112/213) 999.95 8.858 112.8821 1,757.514
+03-May-2021 *** Stamp Duty *** 0.05
+02-Jun-2021 Sys. Investment (113/213) 999.95 8.229 121.5113 1,765.743
+02-Jun-2021 *** Stamp Duty *** 0.05
+02-Jul-2021 Sys. Investment (114/213) 999.95 7.962 125.5877 1,773.705
+02-Jul-2021 *** Stamp Duty *** 0.05
+02-Aug-2021 Sys. Investment (115/213) 999.95 7.635 130.9621 1,781.340
+02-Aug-2021 *** Stamp Duty *** 0.05
+02-Sep-2021 Sys. Investment (116/213) 999.95 7.188 139.1199 1,788.528
+02-Sep-2021 *** Stamp Duty *** 0.05
+04-Oct-2021 Sys. Investment (117/213) 999.95 6.807 146.9019 1,795.335
+04-Oct-2021 *** Stamp Duty *** 0.05
+02-Nov-2021 Sys. Investment (118/213) 999.95 6.680 149.6945 1,802.015
+02-Nov-2021 *** Stamp Duty *** 0.05
+02-Dec-2021 Sys. Investment (119/213) 999.95 6.866 145.6422 1,808.881
+02-Dec-2021 *** Stamp Duty *** 0.05
+03-Jan-2022 Sys. Investment (120/213) 999.95 6.783 147.4307 1,815.664
+03-Jan-2022 *** Stamp Duty *** 0.05
+02-Feb-2022 Sys. Investment (121/213) 999.95 6.587 151.8074 1,822.251
+02-Feb-2022 *** Stamp Duty *** 0.05
+02-Mar-2022 Sys. Investment (122/213) 999.95 7.183 139.2144 1,829.434
+02-Mar-2022 *** Stamp Duty *** 0.05
+04-Apr-2022 Sys. Investment (123/213) 999.95 6.434 155.4074 1,835.868
+04-Apr-2022 *** Stamp Duty *** 0.05
+02-May-2022 Sys. Investment (124/213) 999.95 6.682 149.6436 1,842.550
+Page 11 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+02-May-2022 *** Stamp Duty *** 0.05
+02-Jun-2022 Sys. Investment (125/213) 999.95 6.901 144.8996 1,849.451
+02-Jun-2022 *** Stamp Duty *** 0.05
+04-Jul-2022 Sys. Investment (126/213) 999.95 7.107 140.6922 1,856.558
+04-Jul-2022 *** Stamp Duty *** 0.05
+02-Aug-2022 Sys. Investment (127/213) 999.95 6.403 156.1811 1,862.961
+02-Aug-2022 *** Stamp Duty *** 0.05
+02-Sep-2022 Sys. Investment (128/213) 999.95 6.175 161.9290 1,869.136
+02-Sep-2022 *** Stamp Duty *** 0.05
+03-Oct-2022 Sys. Investment (129/213) 999.95 6.181 161.7680 1,875.317
+03-Oct-2022 *** Stamp Duty *** 0.05
+02-Nov-2022 Sys. Investment (130/213) 999.95 5.958 167.8415 1,881.275
+02-Nov-2022 *** Stamp Duty *** 0.05
+02-Dec-2022 Sys. Investment (131/213) 999.95 5.851 170.8929 1,887.126
+02-Dec-2022 *** Stamp Duty *** 0.05
+02-Jan-2023 Sys. Investment (132/213) 999.95 5.981 167.1921 1,893.107
+02-Jan-2023 *** Stamp Duty *** 0.05
+02-Feb-2023 Sys. Investment (133/213) 999.95 6.146 162.7108 1,899.253
+02-Feb-2023 *** Stamp Duty *** 0.05
+02-Mar-2023 Sys. Investment (134/213) 999.95 6.141 162.8347 1,905.394
+02-Mar-2023 *** Stamp Duty *** 0.05
+03-Apr-2023 Sys. Investment (135/213) 999.95 6.116 163.4993 1,911.510
+03-Apr-2023 *** Stamp Duty *** 0.05
+02-May-2023 Sys. Investment (136/213) 999.95 5.867 170.4490 1,917.377
+02-May-2023 *** Stamp Duty *** 0.05
+02-Jun-2023 Sys. Investment (137/213) 999.95 5.529 180.8703 1,922.906
+02-Jun-2023 *** Stamp Duty *** 0.05
+03-Jul-2023 Sys. Investment (138/213) 999.95 5.234 191.0417 1,928.140
+03-Jul-2023 *** Stamp Duty *** 0.05
+02-Aug-2023 Sys. Investment (139/213) 999.95 4.998 200.0583 1,933.138
+02-Aug-2023 *** Stamp Duty *** 0.05
+04-Sep-2023 Sys. Investment (140/213) 999.95 4.749 210.5788 1,937.887
+04-Sep-2023 *** Stamp Duty *** 0.05
+03-Oct-2023 Sys. Investment (141/213) 999.95 4.761 210.0393 1,942.648
+03-Oct-2023 *** Stamp Duty *** 0.05
+02-Nov-2023 Sys. Investment (142/213) 999.95 4.863 205.6434 1,947.511
+02-Nov-2023 *** Stamp Duty *** 0.05
+04-Dec-2023 Sys. Investment (143/213) 999.95 4.499 222.2384 1,952.010
+04-Dec-2023 *** Stamp Duty *** 0.05
+02-Jan-2024 Sys. Investment (144/213) 999.95 4.329 230.9661 1,956.339
+02-Jan-2024 *** Stamp Duty *** 0.05
+02-Feb-2024 Sys. Investment (145/213) 999.95 4.247 235.4572 1,960.586
+02-Feb-2024 *** Stamp Duty *** 0.05
+04-Mar-2024 Sys. Investment (146/213) 999.95 4.099 243.9554 1,964.685
+04-Mar-2024 *** Stamp Duty *** 0.05
+02-Apr-2024 Sys. Investment (147/213) 999.95 3.998 250.1091 1,968.683
+02-Apr-2024 *** Stamp Duty *** 0.05
+02-May-2024 Sys. Investment (148/213) 999.95 3.782 264.3709 1,972.465
+02-May-2024 *** Stamp Duty *** 0.05
+03-Jun-2024 Sys. Investment (149/213) 999.95 3.616 276.5441 1,976.081
+03-Jun-2024 *** Stamp Duty *** 0.05
+02-Jul-2024 Sys. Investment (150/213) 999.95 3.455 289.3942 1,979.536
+02-Jul-2024 *** Stamp Duty *** 0.05
+02-Aug-2024 Sys. Investment (151/213) 999.95 3.385 295.4223 1,982.921
+02-Aug-2024 *** Stamp Duty *** 0.05
+02-Sep-2024 Sys. Investment (152/213) 999.95 3.346 298.8305 1,986.267
+02-Sep-2024 *** Stamp Duty *** 0.05
+03-Oct-2024 Sys. Investment (153/213) 999.95 3.324 300.8637 1,989.591
+03-Oct-2024 *** Stamp Duty *** 0.05
+04-Nov-2024 Sys. Investment (154/213) 999.95 3.448 289.9671 1,993.039
+04-Nov-2024 *** Stamp Duty *** 0.05
+02-Dec-2024 Sys. Investment (155/213) 999.95 3.417 292.6710 1,996.456
+02-Dec-2024 *** Stamp Duty *** 0.05
+02-Jan-2025 Sys. Investment (156/213) 999.95 3.406 293.5609 1,999.862
+02-Jan-2025 *** Stamp Duty *** 0.05
+03-Feb-2025 Sys. Investment (157/213) 999.95 3.720 268.7779 2,003.582
+03-Feb-2025 *** Stamp Duty *** 0.05
+03-Mar-2025 Sys. Investment (158/213) 999.95 3.988 250.7137 2,007.570
+03-Mar-2025 *** Stamp Duty *** 0.05
+Page 12 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+02-Apr-2025 Sys. Investment (159/213) 999.95 3.725 268.4679 2,011.295
+02-Apr-2025 *** Stamp Duty *** 0.05
+02-May-2025 Sys. Investment (160/213) 999.95 3.625 275.8801 2,014.920
+02-May-2025 *** Stamp Duty *** 0.05
+Closing Unit Balance: 2,014.920 NAV on 09-May-2025: INR 272.1606 Total Cost Value: 161,000.00 Market Value on 09-May-2025: INR 548,381.84
+For subscriptions received w.e.f. Mar 17th, 2020, 10% of the units allotted shall be redeemed without any exit load, 1% exit load shall be applicable for units
+redeemed in excess of such limit,on or before completion of 12 months from the date of allotment of units. And Nil thereafter. Redemption of units would be done on
+First in First out Basis (FIFO).For subscriptions prior to  Mar 17th, 2020, Exit load levied on the Units redeemed will be the rate prevailing at the time of the allotment
+of the Units.For Special products registrations, load for each transaction is based on the load structure applicable as on the registration date.
+Folio No: 849328489566 / 0 PAN: miQZH3854e KYC: OK  PAN: OK
+VKLDpuS slnAR pmDPG
+RMFSCGPG-NIPPON INDIA SMALL CAP FUND - GROWTH PLAN GROWTH OPTION - ISIN: INF204K01HY3(Advisor: ARN-89291) Registrar :
+KFINTECH
+ Nominee 1: IZPid d ddQuO  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+12-Sep-2016 Sys. Investment (1/60) 5,000.00 171.468 29.1599 171.468
+10-Oct-2016 Sys. Investment (2/60) 5,000.00 160.148 31.2211 331.616
+10-Nov-2016 Sys. Investment (3/60) 5,000.00 161.250 31.0077 492.866
+12-Dec-2016 Sys. Investment (4/60) 5,000.00 169.408 29.5146 662.274
+10-Jan-2017 Sys. Investment (5/60) 5,000.00 163.555 30.5708 825.829
+10-Feb-2017 Sys. Investment (6/60) 5,000.00 154.405 32.3824 980.234
+10-Mar-2017 Sys. Investment (7/60) 5,000.00 153.488 32.5759 1,133.722
+10-Apr-2017 Sys. Investment (8/60) 5,000.00 138.821 36.0176 1,272.543
+10-May-2017 Sys. Investment (9/60) 5,000.00 132.245 37.8085 1,404.788
+12-Jun-2017 Sys. Investment (10/60) 5,000.00 132.990 37.5969 1,537.778
+10-Jul-2017 Sys. Investment (11/60) 5,000.00 128.596 38.8814 1,666.374
+10-Aug-2017 Sys. Investment (12/60) 5,000.00 135.964 36.7744 1,802.338
+11-Sep-2017 Sys. Investment (13/60) 5,000.00 126.223 39.6123 1,928.561
+10-Oct-2017 Sys. Investment (14/60) 5,000.00 122.102 40.9493 2,050.663
+10-Nov-2017 Sys. Investment (15/60) 5,000.00 116.296 42.9939 2,166.959
+11-Dec-2017 Sys. Investment (16/60) 5,000.00 110.220 45.3639 2,277.179
+10-Jan-2018 Sys. Investment (17/60) 5,000.00 101.268 49.3737 2,378.447
+12-Feb-2018 Sys. Investment (18/60) 5,000.00 106.899 46.7731 2,485.346
+12-Mar-2018 Sys. Investment (19/60) 5,000.00 113.369 44.1037 2,598.715
+10-Apr-2018 Sys. Investment (20/60) 5,000.00 109.591 45.6240 2,708.306
+10-May-2018 Sys. Investment (21/60) 5,000.00 110.036 45.4396 2,818.342
+11-Jun-2018 Sys. Investment (22/60) 5,000.00 115.239 43.3881 2,933.581
+10-Jul-2018 Sys. Investment (23/60) 5,000.00 118.483 42.2001 3,052.064
+10-Aug-2018 Sys. Investment (24/60) 5,000.00 115.645 43.2358 3,167.709
+10-Sep-2018 Sys. Investment (25/60) 5,000.00 113.204 44.1680 3,280.913
+10-Oct-2018 Sys. Investment (26/60) 5,000.00 129.532 38.6004 3,410.445
+12-Nov-2018 Sys. Investment (27/60) 5,000.00 125.294 39.9061 3,535.739
+10-Dec-2018 Sys. Investment (28/60) 5,000.00 131.658 37.9772 3,667.397
+10-Jan-2019 Sys. Investment (29/60) 5,000.00 126.684 39.4684 3,794.081
+11-Feb-2019 Sys. Investment (30/60) 5,000.00 135.756 36.8309 3,929.837
+11-Mar-2019 Sys. Investment (31/60) 5,000.00 125.488 39.8443 4,055.325
+10-Apr-2019 Sys. Investment (32/60) 5,000.00 124.066 40.3010 4,179.391
+10-May-2019 Sys. Investment (33/60) 5,000.00 129.320 38.6639 4,308.711
+10-Jun-2019 Sys. Investment (34/60) 5,000.00 124.620 40.1219 4,433.331
+10-Jul-2019 Sys. Investment (35/60) 5,000.00 131.153 38.1235 4,564.484
+13-Aug-2019 Sys. Investment (36/60) 5,000.00 142.783 35.0182 4,707.267
+11-Sep-2019 Sys. Investment (37/60) 5,000.00 137.716 36.3067 4,844.983
+10-Oct-2019 Sys. Investment (38/60) 5,000.00 138.053 36.2179 4,983.036
+11-Nov-2019 Sys. Investment (39/60) 5,000.00 130.548 38.3001 5,113.584
+10-Dec-2019 Sys. Investment (40/60) 5,000.00 134.866 37.0739 5,248.450
+10-Jan-2020 Sys. Investment (41/60) 5,000.00 124.977 40.0075 5,373.427
+10-Feb-2020 Sys. Investment (42/60) 5,000.00 120.743 41.4102 5,494.170
+11-Mar-2020 Sys. Investment (43/60) 5,000.00 138.276 36.1595 5,632.446
+13-Apr-2020 Sys. Investment (44/60) 5,000.00 171.236 29.1994 5,803.682
+11-May-2020 Sys. Investment (45/60) 5,000.00 167.662 29.8219 5,971.344
+10-Jun-2020 Sys. Investment (46/60) 5,000.00 150.958 33.1219 6,122.302
+10-Jul-2020 Sys. Investment (47/60) 4,999.75 140.789 35.5123 6,263.091
+10-Jul-2020 *** Stamp Duty *** 0.25
+10-Aug-2020 Sys. Investment (48/60) 4,999.75 129.538 38.5967 6,392.629
+10-Aug-2020 *** Stamp Duty *** 0.25
+10-Sep-2020 Sys. Investment (49/60) 4,999.75 122.289 40.8846 6,514.918
+10-Sep-2020 *** Stamp Duty *** 0.25
+12-Oct-2020 Sys. Investment (50/60) 4,999.75 121.423 41.1764 6,636.341
+Page 13 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+12-Oct-2020 *** Stamp Duty *** 0.25
+10-Nov-2020 Sys. Investment (51/60) 4,999.75 117.597 42.5159 6,753.938
+10-Nov-2020 *** Stamp Duty *** 0.25
+10-Dec-2020 Sys. Investment (52/60) 4,999.75 104.059 48.0472 6,857.997
+10-Dec-2020 *** Stamp Duty *** 0.25
+11-Jan-2021 Sys. Investment (53/60) 4,999.75 95.738 52.2235 6,953.735
+11-Jan-2021 *** Stamp Duty *** 0.25
+10-Feb-2021 Sys. Investment (54/60) 4,999.75 90.921 54.9903 7,044.656
+10-Feb-2021 *** Stamp Duty *** 0.25
+10-Mar-2021 Sys. Investment (55/60) 4,999.75 83.090 60.1726 7,127.746
+10-Mar-2021 *** Stamp Duty *** 0.25
+13-Apr-2021 Sys. Investment (56/60) 4,999.75 84.470 59.1898 7,212.216
+13-Apr-2021 *** Stamp Duty *** 0.25
+10-May-2021 Sys. Investment (57/60) 4,999.75 78.216 63.9220 7,290.432
+10-May-2021 *** Stamp Duty *** 0.25
+10-Jun-2021 Sys. Investment (58/60) 4,999.75 70.821 70.5967 7,361.253
+10-Jun-2021 *** Stamp Duty *** 0.25
+12-Jul-2021 Sys. Investment (59/60) 4,999.75 67.208 74.3919 7,428.461
+12-Jul-2021 *** Stamp Duty *** 0.25
+10-Aug-2021 Sys. Investment (60/60) 4,999.75 66.276 75.4379 7,494.737
+10-Aug-2021 *** Stamp Duty *** 0.25
+21-Sep-2021 Sys. Investment (1/14) 4,999.75 62.486 80.0135 7,557.223
+21-Sep-2021 *** Stamp Duty *** 0.25
+11-Oct-2021 Sys. Investment (2/14) 4,999.75 58.938 84.8301 7,616.161
+11-Oct-2021 *** Stamp Duty *** 0.25
+10-Nov-2021 Sys. Investment (3/14) 4,999.75 58.745 85.1099 7,674.906
+10-Nov-2021 *** Stamp Duty *** 0.25
+10-Dec-2021 Sys. Investment (4/14) 4,999.75 58.785 85.0515 7,733.691
+10-Dec-2021 *** Stamp Duty *** 0.25
+10-Jan-2022 Sys. Investment (5/14) 4,999.75 55.256 90.4834 7,788.947
+10-Jan-2022 *** Stamp Duty *** 0.25
+10-Feb-2022 Sys. Investment (6/14) 4,999.75 57.855 86.4184 7,846.802
+10-Feb-2022 *** Stamp Duty *** 0.25
+10-Mar-2022 Sys. Investment (7/14) 4,999.75 62.064 80.5579 7,908.866
+10-Mar-2022 *** Stamp Duty *** 0.25
+11-Apr-2022 Sys. Investment (8/14) 4,999.75 55.891 89.4550 7,964.757
+11-Apr-2022 *** Stamp Duty *** 0.25
+10-May-2022 Sys. Investment (9/14) 4,999.75 63.157 79.1636 8,027.914
+10-May-2022 *** Stamp Duty *** 0.25
+10-Jun-2022 Sys. Investment (10/14) 4,999.75 63.185 79.1293 8,091.099
+10-Jun-2022 *** Stamp Duty *** 0.25
+11-Jul-2022 Sys. Investment (11/14) 4,999.75 61.526 81.2623 8,152.625
+11-Jul-2022 *** Stamp Duty *** 0.25
+10-Aug-2022 Sys. Investment (12/14) 4,999.75 57.815 86.4778 8,210.440
+10-Aug-2022 *** Stamp Duty *** 0.25
+12-Sep-2022 Sys. Investment (13/14) 4,999.75 53.268 93.8603 8,263.708
+12-Sep-2022 *** Stamp Duty *** 0.25
+10-Oct-2022 Sys. Investment (14/14) 4,999.75 54.186 92.2698 8,317.894
+10-Oct-2022 *** Stamp Duty *** 0.25
+17-Oct-2022 Sys. Investment (1/49) 4,999.75 55.051 90.8197 8,372.945
+17-Oct-2022 *** Stamp Duty *** 0.25
+10-Nov-2022 Sys. Investment (2/49) 4,999.75 54.591 91.5857 8,427.536
+10-Nov-2022 *** Stamp Duty *** 0.25
+12-Dec-2022 Sys. Investment (3/49) 4,999.75 52.402 95.4121 8,479.938
+12-Dec-2022 *** Stamp Duty *** 0.25
+10-Jan-2023 Sys. Investment (4/49) 4,999.75 53.942 92.6868 8,533.880
+10-Jan-2023 *** Stamp Duty *** 0.25
+10-Feb-2023 Sys. Investment (5/49) 4,999.75 54.069 92.4691 8,587.949
+10-Feb-2023 *** Stamp Duty *** 0.25
+10-Mar-2023 Sys. Investment (6/49) 4,999.75 53.871 92.8092 8,641.820
+10-Mar-2023 *** Stamp Duty *** 0.25
+10-Apr-2023 Sys. Investment (7/49) 4,999.75 53.975 92.6305 8,695.795
+10-Apr-2023 *** Stamp Duty *** 0.25
+10-May-2023 Sys. Investment (8/49) 4,999.75 50.988 98.0576 8,746.783
+10-May-2023 *** Stamp Duty *** 0.25
+12-Jun-2023 Sys. Investment (9/49) 4,999.75 47.353 105.5836 8,794.136
+12-Jun-2023 *** Stamp Duty *** 0.25
+10-Jul-2023 Sys. Investment (10/49) 4,999.75 45.364 110.2143 8,839.500
+10-Jul-2023 *** Stamp Duty *** 0.25
+Page 14 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+10-Aug-2023 Sys. Investment (11/49) 4,999.75 42.830 116.7359 8,882.330
+10-Aug-2023 *** Stamp Duty *** 0.25
+12-Sep-2023 Sys. Investment (12/49) 4,999.75 40.951 122.0915 8,923.281
+12-Sep-2023 *** Stamp Duty *** 0.25
+10-Oct-2023 Sys. Investment (13/49) 4,999.75 40.659 122.9669 8,963.940
+10-Oct-2023 *** Stamp Duty *** 0.25
+10-Nov-2023 Sys. Investment (14/49) 4,999.75 40.116 124.6314 9,004.056
+10-Nov-2023 *** Stamp Duty *** 0.25
+11-Dec-2023 Sys. Investment (15/49) 4,999.75 37.216 134.3457 9,041.272
+11-Dec-2023 *** Stamp Duty *** 0.25
+10-Jan-2024 Sys. Investment (16/49) 4,999.75 35.719 139.9727 9,076.991
+10-Jan-2024 *** Stamp Duty *** 0.25
+12-Feb-2024 Sys. Investment (17/49) 4,999.75 35.694 140.0706 9,112.685
+12-Feb-2024 *** Stamp Duty *** 0.25
+11-Mar-2024 Sys. Investment (18/49) 4,999.75 35.570 140.5597 9,148.255
+11-Mar-2024 *** Stamp Duty *** 0.25
+10-Apr-2024 Sys. Investment (19/49) 4,999.75 33.798 147.9301 9,182.053
+10-Apr-2024 *** Stamp Duty *** 0.25
+10-May-2024 Sys. Investment (20/49) 4,999.75 33.458 149.4332 9,215.511
+10-May-2024 *** Stamp Duty *** 0.25
+10-Jun-2024 Sys. Investment (21/49) 4,999.75 30.860 162.0128 9,246.371
+10-Jun-2024 *** Stamp Duty *** 0.25
+10-Jul-2024 Sys. Investment (22/49) 4,999.75 28.560 175.0638 9,274.931
+10-Jul-2024 *** Stamp Duty *** 0.25
+12-Aug-2024 Sys. Investment (23/49) 4,999.75 28.693 174.2527 9,303.624
+12-Aug-2024 *** Stamp Duty *** 0.25
+10-Sep-2024 Sys. Investment (24/49) 4,999.75 27.692 180.5478 9,331.316
+10-Sep-2024 *** Stamp Duty *** 0.25
+10-Oct-2024 Sys. Investment (25/49) 4,999.75 27.704 180.4680 9,359.020
+10-Oct-2024 *** Stamp Duty *** 0.25
+11-Nov-2024 Sys. Investment (26/49) 4,999.75 28.710 174.1453 9,387.730
+11-Nov-2024 *** Stamp Duty *** 0.25
+10-Dec-2024 Sys. Investment (27/49) 4,999.75 27.445 182.1737 9,415.175
+10-Dec-2024 *** Stamp Duty *** 0.25
+10-Jan-2025 Sys. Investment (28/49) 4,999.75 29.987 166.7280 9,445.162
+10-Jan-2025 *** Stamp Duty *** 0.25
+10-Feb-2025 Sys. Investment (29/49) 4,999.75 32.237 155.0927 9,477.399
+10-Feb-2025 *** Stamp Duty *** 0.25
+10-Mar-2025 Sys. Investment (30/49) 4,999.75 34.742 143.9097 9,512.141
+10-Mar-2025 *** Stamp Duty *** 0.25
+11-Apr-2025 Sys. Investment (31/49) 4,999.75 33.747 148.1561 9,545.888
+11-Apr-2025 *** Stamp Duty *** 0.25
+Closing Unit Balance: 9,545.888 NAV on 09-May-2025: INR 151.8315 Total Cost Value: 525,000.00 Market Value on 09-May-2025: INR 1,449,366.49
+For subscriptions received w.e.f. Mar 22nd, 2024, 1% exit load shall be applicable for units redeemed on or before completion of one year from the date of allotment
+of units.And Nil thereafter. Redemption of units would be done on First in First out Basis (FIFO).For subscriptions prior to Mar 21st, 2024, Exit load levied on the Units
+redeemed will be the rate prevailing at the time of the allotment of the Units.For Special products registrations, load for each transaction is based on the load
+structure applicable as on the registration date.
+Folio No: 245594189911 / 0 PAN: fIepe7881P KYC: OK  PAN: OK
+IzUpVHg Stoub mVShS
+RMFPHGPG-NIPPON INDIA PHARMA FUND - GROWTH PLAN - ISIN: INF204K01968(Advisor: ARN-65277) Registrar :
+KFINTECH
+ Nominee 1:  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+16-Dec-2011 Purchase 1,000.00 19.530 51.2030 19.530
+18-Jan-2012 Sys. Investment (1/228) 1,000.00 18.666 53.5730 38.196
+21-Feb-2012 Sys. Investment (2/228) 1,000.00 18.052 55.3945 56.248
+19-Mar-2012 Sys. Investment (3/228) 1,000.00 18.627 53.6852 74.875
+18-Apr-2012 Sys. Investment (4/228) 1,000.00 16.824 59.4388 91.699
+18-May-2012 Sys. Investment (5/228) 1,000.00 17.721 56.4300 109.420
+18-Jun-2012 Sys. Investment (6/228) 1,000.00 18.037 55.4401 127.457
+18-Jul-2012 Sys. Investment (7/228) 1,000.00 16.607 60.2160 144.064
+21-Aug-2012 Sys. Investment (8/228) 1,000.00 15.974 62.6023 160.038
+18-Sep-2012 Sys. Investment (9/228) 1,000.00 15.622 64.0117 175.660
+18-Oct-2012 Sys. Investment (10/228) 1,000.00 15.193 65.8189 190.853
+19-Nov-2012 Sys. Investment (11/228) 1,000.00 15.335 65.2091 206.188
+18-Dec-2012 Sys. Investment (12/228) 1,000.00 14.552 68.7173 220.740
+18-Jan-2013 Sys. Investment (13/228) 1,000.00 14.652 68.2489 235.392
+18-Feb-2013 Sys. Investment (14/228) 1,000.00 15.388 64.9872 250.780
+Page 15 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+18-Mar-2013 Sys. Investment (15/228) 1,000.00 15.131 66.0910 265.911
+18-Apr-2013 Sys. Investment (16/228) 1,000.00 14.645 68.2808 280.556
+20-May-2013 Sys. Investment (17/228) 1,000.00 13.831 72.3007 294.387
+18-Jun-2013 Sys. Investment (18/228) 1,000.00 14.177 70.5358 308.564
+18-Jul-2013 Sys. Investment (19/228) 1,000.00 13.532 73.8970 322.096
+19-Aug-2013 Sys. Investment (20/228) 1,000.00 14.409 69.4015 336.505
+18-Sep-2013 Sys. Investment (21/228) 1,000.00 13.988 71.4898 350.493
+18-Oct-2013 Sys. Investment (22/228) 1,000.00 13.419 74.5217 363.912
+18-Nov-2013 Sys. Investment (23/228) 1,000.00 12.869 77.7048 376.781
+18-Dec-2013 Sys. Investment (24/228) 1,000.00 12.328 81.1142 389.109
+20-Jan-2014 Sys. Investment (25/228) 1,000.00 11.763 85.0139 400.872
+18-Feb-2014 Sys. Investment (26/228) 1,000.00 11.794 84.7872 412.666
+18-Mar-2014 Sys. Investment (27/228) 1,000.00 11.583 86.3327 424.249
+21-Apr-2014 Sys. Investment (28/228) 1,000.00 11.295 88.5313 435.544
+19-May-2014 Sys. Investment (29/228) 1,000.00 11.904 84.0047 447.448
+18-Jun-2014 Sys. Investment (30/228) 1,000.00 10.969 91.1654 458.417
+18-Jul-2014 Sys. Investment (31/228) 1,000.00 10.262 97.4452 468.679
+18-Aug-2014 Sys. Investment (32/228) 1,000.00 9.591 104.2682 478.270
+18-Sep-2014 Sys. Investment (33/228) 1,000.00 8.454 118.2922 486.724
+20-Oct-2014 Sys. Investment (34/228) 1,000.00 8.512 117.4871 495.236
+18-Nov-2014 Sys. Investment (35/228) 1,000.00 8.128 123.0324 503.364
+18-Dec-2014 Sys. Investment (36/228) 1,000.00 8.256 121.1282 511.620
+19-Jan-2015 Sys. Investment (37/228) 1,000.00 7.799 128.2172 519.419
+18-Feb-2015 Sys. Investment (38/228) 1,000.00 7.649 130.7290 527.068
+18-Mar-2015 Sys. Investment (39/228) 1,000.00 7.302 136.9478 534.370
+20-Apr-2015 Sys. Investment (40/228) 1,000.00 7.397 135.1853 541.767
+18-May-2015 Sys. Investment (41/228) 1,000.00 7.512 133.1158 549.279
+18-Jun-2015 Sys. Investment (42/228) 1,000.00 7.630 131.0599 556.909
+20-Jul-2015 Sys. Investment (43/228) 1,000.00 6.982 143.2297 563.891
+18-Aug-2015 Sys. Investment (44/228) 1,000.00 6.670 149.9142 570.561
+18-Sep-2015 Sys. Investment (45/228) 1,000.00 6.603 151.4517 577.164
+19-Oct-2015 Sys. Investment (46/228) 1,000.00 6.399 156.2681 583.563
+18-Nov-2015 Sys. Investment (47/228) 1,000.00 6.845 146.0909 590.408
+18-Dec-2015 Sys. Investment (48/228) 1,000.00 6.795 147.1650 597.203
+18-Jan-2016 Sys. Investment (49/228) 1,000.00 7.342 136.2103 604.545
+18-Feb-2016 Sys. Investment (50/228) 1,000.00 7.446 134.2948 611.991
+18-Mar-2016 Sys. Investment (51/228) 1,000.00 7.542 132.5924 619.533
+18-Apr-2016 Sys. Investment (52/228) 1,000.00 7.420 134.7645 626.953
+18-May-2016 Sys. Investment (53/228) 1,000.00 7.490 133.5167 634.443
+20-Jun-2016 Sys. Investment (54/228) 1,000.00 7.687 130.0956 642.130
+18-Jul-2016 Sys. Investment (55/228) 1,000.00 7.292 137.1389 649.422
+18-Aug-2016 Sys. Investment (56/228) 1,000.00 7.117 140.5117 656.539
+19-Sep-2016 Sys. Investment (57/228) 1,000.00 6.827 146.4864 663.366
+18-Oct-2016 Sys. Investment (58/228) 1,000.00 6.844 146.1157 670.210
+18-Nov-2016 Sys. Investment (59/228) 1,000.00 7.209 138.7095 677.419
+19-Dec-2016 Sys. Investment (60/228) 1,000.00 7.213 138.6473 684.632
+18-Jan-2017 Sys. Investment (61/228) 1,000.00 7.500 133.3362 692.132
+20-Feb-2017 Sys. Investment (62/228) 1,000.00 7.330 136.4317 699.462
+20-Mar-2017 Sys. Investment (63/228) 1,000.00 7.245 138.0284 706.707
+18-Apr-2017 Sys. Investment (64/228) 1,000.00 7.428 134.6180 714.135
+18-May-2017 Sys. Investment (65/228) 1,000.00 7.763 128.8206 721.898
+19-Jun-2017 Sys. Investment (66/228) 1,000.00 7.846 127.4602 729.744
+18-Jul-2017 Sys. Investment (67/228) 1,000.00 7.464 133.9829 737.208
+18-Aug-2017 Sys. Investment (68/228) 1,000.00 8.249 121.2286 745.457
+18-Sep-2017 Sys. Investment (69/228) 1,000.00 7.781 128.5166 753.238
+18-Oct-2017 Sys. Investment (70/228) 1,000.00 7.509 133.1726 760.747
+20-Nov-2017 Sys. Investment (71/228) 1,000.00 7.398 135.1717 768.145
+18-Dec-2017 Sys. Investment (72/228) 1,000.00 7.162 139.6319 775.307
+18-Jan-2018 Sys. Investment (73/228) 1,000.00 6.977 143.3347 782.284
+19-Feb-2018 Sys. Investment (74/228) 1,000.00 7.174 139.3865 789.458
+19-Mar-2018 Sys. Investment (75/228) 1,000.00 7.409 134.9776 796.867
+18-Apr-2018 Sys. Investment (76/228) 1,000.00 7.111 140.6344 803.978
+18-May-2018 Sys. Investment (77/228) 1,000.00 7.325 136.5132 811.303
+18-Jun-2018 Sys. Investment (78/228) 1,000.00 6.897 144.9973 818.200
+18-Jul-2018 Sys. Investment (79/228) 1,000.00 7.107 140.6967 825.307
+20-Aug-2018 Sys. Investment (80/228) 1,000.00 6.445 155.1481 831.752
+18-Sep-2018 Sys. Investment (81/228) 1,000.00 6.099 163.9517 837.851
+19-Oct-2018 Sys. Investment (82/228) 1,000.00 6.509 153.6381 844.360
+19-Nov-2018 Sys. Investment (83/228) 1,000.00 6.501 153.8266 850.861
+Page 16 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+18-Dec-2018 Sys. Investment (84/228) 1,000.00 6.677 149.7752 857.538
+18-Jan-2019 Sys. Investment (85/228) 1,000.00 6.675 149.8034 864.213
+18-Feb-2019 Sys. Investment (86/228) 1,000.00 6.829 146.4319 871.042
+18-Mar-2019 Sys. Investment (87/228) 1,000.00 6.657 150.2112 877.699
+18-Apr-2019 Sys. Investment (88/228) 1,000.00 6.525 153.2468 884.224
+20-May-2019 Sys. Investment (89/228) 1,000.00 7.050 141.8410 891.274
+18-Jun-2019 Sys. Investment (90/228) 1,000.00 7.196 138.9581 898.470
+18-Jul-2019 Sys. Investment (91/228) 1,000.00 7.028 142.2914 905.498
+19-Aug-2019 Sys. Investment (92/228) 1,000.00 7.228 138.3455 912.726
+18-Sep-2019 Sys. Investment (93/228) 1,000.00 7.065 141.5449 919.791
+18-Oct-2019 Sys. Investment (94/228) 1,000.00 7.016 142.5366 926.807
+18-Nov-2019 Sys. Investment (95/228) 1,000.00 6.752 148.0958 933.559
+18-Dec-2019 Sys. Investment (96/228) 1,000.00 6.599 151.5315 940.158
+20-Jan-2020 Sys. Investment (97/228) 1,000.00 6.398 156.3028 946.556
+18-Feb-2020 Sys. Investment (98/228) 1,000.00 6.167 162.1561 952.723
+18-Mar-2020 Sys. Investment (99/228) 1,000.00 7.360 135.8677 960.083
+20-Apr-2020 Sys. Investment (100/228) 1,000.00 5.653 176.9000 965.736
+18-May-2020 Sys. Investment (101/228) 1,000.00 5.655 176.8453 971.391
+18-Jun-2020 Sys. Investment (102/228) 1,000.00 5.266 189.8998 976.657
+20-Jul-2020 Sys. Investment (103/228) 999.95 5.093 196.3395 981.750
+20-Jul-2020 *** Stamp Duty *** 0.05
+18-Aug-2020 Sys. Investment (104/228) 999.95 4.497 222.3821 986.247
+18-Aug-2020 *** Stamp Duty *** 0.05
+18-Sep-2020 Sys. Investment (105/228) 999.95 4.280 233.6170 990.527
+18-Sep-2020 *** Stamp Duty *** 0.05
+19-Oct-2020 Sys. Investment (106/228) 999.95 4.402 227.1690 994.929
+19-Oct-2020 *** Stamp Duty *** 0.05
+18-Nov-2020 Sys. Investment (107/228) 999.95 4.406 226.9500 999.335
+18-Nov-2020 *** Stamp Duty *** 0.05
+18-Dec-2020 Sys. Investment (108/228) 999.95 4.006 249.6237 1,003.341
+18-Dec-2020 *** Stamp Duty *** 0.05
+18-Jan-2021 Sys. Investment (109/228) 999.95 3.965 252.1692 1,007.306
+18-Jan-2021 *** Stamp Duty *** 0.05
+18-Feb-2021 Sys. Investment (110/228) 999.95 3.963 252.3090 1,011.269
+18-Feb-2021 *** Stamp Duty *** 0.05
+18-Mar-2021 Sys. Investment (111/228) 999.95 4.204 237.8803 1,015.473
+18-Mar-2021 *** Stamp Duty *** 0.05
+19-Apr-2021 Sys. Investment (112/228) 999.95 3.696 270.5168 1,019.169
+19-Apr-2021 *** Stamp Duty *** 0.05
+18-May-2021 Sys. Investment (113/228) 999.95 3.488 286.6465 1,022.657
+18-May-2021 *** Stamp Duty *** 0.05
+18-Jun-2021 Sys. Investment (114/228) 999.95 3.411 293.1491 1,026.068
+18-Jun-2021 *** Stamp Duty *** 0.05
+19-Jul-2021 Sys. Investment (115/228) 999.95 3.196 312.8696 1,029.264
+19-Jul-2021 *** Stamp Duty *** 0.05
+18-Aug-2021 Sys. Investment (116/228) 999.95 3.235 309.0923 1,032.499
+18-Aug-2021 *** Stamp Duty *** 0.05
+20-Sep-2021 Sys. Investment (117/228) 999.95 3.237 308.8921 1,035.736
+20-Sep-2021 *** Stamp Duty *** 0.05
+18-Oct-2021 Sys. Investment (118/228) 999.95 3.224 310.1518 1,038.960
+18-Oct-2021 *** Stamp Duty *** 0.05
+18-Nov-2021 Sys. Investment (119/228) 999.95 3.314 301.7461 1,042.274
+18-Nov-2021 *** Stamp Duty *** 0.05
+20-Dec-2021 Sys. Investment (120/228) 999.95 3.445 290.2990 1,045.719
+20-Dec-2021 *** Stamp Duty *** 0.05
+18-Jan-2022 Sys. Investment (121/228) 999.95 3.334 299.9180 1,049.053
+18-Jan-2022 *** Stamp Duty *** 0.05
+18-Feb-2022 Sys. Investment (122/228) 999.95 3.555 281.2539 1,052.608
+18-Feb-2022 *** Stamp Duty *** 0.05
+21-Mar-2022 Sys. Investment (123/228) 999.95 3.467 288.3966 1,056.075
+21-Mar-2022 *** Stamp Duty *** 0.05
+18-Apr-2022 Sys. Investment (124/228) 999.95 3.414 292.8671 1,059.489
+18-Apr-2022 *** Stamp Duty *** 0.05
+18-May-2022 Sys. Investment (125/228) 999.95 3.676 272.0072 1,063.165
+18-May-2022 *** Stamp Duty *** 0.05
+20-Jun-2022 Sys. Investment (126/228) 999.95 3.922 254.9516 1,067.087
+20-Jun-2022 *** Stamp Duty *** 0.05
+18-Jul-2022 Sys. Investment (127/228) 999.95 3.664 272.9425 1,070.751
+18-Jul-2022 *** Stamp Duty *** 0.05
+Page 17 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+18-Aug-2022 Sys. Investment (128/228) 999.95 3.570 280.0869 1,074.321
+18-Aug-2022 *** Stamp Duty *** 0.05
+19-Sep-2022 Sys. Investment (129/228) 999.95 3.665 272.8657 1,077.986
+19-Sep-2022 *** Stamp Duty *** 0.05
+18-Oct-2022 Sys. Investment (130/228) 999.95 3.534 282.9447 1,081.520
+18-Oct-2022 *** Stamp Duty *** 0.05
+18-Nov-2022 Sys. Investment (131/228) 999.95 3.506 285.2341 1,085.026
+18-Nov-2022 *** Stamp Duty *** 0.05
+19-Dec-2022 Sys. Investment (132/228) 999.95 3.527 283.5412 1,088.553
+19-Dec-2022 *** Stamp Duty *** 0.05
+18-Jan-2023 Sys. Investment (133/228) 999.95 3.528 283.4675 1,092.081
+18-Jan-2023 *** Stamp Duty *** 0.05
+20-Feb-2023 Sys. Investment (134/228) 999.95 3.680 271.7455 1,095.761
+20-Feb-2023 *** Stamp Duty *** 0.05
+20-Mar-2023 Sys. Investment (135/228) 999.95 3.754 266.3724 1,099.515
+20-Mar-2023 *** Stamp Duty *** 0.05
+18-Apr-2023 Sys. Investment (136/228) 999.95 3.548 281.8310 1,103.063
+18-Apr-2023 *** Stamp Duty *** 0.05
+18-May-2023 Sys. Investment (137/228) 999.95 3.562 280.7479 1,106.625
+18-May-2023 *** Stamp Duty *** 0.05
+19-Jun-2023 Sys. Investment (138/228) 999.95 3.257 307.0337 1,109.882
+19-Jun-2023 *** Stamp Duty *** 0.05
+18-Jul-2023 Sys. Investment (139/228) 999.95 3.066 326.1173 1,112.948
+18-Jul-2023 *** Stamp Duty *** 0.05
+21-Aug-2023 Sys. Investment (140/228) 999.95 2.865 349.0622 1,115.813
+21-Aug-2023 *** Stamp Duty *** 0.05
+18-Sep-2023 Sys. Investment (141/228) 999.95 2.837 352.4800 1,118.650
+18-Sep-2023 *** Stamp Duty *** 0.05
+18-Oct-2023 Sys. Investment (142/228) 999.95 2.845 351.4234 1,121.495
+18-Oct-2023 *** Stamp Duty *** 0.05
+20-Nov-2023 Sys. Investment (143/228) 999.95 2.704 369.8413 1,124.199
+20-Nov-2023 *** Stamp Duty *** 0.05
+18-Dec-2023 Sys. Investment (144/228) 999.95 2.636 379.3486 1,126.835
+18-Dec-2023 *** Stamp Duty *** 0.05
+18-Jan-2024 Sys. Investment (145/228) 999.95 2.467 405.3090 1,129.302
+18-Jan-2024 *** Stamp Duty *** 0.05
+19-Feb-2024 Sys. Investment (146/228) 999.95 2.293 436.0868 1,131.595
+19-Feb-2024 *** Stamp Duty *** 0.05
+18-Mar-2024 Sys. Investment (147/228) 999.95 2.365 422.8932 1,133.960
+18-Mar-2024 *** Stamp Duty *** 0.05
+18-Apr-2024 Sys. Investment (148/228) 999.95 2.379 420.3767 1,136.339
+18-Apr-2024 *** Stamp Duty *** 0.05
+21-May-2024 Sys. Investment (149/228) 999.95 2.282 438.1300 1,138.621
+21-May-2024 *** Stamp Duty *** 0.05
+18-Jun-2024 Sys. Investment (150/228) 999.95 2.217 451.0453 1,140.838
+18-Jun-2024 *** Stamp Duty *** 0.05
+18-Jul-2024 Sys. Investment (151/228) 999.95 2.147 465.7476 1,142.985
+18-Jul-2024 *** Stamp Duty *** 0.05
+19-Aug-2024 Sys. Investment (152/228) 999.95 2.005 498.7189 1,144.990
+19-Aug-2024 *** Stamp Duty *** 0.05
+18-Sep-2024 Sys. Investment (153/228) 999.95 1.931 517.9685 1,146.921
+18-Sep-2024 *** Stamp Duty *** 0.05
+18-Oct-2024 Sys. Investment (154/228) 999.95 1.912 523.0612 1,148.833
+18-Oct-2024 *** Stamp Duty *** 0.05
+18-Nov-2024 Sys. Investment (155/228) 999.95 2.022 494.6282 1,150.855
+18-Nov-2024 *** Stamp Duty *** 0.05
+18-Dec-2024 Sys. Investment (156/228) 999.95 1.951 512.4279 1,152.806
+18-Dec-2024 *** Stamp Duty *** 0.05
+20-Jan-2025 Sys. Investment (157/228) 999.95 2.001 499.6813 1,154.807
+20-Jan-2025 *** Stamp Duty *** 0.05
+18-Feb-2025 Sys. Investment (158/228) 999.95 2.124 470.7847 1,156.931
+18-Feb-2025 *** Stamp Duty *** 0.05
+18-Mar-2025 Sys. Investment (159/228) 999.95 2.095 477.2813 1,159.026
+18-Mar-2025 *** Stamp Duty *** 0.05
+21-Apr-2025 Sys. Investment (160/228) 999.95 2.030 492.5522 1,161.056
+21-Apr-2025 *** Stamp Duty *** 0.05
+Page 18 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014
+Consolidated Account Statement
+01-Apr-1990 To 10-May-2025
+Date Transaction Amount Units NAV                      Unit
+(INR) (INR) Balance
+Closing Unit Balance: 1,161.056 NAV on 09-May-2025: INR 484.0594 Total Cost Value: 161,000.00 Market Value on 09-May-2025: INR 562,020.07
+For subscriptions received w.e.f. May 21st, 2020, 1% exit load shall be applicable for units redeemed on or before completion of one months from the date of
+allotment of units.And Nil thereafter. Redemption of units would be done on First in First out Basis (FIFO).For subscriptions prior to May 21st, 2020, Exit load levied
+on the Units redeemed will be the rate prevailing at the time of the allotment of the Units.For Special products registrations, load for each transaction is based on
+the load structure applicable as on the registration date.
+Folio No: 194016859231 / 0 PAN: csUyc8769R KYC: OK  PAN: OK
+aIJPaBR JvZcj pIpGU
+RMFAFGPG-NIPPON INDIA ARBITRAGE FUND - GROWTH PLAN - ISIN: INF204K01IY1(Advisor: ARN-08358) Registrar :
+KFINTECH
+ Nominee 1: MkNc ZQnBW jFQrCikdfCU  Nominee 2:  Nominee 3:
+ Opening Unit Balance: 0.000
+16-Sep-2016 Purchase 50,000.00 3,079.273 16.2376 3,079.273
+11-Jan-2024 Redemption less TDS, STT (73,927.06) (3,079.273) 24.0082 0.000
+11-Jan-2024 *** STT Paid *** 0.74
+Closing Unit Balance: 0.000 NAV on 09-May-2025: INR 26.3335 Total Cost Value: 0.00 Market Value on 09-May-2025: INR 0.00
+Entry Load -NIL, Exit Load -For subscriptions received W.e.f. July 01,2016 , 0.25% if redeemed/swtiched on or before completion of 1 months from the date of
+allotment of units.Nil thereafter. For subscriptions prior to July 01st, 2016, Exit load levied on the Units redeemed will be the rate prevailing at the time of the
+allotment of the Units.For Special products registrations, load for each transaction is based on the load structure applicable as on the registration date.
+Page 19 of 19
+CAMSCASWS-1005251848 Version:V3.4 Live-1014

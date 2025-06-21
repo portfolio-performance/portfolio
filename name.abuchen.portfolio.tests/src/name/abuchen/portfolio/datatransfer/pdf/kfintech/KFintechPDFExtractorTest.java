@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -301,6 +302,164 @@ public class KFintechPDFExtractorTest
                         hasNote("Switch In - From SBI Contra Fund- Regular Plan Div"), //
                         hasAmount("INR", 6718.50), hasGrossValue("INR", 6718.50), //
                         hasTaxes("INR", 0), hasFees("INR", 0))));
+    }
+
+    @Test
+    public void testConsolidatedAccountStatement02()
+    {
+        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(11L));
+        assertThat(countBuySell(results), is(476L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(487));
+        new AssertImportActions().check(results, "INR");
+
+        // Mirae Asset Aggressive Hybrid Fund
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF769K01DE6"), //
+                        hasName("Mirae Asset Aggressive Hybrid Fund (formerly Mirae Asset Hybrid-Equity Fund ) - Regular Plan"), //
+                        hasCurrencyCode("INR"))));
+
+        var transactions = results.stream().filter(
+                        item -> item.getSecurity() != null && "INF769K01DE6".equals(item.getSecurity().getIsin()))
+                        .toList();
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-08-23"), hasShares(6967.67), //
+                        hasAmount("INR", 100000), hasGrossValue("INR", 100000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-08-29"), hasShares(415.139), //
+                        hasAmount("INR", 6000), hasGrossValue("INR", 6000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-10-24"), hasShares(453.378), //
+                        hasAmount("INR", 6000), hasGrossValue("INR", 6000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        // NIPPON INDIA RETIREMENT FUND
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF204KA1B64"), //
+                        hasName("NIPPON INDIA RETIREMENT FUND - WEALTH CREATION SCHEME - GROWTH PLAN"), //
+                        hasCurrencyCode("INR"))));
+
+        transactions = results.stream().filter(
+                        item -> item.getSecurity() != null && "INF204KA1B64".equals(item.getSecurity().getIsin()))
+                        .toList();
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2016-06-23"), hasShares(2504.659), //
+                        hasAmount("INR", 25000), hasGrossValue("INR", 25000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+    }
+
+    @Test
+    public void testConsolidatedAccountStatement03()
+    {
+        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(10L));
+        assertThat(countBuySell(results), is(764L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(774));
+        new AssertImportActions().check(results, "INR");
+
+        // testing the three cases mentioned here:
+        // https://forum.portfolio-performance.info/t/import-pdf-kfintech-india/32633/12
+
+        // A. Scheme Name : Mirae Large and Midcap Fund
+        // ISIN : INF769K01101
+        // Line No at which Scheme Appears : 498
+        // Transactions failed to be imported between Line Numbers : 502 to 626
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF769K01101"), //
+                        hasName("Mirae Asset Large and Midcap Fund (formerly Mirae Asset Emerging Bluechip Fund) - Regular Plan"), //
+                        hasCurrencyCode("INR"))));
+
+        var transactions = results.stream() //
+                        .filter(item -> item.getSecurity() != null
+                                        && "INF769K01101".equals(item.getSecurity().getIsin()))
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .toList();
+
+        assertThat(transactions.size(), is(54));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2020-11-25"), hasShares(99.365), //
+                        hasAmount("INR", 6500.00), hasGrossValue("INR", 6499.68), //
+                        hasTaxes("INR", 0.32), hasFees("INR", 0))));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2020-12-28"), hasShares(92.792), //
+                        hasAmount("INR", 6500.00), hasGrossValue("INR", 6499.68), //
+                        hasTaxes("INR", 0.32), hasFees("INR", 0))));
+
+        // B. Scheme Name : Nippon India Multicap
+        // ISIN : INF204K01489
+        // Line no at which scheme appears : 645
+        // Transaction imported only at : Line No 649
+        // Transaction did not import : from Line no 650 to 893 (purchase)
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF204K01489"), //
+                        hasName("NIPPON INDIA MULTI CAP FUND - GROWTH PLAN GROWTH OPTION"), //
+                        hasCurrencyCode("INR"))));
+
+        transactions = results.stream() //
+                        .filter(item -> item.getSecurity() != null
+                                        && "INF204K01489".equals(item.getSecurity().getIsin()))
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .toList();
+
+        assertThat(transactions.size(), is(161));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2012-02-02"), hasShares(28.883), //
+                        hasAmount("INR", 1000.00), hasGrossValue("INR", 1000.00), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        // C. Scheme Name : Nippon India Pharma
+        // ISIN : INF204KO1968
+        // Scheme appears at : Line 1087
+        // Transaction Imported : only Line 1091
+        // Transaction missed to be imported : from Line 1092 to 1334 (purchase)
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF204K01968"), //
+                        hasName("NIPPON INDIA PHARMA FUND - GROWTH PLAN"), //
+                        hasCurrencyCode("INR"))));
+
+        transactions = results.stream() //
+                        .filter(item -> item.getSecurity() != null
+                                        && "INF204K01968".equals(item.getSecurity().getIsin()))
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .toList();
+
+        assertThat(transactions.size(), is(161));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2025-04-21"), hasShares(2.030), //
+                        hasAmount("INR", 1000.00), hasGrossValue("INR", 999.95), //
+                        hasTaxes("INR", 0.05), hasFees("INR", 0))));
     }
 
 }
