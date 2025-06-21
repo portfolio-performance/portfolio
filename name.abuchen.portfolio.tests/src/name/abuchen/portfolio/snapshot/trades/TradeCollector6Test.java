@@ -51,8 +51,10 @@ public class TradeCollector6Test
         assertThat(firstTrade.getProfitLossMovingAverage(), is(firstTrade.getProfitLoss()));
 
         // 200*15-520-10-10-1000 = 1500
-        assertThat(firstTrade.getGrossProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
-        assertThat(firstTrade.getGrossProfitLossMovingAverage(), is(firstTrade.getGrossProfitLoss()));
+        assertThat(firstTrade.getProfitLossWithoutTaxesAndFees(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
+        assertThat(firstTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
+                        is(firstTrade.getProfitLossWithoutTaxesAndFees()));
     }
 
     @Test
@@ -89,9 +91,10 @@ public class TradeCollector6Test
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(466.67))));
 
         // 1480+10+10 - (520-10-10 + 1000*5/10) = 500
-        assertThat(firstTrade.getGrossProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(firstTrade.getProfitLossWithoutTaxesAndFees(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         // 1480+10+10 - (520-10-10 + 1000)*10/15 = 500
-        assertThat(firstTrade.getGrossProfitLossMovingAverage(),
+        assertThat(firstTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
 
         // return : 1480/(520 + 1000*5/10)-1=0.45098
@@ -108,9 +111,10 @@ public class TradeCollector6Test
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(493.33))));
 
         // 200*5 - (500*5/10) = 500
-        assertThat(secondTrade.getGrossProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
+        assertThat(secondTrade.getProfitLossWithoutTaxesAndFees(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
         // 200*5 - (520-10-10 + 1000)*5/15 = 500
-        assertThat(secondTrade.getGrossProfitLossMovingAverage(),
+        assertThat(secondTrade.getProfitLossMovingAverageWithoutTaxesAndFees(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(500.00))));
 
         // return : 200*5 / (1000*5/10)-1 = 1

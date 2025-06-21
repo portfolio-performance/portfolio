@@ -342,7 +342,7 @@ public class PaymentsViewModel
                     continue;
 
                 long value = 0;
-                value = trade.getGrossProfitLoss().getAmount();
+                value = trade.getProfitLossWithoutTaxesAndFees().getAmount();
 
                 if (value != 0)
                 {
