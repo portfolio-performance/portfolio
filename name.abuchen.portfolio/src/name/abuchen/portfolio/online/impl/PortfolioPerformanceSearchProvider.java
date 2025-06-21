@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecurityType;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
@@ -50,7 +51,7 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
             answer.isin = (String) json.get("isin"); //$NON-NLS-1$
             answer.type = (String) json.get("type"); //$NON-NLS-1$
 
-            answer.type = SecuritySearchProvider.convertType(answer.type);
+            answer.type = SecurityType.convertType(answer.type);
 
             var markets = (JSONArray) json.get("markets"); //$NON-NLS-1$
 

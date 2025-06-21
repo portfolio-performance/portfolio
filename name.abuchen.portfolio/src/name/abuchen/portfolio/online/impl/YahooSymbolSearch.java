@@ -14,8 +14,8 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.SecurityType;
 import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -49,7 +49,7 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
             // Convert the security type using the SecuritySearchProvider
             // instance
-            type = SecuritySearchProvider.convertType(type);
+            type = SecurityType.convertType(type);
 
             var exchange = (String) json.get("exchDisp"); //$NON-NLS-1$
             if (exchange == null)

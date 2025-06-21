@@ -11,6 +11,7 @@ import org.json.simple.JSONValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecurityType;
 import name.abuchen.portfolio.util.WebAccess;
 
 /**
@@ -60,7 +61,7 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
 
             // Convert the security type using the SecuritySearchProvider
             // instance
-            type = SecuritySearchProvider.convertType(type);
+            type = SecurityType.convertType(type);
 
             // Combine the symbol and exchange codes to create the security ID
             var symbol = new StringBuilder(tickerSymbol);
