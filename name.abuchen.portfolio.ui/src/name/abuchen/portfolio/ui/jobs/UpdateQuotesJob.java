@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -55,33 +55,45 @@ public final class UpdateQuotesJob extends AbstractClientJob
     }
 
     /**
-     * Keeps dirty state of parallel jobs and marks the client file dirty after
-     * 20 dirty result. Background: marking the client dirty after every job
-     * sends too many update events to the GUI.
+     * Throttles the dirty notification to the user interface. Background:
+     * marking the client dirty after every job sends too many update events to
+     * the user interface.
      */
     private static class Dirtyable
     {
-        private static final int THRESHOLD = 20;
+        private static final long TIME_THRESHOLD_MS = 250;
 
         private final Client client;
-        private AtomicInteger counter;
+        private final AtomicBoolean dirtyState = new AtomicBoolean(false);
+        private long lastUpdate = System.currentTimeMillis();
 
         public Dirtyable(Client client)
         {
             this.client = client;
-            this.counter = new AtomicInteger();
         }
 
-        public void markDirty()
+        public synchronized void markDirty()
         {
-            int count = counter.incrementAndGet();
-            if (count % THRESHOLD == 0)
+            long now = System.currentTimeMillis();
+            if (now - lastUpdate >= TIME_THRESHOLD_MS)
+            {
                 client.markDirty();
+                dirtyState.set(false);
+                lastUpdate = now;
+            }
+            else
+            {
+                dirtyState.set(true);
+            }
         }
 
-        public boolean isDirty()
+        public synchronized void flushIfDue()
         {
-            return counter.get() % THRESHOLD != 0;
+            if (dirtyState.get())
+            {
+                client.markDirty();
+                dirtyState.set(false);
+            }
         }
     }
 
@@ -248,8 +260,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         if (!jobs.isEmpty())
             runJobs(monitor, jobs);
 
-        if (!monitor.isCanceled() && dirtyable.isDirty())
-            getClient().markDirty();
+        dirtyable.flushIfDue();
 
         if (repeatPeriod > 0)
             schedule(repeatPeriod);
