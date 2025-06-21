@@ -212,6 +212,8 @@ public interface UIConstants
 
         String COINGECKO_API_KEY = "COINGECKO_API_KEY"; //$NON-NLS-1$
 
+        String COINGECKO_DEMO_API_KEY = "COINGECKO_DEMO_API_KEY"; //$NON-NLS-1$
+
         @Deprecated(since = "2025-05-09")
         String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$ //NOSONAR
         @Deprecated(since = "2025-05-09")

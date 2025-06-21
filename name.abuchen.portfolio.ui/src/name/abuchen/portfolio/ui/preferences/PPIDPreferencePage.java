@@ -7,9 +7,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -26,7 +23,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.OAuthHelper;
-import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
 public class PPIDPreferencePage extends PreferencePage
 {
@@ -55,38 +51,8 @@ public class PPIDPreferencePage extends PreferencePage
         var area = new Composite(parent, SWT.NONE);
         GridLayoutFactory.swtDefaults().numColumns(2).spacing(5, 10).applyTo(area);
 
-        // If we use #setDescription on the PreferencePage, the layout is broken
-        // (increases the height of the page unnecessarily). Therefore we add
-        // the description as a separate label.
-        var description = new StyledLabel(area, SWT.WRAP);
-        GridDataFactory.swtDefaults().span(2, 1)
-                        .hint(Math.max(200, parent.getParent().getClientArea().width - 20), SWT.DEFAULT)
-                        .applyTo(description);
-        description.setText(Messages.PrefDescriptionPortfolioPerformanceID);
-
-        // attach a resize listener to the scrolled composite up in the Control
-        // hierarchy to trigger the layout of the description label
-        var control = parent;
-        while (control != null)
-        {
-            if (control instanceof ScrolledComposite scrolled)
-            {
-                scrolled.addControlListener(new ControlAdapter()
-                {
-                    @Override
-                    public void controlResized(ControlEvent e)
-                    {
-                        GridDataFactory.swtDefaults().span(2, 1)
-                                        .hint(Math.max(200, scrolled.getClientArea().width - 20), SWT.DEFAULT)
-                                        .applyTo(description);
-                        description.getParent().layout();
-                    }
-                });
-                break;
-            }
-            control = control.getParent();
-        }
-
+        new DescriptionFieldEditor(Messages.PrefDescriptionPortfolioPerformanceID, area);
+        
         var label = new Label(area, SWT.NONE);
         label.setText(Messages.LabelUser);
 

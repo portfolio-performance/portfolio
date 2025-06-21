@@ -90,9 +90,13 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
     // Even though the CoinGecko documentation states that the free version
-    // allows 30 requests per minute, we see error messages when reaching about
-    // 9.5 calls per minute.
+    // allows 5 to 10 requests per minute depending on the global use of the
+    // API. We still see errors on 9.5 calls per minute, but we retry anyway
     private static final double RATE_LIMIT_FREE = 9.5 / 60;
+
+    // The CoinGecko web site reads: To get a stable rate limit of 30 calls per
+    // minute, please register a demo account.
+    private static final double RATE_LIMIT_DEMO = 30.0 / 60;
 
     // According to the web page, the rate limit for paid subscriptions starts
     // with 500 calls per minute. From the experience with the rate limit of the
@@ -100,6 +104,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     private static final double RATE_LIMIT_PLAN = 250.0 / 60;
 
     private String apiKey;
+    private String demoApiKey;
 
     private RateLimiter rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
 
@@ -123,12 +128,34 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     {
         this.apiKey = apiKey;
 
-        rateLimiter = RateLimiter.create(hasPlan() ? RATE_LIMIT_PLAN : RATE_LIMIT_FREE);
+        if (hasPlan())
+            rateLimiter = RateLimiter.create(RATE_LIMIT_PLAN);
+        else if (hasDemoAccount())
+            rateLimiter = RateLimiter.create(RATE_LIMIT_DEMO);
+        else
+            rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
+    }
+
+    public void setDemoApiKey(String demoApiKey)
+    {
+        this.demoApiKey = demoApiKey;
+
+        if (hasPlan())
+            rateLimiter = RateLimiter.create(RATE_LIMIT_PLAN);
+        else if (hasDemoAccount())
+            rateLimiter = RateLimiter.create(RATE_LIMIT_DEMO);
+        else
+            rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
     }
 
     private boolean hasPlan()
     {
         return apiKey != null && !apiKey.isBlank();
+    }
+
+    private boolean hasDemoAccount()
+    {
+        return demoApiKey != null && !demoApiKey.isBlank();
     }
 
     @Override
@@ -140,7 +167,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     @Override
     public int getMaxRateLimitAttempts()
     {
-        return 10;
+        return 30;
     }
 
     @Override
@@ -286,6 +313,8 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
 
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
+            else if (hasDemoAccount())
+                webaccess.addParameter("x_cg_demo_api_key", demoApiKey); //$NON-NLS-1$
 
             ResponseData response = cache.lookup(coinGeckoId + security.getCurrencyCode());
 

@@ -1189,6 +1189,7 @@ public class Messages extends NLS
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionCoingecko;
+    public static String PrefDescriptionCoinGeckoDemoAPIKey;
     public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionEODHistoricalData;
     public static String PrefDescriptionFinnhub;
@@ -1233,6 +1234,7 @@ public class Messages extends NLS
     public static String PrefTitleAPIKeys;
     public static String PrefTitleBackup;
     public static String PrefTitleCalendar;
+    public static String PrefTitleDemoAPIKey;
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleEODHistoricalData;
     public static String PrefTitleFinnhub;
