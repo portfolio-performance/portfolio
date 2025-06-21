@@ -154,7 +154,8 @@ public class SearchSecurityWizardPage extends WizardPage
         }
 
         for (String type : List.of(name.abuchen.portfolio.Messages.LabelSearchShare,
-                        name.abuchen.portfolio.Messages.LabelCryptocurrency))
+                        name.abuchen.portfolio.Messages.LabelCryptocurrency,
+                        name.abuchen.portfolio.Messages.LabelCommodity))
         {
             var chip = new Chips(chips, SWT.PUSH);
             chip.setData(type);

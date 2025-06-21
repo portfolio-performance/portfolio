@@ -121,6 +121,7 @@ public interface SecuritySearchProvider
         typeMap.put("real estate investment trust (reit)", Messages.LabelSearchReit);
         typeMap.put("reit", Messages.LabelSearchReit);
         typeMap.put("warrant", Messages.LabelSearchWarrant);
+        typeMap.put("commodity", Messages.LabelCommodity);
 
         // keep original capitalization for unknown types
         return typeMap.getOrDefault(trim(type).toLowerCase(), type);

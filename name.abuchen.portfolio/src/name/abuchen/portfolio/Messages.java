@@ -126,6 +126,7 @@ public class Messages extends NLS
     public static String IssueTransactionWithoutDate;
     public static String LabelAssetAllocation;
     public static String LabelCloseBrowserWindowAndGoBackToApplication;
+    public static String LabelCommodity;
     public static String LabelCreditSuisseHTMLTable;
     public static String LabelCryptocurrency;
     public static String LabelDefaultReferenceAccountName;
