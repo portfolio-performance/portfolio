@@ -110,6 +110,11 @@ public class TradeDetailsView extends AbstractFinanceView
         {
             return value;
         }
+
+        public boolean isFalse()
+        {
+            return !value;
+        }
     }
 
     private class FilterAction extends Action
@@ -148,6 +153,8 @@ public class TradeDetailsView extends AbstractFinanceView
         }
     }
 
+    private static final String PREF_USE_SECURITY_CURRENCY = "useSecurityCurrency"; //$NON-NLS-1$
+
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     private Input input;
@@ -160,6 +167,11 @@ public class TradeDetailsView extends AbstractFinanceView
     {
         return Messages.LabelTrades;
     }
+
+    /**
+     * Indicates whether to calculate the trade in the currency of the security
+     */
+    private boolean useSecurityCurrency = false;
 
     private MutableBoolean usePreselectedTrades = new MutableBoolean(false);
 
@@ -180,9 +192,15 @@ public class TradeDetailsView extends AbstractFinanceView
     }
 
     @PostConstruct
-    protected void contruct(ExchangeRateProviderFactory factory)
+    protected void construct(ExchangeRateProviderFactory factory)
     {
         converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+    }
+
+    @PostConstruct
+    private void readPreferences(IPreferenceStore preferences)
+    {
+        useSecurityCurrency = preferences.getBoolean(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY);
     }
 
     @Override
@@ -216,8 +234,24 @@ public class TradeDetailsView extends AbstractFinanceView
                                                         .export(Messages.LabelTrades + ".csv"))) //$NON-NLS-1$
         ));
 
-        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
-                        manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
+        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
+            table.getShowHideColumnHelper().menuAboutToShow(manager);
+
+            // add the action to use the security currency only the user is not
+            // using the preselected trades
+            if (usePreselectedTrades.isFalse())
+            {
+                manager.add(new Separator());
+                var action = new SimpleAction(Messages.LabelUseSecurityCurrency, a -> {
+                    useSecurityCurrency = !useSecurityCurrency;
+                    getPreferenceStore().setValue(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY,
+                                    useSecurityCurrency);
+                    update();
+                });
+                action.setChecked(useSecurityCurrency);
+                manager.add(action);
+            }
+        }));
     }
 
     private void updateFilterButtonImage(DropDown dropDown)
@@ -269,9 +303,8 @@ public class TradeDetailsView extends AbstractFinanceView
         boolean hasPreselectedTrades = input != null;
 
         // retrieve existing filter
-        int savedFilters = 0;
         IPreferenceStore preferenceStore = getPreferenceStore();
-        savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
+        var savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
         if ((savedFilters & (1 << 1)) != 0)
             onlyOpen.setValue(true);
         if ((savedFilters & (1 << 2)) != 0)
@@ -436,12 +469,14 @@ public class TradeDetailsView extends AbstractFinanceView
 
     private Input collectAllTrades()
     {
-        TradeCollector collector = new TradeCollector(getClient(), converter);
         List<Trade> trades = new ArrayList<>();
         List<TradeCollectorException> errors = new ArrayList<>();
         getClient().getSecurities().forEach(s -> {
             try
             {
+                var collector = new TradeCollector(getClient(),
+                                useSecurityCurrency && s.getCurrencyCode() != null ? converter.with(s.getCurrencyCode())
+                                                : converter);
                 trades.addAll(collector.collect(s));
             }
             catch (TradeCollectorException e)

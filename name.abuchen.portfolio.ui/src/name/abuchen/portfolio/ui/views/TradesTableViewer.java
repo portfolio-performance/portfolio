@@ -395,17 +395,34 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new IsinColumn();
+        column.setGroupLabel(Messages.ColumnSecurity);
         column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new SymbolColumn();
+        column.setGroupLabel(Messages.ColumnSecurity);
         column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new WknColumn();
+        column.setGroupLabel(Messages.ColumnSecurity);
         column.getEditingSupport().addListener(new TouchClientListener(view.getClient()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("instrumentCurrency", Messages.ColumnCurrency, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnSecurity);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Trade) element).getSecurity().getCurrencyCode();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getSecurity().getCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
     }
