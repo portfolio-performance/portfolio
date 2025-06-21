@@ -39,6 +39,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -156,6 +158,9 @@ public class TradeDetailsView extends AbstractFinanceView
     private static final String PREF_USE_SECURITY_CURRENCY = "useSecurityCurrency"; //$NON-NLS-1$
 
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
+
+    @Inject
+    private SelectionService selectionService;
 
     private Input input;
 
@@ -369,6 +374,12 @@ public class TradeDetailsView extends AbstractFinanceView
         table = new TradesTableViewer(this);
 
         Control control = table.createViewControl(parent, TradesTableViewer.ViewMode.MULTIPLE_SECURITES);
+
+        table.getTableViewer().addSelectionChangedListener(event -> {
+            var selection = event.getStructuredSelection();
+            selectionService.setSelection(selection.isEmpty() ? null
+                            : SecuritySelection.from(getClient(), event.getStructuredSelection()));
+        });
 
         table.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
