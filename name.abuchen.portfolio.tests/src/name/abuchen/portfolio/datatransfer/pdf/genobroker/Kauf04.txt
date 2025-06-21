@@ -1,0 +1,43 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.2.qualifier
+System: macosx | aarch64 | 21.0.4+7-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster
+Depotnummer 6020732715
+ 
+ Kundennummer 5213915045
+YPZCdsc fzDJmi
+ Auftragsnummer 625571/30.00
+HofAoAZ piNopO Datum 11.06.2025
+owOjjZPuWTm. 2 Rechnungsnummer C93970-0008804334/25
+29956 ajYVlBzWbuyueT Umsatzsteuer-ID Tt076810289   
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 10.06.2025 10:21:38 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.000 RAFAEL HOLDINGS INC.               US75062E1064 (A2JDMF)
+REGISTERED SH. CLASS B DL -,01     
+Handels-/Ausführungsplatz New York-NYSE (gemäß Weisung)
+Börsensegment XNYS
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 10.06.2025 15:33:35 Auftraggeber Swe Jskejdn Dekjdr
+Ortszeit 10.06.2025 10:33:35 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 2,37 USD
+Wertpapierrechnung Lagerland USA
+Devisenkurs (EUR/USD) 1,1403 vom 11.06.2025
+Kurswert 4.156,80- EUR
+Provision 9,95- EUR
+Fremde Auslagen 21,65- EUR
+Fremde Spesen 8,77- EUR
+Eigene Spesen 25,00- EUR
+Ausmachender Betrag 4.222,17- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 11.06.2025 zu Lasten des Kontos 0232542 (IBAN Ny24 7795 7076 9779 3579 65),
+BLZ 75215158 (BIC XJxDHnp9jbr).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.12345678R07                                                             

@@ -74,7 +74,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^.*Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^.*Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> { //
                                                             if (!v.get("name1").startsWith("Handels-/Ausführungsplatz")) //
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1"))); //
@@ -476,6 +476,28 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Spesen 8,77- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Fremde Spesen (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Eigene Spesen 25,00- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Auslagen 21,65- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("Fremde Auslagen (?<fee>[\\.,\\d]+)\\-[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+
     }
 }
