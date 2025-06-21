@@ -98,6 +98,7 @@ public class Trade implements Adaptable
                             .setScale(0, RoundingMode.HALF_UP).longValue();
 
             this.exitValue = converter.at(now).apply(Money.of(security.getCurrencyCode(), marketValue));
+            this.exitGrossValue = exitValue;
 
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase())
@@ -260,8 +261,6 @@ public class Trade implements Adaptable
 
     public Money getGrossProfitLoss()
     {
-        if (exitGrossValue == null)
-            return null;
         return exitGrossValue.subtract(entryGrossValue);
     }
 
