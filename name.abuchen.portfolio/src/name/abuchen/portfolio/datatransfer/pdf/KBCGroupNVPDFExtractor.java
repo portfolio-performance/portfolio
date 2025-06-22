@@ -292,11 +292,15 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // Uw Uitbetaling dividenden van 2.065 ISHAR.III CORE EUR CORP BD UC ETF-D 4.173,16 EUR
                                         // aan 2,020901 EUR
                                         // Cash Dividend IE00B3F81R35ex 2024-01-11 pd 2024-01-24
+                                        //
+                                        // Uw Uitbetaling dividenden van 912 ISHAR.III CORE EUR CORP BD UC 1.860,12 EUR
+                                        // ETF-D aan 2,039605 EUR
+                                        // Cash Dividend IE00B3F81R35ex 2025-01-16 pd 2025-01-29
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^.* van [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^aan [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.*aan [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -405,7 +409,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) " //
                                         + "(?<note>Provisionering rekening klant) " //
-                                        + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
+                                        + "Valuta[\\s]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -418,6 +422,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 04/09/2024 Overschrijving naar klant Valuta 04/09/2024 -32.339,70 EUR
+        // 30/01/2025 Overschrijving naar klant Valuta30/01/2025 -1.275,00 EUR
         // @formatter:on
         var removalBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Overschrijving naar klant.*$");
         type.addBlock(removalBlock);
@@ -433,7 +438,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) " //
                                         + "(?<note>Overschrijving naar klant) " //
-                                        + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
+                                        + "Valuta[\\s]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
