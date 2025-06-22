@@ -523,6 +523,37 @@ public class KBCGroupNVPDFExtractorTest
     }
 
     @Test
+    public void testDividende04()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3F81R35"), hasWkn(null), hasTicker(null), //
+                        hasName("ISHAR.III CORE EUR CORP BD UC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-29T00:00"), hasShares(912.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Borderel 006631462"), //
+                        hasAmount("EUR", 1276.04), hasGrossValue("EUR", 1860.12), //
+                        hasTaxes("EUR", 558.04 + 4.52), hasFees("EUR", 21.52))));
+    }
+
+    @Test
     public void testRekeninguittreksel01()
     {
         var extractor = new KBCGroupNVPDFExtractor(new Client());
@@ -658,5 +689,26 @@ public class KBCGroupNVPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-08-05"), hasAmount("EUR", 179.48), //
                         hasSource("Rekeninguittreksel05.txt"), hasNote("Bewaarloon"))));
+    }
+
+    @Test
+    public void testRekeninguittreksel06()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-30"), hasAmount("EUR", 1275.00), //
+                        hasSource("Rekeninguittreksel06.txt"), hasNote("Overschrijving naar klant"))));
     }
 }
