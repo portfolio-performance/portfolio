@@ -37,6 +37,38 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.77.2" date="2025-06-22">
+      <description>
+        <ul>
+          <li>New: Support for CoinGecko demo account – allows for a stable rate limit of 30 requests per minute.</li>
+          <li>New: Hold the Alt key (on macOS: Option) and double-click a cell to copy its content to the clipboard.</li>
+          <li>New: New column showing prices in the reporting currency in the assets and securities performance views.</li>
+          <li>New: The Trades view now shows additional columns with metrics excluding taxes and fees. You can also view these metrics in the currency of the security.</li>
+          <li>Improvement: The Java Virtual Machine no longer uses a hardcoded memory limit but relies on its own heuristics – typically one quarter of the physical memory.</li>
+          <li>Improvement: The selected coloring – by category or performance – of the tree map is now saved.</li>
+          <li>Improvement: The last size and position of some dialogs are now remembered.</li>
+          <li>Improvement: Search results can now be filtered by "Commodities" to find prices from edelkurs.de more easily.</li>
+          <li>Improvement: The JSON price feed can now be configured with a time zone for the price data.</li>
+          <li>Improvement: PDF imports updated for GENO Broker, KFintech, Scalable Capital, and Saxo.</li>
+          <li>Fix: Number format in tooltip was incorrect when displaying prices of multiple securities in a chart.</li>
+          <li>Fix: The IBFlex importer incorrectly imported the direction of currency exchanges – e.g., USD to EUR instead of EUR to USD.</li>
+          <li>Fix: The portfolio view could consume excessive memory, leading to out-of-memory errors.</li>
+          <li xml:lang="de">Neu: Unterstützung für den Demo-Account von CoinGecko – damit sind stabilere 30 Abrufe pro Minute möglich.</li>
+          <li xml:lang="de">Neu: Mit gedrückter Alt-Taste (auf macOS: Option) und Doppelklick auf eine Zelle wird deren Inhalt in die Zwischenablage kopiert.</li>
+          <li xml:lang="de">Neu: Neue Spalte mit Kursen in der Berichtswährung in der Vermögensaufstellung und der Wertpapier-Performance.</li>
+          <li xml:lang="de">Neu: Die Trades-Ansicht zeigt nun zusätzliche Spalten mit Kennzahlen ohne Steuern und Gebühren. Zusätzlich kannst du dir die Kennzahlen alternativ in der Währung des Wertpapiers anzeigen lassen.</li>
+          <li xml:lang="de">Verbesserung: Die Java Virtual Machine verwendet jetzt keine hartkodierte Maximalgröße mehr, sondern ihre eigene Heuristik – typischerweise ein Viertel des physischen Speichers.</li>
+          <li xml:lang="de">Verbesserung: Die gewählte Farbgebung der Baumkarte – nach Kategorie oder Performance – wird jetzt gespeichert.</li>
+          <li xml:lang="de">Verbesserung: Die letzte Größe und Position einiger Dialoge werden jetzt gespeichert.</li>
+          <li xml:lang="de">Verbesserung: Suchergebnisse lassen sich nach „Rohstoffen“ filtern, um Kurse von edelkurs.de schneller zu finden.</li>
+          <li xml:lang="de">Verbesserung: Der JSON-Kurslieferant kann jetzt mit einer Zeitzone für die Kursdaten konfiguriert werden.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für GENO Broker, KFintech, Scalable Capital und Saxo.</li>
+          <li xml:lang="de">Fix: Das Zahlenformat im Tooltip war fehlerhaft, wenn Kurse mehrerer Wertpapiere im Diagramm angezeigt wurden.</li>
+          <li xml:lang="de">Fix: Der IBFlex-Importer hat die Richtung eines Währungstauschs falsch importiert – z. B. USD nach EUR statt EUR nach USD.</li>
+          <li xml:lang="de">Fix: In der Vermögensaufstellung konnte es zu übermäßigem Speicherverbrauch und Out-of-Memory-Fehlern kommen.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.77.1" date="2025-06-09">
       <description>
         <ul>
