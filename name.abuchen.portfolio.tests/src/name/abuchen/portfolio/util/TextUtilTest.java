@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 import org.junit.Test;
 
@@ -208,9 +207,9 @@ public class TextUtilTest
     @Test
     public void testIsNumericMatch()
     {
-        var decimalSeparator = new DecimalFormatSymbols(Locale.getDefault()).getDecimalSeparator();
+        var decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
         var decimalSep = String.valueOf(decimalSeparator);
-        var groupingSeparator = new DecimalFormatSymbols(Locale.getDefault()).getGroupingSeparator();
+        var groupingSeparator = new DecimalFormatSymbols().getGroupingSeparator();
         var groupSep = String.valueOf(groupingSeparator);
 
         // Whole numbers
