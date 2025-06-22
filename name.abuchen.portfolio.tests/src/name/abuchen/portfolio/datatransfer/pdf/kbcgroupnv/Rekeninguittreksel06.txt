@@ -1,0 +1,21 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.77.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+zRgqZlgs-ErebqyOQ zXlLNJ-OIQzvSE
+Overzicht transacties en rekeninguittreksels voor
+klantnummer 1202313
+30/01/2025
+EUR-REKENING - 45
+Rekeninguittreksel Nr 37 Vorig Saldo: 1.279,32 EUR
+30/01/2025 Overschrijving naar klant Valuta30/01/2025 -1.275,00 EUR
+Mededeling: dividend core eur
+Nieuw Saldo 4,32 EUR
+Dit deposito komt in aanmerking voor depositobescherming. Meer info: www.kbc.be/depositobescherming
+Heb je nog vragen ? Gelieve je te richten tot de Bolero order desk
+YJpRoPTf-ZfiszOkV sTjGOZ-CjdYTHX Pagina 1
+7_3_1_4_1_9_0_________________________________________________________________________________
+KBC BANK NV Documentreferte: 46
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N¡ BE77 4096 5474 0142 - BIC
+KREDBEBB
