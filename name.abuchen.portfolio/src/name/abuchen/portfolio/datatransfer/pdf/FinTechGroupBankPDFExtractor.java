@@ -66,7 +66,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        var firstRelevantLine = new Block("^.*Auftragsdatum .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2453,7 +2453,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        var firstRelevantLine = new Block("^.*Auftragsdatum .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2687,7 +2687,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        var firstRelevantLine = new Block("^.*Auftragsdatum .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
