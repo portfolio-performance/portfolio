@@ -64,7 +64,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
@@ -89,12 +88,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -103,7 +101,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("519406"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -118,13 +116,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 678984193"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5893.10))));
+                        is(Money.of("EUR", Values.Amount.factorize(5893.10))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5887.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(5887.20))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90 + 1.00 + 1.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90 + 1.00 + 1.00))));
 
         // check 2st buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -139,13 +137,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5954.80))));
+                        is(Money.of("EUR", Values.Amount.factorize(5954.80))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5948.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5948.90))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
@@ -160,17 +158,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 678985130"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5943.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(5943.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5948.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5948.90))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check tax-refund in 3rd buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -179,14 +177,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 678985130"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -196,12 +190,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(20));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -210,7 +203,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("CQ0U7Z"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("CITI.GL.M. CALL19 MGA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -225,13 +218,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301138113"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3008.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3008.90))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3003.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3003.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 2st buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -246,13 +239,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301140879"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3000.80))));
+                        is(Money.of("EUR", Values.Amount.factorize(3000.80))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2994.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(2994.90))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
@@ -267,13 +260,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141388"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3039.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3039.90))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3034.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3034.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 4rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
@@ -288,13 +281,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301141655"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3019.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(3019.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3013.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(3013.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 5th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
@@ -309,13 +302,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143554"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3015.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3015.90))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3010.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3010.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 6th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
@@ -330,13 +323,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301143813"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3019.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(3019.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3013.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(3013.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 7th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
@@ -351,13 +344,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301160198"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2992.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(2992.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2988.70))));
+                        is(Money.of("EUR", Values.Amount.factorize(2988.70))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
 
         // check 8th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
@@ -372,13 +365,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3015.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(3015.50))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3009.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(3009.60))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 9th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
@@ -393,13 +386,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301175892"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3017.25))));
+                        is(Money.of("EUR", Values.Amount.factorize(3017.25))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3011.35))));
+                        is(Money.of("EUR", Values.Amount.factorize(3011.35))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check 10th buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(9).findFirst()
@@ -414,13 +407,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1301188569"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5417.88))));
+                        is(Money.of("EUR", Values.Amount.factorize(5417.88))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5411.98))));
+                        is(Money.of("EUR", Values.Amount.factorize(5411.98))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
     }
 
     @Test
@@ -430,12 +423,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -444,7 +436,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1MECS"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SOURCE PHY.MRKT.ETC00 XAU"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -459,13 +451,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1344625752"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.72))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.72))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.72))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(2.72))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -475,12 +466,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -489,7 +479,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("DS5WKN"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -504,13 +494,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567895"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1023.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(1023.90))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1020.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1020.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
     }
 
     @Test
@@ -520,12 +510,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung05.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -534,7 +523,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("VN4LAU"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VONT.FINL PR CALL17 DAX"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -549,13 +538,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1147218952"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1036.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(1036.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1032.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1032.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
 
         // check 2st buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -570,13 +559,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1147259184"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1003.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(1003.90))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
 
         // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
@@ -591,13 +580,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1147293642"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1232.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(1232.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1312.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1312.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(76.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(76.20))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.90))));
 
         // check 4rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
@@ -612,17 +601,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1147294899"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(844.10))));
+                        is(Money.of("EUR", Values.Amount.factorize(844.10))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(850.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(850.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         // check tax-refund in 4rd buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -631,14 +620,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1147294899"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.72))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.72))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(44.72))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(44.72))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -648,12 +633,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung06.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -662,7 +646,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("SKWM02"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SKW STAHL-METAL.HLDG.NA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -677,17 +661,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1087224318"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1253.15))));
+                        is(Money.of("EUR", Values.Amount.factorize(1253.15))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1265.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1265.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.00 + 6.85))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.00 + 6.85))));
 
         // check tax-refund buy sell transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -696,14 +680,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechSammelabrechnung06.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1087224318"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(463.04))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(463.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(463.04))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(463.04))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -713,15 +693,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung07.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechSammelabrechnung07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(4L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -785,7 +764,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -794,7 +773,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("ETF114"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -809,13 +788,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 999999999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.30))));
+                        is(Money.of("EUR", Values.Amount.factorize(50.30))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(44.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(44.40))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
     }
 
     @Test
@@ -829,7 +808,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -838,7 +817,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("ETF001"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMST.-DAX TR UCITS ETF I"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -853,13 +832,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1071613216"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -869,12 +848,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "biwAGWertpapierEingang01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "biwAGWertpapierEingang01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -883,11 +861,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check delivery inbound (Einlieferung) transaction
-        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -896,14 +874,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("biwAGWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 952921288"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7517.50))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7517.50))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7517.50))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(7517.50))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -913,15 +887,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "biwAGWertpapierAusgang01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "biwAGWertpapierAusgang01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(2L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -971,7 +944,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -983,7 +956,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.56))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.56))));
         assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gebühr Kapitaltransaktion Ausland ISIN12345678"));
 
@@ -993,7 +966,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.89))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.89))));
         assertThat(transaction.getSource(), is("biwAGKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2014 - 31.12.2014"));
     }
@@ -1012,7 +985,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2011-02-10"), hasAmount("EUR", 1300.00), //
@@ -1033,7 +1006,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2013-01-28"), hasAmount("EUR", 10.00), //
@@ -1041,7 +1014,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2013-02-14"), hasAmount("EUR", 1.50), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("Gebühr Kapitaltransaktion Ausland US0378331005"))));
+                        hasSource("biwAGKontoauszug03.txt"),
+                        hasNote("Gebühr Kapitaltransaktion Ausland US0378331005"))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2013-03-01"), hasAmount("EUR", 10.00), //
@@ -1059,7 +1033,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         interest(hasDate("2013-03-31"), hasAmount("EUR", 0.00), //
-                        hasSource("biwAGKontoauszug03.txt"), hasNote("Zinsabschluss 01.01.2013 - 31.03.2013")))));
+                                        hasSource("biwAGKontoauszug03.txt"),
+                                        hasNote("Zinsabschluss 01.01.2013 - 31.03.2013")))));
     }
 
     @Test
@@ -1073,7 +1048,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1082,7 +1057,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0Q1YY"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1097,13 +1072,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1137201681"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1050.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1050.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1050.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1117,7 +1092,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1126,7 +1101,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("ETF113"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1141,13 +1116,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1234211246"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(800.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(800.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(800.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1161,7 +1136,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1170,7 +1145,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("DBX1A7"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DB X-TR.S.E.600U.E.(DR)1C"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1185,13 +1160,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1233799247"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1205,7 +1180,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1214,7 +1189,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0NECU"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1229,13 +1204,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1234387912"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(999.10))));
+                        is(Money.of("EUR", Values.Amount.factorize(999.10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.90))));
     }
 
     @Test
@@ -1249,7 +1224,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1258,7 +1233,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JJTP"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR BARC.EO.GOV.BD ETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1273,13 +1248,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1344974056"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16))));
+                        is(Money.of("EUR", Values.Amount.factorize(6.16))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.16))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1293,7 +1267,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1302,7 +1276,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("DBX1DA"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DB X-TRACK.DAX ETF(DR)1C"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1317,13 +1291,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1342424242"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1337,7 +1311,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1346,7 +1320,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JKS0"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR S+P US DIV.ARIST.ETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1361,13 +1335,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1340886542"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(998.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(998.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.50))));
     }
 
     @Test
@@ -1381,7 +1355,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1390,7 +1364,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("ETF127"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMS.-MSCI EM.M.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1405,13 +1379,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1555928306"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(52.50))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(52.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(52.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1425,7 +1399,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1434,7 +1408,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2DTF1"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FRAN.LIB.Q EM EQ.UC.DLA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1449,13 +1423,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1111111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1279.55))));
+                        is(Money.of("EUR", Values.Amount.factorize(1279.55))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1270.94))));
+                        is(Money.of("EUR", Values.Amount.factorize(1270.94))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.71))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.71))));
     }
 
     @Test
@@ -1469,7 +1443,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1478,7 +1452,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("ETF110"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1493,17 +1467,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1321692761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(400.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -1512,14 +1486,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechKauf10.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1321692761"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1529,12 +1499,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKaufStorno01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKaufStorno01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1566,7 +1535,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1575,7 +1544,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("US9RGR"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1590,13 +1559,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 980001189"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16508.16))));
+                        is(Money.of("EUR", Values.Amount.factorize(16508.16))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16514.06))));
+                        is(Money.of("EUR", Values.Amount.factorize(16514.06))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
     }
 
     @Test
@@ -1610,7 +1579,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1619,7 +1588,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("980700"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1634,13 +1603,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1242877942"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4840.15))));
+                        is(Money.of("EUR", Values.Amount.factorize(4840.15))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4846.05))));
+                        is(Money.of("EUR", Values.Amount.factorize(4846.05))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
     }
 
     @Test
@@ -1654,7 +1623,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1663,7 +1632,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0YEDM"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSVII-FTSE 100 LS ACC"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1678,13 +1647,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1344971210"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.95))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.95))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1698,7 +1666,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1707,7 +1675,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1191N"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SSGA S.E.E.II-M.EU.CON.S."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1722,13 +1690,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1574141471"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48))));
+                        is(Money.of("EUR", Values.Amount.factorize(9.48))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.38))));
+                        is(Money.of("EUR", Values.Amount.factorize(15.38))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
     }
 
     @Test
@@ -1742,7 +1710,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1751,11 +1719,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("840221"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1764,14 +1732,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 716759781"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(795.15))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1080.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(284.85))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(795.15))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1080.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(284.85))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1785,7 +1749,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1794,11 +1758,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("AB1234"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1807,14 +1771,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.55))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(77.77))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.22))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(55.55))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(77.77))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(22.22))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1828,7 +1788,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1837,11 +1797,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("633500"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("KRONES AG O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1850,14 +1810,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1236644834"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.13))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(23.25))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.12))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.13))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(23.25))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(6.12))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1871,7 +1827,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1880,11 +1836,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("884437"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("STARBUCKS CORP."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1893,23 +1849,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.45))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.23))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.45))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.23))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(26.25))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(26.25))));
     }
 
     @Test
     public void testFinTechDividende04WithSecurityInUSD()
     {
-        var security = new Security("STARBUCKS CORP.", CurrencyUnit.EUR);
+        var security = new Security("STARBUCKS CORP.", "EUR");
         security.setIsin("US8552441094");
         security.setWkn("884437");
 
@@ -1926,8 +1879,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(1));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1936,18 +1889,15 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.45))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.23))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.45))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.23))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.11 + (7.88 / 1.1808)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -1963,7 +1913,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1974,8 +1924,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getName(), is("ROYAL DUTCH SHELL A EO-07"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1984,14 +1934,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 0000000000"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.97))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.73))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.76))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(60.97))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(71.73))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.76))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2001,8 +1947,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechDividende06.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechDividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -2014,11 +1959,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("AB1234"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -2027,14 +1972,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechDividende06.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(73.75))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(73.75))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(73.75))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(73.75))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2049,7 +1990,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2058,7 +1999,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2073,13 +2014,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 197409035"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2867.88))));
+                        is(Money.of("EUR", Values.Amount.factorize(2867.88))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3250.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3250.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(382.12))));
+                        is(Money.of("EUR", Values.Amount.factorize(382.12))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2094,7 +2035,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2103,7 +2044,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2118,13 +2059,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 376762270"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.20))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2139,7 +2079,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2148,12 +2088,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check 1st delivery outbound (Auslieferung) transaction
-        var deliveryTransaction = (PortfolioTransaction) results.stream()
-                        .filter(TransactionItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        var deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
@@ -2162,14 +2101,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
         assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770199"));
 
-        assertThat(deliveryTransaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd delivery outbound (Auslieferung) transaction
         deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
@@ -2182,14 +2117,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
         assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770243"));
 
-        assertThat(deliveryTransaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 3rd delivery outbound (Auslieferung) transaction
         deliveryTransaction = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
@@ -2202,14 +2133,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(deliveryTransaction.getSource(), is("FinTechWertpapierAusgang03.txt"));
         assertThat(deliveryTransaction.getNote(), is("Transaktion-Nr.: 223770249"));
 
-        assertThat(deliveryTransaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(deliveryTransaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2224,7 +2151,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2233,7 +2160,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("SG0WRD"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2248,13 +2175,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktionsnummer: 921414163"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.22))));
+                        is(Money.of("EUR", Values.Amount.factorize(111.22))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(111.22))));
+                        is(Money.of("EUR", Values.Amount.factorize(111.22))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2269,7 +2196,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2278,7 +2205,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("UE5KPQ"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS LDN CALL21 SQ3"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2293,17 +2220,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1234567890"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(305.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(305.20))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(305.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(305.20))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -2312,14 +2239,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FinTechWertpapierAusgang05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(88.53))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(88.53))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(88.53))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(88.53))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2334,7 +2257,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2343,7 +2266,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security1.getWkn());
         assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("COMS.-MSCI WORL.T.U.ETF I"));
-        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getCurrencyCode(), is("EUR"));
 
         var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
@@ -2351,7 +2274,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security2.getWkn());
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("C-IBO.E.L.S.D.O.T.U.ETF I"));
-        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getCurrencyCode(), is("EUR"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2366,13 +2289,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543211"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -2387,13 +2309,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 9876543210"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2408,7 +2329,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(20));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2417,11 +2338,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DEKAFONDS CF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check 1st delivery inbound (Einlieferung) transaction
-        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2430,18 +2351,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461796"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.50))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.50))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.50))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.50))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 2nd delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2450,18 +2367,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461797"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.30))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.30))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.30))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 3rd delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2470,18 +2383,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461798"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 4th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(3).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(3).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2490,17 +2399,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461799"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 5th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(4).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(4).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2509,18 +2415,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461800"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 6th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(5).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(5).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2529,18 +2431,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461801"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 7th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(6).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(6).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2549,18 +2447,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461802"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 8th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(7).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(7).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2569,18 +2463,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461803"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 9th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(8).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(8).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2589,18 +2479,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461804"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 10th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(9).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(9).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2609,18 +2495,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461805"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 11th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(10).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(10).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2629,18 +2511,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461806"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 12th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(11).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(11).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2649,18 +2527,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461807"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 13th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(12).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(12).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2669,18 +2543,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461808"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 14th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(13).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(13).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2689,18 +2559,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461809"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 15th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(14).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(14).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2709,18 +2575,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461810"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.12))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.12))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.12))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.12))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 16th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(15).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(15).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2729,18 +2591,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461811"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.98))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.98))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 17th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(16).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(16).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2749,18 +2607,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461812"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 18th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(17).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(17).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -2769,18 +2623,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461813"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check 19th delivery inbound (Einlieferung) transaction
-        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(18).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(18).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         assertThat(entry.getDateTime(), is(LocalDateTime.parse("2016-06-15T00:00")));
@@ -2788,14 +2638,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getSource(), is("FinTechWertpapierEingang01.txt"));
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1127461814"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(49.99))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(49.99))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2805,12 +2651,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -2822,7 +2667,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1100.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1100.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -2832,7 +2677,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-03-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.01.2016 - 31.03.2016"));
 
@@ -2845,19 +2690,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2016-03-31T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2016-03-31T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FinTechKontoauszug01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Zinsabschluss 01.01.2016 - 31.03.2016"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2867,12 +2713,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         assertThat(countAccountTransactions(results), is(2L));
@@ -2901,12 +2746,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -2918,7 +2762,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-09-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.07.2016 - 30.09.2016"));
 
@@ -2931,19 +2775,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2016-09-30T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2016-09-30T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FinTechKontoauszug03.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Zinsabschluss 01.07.2016 - 30.09.2016"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -2951,7 +2796,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2016 - 31.12.2016"));
 
@@ -2964,19 +2809,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2016-12-31T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FinTechKontoauszug03.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Zinsabschluss 01.10.2016 - 31.12.2016"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -2984,7 +2830,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.94))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.94))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Steuertopfoptimierung 2016"));
     }
@@ -2996,12 +2842,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -3013,7 +2858,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2000.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("EINZAHLUNG 4 FLATEX / 0/16765097"));
 
@@ -3023,7 +2868,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-09-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.07.2010 - 30.09.2010"));
 
@@ -3036,19 +2881,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2010-09-30T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2010-09-30T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FinTechKontoauszug04.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Zinsabschluss 01.07.2010 - 30.09.2010"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -3056,7 +2902,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
         assertThat(transaction.getSource(), is("FinTechKontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2010 - 31.12.2010"));
     }
@@ -3068,15 +2914,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug05.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2017-03-31"), hasAmount("EUR", 0.48), //
@@ -3103,15 +2948,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug06.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(13L));
         assertThat(results.size(), is(13));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2018-09-30"), hasAmount("EUR", 1.59), //
@@ -3165,7 +3009,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3174,7 +3018,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A111X9"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3189,13 +3033,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1609519682"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(760.09))));
+                        is(Money.of("EUR", Values.Amount.factorize(760.09))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(751.68))));
+                        is(Money.of("EUR", Values.Amount.factorize(751.68))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
     }
 
     @Test
@@ -3209,7 +3053,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3218,7 +3062,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("865177"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLIED MATERIALS INC."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3233,13 +3077,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2008664208"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3437.43))));
+                        is(Money.of("EUR", Values.Amount.factorize(3437.43))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3430.68))));
+                        is(Money.of("EUR", Values.Amount.factorize(3430.68))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 0.85))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 0.85))));
     }
 
     @Test
@@ -3253,7 +3097,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3262,7 +3106,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JJTM"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR BL.BA.EO AG.BD U.ETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3277,13 +3121,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1234140149"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81))));
+                        is(Money.of("EUR", Values.Amount.factorize(9529.81))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9538.22))));
+                        is(Money.of("EUR", Values.Amount.factorize(9538.22))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
     }
 
     @Test
@@ -3297,7 +3141,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3306,7 +3150,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A142N1"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSV-S+500INF.T.SECT.DLA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3321,13 +3165,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5681.04))));
+                        is(Money.of("EUR", Values.Amount.factorize(5681.04))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5999.30))));
+                        is(Money.of("EUR", Values.Amount.factorize(5999.30))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(305.85))));
+                        is(Money.of("EUR", Values.Amount.factorize(305.85))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.90 + 2.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(9.90 + 2.51))));
     }
 
     @Test
@@ -3341,7 +3185,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3350,7 +3194,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("984811"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS TOP DIVIDENDE LD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3365,17 +3209,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10746.30))));
+                        is(Money.of("EUR", Values.Amount.factorize(10746.30))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10756.20))));
+                        is(Money.of("EUR", Values.Amount.factorize(10756.20))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(9.90))));
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -3384,14 +3228,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExVerkauf03.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.87))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.87))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(18.87))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(18.87))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3405,7 +3245,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3414,7 +3254,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12GS7"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AURORA CANNABIS"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -3429,13 +3269,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Spitzenregulierung in CA05156X1087 | Transaktions-Nr. 1942669999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.86))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.86))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.86))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.86))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3445,12 +3284,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExVorabpauschale01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExVorabpauschale01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3459,11 +3297,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A111X9"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS MSCI EM USD-AC"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -3472,14 +3310,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExVorabpauschale01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1776319005"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.69))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.69))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3489,12 +3323,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExVorabpauschale02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExVorabpauschale02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3503,7 +3336,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0RPWH"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS CR WD USD-AC"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check cancellation (Amount = 0,00) transaction
         var cancellation = (TransactionItem) results.stream() //
@@ -3514,19 +3347,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAXES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2020-01-11T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2020-01-11T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(1.741300)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExVorabpauschale02.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Transaktion-Nr.: 1222222222"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3540,7 +3374,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3549,11 +3383,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1T8FS"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANG.FTSE DEV.EU.UETF EOD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3562,14 +3396,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.07))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.07))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(36.07))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(36.07))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3583,7 +3413,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3592,11 +3422,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("870747"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3605,23 +3435,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.87))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.87))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.65))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(7.65))));
     }
 
     @Test
     public void testFlatExDividende02WithSecurityInEUR()
     {
-        var security = new Security("MICROSOFT    DL-,00000625", CurrencyUnit.EUR);
+        var security = new Security("MICROSOFT    DL-,00000625", "EUR");
         security.setIsin("US5949181045");
         security.setWkn("870747");
 
@@ -3636,11 +3463,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3649,18 +3476,15 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.87))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(6.87))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3676,7 +3500,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3685,11 +3509,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1T8FV"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VA.FTSE A.W.H.D.Y.UETFDLD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3698,23 +3522,19 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.42))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(12.88))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(12.88))));
     }
 
     @Test
     public void testFlatExDividende03WithSecurityInEUR()
     {
-        var security = new Security("VA.FTSE A.W.H.D.Y.UETFDLD", CurrencyUnit.EUR);
+        var security = new Security("VA.FTSE A.W.H.D.Y.UETFDLD", "EUR");
         security.setIsin("IE00B8GKDB10");
         security.setWkn("A1T8FV");
 
@@ -3729,11 +3549,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3742,18 +3562,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.42))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(11.42))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3769,7 +3585,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3778,11 +3594,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A14MS9"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IRON MOUNTAIN (NEW)DL-,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3791,23 +3607,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.30))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(103.87))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(75.30))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(103.87))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(121.84))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(121.84))));
     }
 
     @Test
     public void testFlatExDividende04WithSecurityInEUR()
     {
-        var security = new Security("IRON MOUNTAIN (NEW)DL-,01", CurrencyUnit.EUR);
+        var security = new Security("IRON MOUNTAIN (NEW)DL-,01", "EUR");
         security.setIsin("US46284V1017");
         security.setWkn("A14MS9");
 
@@ -3822,11 +3635,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3835,18 +3648,15 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.30))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(103.87))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(75.30))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(103.87))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(12.99 + (18.28 / 1.173)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3862,7 +3672,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3871,11 +3681,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("870747"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3884,23 +3694,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.73))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.47))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.73))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.47))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(25.50))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(25.50))));
     }
 
     @Test
     public void testFlatExDividende05WithSecurityInEUR()
     {
-        var security = new Security("MICROSOFT    DL-,00000625", CurrencyUnit.EUR);
+        var security = new Security("MICROSOFT    DL-,00000625", "EUR");
         security.setIsin("US5949181045");
         security.setWkn("870747");
 
@@ -3915,11 +3722,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3928,18 +3735,15 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.73))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(22.47))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(16.73))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(22.47))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.37 + (3.82 / 1.1348)))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3955,7 +3759,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3964,11 +3768,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("870747"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MICROSOFT    DL-,00000625"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3977,26 +3781,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende06.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(18.99))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(25.50))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(18.99))));
+        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(25.50))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize((2.37 * 1.1348) + 3.82))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+                        is(Money.of("USD", Values.Amount.factorize((2.37 * 1.1348) + 3.82))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testFlatExDividende07WithNegativeAmount()
     {
         /***
-         * This test is a dividend transaction with negative amount.
-         *
-         * If we have a negative amount and no gross reinvestment,
-         * we first book the dividends received and then the tax charge
-         *
-         * Taxes must be paid.
+         * This test is a dividend transaction with negative amount. If we have
+         * a negative amount and no gross reinvestment, we first book the
+         * dividends received and then the tax charge Taxes must be paid.
          */
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
@@ -4006,7 +3804,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4015,11 +3813,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0RLJD"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PICTET-GL.MEGAT.SEL.P EO"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -4028,14 +3826,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDividende07.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1784953069 | Bruttothesaurierung 23,19 EUR"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(8.26))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(8.26))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -4052,7 +3846,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4098,7 +3892,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4107,7 +3901,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A3E444"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("FRAPORT AG 20/27"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -4122,13 +3916,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1225591278"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1704.15))));
+                        is(Money.of("EUR", Values.Amount.factorize(1704.15))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1690.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1690.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00 + 5.90 + 6.25))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.00 + 5.90 + 6.25))));
     }
 
     @Test
@@ -4145,7 +3939,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4166,7 +3960,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroKauf02WithSecurityInEUR()
     {
-        var security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", CurrencyUnit.EUR);
+        var security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", "EUR");
         security.setIsin("US912810SQ22");
         security.setWkn("A281P1");
 
@@ -4184,7 +3978,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -4214,7 +4008,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4244,7 +4038,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroKauf03WithSecurityInEUR()
     {
-        var security = new Security("USA 21/51", CurrencyUnit.EUR);
+        var security = new Security("USA 21/51", "EUR");
         security.setIsin("US912810TB44");
         security.setWkn("A3KYSD");
 
@@ -4262,7 +4056,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -4300,7 +4094,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4331,7 +4125,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4362,7 +4156,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4391,7 +4185,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4421,7 +4215,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4430,7 +4224,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12GPB"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMGEST GROWTH ASIA"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -4445,23 +4239,23 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2831966689"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4199.73))));
+                        is(Money.of("EUR", Values.Amount.factorize(4199.73))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4216.61))));
+                        is(Money.of("EUR", Values.Amount.factorize(4216.61))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.88))));
+                        is(Money.of("EUR", Values.Amount.factorize(16.88))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4216.61 * 1.045010))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(4216.61 * 1.045010))));
     }
 
     @Test
     public void testFlatExDegiroVerkauf01WithSecurityInUSD()
     {
-        var security = new Security("COMGEST GROWTH ASIA", CurrencyUnit.EUR);
+        var security = new Security("COMGEST GROWTH ASIA", "EUR");
         security.setIsin("IE00BQ3D6V05");
         security.setWkn("A12GPB");
 
@@ -4490,17 +4284,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2831966689"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4199.73))));
+                        is(Money.of("EUR", Values.Amount.factorize(4199.73))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4216.61))));
+                        is(Money.of("EUR", Values.Amount.factorize(4216.61))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.88))));
+                        is(Money.of("EUR", Values.Amount.factorize(16.88))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -4519,7 +4313,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4558,7 +4352,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4589,7 +4383,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4636,7 +4430,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4667,7 +4461,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4706,7 +4500,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4728,14 +4522,15 @@ public class FinTechGroupBankPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4758,23 +4553,19 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFlatExDegiroDividende01WithNegativeAmount()
     {
         /***
-         * This test is a dividend transaction with negative amount.
-         *
-         * If we have a negative amount and no gross reinvestment,
-         * we first book the dividends received and then the tax charge
-         *
-         * Taxes must be paid.
+         * This test is a dividend transaction with negative amount. If we have
+         * a negative amount and no gross reinvestment, we first book the
+         * dividends received and then the tax charge Taxes must be paid.
          */
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4783,11 +4574,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2N6CW"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR MSCI WORLD ETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -4796,31 +4587,24 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.62))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(17.62))));
     }
 
     @Test
     public void testFlatExDegiroDividende01WithNegativeAmountAndSecurityInEUR()
     {
         /***
-         * This test is a dividend transaction with negative amount.
-         *
-         * If we have a negative amount and no gross reinvestment,
-         * we first book the dividends received and then the tax charge
-         *
-         * Taxes must be paid.
+         * This test is a dividend transaction with negative amount. If we have
+         * a negative amount and no gross reinvestment, we first book the
+         * dividends received and then the tax charge Taxes must be paid.
          */
-        var security = new Security("SPDR MSCI WORLD ETF", CurrencyUnit.EUR);
+        var security = new Security("SPDR MSCI WORLD ETF", "EUR");
         security.setIsin("IE00BFY0GT14");
         security.setWkn("A2N6CW");
 
@@ -4835,11 +4619,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -4848,18 +4632,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 123456789 | Bruttothesaurierung 78,81 USD"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.24))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -4871,12 +4651,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4885,11 +4664,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1XEY2"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("XTRACKERS MSCI WORLD ETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -4898,21 +4677,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(34.66))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(34.66))));
 
         // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -4921,20 +4696,16 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testFlatExDegiroDividende02WithNegativeAmountAndSecurityInEUR()
     {
-        var security = new Security("XTRACKERS MSCI WORLD ETF", CurrencyUnit.EUR);
+        var security = new Security("XTRACKERS MSCI WORLD ETF", "EUR");
         security.setIsin("IE00BK1PV551");
         security.setWkn("A1XEY2");
 
@@ -4949,11 +4720,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -4962,18 +4733,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.66 / 1.110600))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(34.66 / 1.110600))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check dividends tax transaction
-        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .skip(1).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -4982,18 +4749,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.39))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(99.39))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -5005,12 +4768,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5019,11 +4781,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PSR2"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -5032,23 +4794,21 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.37))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.66 / 1.051700))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.37))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.66 / 1.051700))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.81 / 1.051700))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.81 / 1.051700))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10 / 1.051700))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.10 / 1.051700))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(10.66))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(10.66))));
     }
 
     @Test
     public void testFlatExDegiroDividende03WithSecurityInEUR()
     {
-        var security = new Security("BIONTECH SE SPON. ADRS 1", CurrencyUnit.EUR);
+        var security = new Security("BIONTECH SE SPON. ADRS 1", "EUR");
         security.setIsin("US09075V1026");
         security.setWkn("A2PSR2");
 
@@ -5063,11 +4823,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -5076,18 +4836,16 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.37))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.66 / 1.051700))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.37))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(10.66 / 1.051700))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.81 / 1.051700))));
+                        is(Money.of("EUR", Values.Amount.factorize(2.81 / 1.051700))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10 / 1.051700))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.10 / 1.051700))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -5099,12 +4857,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5113,11 +4870,11 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PSR2"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BIONTECH SE SPON. ADRS 1"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -5126,14 +4883,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDegiroDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924406"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(15.49))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(21.32))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5.63))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.20))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(15.49))));
+        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(21.32))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(5.63))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.20))));
     }
 
     @Test
@@ -5150,7 +4903,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5171,7 +4924,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende05WithSecurityInEUR()
     {
-        var security = new Security("X(IE)-MSCI WRLD MOM. 1CDL", CurrencyUnit.EUR);
+        var security = new Security("X(IE)-MSCI WRLD MOM. 1CDL", "EUR");
         security.setIsin("IE00BL25JP72");
         security.setWkn("A1103G");
 
@@ -5189,7 +4942,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
@@ -5201,7 +4954,7 @@ public class FinTechGroupBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -5221,7 +4974,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5242,7 +4995,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende06WithSecurityInEUR()
     {
-        var security = new Security("X(IE)-MSCI WRLD QUAL.1CDL", CurrencyUnit.EUR);
+        var security = new Security("X(IE)-MSCI WRLD QUAL.1CDL", "EUR");
         security.setIsin("IE00BL25JL35");
         security.setWkn("A1103D");
 
@@ -5260,7 +5013,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
@@ -5272,7 +5025,7 @@ public class FinTechGroupBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -5292,7 +5045,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5313,7 +5066,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende07WithSecurityInEUR()
     {
-        var security = new Security("X(IE)-MSCI WORLD VAL.1CDL", CurrencyUnit.EUR);
+        var security = new Security("X(IE)-MSCI WORLD VAL.1CDL", "EUR");
         security.setIsin("IE00BL25JM42");
         security.setWkn("A1103E");
 
@@ -5331,7 +5084,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
@@ -5343,7 +5096,7 @@ public class FinTechGroupBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -5363,7 +5116,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5423,7 +5176,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5444,7 +5197,7 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende10WithSecurityInEUR()
     {
-        var security = new Security("TORON.DOM.BK 19/24 MTN", CurrencyUnit.EUR);
+        var security = new Security("TORON.DOM.BK 19/24 MTN", "EUR");
         security.setIsin("US89114QCB23");
         security.setWkn("A2RY26");
 
@@ -5462,7 +5215,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5474,7 +5227,7 @@ public class FinTechGroupBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -5494,7 +5247,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5528,7 +5281,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5553,14 +5306,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividendeReinvestGebuehren01.txt"), errors);
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividendeReinvestGebuehren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5591,7 +5345,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5617,14 +5371,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalerhoehung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalerhoehung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5650,14 +5405,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalherabsetzung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalherabsetzung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5683,14 +5439,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5716,14 +5473,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5749,12 +5507,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5763,7 +5520,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12HM0"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APHRIA INC."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -5778,13 +5535,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 123456789"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52))));
+                        is(Money.of("EUR", Values.Amount.factorize(4416.52))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4573.80))));
+                        is(Money.of("EUR", Values.Amount.factorize(4573.80))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(148.87))));
+                        is(Money.of("EUR", Values.Amount.factorize(148.87))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
     }
 
     @Test
@@ -5794,12 +5551,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5808,7 +5564,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("855681"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("INTEL CORP.       DL-,001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -5823,13 +5579,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36))));
+                        is(Money.of("USD", Values.Amount.factorize(4773.36))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4780.50))));
+                        is(Money.of("USD", Values.Amount.factorize(4780.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+                        is(Money.of("USD", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.03 + 0.11))));
+                        is(Money.of("USD", Values.Amount.factorize(7.03 + 0.11))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -5844,19 +5600,19 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98))));
+                        is(Money.of("USD", Values.Amount.factorize(955.98))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(957.00))));
+                        is(Money.of("USD", Values.Amount.factorize(957.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.00))));
+                        is(Money.of("USD", Values.Amount.factorize(1.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
+                        is(Money.of("USD", Values.Amount.factorize(0.02))));
     }
 
     @Test
     public void testFlatExSammelabrechnung02WithSecurityInEUR()
     {
-        var security = new Security("INTEL CORP.       DL-,001", CurrencyUnit.EUR);
+        var security = new Security("INTEL CORP.       DL-,001", "EUR");
         security.setIsin("US4581401001");
         security.setWkn("855681");
 
@@ -5867,8 +5623,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -5886,13 +5641,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694078"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4773.36))));
+                        is(Money.of("USD", Values.Amount.factorize(4773.36))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4780.50))));
+                        is(Money.of("USD", Values.Amount.factorize(4780.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+                        is(Money.of("USD", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(7.03 + 0.11))));
+                        is(Money.of("USD", Values.Amount.factorize(7.03 + 0.11))));
 
         // check 2st buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -5907,13 +5662,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2101694102"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(955.98))));
+                        is(Money.of("USD", Values.Amount.factorize(955.98))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(957.00))));
+                        is(Money.of("USD", Values.Amount.factorize(957.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.00))));
+                        is(Money.of("USD", Values.Amount.factorize(1.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
+                        is(Money.of("USD", Values.Amount.factorize(0.02))));
     }
 
     @Test
@@ -5923,12 +5678,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5937,7 +5691,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security1.getWkn(), is("A0S9GB"));
         assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("DT.BOERSE COM. XETRA-GOLD"));
-        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getCurrencyCode(), is("EUR"));
 
         var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
@@ -5945,7 +5699,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security2.getWkn(), is("A2JNY1"));
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("XIAOMI CORP. CL.B"));
-        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getCurrencyCode(), is("EUR"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -5960,13 +5714,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1558.05))));
+                        is(Money.of("EUR", Values.Amount.factorize(1558.05))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1564.23))));
+                        is(Money.of("EUR", Values.Amount.factorize(1564.23))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.80 + 2.38))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.80 + 2.38))));
 
         // check 2nd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -5981,13 +5735,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 0000000000"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1581.52))));
+                        is(Money.of("EUR", Values.Amount.factorize(1581.52))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1572.17))));
+                        is(Money.of("EUR", Values.Amount.factorize(1572.17))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.80 + 5.55))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.80 + 5.55))));
     }
 
     @Test
@@ -5997,12 +5751,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -6014,7 +5767,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6024,7 +5777,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.26))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.26))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.04.2020 - 30.04.2020"));
 
@@ -6034,7 +5787,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.05))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2020 - 30.06.2020"));
     }
@@ -6046,12 +5799,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(13));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -6063,7 +5815,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6073,7 +5825,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrift"));
 
@@ -6083,7 +5835,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrift"));
 
@@ -6093,7 +5845,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrift"));
 
@@ -6103,7 +5855,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(400.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6113,7 +5865,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("R-Transaktion"));
 
@@ -6123,7 +5875,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("R-Transaktion"));
 
@@ -6133,7 +5885,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(53.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(53.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("R-Transaktion"));
 
@@ -6143,7 +5895,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6153,7 +5905,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(150.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6163,7 +5915,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-25T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(159.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(159.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6173,7 +5925,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(160.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(160.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6183,7 +5935,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.07))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.07))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.10.2019 - 31.12.2019"));
     }
@@ -6195,12 +5947,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -6212,7 +5963,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-07T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6222,7 +5973,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.26))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.26))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.04.2020 - 30.04.2020"));
 
@@ -6232,7 +5983,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.05))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2020 - 30.06.2020"));
     }
@@ -6244,15 +5995,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(6L));
         assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2019-06-30"), hasAmount("EUR", 0.50), //
@@ -6286,12 +6036,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -6303,7 +6052,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6313,7 +6062,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6323,7 +6072,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-08T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(200.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6333,7 +6082,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.04.2021 - 30.04.2021"));
 
@@ -6346,19 +6095,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2021-07-19T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotgebühren 01.04.2021 - 30.04.2021"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -6366,7 +6116,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.05.2021 - 31.05.2021"));
 
@@ -6379,19 +6129,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2021-07-19T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotgebühren 01.05.2021 - 31.05.2021"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -6399,7 +6150,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.06.2021 - 30.06.2021"));
 
@@ -6412,19 +6163,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2021-07-19T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2021-07-19T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotgebühren 01.06.2021 - 30.06.2021"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         item = iter.next();
 
@@ -6432,7 +6184,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.73))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.73))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2021 - 30.06.2021"));
     }
@@ -6444,12 +6196,11 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(24));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -6461,7 +6212,7 @@ public class FinTechGroupBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6471,7 +6222,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1800.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1800.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6481,7 +6232,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-20T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6491,7 +6242,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-26T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1250.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1250.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6501,7 +6252,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-29T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6511,7 +6262,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6521,7 +6272,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1500.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6531,7 +6282,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6541,7 +6292,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2500.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2500.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6551,7 +6302,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-13T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6561,7 +6312,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6571,7 +6322,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1500.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6581,7 +6332,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6591,7 +6342,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6601,7 +6352,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-14T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6611,7 +6362,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6621,7 +6372,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-01T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(600.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(600.00))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
 
@@ -6631,7 +6382,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.09))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.09))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Depotservicegebühr US09075V1026"));
 
@@ -6641,7 +6392,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.84))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.84))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.01.2022 - 31.01.2022"));
 
@@ -6651,7 +6402,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.99))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.99))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.02.2022 - 28.02.2022"));
 
@@ -6661,7 +6412,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.85))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.85))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Depotgebühren 01.03.2022 - 31.03.2022"));
 
@@ -6671,7 +6422,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-04-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.34))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Depotservicegebühr US47215P1066"));
 
@@ -6681,7 +6432,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Gebühr Tax Voucher WKN A0NFN3"));
 
@@ -6691,7 +6442,7 @@ public class FinTechGroupBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.16))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.16))));
         assertThat(transaction.getSource(), is("FlatExDegiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.01.2022 - 31.03.2022"));
     }
@@ -6710,7 +6461,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(8L));
         assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interestCharge(hasDate("2021-03-31"), hasAmount("EUR", 5.60), //
@@ -6759,15 +6510,14 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         interest( //
                                         hasDate("2023-09-30"), hasAmount("EUR", 0.68), //
-                                        hasSource("FlatExDegiroKontoauszug04.txt"),
-                                        hasNote("Zinsabschluss")))));
+                                        hasSource("FlatExDegiroKontoauszug04.txt"), hasNote("Zinsabschluss")))));
     }
 
     @Test
@@ -6784,11 +6534,12 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-10-25"), hasAmount("EUR", 5.90), //
-                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Gebühr Kapitaltransaktion Ausland US17275R1023"))));
+                        hasSource("FlatExDegiroKontoauszug05.txt"),
+                        hasNote("Gebühr Kapitaltransaktion Ausland US17275R1023"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-11-09"), hasAmount("EUR", 10000.00), //
@@ -6800,7 +6551,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-12-01"), hasAmount("EUR", 5.90), //
-                        hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"))));
+                        hasSource("FlatExDegiroKontoauszug05.txt"),
+                        hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"))));
     }
 
     @Test
@@ -6817,7 +6569,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -6846,7 +6598,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-02-13"), hasAmount("EUR", 1.88), //
@@ -6864,12 +6616,12 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -6878,7 +6630,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2ARCV"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("THE TRA.DESK A DL-,000001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -6893,13 +6645,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1737.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1737.50))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1745.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(1745.40))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.00))));
 
         // check 2st buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(1).findFirst()
@@ -6914,13 +6666,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertNull(entry.getNote());
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1796.12))));
+                        is(Money.of("EUR", Values.Amount.factorize(1796.12))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1788.22))));
+                        is(Money.of("EUR", Values.Amount.factorize(1788.22))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.00))));
     }
 
     @Test
@@ -6930,12 +6682,12 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -6944,7 +6696,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2JHLZ"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DOCUSIGN INC    DL-,0001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -6959,13 +6711,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2592937917"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3456.41))));
+                        is(Money.of("EUR", Values.Amount.factorize(3456.41))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3448.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3448.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90 + 2.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90 + 2.51))));
     }
 
     @Test
@@ -6975,12 +6727,12 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung03.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -6989,7 +6741,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("MA5GEG"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("MS CI.I. CALL23 ABL"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -7004,17 +6756,16 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 2512347917"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.19))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.19))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.19))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.19))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
@@ -7023,14 +6774,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDeGiroSammelabrechnung03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2512347917"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -7040,12 +6787,12 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung04.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -7054,7 +6801,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getWkn(), is("851745"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("3M CO.             DL-,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -7069,23 +6816,23 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 3157457617"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(534.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(534.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(528.10))));
+                        is(Money.of("EUR", Values.Amount.factorize(528.10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(572.35))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(572.35))));
     }
 
     @Test
     public void testFlatExDeGiroSammelabrechnung04WithSecurityInEUR()
     {
-        var security = new Security("3M CO.             DL-,01", CurrencyUnit.EUR);
+        var security = new Security("3M CO.             DL-,01", "EUR");
         security.setIsin("US88579Y1010");
         security.setWkn("851745");
 
@@ -7096,11 +6843,12 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung04.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -7115,17 +6863,17 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 3157457617"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(534.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(534.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(528.10))));
+                        is(Money.of("EUR", Values.Amount.factorize(528.10))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.90))));
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -7137,16 +6885,16 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroDepotServiceGebuehr01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroDepotServiceGebuehr01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
@@ -7155,16 +6903,13 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getSource(), is("FlatExDeGiroDepotServiceGebuehr01.txt"));
         assertThat(transaction.getNote(), is("Depotservicegebühr US09075V1026"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.18))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.18))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.18))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.18))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
-        // check cancellation (Import by deposit statement transaction) transaction
+        // check cancellation (Import by deposit statement transaction)
+        // transaction
         var cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
@@ -7174,19 +6919,20 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(cancellation.getFailureMessage(),
                         is(Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2023-03-23T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2023-03-23T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("FlatExDeGiroDepotServiceGebuehr01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Depotservicegebühr US09075V1026"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.18))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.18))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.18))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.18))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -7196,14 +6942,15 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVorabpauschale01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVorabpauschale01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
