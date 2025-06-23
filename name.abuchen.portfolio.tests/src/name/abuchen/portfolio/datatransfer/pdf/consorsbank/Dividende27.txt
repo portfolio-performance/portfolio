@@ -1,0 +1,63 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 0111111111
+1111111111/00
+Vermerk der Bank: 1000
+2
+Max Mustermann
+Datum: 20.06.2025
+Blumenstraße 1
+Seite: 1 von 2
+12345 Blumenstadt
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile A0F5UF DE000A0F5UF5
+Bestand
+279 Stück
+Ertragsausschüttung je Anteil 0,288567 USD Schlusstag 15.06.2025
+Brutto in USD 80,51 USD
+80,51 USD
+Netto in USD
+Devisenkurs 1,155400 USD / EUR
+69,68 EUR
+Brutto in EUR
+69,68 EUR
+Netto zugunsten IBAN DE12 1234 1234 1234 1234 11
+Valuta 16.06.2025 BIC DABBDEMMXXX
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1351384D-1391-2E9B-721D-F56F59BFD0E2
+Depotnummer: 0111111111
+1111111111/00
+Vermerk der Bank: 1000
+2
+Datum: 20.06.2025
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 69,68 EUR
+abzgl. Teilfreistellung 30,00 % von 69,68 EUR 20,90 EUR
+Ertragsausschüttung mit Teilfreistellung 48,78 EUR
+Steuerpflichtiger Gesamtertrag 48,78 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -48,78 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 2.647,90 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -48,78 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 2.599,12 EUR
+Sparerpauschbetrag vor der Abrechnung 1.000,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 1.000,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 6,26 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 6,26 EUR
