@@ -314,7 +314,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
             else if (hasDemoAccount())
-                webaccess.addParameter("x_cg_demo_api_key", demoApiKey); //$NON-NLS-1$
+                webaccess.addHeader("x-cg-demo-api-key", this.demoApiKey); //$NON-NLS-1$
 
             ResponseData response = cache.lookup(coinGeckoId + security.getCurrencyCode());
 
