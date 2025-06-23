@@ -12,11 +12,12 @@ E-Mail: info@flatex.de
 flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
         Frankfurt, 16.01.2025
 5018893443676558698451
-Herr Auftragsdatum      16.01.2025n
-ePgx FpSgMQ mgYwLhl Handelstag         16.01.2025
-WR ZbgYYdcYug Ausführungszeit    21:57 Uhr
-zHwdt ByVKEXzQqG 26 Valuta             20.01.2025
-62541 mNPJUisVJ Auftragsnummer     826637070/1
+Auftragsdatum      16.01.2025
+Herrn Handelstag         16.01.2025
+Vorname Nachname
+WR Stadt Ausführungszeit    21:57 Uhr
+Musterstrasse 26 Valuta             20.01.2025
+62541 Stadt Auftragsnummer     826637070/1
 Ausf.platz/-art    Société Général
 Wertpapierabrechnung Kauf Fonds/Zertifikate
 Ihre Depotnummer: 2943276222
