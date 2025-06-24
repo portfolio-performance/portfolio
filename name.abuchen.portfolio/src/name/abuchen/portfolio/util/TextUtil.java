@@ -235,6 +235,24 @@ public final class TextUtil
     }
 
     /**
+     * Removes non-breaking spaces and narrow non-breaking spaces from the input
+     * string that are used in some locales as grouping separator. We sanitize
+     * the formatted number before putting it into the clipboard, so that the
+     * result can be copied to Excel.
+     */
+    public static String sanitizeFormattedNumber(String input)
+    {
+        if (input == null || input.isEmpty())
+            return input;
+
+        return input
+                        // \u00A0 = NO-BREAK SPACE
+                        .replace("\u00A0", "") //$NON-NLS-1$ //$NON-NLS-2$
+                        // \u202F = NARROW NO-BREAK SPACE
+                        .replace("\u202F", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
      * Retrieves the appropriate list separator character based on the default
      * locale. Handles Switzerland differently, using a semicolon as a list
      * separator if the locale is Swiss.

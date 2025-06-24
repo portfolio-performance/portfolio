@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class CopyPasteSupport
 {
@@ -70,18 +71,18 @@ public class CopyPasteSupport
             for (int column = 0; column < columnCount; column++)
             {
                 if (column > 0)
-                    result.append((char) SWT.TAB);
+                    result.append(SWT.TAB);
 
                 int orderedColumn = columnOrder[column];
 
                 if (labelProvider[orderedColumn] != null)
                 {
                     Long value = labelProvider[orderedColumn].getValue(rowItem.getData());
-                    result.append(value != null ? Values.Share.format(value) : ""); //$NON-NLS-1$
+                    result.append(value != null ? TextUtil.sanitizeFormattedNumber(Values.Share.format(value)) : ""); //$NON-NLS-1$
                 }
                 else
                 {
-                    result.append(rowItem.getText(orderedColumn));
+                    result.append(TextUtil.sanitizeFormattedNumber(rowItem.getText(orderedColumn)));
                 }
             }
         }
@@ -135,18 +136,18 @@ public class CopyPasteSupport
             for (int column = 0; column < columnCount; column++)
             {
                 if (column > 0)
-                    result.append((char) SWT.TAB);
+                    result.append(SWT.TAB);
 
                 int orderedColumn = columnOrder[column];
 
                 if (labelProvider[orderedColumn] != null)
                 {
                     Long value = labelProvider[orderedColumn].getValue(rowItem.getData());
-                    result.append(value != null ? Values.Share.format(value) : ""); //$NON-NLS-1$
+                    result.append(value != null ? TextUtil.sanitizeFormattedNumber(Values.Share.format(value)) : ""); //$NON-NLS-1$
                 }
                 else
                 {
-                    result.append(rowItem.getText(orderedColumn));
+                    result.append(TextUtil.sanitizeFormattedNumber(rowItem.getText(orderedColumn)));
                 }
             }
         }
@@ -175,6 +176,11 @@ public class CopyPasteSupport
         {
             text = cell.getText();
         }
+
+        // remove grouping separators such as non-breaking spaces. We do not
+        // know if we actually have a number here - as we are working only with
+        // the formatted text - therefore we keep the spaces.
+        text = TextUtil.sanitizeFormattedNumber(text);
 
         if (text != null && !text.isEmpty())
         {
