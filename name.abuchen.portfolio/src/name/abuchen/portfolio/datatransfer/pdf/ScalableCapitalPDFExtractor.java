@@ -141,6 +141,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -212,15 +213,15 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // USD / EUR 1,0269
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .attributes("termCurrency", "baseCurrency", "exchangeRate", "gross") //
                                                         .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ (?<gross>[\\.,\\d]+) [A-Z]{3}.*$") //")
-                                                        .match("^(?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^(?<termCurrency>[A-Z]{3}) \\/ (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -338,38 +339,38 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
-                        // Kapitalertragsteuer 0,00 EUR
+                        // Kapitalertragsteuer 2,48 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
-                        // Solidaritätszuschlag 0,00 EUR
+                        // Solidaritätszuschlag 0,14 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Solidarit.tszuschlag (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Kirchensteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Ausländische Quellensteuer -0,01 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Ausl.ndische Quellensteuer \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Ausl.ndische Quellensteuer (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Verrechnung anrechenbarer Quellensteuer -0,12 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Verrechnung anrechenbarer Quellensteuer \\-(?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Verrechnung anrechenbarer Quellensteuer (\\-)?(?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
