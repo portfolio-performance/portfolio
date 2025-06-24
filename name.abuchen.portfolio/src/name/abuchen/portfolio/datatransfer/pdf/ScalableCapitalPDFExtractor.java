@@ -141,6 +141,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -214,13 +215,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
                                                         .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ (?<gross>[\\.,\\d]+) [A-Z]{3}.*$") //")
-                                                        .match("^(?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^(?<termCurrency>[A-Z]{3}) \\/ (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -336,6 +337,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Steuern -2,62 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Steuern \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kapitalertragsteuer 0,00 EUR
