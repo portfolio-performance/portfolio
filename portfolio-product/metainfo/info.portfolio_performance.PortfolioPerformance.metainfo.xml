@@ -37,6 +37,16 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+     <release version="0.77.3" date="2025-06-24">
+      <description>
+        <ul>
+          <li>Improvement: Numeric values are copied to the clipboard without special characters such as non-breaking spaces.</li>
+          <li>Improvement: PDF imports updated for Scalable Capital, Consorsbank, and Flatex.</li>
+          <li xml:lang="de">Verbesserung: Zahlenwerte werden ohne Sonderzeichen wie geschützte Leerzeichen (non-breaking spaces) in die Zwischenablage kopiert.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für Scalable Capital, Consorsbank und FlatEx.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.77.2" date="2025-06-22">
       <description>
         <ul>
