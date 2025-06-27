@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Exchange;
@@ -12,6 +13,8 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public interface QuoteFeed // NOSONAR
 {
+    static final Pattern HOST_PATTERN = Pattern.compile("^https?://([^/]+)/?.*"); //$NON-NLS-1$
+
     String MANUAL = "MANUAL"; //$NON-NLS-1$
 
     /**
@@ -23,6 +26,38 @@ public interface QuoteFeed // NOSONAR
      * Returns the display name of the quote feed.
      */
     String getName();
+
+    /**
+     * Returns the criterion used to group securities for the price update. By
+     * default, this is the feed itself. However, when downloading prices from a
+     * website, it maybe the host name to parallelize requests to different
+     * hosts while avoiding overloading a single host. This also works across
+     * feeds, e.g., the generic HTML and JSON feeds should not access the same
+     * server in parallel.
+     */
+    default String getGroupingCriterion(Security security)
+    {
+        return getId();
+    }
+
+    default String getLatestGroupingCriterion(Security security)
+    {
+        return getGroupingCriterion(security);
+    }
+
+    /**
+     * Extracts the grouping criterion from the given URL.
+     */
+    default String getCriterionFrom(String url)
+    {
+        if (url == null || url.isEmpty())
+            return getId();
+
+        // Use regex to extract host because the URL may contain template
+        // patterns which woould not be parsed correctly by URL.getHost()
+        var matcher = HOST_PATTERN.matcher(url);
+        return matcher.matches() ? matcher.group(1) : getId();
+    }
 
     /**
      * Returns true if the download request should be merged, i.e. first the

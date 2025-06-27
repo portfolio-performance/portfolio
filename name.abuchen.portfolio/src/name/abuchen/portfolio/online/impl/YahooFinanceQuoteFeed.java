@@ -54,8 +54,15 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         return Messages.LabelYahooFinance;
     }
+    
+    @Override
+    public String getGroupingCriterion(Security security)
+    {
+        return "finance.yahoo.com"; //$NON-NLS-1$
+    }
 
     @SuppressWarnings("nls")
+    @VisibleForTesting
     public String rpcLatestQuote(Security security) throws IOException
     {
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol())

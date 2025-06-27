@@ -148,6 +148,9 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
     }
 
+    /**
+     * Returns true if the user has a paid plan with CoinGecko.
+     */
     private boolean hasPlan()
     {
         return apiKey != null && !apiKey.isBlank();
@@ -156,6 +159,20 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     private boolean hasDemoAccount()
     {
         return demoApiKey != null && !demoApiKey.isBlank();
+    }
+
+    /**
+     * Returns the host name of the CoinGecko API to use for requests.
+     */
+    private String getHost()
+    {
+        return hasPlan() ? "pro-api.coingecko.com" : "api.coingecko.com"; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    @Override
+    public String getGroupingCriterion(Security security)
+    {
+        return getHost();
     }
 
     @Override
@@ -306,7 +323,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             if (!hasPlan() && days > 365)
                 days = 365;
 
-            WebAccess webaccess = new WebAccess(hasPlan() ? "pro-api.coingecko.com" : "api.coingecko.com", endpoint) //$NON-NLS-1$ //$NON-NLS-2$
+            WebAccess webaccess = new WebAccess(getHost(), endpoint)
                             .addParameter("vs_currency", security.getCurrencyCode()) //$NON-NLS-1$
                             .addParameter("days", Long.toString(days)) //$NON-NLS-1$
                             .addParameter("interval", "daily"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -392,8 +409,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         {
             List<Coin> coinList = new ArrayList<>();
 
-            WebAccess webaccess = new WebAccess(hasPlan() ? "pro-api.coingecko.com" : "api.coingecko.com", //$NON-NLS-1$ //$NON-NLS-2$
-                            "/api/v3/coins/list"); //$NON-NLS-1$
+            WebAccess webaccess = new WebAccess(getHost(), "/api/v3/coins/list"); //$NON-NLS-1$
 
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$

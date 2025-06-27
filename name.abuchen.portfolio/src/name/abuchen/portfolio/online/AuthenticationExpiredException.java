@@ -13,4 +13,9 @@ public class AuthenticationExpiredException extends QuoteFeedException
     {
         super();
     }
+    
+    public AuthenticationExpiredException(String message)
+    {
+        super(message);
+    }
 }

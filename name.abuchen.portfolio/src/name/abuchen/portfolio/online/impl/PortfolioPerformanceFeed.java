@@ -204,7 +204,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
         var isAuthenticated = oauthClient != null && oauthClient.isAuthenticated();
 
         if (!isSample && !isAuthenticated)
-            return QuoteFeedData.withError(new IllegalArgumentException(Messages.LabelLoginToRetrieveHistoricalPrices));
+            throw new AuthenticationExpiredException(Messages.LabelLoginToRetrieveHistoricalPrices);
 
         Optional<AccessToken> accessToken = Optional.empty();
 

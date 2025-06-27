@@ -82,6 +82,19 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public String getGroupingCriterion(Security security)
+    {
+        return getCriterionFrom(security.getFeedURL());
+    }
+
+    @Override
+    public String getLatestGroupingCriterion(Security security)
+    {
+        String latestFeed = security.getLatestFeed();
+        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? latestFeed : security.getFeedURL());
+    }
+
+    @Override
     public Optional<String> getHelpURL()
     {
         return Optional.of("https://help.portfolio-performance.info/de/how-to/kursdaten_laden/#json"); //$NON-NLS-1$
