@@ -153,6 +153,7 @@ export MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml clean verify
 ```
 
+Windows
 ```
 set MAVEN_OPTS="-Xmx4g"
 mvn -f portfolio-app/pom.xml -Denforcer.skip=true clean verify
