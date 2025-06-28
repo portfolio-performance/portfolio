@@ -56,6 +56,16 @@ public class SecuritySelection implements Adaptable
     {
         return securities;
     }
+    
+    public boolean isEmpty()
+    {
+        return securities.isEmpty();
+    }
+    
+    public int size()
+    {
+        return securities.size();
+    }
 
     @Override
     public <T> T adapt(Class<T> type)
