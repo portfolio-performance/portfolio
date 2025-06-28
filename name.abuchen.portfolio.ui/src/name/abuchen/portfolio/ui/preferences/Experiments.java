@@ -12,6 +12,7 @@ public class Experiments
 {
     public enum Feature
     {
+        JULY26_REFACTORED_PRICE_UPDATE
     }
 
     public boolean isEnabled(Feature feature)

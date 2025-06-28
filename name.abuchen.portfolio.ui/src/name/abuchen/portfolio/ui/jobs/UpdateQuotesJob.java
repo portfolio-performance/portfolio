@@ -45,6 +45,8 @@ import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
+import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
@@ -177,6 +179,15 @@ public final class UpdateQuotesJob extends AbstractClientJob
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
+        var isExperimentEnabled = new Experiments().isEnabled(Experiments.Feature.JULY26_REFACTORED_PRICE_UPDATE);
+        if (isExperimentEnabled)
+        {
+            var job = new UpdatePricesJob(getClient(), filter, target);
+            job.repeatEvery(repeatPeriod);
+            job.schedule();
+            return Status.OK_STATUS;
+        }
+
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
         List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
