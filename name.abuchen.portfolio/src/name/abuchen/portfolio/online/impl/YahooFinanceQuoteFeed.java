@@ -276,6 +276,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             int size = quotes.size();
 
+            LatestSecurityPrice previous = null;
             for (int index = 0; index < size; index++)
             {
                 Long ts = (Long) timestamp.get(index);
@@ -295,7 +296,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
                     price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
-                    answer.add(price);
+                    if (previous != null && previous.getDate().equals(price.getDate()))
+                        answer.set(answer.size() - 1, price);
+                    else
+                        answer.add(price);
+
+                    previous = price;
                 }
             }
         }
