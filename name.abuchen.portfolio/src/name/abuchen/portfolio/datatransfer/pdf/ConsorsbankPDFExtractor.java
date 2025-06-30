@@ -534,10 +534,20 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
+                                        // Quellensteuer in EUR
+                                        // 69,68 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Quellensteuer in [A-Z]{3}") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // Brutto in EUR
                                         // 69,68 EUR
-                                        // Netto zugunsten IBAN DE12 1234 1234 1234 1234 11
-                                        // Valuta 16.06.2025 BIC DABBDEMMXXX
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //

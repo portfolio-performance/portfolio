@@ -4124,6 +4124,148 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testDividende28()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4370761029"), hasWkn("866953"), hasTicker(null), //
+                        hasName("HOME DEPOT INC., THE Registered Shares DL -,05"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-18T00:00"), hasShares(5.76152), //
+                        hasSource("Dividende28.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.75), hasGrossValue("EUR", 11.47), //
+                        hasForexGrossValue("USD", 13.25), //
+                        hasTaxes("EUR", 1.72), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende28WithSecurityInEUR()
+    {
+        var security = new Security("HOME DEPOT INC., THE Registered Shares DL -,05", "EUR");
+        security.setIsin("US4370761029");
+        security.setWkn("866953");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-18T00:00"), hasShares(5.76152), //
+                        hasSource("Dividende28.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.75), hasGrossValue("EUR", 11.47), //
+                        hasTaxes("EUR", 1.72), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende29()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7475251036"), hasWkn("883121"), hasTicker(null), //
+                        hasName("QUALCOMM INC. Registered Shares DL -,0001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-26T00:00"), hasShares(2.80486), //
+                        hasSource("Dividende29.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.81), hasGrossValue("EUR", 2.13), //
+                        hasForexGrossValue("USD", 2.50), //
+                        hasTaxes("EUR", 0.32), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende29WithSecurityInEUR()
+    {
+        var security = new Security("QUALCOMM INC. Registered Shares DL -,0001", "EUR");
+        security.setIsin("US7475251036");
+        security.setWkn("883121");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-26T00:00"), hasShares(2.80486), //
+                        hasSource("Dividende29.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.81), hasGrossValue("EUR", 2.13), //
+                        hasTaxes("EUR", 0.32), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testStornoDividende01()
     {
         var extractor = new ConsorsbankPDFExtractor(new Client());
