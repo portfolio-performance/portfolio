@@ -352,16 +352,19 @@ public class PaymentsViewModel
                     {
                         sumRetired.values[index] += value;
                         sumRetired.sum += value;
+                        sumRetired.numTransactions[index] += 1;
                     }
                     else
                     {
                         Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, false, noOfmonths));
                         line.values[index] += value;
                         line.sum += value;
+                        line.numTransactions[index] += 1;
                     }
 
                     sum.values[index] += value;
                     sum.sum += value;
+                    sum.numTransactions[index] += 1;
 
                     trade.getClosingTransaction().ifPresent(transactions::add);
                 }
@@ -398,6 +401,16 @@ public class PaymentsViewModel
 
                     if (value != 0)
                     {
+                        // Closed trades transactions were already added and
+                        // counted for "SUM/ALL" mode.
+                        // They may or may not contains FEES or TAXES.
+                        // In SUM mode ("ALL"), we still need to remove FEES and
+                        // TAXES value from the profit of such closed trades,
+                        // but we should not increase the number of "ALL"
+                        // transactions a second time.
+                        boolean isClosedTrade = transactions
+                                        .contains(new TransactionPair<>(portfolio, transaction));
+
                         transactions.add(new TransactionPair<>(portfolio, transaction));
 
                         int index = (transaction.getDateTime().getYear() - startYear) * 12
@@ -408,18 +421,21 @@ public class PaymentsViewModel
                         {
                             sumRetired.values[index] += value;
                             sumRetired.sum += value;
-                            sumRetired.numTransactions[index] += 1;
+                            if (mode != Mode.ALL || !isClosedTrade)
+                                sumRetired.numTransactions[index] += 1;
                         }
                         else
                         {
                             Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, false, noOfmonths));
                             line.values[index] += value;
                             line.sum += value;
-                            line.numTransactions[index] += 1;
+                            if (mode != Mode.ALL || !isClosedTrade)
+                                line.numTransactions[index] += 1;
                         }
                         sum.values[index] += value;
                         sum.sum += value;
-                        sum.numTransactions[index] += 1;
+                        if (mode != Mode.ALL || !isClosedTrade)
+                            sum.numTransactions[index] += 1;
                     }
                 }
             }
