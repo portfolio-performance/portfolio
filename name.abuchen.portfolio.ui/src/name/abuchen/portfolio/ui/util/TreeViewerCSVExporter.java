@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TreeViewerCSVExporter extends AbstractCSVExporter
 {
@@ -108,7 +109,7 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
         path.add(labels[0].getText(element));
 
         for (String s : path)
-            printer.print(s);
+            printer.print(TextUtil.sanitizeFormattedNumber(s));
 
         for (int ii = path.size(); ii < depth; ii++)
             printer.print(""); //$NON-NLS-1$
@@ -116,7 +117,7 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
         for (int ii = 1; ii < labels.length; ii++)
         {
             String text = labels[ii].getText(element);
-            printer.print(text != null ? text : ""); //$NON-NLS-1$
+            printer.print(text != null ? TextUtil.sanitizeFormattedNumber(text) : ""); //$NON-NLS-1$
         }
 
         printer.println();
