@@ -70,7 +70,7 @@ public class TradesTableViewer
 
         trades = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(trades);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), trades);
         ToolTipCustomProviderSupport.enableFor(trades, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(trades);
 

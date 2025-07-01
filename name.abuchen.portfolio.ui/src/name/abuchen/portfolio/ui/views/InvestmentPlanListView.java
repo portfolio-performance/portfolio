@@ -141,7 +141,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
 
         plans = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(plans);
+        ColumnEditingSupport.prepare(getEditorActivationState(), plans);
         CopyPasteSupport.enableFor(plans);
 
         planColumns = new ShowHideColumnHelper(InvestmentPlanListView.class.getSimpleName() + "@top", //$NON-NLS-1$

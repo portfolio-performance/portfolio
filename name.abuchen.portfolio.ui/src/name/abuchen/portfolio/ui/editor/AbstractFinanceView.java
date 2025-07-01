@@ -50,6 +50,11 @@ public abstract class AbstractFinanceView
     @Inject
     private PortfolioPart part;
 
+    /**
+     * Track editor activation and delay updates until the editor is deactivated
+     */
+    private final EditorActivationState editorActivationState = new EditorActivationState();
+
     private Composite top;
     private InformationPane pane;
 
@@ -98,10 +103,12 @@ public abstract class AbstractFinanceView
 
     public final void onRecalculationNeeded()
     {
-        notifyModelUpdated();
+        editorActivationState.deferUntilNotEditing(() -> {
+            notifyModelUpdated();
 
-        if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
-            pane.onRecalculationNeeded();
+            if (pane != null && pane.getControl() != null && !pane.getControl().isDisposed())
+                pane.onRecalculationNeeded();
+        });
     }
 
     /** called when some other view modifies the model */
@@ -328,12 +335,17 @@ public abstract class AbstractFinanceView
 
         context.dispose();
     }
+    
+    public final EditorActivationState getEditorActivationState()
+    {
+        return editorActivationState;
+    }
 
     public final Control getControl()
     {
         return top;
     }
-
+    
     public void setFocus()
     {
         getControl().setFocus();

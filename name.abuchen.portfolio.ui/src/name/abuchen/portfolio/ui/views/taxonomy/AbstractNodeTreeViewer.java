@@ -371,7 +371,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ColumnEditingSupport.prepare(nodeViewer);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(nodeViewer);
 

@@ -18,6 +18,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.editor.EditorActivationState;
 
 public abstract class ColumnEditingSupport
 {
@@ -106,6 +107,11 @@ public abstract class ColumnEditingSupport
 
     public static void prepare(ColumnViewer viewer)
     {
+        prepare(null, viewer);
+    }
+
+    public static void prepare(EditorActivationState state, ColumnViewer viewer)
+    {
         ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(viewer)
         {
             @Override
@@ -131,5 +137,8 @@ public abstract class ColumnEditingSupport
             TableViewerEditor.create(tableViewer, null, activationStrategy, feature);
         else if (viewer instanceof TreeViewer treeViewer)
             TreeViewerEditor.create(treeViewer, activationStrategy, feature);
+
+        if (state != null)
+            viewer.getColumnViewerEditor().addEditorActivationListener(state.createListener());
     }
 }

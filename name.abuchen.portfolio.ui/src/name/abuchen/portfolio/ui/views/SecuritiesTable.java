@@ -195,7 +195,7 @@ public final class SecuritiesTable implements ModificationListener
         ImportFromURLDropAdapter.attach(this.securities.getControl(), view.getPart());
         ImportFromFileDropAdapter.attach(this.securities.getControl(), view.getPart());
 
-        ColumnEditingSupport.prepare(securities);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(securities);
 

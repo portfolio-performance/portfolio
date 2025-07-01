@@ -743,7 +743,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         recordColumns.setToolBarManager(getViewToolBarManager());
 
         ToolTipCustomProviderSupport.enableFor(records, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(records);
+        ColumnEditingSupport.prepare(getEditorActivationState(), records);
         CopyPasteSupport.enableFor(records);
 
         createCommonColumns();

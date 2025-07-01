@@ -196,7 +196,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         portfolios = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(portfolios);
+        ColumnEditingSupport.prepare(getEditorActivationState(), portfolios);
         ColumnViewerToolTipSupport.enableFor(portfolios, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(portfolios);
 

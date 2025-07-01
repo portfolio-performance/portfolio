@@ -269,7 +269,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
-        ColumnEditingSupport.prepare(calculation);
+        ColumnEditingSupport.prepare(getEditorActivationState(), calculation);
         ToolTipCustomProviderSupport.enableFor(calculation, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(calculation);
 

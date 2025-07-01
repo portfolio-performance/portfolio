@@ -363,7 +363,7 @@ public class StatementOfAssetsViewer
 
         assets = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(assets);
+        ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets);
         CopyPasteSupport.enableFor(assets);
 
         ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());

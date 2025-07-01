@@ -149,7 +149,7 @@ public final class TransactionsViewer implements ModificationListener
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(tableViewer);
+        ColumnEditingSupport.prepare(owner.getEditorActivationState(), tableViewer);
         CopyPasteSupport.enableFor(tableViewer);
 
         tableViewer.setUseHashlookup(true);

@@ -104,7 +104,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
 
         bookmarks = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ColumnEditingSupport.prepare(bookmarks);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), bookmarks);
         CopyPasteSupport.enableFor(bookmarks);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(BookmarksListTab.class.getSimpleName() + "@bottom", //$NON-NLS-1$

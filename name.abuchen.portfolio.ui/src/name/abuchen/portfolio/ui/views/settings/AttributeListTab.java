@@ -146,7 +146,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         CopyPasteSupport.enableFor(tableViewer);
 
-        ColumnEditingSupport.prepare(tableViewer);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), tableViewer);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(AttributeListTab.class.getSimpleName() + "@v2", //$NON-NLS-1$
                         preferences, tableViewer, layout);

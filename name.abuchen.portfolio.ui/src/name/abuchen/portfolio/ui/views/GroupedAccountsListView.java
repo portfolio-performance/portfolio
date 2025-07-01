@@ -254,7 +254,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         tree.setHeaderVisible(true);
         tree.setLinesVisible(true);
 
-        ColumnEditingSupport.prepare(groupedAccounts);
+        ColumnEditingSupport.prepare(getEditorActivationState(), groupedAccounts);
         ColumnViewerToolTipSupport.enableFor(groupedAccounts, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(groupedAccounts);
 

@@ -149,7 +149,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(transactions);
+        ColumnEditingSupport.prepare(view.getEditorActivationState(), transactions);
         CopyPasteSupport.enableFor(transactions);
 
         // needed for virtual tables as otherwise the in-place editing does not

@@ -109,28 +109,29 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
     @Override
     public void onProgress(PriceUpdateSnapshot status)
     {
-        var isNewRequest = this.timestamp != status.getTimestamp();
+        getEditorActivationState().deferUntilNotEditing(() -> {
+            var isNewRequest = this.timestamp != status.getTimestamp();
 
-        this.timestamp = status.getTimestamp();
-        this.statuses = status;
+            this.timestamp = status.getTimestamp();
+            this.statuses = status;
 
-        if (!securities.getTable().isDisposed())
-        {
-            if (isNewRequest)
+            if (!securities.getTable().isDisposed())
             {
-                securities.setInput(status.getSecurities());
+                if (isNewRequest)
+                {
+                    securities.setInput(status.getSecurities());
 
-                var dateTime = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault())
-                                .toLocalDateTime();
+                    var dateTime = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-                updateTitle(MessageFormat.format(Messages.LabelWithQualifier, getDefaultTitle(),
-                                Values.DateTime.format(dateTime)));
+                    updateTitle(MessageFormat.format(Messages.LabelWithQualifier, getDefaultTitle(),
+                                    Values.DateTime.format(dateTime)));
+                }
+                else
+                {
+                    securities.refresh(true);
+                }
             }
-            else
-            {
-                securities.refresh(true);
-            }
-        }
+        });
     }
 
     @Override
@@ -155,7 +156,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
                         securities, layout);
 
         ToolTipCustomProviderSupport.enableFor(securities, ToolTip.NO_RECREATE);
-        ColumnEditingSupport.prepare(securities);
+        ColumnEditingSupport.prepare(getEditorActivationState(), securities);
         CopyPasteSupport.enableFor(securities);
 
         createColumns();
