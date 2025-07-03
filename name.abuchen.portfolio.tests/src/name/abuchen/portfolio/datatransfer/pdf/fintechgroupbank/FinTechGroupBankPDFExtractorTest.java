@@ -6610,6 +6610,31 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKontoauszug08()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2025-04-25"), hasAmount("EUR", 15.90), //
+                        hasSource("FlatExDegiroKontoauszug08.txt"), hasNote("Bearbeitungsgebühr - Erträgnisaufstellung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2025-04-30"), hasAmount("EUR", 5.90), //
+                        hasSource("FlatExDegiroKontoauszug08.txt"), hasNote("Portokosten - Versand Kundenformular"))));
+    }
+
+    @Test
     public void testFlatExDeGiroSammelabrechnung01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
