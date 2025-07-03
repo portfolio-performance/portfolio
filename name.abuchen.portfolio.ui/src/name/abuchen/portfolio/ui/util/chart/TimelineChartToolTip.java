@@ -47,6 +47,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private Format defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
     private Map<String, Format> overrideValueFormat = new HashMap<>();
+    private Map<String, Color> secondColor = new HashMap<>();
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
@@ -96,6 +97,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     public void overrideValueFormat(String series, Format valueFormat)
     {
         this.overrideValueFormat.put(series, valueFormat);
+    }
+
+    public void secondColor(String series, Color color)
+    {
+        this.secondColor.put(series, color);
     }
 
     /**
@@ -216,6 +222,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
             cl.setBackdropColor(color);
+
+            Color color2 = secondColor.getOrDefault(series.getId(), color);
+            if (!color.equals(color2))
+                cl.setSecondColor(color2);
+
             cl.setText(series.getDescription() != null ? series.getDescription() : series.getId());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(cl);
 

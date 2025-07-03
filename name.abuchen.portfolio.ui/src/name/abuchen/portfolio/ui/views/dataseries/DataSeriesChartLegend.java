@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
 import name.abuchen.portfolio.util.TextUtil;
 
 /**
@@ -179,6 +181,12 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
             return legend.resources.createColor(series.getColor());
         }
 
+        private Color getSecondColor()
+        {
+            DataSeriesChartLegend legend = (DataSeriesChartLegend) getParent();
+            return legend.resources.createColor(series.getColorNegative());
+        }
+
         private void paintControl(Event e)
         {
             Color oldForeground = e.gc.getForeground();
@@ -190,6 +198,12 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             gc.setBackground(getColor());
             gc.fillRectangle(r.x, r.y, r.width, r.height);
+
+            if (!getSecondColor().equals(getColor()))
+            {
+                gc.setBackground(getSecondColor());
+                gc.fillPolygon(new int[] { r.x, r.y, r.width, r.y, r.width, r.height });
+            }
 
             gc.setForeground(getForeground());
             gc.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
@@ -222,7 +236,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
         {
             DataSeriesConfigurator configurator = ((DataSeriesChartLegend) getParent()).configurator;
 
-            manager.add(new Action(Messages.ChartSeriesPickerColor)
+            manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, "")) //$NON-NLS-1$
             {
                 @Override
                 public void run()
@@ -233,10 +247,45 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                     if (newColor != null)
                     {
                         series.setColor(newColor);
+                        series.setColorNegative(newColor);
                         configurator.fireUpdate();
                     }
                 }
             });
+
+            if (!series.isLineChart() && configurator.getUseCase().equals(UseCase.PERFORMANCE))
+            {
+                manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, " (> 0)")) //$NON-NLS-1$
+                {
+                    @Override
+                    public void run()
+                    {
+                        ColorDialog colorDialog = new ColorDialog(Display.getDefault().getActiveShell());
+                        colorDialog.setRGB(series.getColor());
+                        RGB newColor = colorDialog.open();
+                        if (newColor != null)
+                        {
+                            series.setColor(newColor);
+                            configurator.fireUpdate();
+                        }
+                    }
+                });
+                manager.add(new Action(MessageFormat.format(Messages.ChartSeriesPickerColor, " (< 0)")) //$NON-NLS-1$
+                {
+                    @Override
+                    public void run()
+                    {
+                        ColorDialog colorDialog = new ColorDialog(Display.getDefault().getActiveShell());
+                        colorDialog.setRGB(series.getColorNegative());
+                        RGB newColor = colorDialog.open();
+                        if (newColor != null)
+                        {
+                            series.setColorNegative(newColor);
+                            configurator.fireUpdate();
+                        }
+                    }
+                });
+            }
 
             if (series.isLineChart())
             {
