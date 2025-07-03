@@ -239,8 +239,8 @@ public class DataSeriesSet
                         Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
-                        Messages.LabelAggregationDaily,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
+                        Messages.LabelAggregationDaily, Colors.getColor(60, 151, 218).getRGB());
+        series.setColorNegative(Colors.getColor(253, 156, 82).getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
