@@ -1030,9 +1030,18 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (Arrays.asList(ASSETKEY_OPTION, ASSETKEY_FUTURE_OPTION).contains(element.getAttribute("assetCategory")))
             {
-                // Converting symbol into Option name only to keep a single security per option trading asset
-                computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+.*", ""));
-                description = computedTickerSymbol.get();
+                if (element.hasAttribute("underlyingSymbol")) {
+                    // Using the underlying symbol if possible
+                    computedTickerSymbol = Optional.ofNullable(element.getAttribute("underlyingSymbol"));
+                    description = computedTickerSymbol.get();
+                    quoteFeed = YahooFinanceQuoteFeed.ID;
+                }
+                else
+                {
+                    // Converting symbol into the trading asset (SPXW  20251207...) -> SPXW
+                    computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+.*", ""));
+                    description = computedTickerSymbol.get();
+                }
             }
 
             if (Arrays.asList(ASSETKEY_STOCK, ASSETKEY_FUND, ASSETKEY_CERTIFICATE)

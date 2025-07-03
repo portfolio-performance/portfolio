@@ -2806,10 +2806,10 @@ public class IBFlexStatementExtractorTest
                         .collect(Collectors.toList());
 
         assertThat(errors, empty());
-        assertThat(securityItems.size(), is(3));
+        assertThat(securityItems.size(), is(2));
         assertThat(buySellTransactions.size(), is(0));
         assertThat(accountTransactions.size(), is(4));
-        assertThat(results.size(), is(7));
+        assertThat(results.size(), is(6));
         new AssertImportActions().check(results, CurrencyUnit.USD, CurrencyUnit.EUR);
 
         assertThat(results, hasItem(sellOption( //
