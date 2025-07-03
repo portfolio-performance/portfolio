@@ -183,7 +183,7 @@ public class PaymentsView extends AbstractFinanceView
 
         toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
 
-            EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
+            EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.OPTION_PREMIUMS, Mode.INTEREST, Mode.EARNINGS);
             if (supportGrossValue.contains(model.getMode()))
             {
                 Action action = new SimpleAction(Messages.LabelUseGrossValue,

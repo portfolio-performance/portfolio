@@ -56,6 +56,7 @@ import name.abuchen.portfolio.util.Interval;
         dividends = new long[size];
         interest = new long[size];
         interestCharge = new long[size];
+        optionPremiums = new long[size];
         buys = new long[size];
         sells = new long[size];
         fees = new long[size];
@@ -146,6 +147,20 @@ import name.abuchen.portfolio.util.Interval;
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
                                                         interval, d);
                                         addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
+                                                        interval, d);
+                                        break;
+                                    case SELL_OPTION:
+                                        addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, d);
+                                        addValue(optionPremiums, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
+                                                        interval, d);
+                                        break;
+                                    case BUY_OPTION:
+                                        addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, d);
+                                        addValue(optionPremiums, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
                                                         interval, d);
                                         break;

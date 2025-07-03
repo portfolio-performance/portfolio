@@ -87,7 +87,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         switch (type)
         {
-            case DEPOSIT, REMOVAL, FEES, FEES_REFUND, TAXES, TAX_REFUND, INTEREST, INTEREST_CHARGE, DIVIDENDS:
+            case DEPOSIT, REMOVAL, FEES, FEES_REFUND, TAXES, TAX_REFUND, INTEREST, INTEREST_CHARGE, DIVIDENDS, SELL_OPTION, BUY_OPTION:
                 return;
             case BUY, SELL, TRANSFER_IN, TRANSFER_OUT:
             default:
@@ -187,6 +187,8 @@ public class AccountTransactionModel extends AbstractModel
     public boolean supportsSecurity()
     {
         return type == Type.DIVIDENDS //
+                        || type == Type.SELL_OPTION //
+                        || type == Type.BUY_OPTION //
                         || type == Type.TAXES //
                         || type == Type.TAX_REFUND //
                         || type == Type.FEES //
@@ -203,12 +205,17 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsTaxUnits()
     {
-        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST;
+        return type == AccountTransaction.Type.DIVIDENDS || 
+               type == AccountTransaction.Type.INTEREST || 
+               type == AccountTransaction.Type.SELL_OPTION || 
+               type == AccountTransaction.Type.BUY_OPTION;
     }
 
     public boolean supportsFees()
     {
-        return type == AccountTransaction.Type.DIVIDENDS;
+        return type == AccountTransaction.Type.DIVIDENDS || 
+               type == AccountTransaction.Type.SELL_OPTION || 
+               type == AccountTransaction.Type.BUY_OPTION;
     }
 
     public void setSource(Account account, AccountTransaction transaction)

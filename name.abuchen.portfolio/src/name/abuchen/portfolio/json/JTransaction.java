@@ -18,7 +18,7 @@ public class JTransaction
 {
     public enum Type
     {
-        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
+        PURCHASE, SALE, INBOUND_DELIVERY, OUTBOUND_DELIVERY, SECURITY_TRANSFER, CASH_TRANSFER, DEPOSIT, REMOVAL, DIVIDEND, SELL_OPTION, BUY_OPTION, INTEREST, INTEREST_CHARGE, TAX, TAX_REFUND, FEE, FEE_REFUND
     }
 
     private Type type;
@@ -238,6 +238,12 @@ public class JTransaction
                 break;
             case DIVIDENDS:
                 jtx.type = JTransaction.Type.DIVIDEND;
+                break;
+            case SELL_OPTION:
+                jtx.type = JTransaction.Type.SELL_OPTION;
+                break;
+            case BUY_OPTION:
+                jtx.type = JTransaction.Type.BUY_OPTION;
                 break;
             case INTEREST:
                 jtx.type = JTransaction.Type.INTEREST;

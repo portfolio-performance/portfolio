@@ -48,10 +48,12 @@ import name.abuchen.portfolio.money.MutableMoney;
         {
             case TAXES:
             case FEES:
+            case BUY_OPTION:
                 delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                 break;
             case TAX_REFUND:
             case FEES_REFUND:
+            case SELL_OPTION:
                 delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                 break;
             default:

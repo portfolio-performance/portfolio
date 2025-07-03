@@ -49,6 +49,24 @@ public enum TransactionFilterCriteria
         else
             return false;
     }), //
+    BUY_AND_SELL_OPTION(Messages.TransactionFilterOptionBuyAndSell, 0, tx -> {
+        if (tx instanceof AccountTransaction atx)
+            return atx.getType() == AccountTransaction.Type.BUY_OPTION || atx.getType() == AccountTransaction.Type.SELL_OPTION;
+        else
+            return false;
+    }), //
+    SELL_OPTION(Messages.TransactionFilterOptionSell, 1, tx -> {
+        if (tx instanceof AccountTransaction atx)
+            return atx.getType() == AccountTransaction.Type.SELL_OPTION;
+        else
+            return false;
+    }), //
+    BUY_OPTION(Messages.TransactionFilterOptionBuy, 1, tx -> {
+        if (tx instanceof AccountTransaction atx)
+            return atx.getType() == AccountTransaction.Type.BUY_OPTION;
+        else
+            return false;
+    }), //
     DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, 0, tx -> {
         if (tx instanceof AccountTransaction atx)
             return atx.getType() == AccountTransaction.Type.DEPOSIT || atx.getType() == AccountTransaction.Type.REMOVAL;

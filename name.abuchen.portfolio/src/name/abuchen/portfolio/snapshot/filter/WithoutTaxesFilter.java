@@ -154,6 +154,8 @@ public class WithoutTaxesFilter implements ClientFilter
                     pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
+                case SELL_OPTION:
+                case BUY_OPTION:
                 case INTEREST:
                     stripTaxes(t, pseudoAccount);
                     break;
@@ -183,7 +185,10 @@ public class WithoutTaxesFilter implements ClientFilter
 
     private void stripTaxes(AccountTransaction t, ReadOnlyAccount readOnlyAccount)
     {
-        if (t.getType() != AccountTransaction.Type.DIVIDENDS && t.getType() != AccountTransaction.Type.INTEREST)
+        if (t.getType() != AccountTransaction.Type.DIVIDENDS && 
+            t.getType() != AccountTransaction.Type.INTEREST &&
+            t.getType() != AccountTransaction.Type.SELL_OPTION &&
+            t.getType() != AccountTransaction.Type.BUY_OPTION)
             throw new UnsupportedOperationException();
 
         Money taxes = t.getUnitSum(Unit.Type.TAX);
