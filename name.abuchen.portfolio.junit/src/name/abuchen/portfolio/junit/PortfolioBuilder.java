@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class PortfolioBuilder
 {
@@ -29,6 +30,21 @@ public class PortfolioBuilder
     {
         this();
         this.portfolio.setReferenceAccount(referenceAccount);
+    }
+
+    public static long amountOf(double amount)
+    {
+        return Values.Amount.factorize(amount);
+    }
+
+    public static long quoteOf(double amount)
+    {
+        return Values.Quote.factorize(amount);
+    }
+
+    public static long sharesOf(double shares)
+    {
+        return Values.Share.factorize(shares);
     }
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount) // NOSONAR
