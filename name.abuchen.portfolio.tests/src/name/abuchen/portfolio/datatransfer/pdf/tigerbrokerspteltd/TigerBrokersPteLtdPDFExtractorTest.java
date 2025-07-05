@@ -939,4 +939,34 @@ public class TigerBrokersPteLtdPDFExtractorTest
                         hasAmount("USD", 38.28), hasGrossValue("USD", 45.03), //
                         hasTaxes("USD", 6.75), hasFees("USD", 0.00))));
     }
+
+    @Test
+    public void testAccountStatement09()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VT"), //
+                        hasName("Vanguard Total World Stock ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-19T13:01:49"), hasShares(3), //
+                        hasSource("AccountStatement09.txt"), hasNote(null), //
+                        hasAmount("USD", 356.90), hasGrossValue("USD", 354.90), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.01 + 0.99 + 1.00))));
+    }
 }
