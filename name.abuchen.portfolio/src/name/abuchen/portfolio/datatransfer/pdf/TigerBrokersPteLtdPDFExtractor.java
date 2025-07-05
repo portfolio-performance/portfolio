@@ -66,6 +66,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("Activity Statement", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^.* Base Currency : (?<currency>[\\w]{3})$");
+            Pattern pCurrencyNew = Pattern.compile("^.* Cash (?<currency>[\\w]{3})$");
             Pattern pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
             Pattern pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[\\w]{3})$");
             Pattern pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
@@ -77,6 +78,10 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                 Matcher mCurrency = pCurrency.matcher(line);
                 if (mCurrency.matches())
                     context.put("currency", mCurrency.group("currency"));
+
+                Matcher mCurrencyNew = pCurrencyNew.matcher(line);
+                if (mCurrencyNew.matches())
+                    context.put("currency", mCurrencyNew.group("currency"));
 
                 Matcher mSecurityCurrency = pSecurityCurrency.matcher(line);
                 if (mSecurityCurrency.matches())
@@ -428,6 +433,79 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         addFeesSectionsTransaction(buyBlock_Format04, type);
 
+        Transaction<BuySellEntry> buyBlock_Format05 = new Transaction<>();
+
+        // @formatter:off
+        // Settlement Fee: 
+        // -0.01 2024-12-19
+        // Vanguard Total World Stock ETF
+        // US ARCA Open 3 118.29960 354.90 0.00 Commission: 2024-
+        // -0.99 0.00 0.00 13:01:49, US USD
+        // (VT) 12-20
+        // Platform Fee: /Eastern
+        // -1.00
+        // @formatter:on
+        Block firstRelevantLineForBuyBlock_Format05 = new Block("^Settlement Fee:\\s*$", "^\\-[\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForBuyBlock_Format05);
+        firstRelevantLineForBuyBlock_Format05.setMaxSize(9);
+        firstRelevantLineForBuyBlock_Format05.set(buyBlock_Format05);
+
+        buyBlock_Format05 //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        .section("settlementFee", "date", "name", "shares", "gross", "commissionFee", "time", "tickerSymbol", "platformFee") //
+                        .match("^Settlement Fee:\\s*$") //
+                        .match("^\\-(?<settlementFee>[\\.,\\d]+) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^.* (?<shares>[\\.,\\d]+) [\\.,\\d]+ (?<gross>[\\.,\\d]+) [\\.,\\d]+ Commission: [\\d]{4}\\-$") //
+                        .match("^\\-(?<commissionFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* [\\w]{3}$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) [\\d]{2}\\-[\\d]{2}$") //
+                        .match("^Platform Fee:.*$") //
+                        .match("^\\-(?<platformFee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            DocumentContext context = type.getCurrentContext();
+
+                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
+                                            .orElseGet(SecurityListHelper::new);
+                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+
+                            if (securityItem.isPresent())
+                            {
+                                v.put("name", securityItem.get().name);
+                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
+                                v.put("currency", securityItem.get().currency);
+                            }
+                            else
+                            {
+                                // If not found in security list, use the parsed name and set currency to USD
+                                v.put("currency", CurrencyUnit.USD);
+                            }
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+
+                            // The amount is stated in gross, add all fees
+                            t.setAmount(asAmount(v.get("gross")) + asAmount(v.get("settlementFee")) + asAmount(v.get("commissionFee")) + asAmount(v.get("platformFee")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                return new BuySellEntryItem(t);
+                            return null;
+                        });
+
+        addFeesSectionsTransaction(buyBlock_Format05, type);
+
         Transaction<AccountTransaction> dividendBlock = new Transaction<>();
 
         // @formatter:off
@@ -719,7 +797,41 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^Platform Fee: \\-(?<fee>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Settlement Fee: 
+                        // -0.01 2024-12-19
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^Settlement Fee:\\s*$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.USD);
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // -0.99 0.00 0.00 13:01:49, US USD
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^\\-(?<fee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .* [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.USD);
+                            processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Platform Fee: /Eastern
+                        // -1.00
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^Platform Fee:.*$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.USD);
+                            processFeeEntries(t, v, type);
+                        });
     }
 
     private static class SecurityItem
