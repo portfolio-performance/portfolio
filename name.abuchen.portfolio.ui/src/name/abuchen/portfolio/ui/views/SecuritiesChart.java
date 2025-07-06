@@ -63,6 +63,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
@@ -997,13 +998,15 @@ public class SecuritiesChart
                                 || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
                                 || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA);
 
-                if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
-                                || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
-                {
-                    Optional<Double> purchasePrice = chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
-                                    ? getLatestPurchasePrice(security, CostMethod.FIFO)
-                                    : getLatestPurchasePrice(security, CostMethod.MOVING_AVERAGE);
+                CostMethod costMethod = null;
+                if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE))
+                    costMethod = CostMethod.FIFO;
+                else if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
+                    costMethod = CostMethod.MOVING_AVERAGE;
 
+                if (costMethod != null)
+                {
+                    Optional<Double> purchasePrice = getLatestPurchasePrice(security, costMethod);
                     if (purchasePrice.isPresent())
                         firstQuote = purchasePrice.get();
                     else
@@ -1828,8 +1831,19 @@ public class SecuritiesChart
                         .sorted() //
                         .toList();
 
-        var color = costMethod == CostMethod.FIFO ? colorFifoPurchasePrice : colorMovingAveragePurchasePrice;
         var costMethodLabel = costMethod.getLabel();
+        Color color;
+        switch (costMethod)
+        {
+            case FIFO:
+                color = colorFifoPurchasePrice;
+                break;
+            case MOVING_AVERAGE:
+                color = colorMovingAveragePurchasePrice;
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
 
         // calculate FIFO or moving average purchase price for each event -
         // separate lineSeries per holding period
@@ -1924,9 +1938,18 @@ public class SecuritiesChart
         if (r.isEmpty())
             return Optional.empty();
 
-        var purchasePricePerShare = costMethod == CostMethod.FIFO //
-                        ? r.get().getFifoCostPerSharesHeld().get()
-                        : r.get().getMovingAverageCostPerSharesHeld().get();
+        Quote purchasePricePerShare;
+        switch (costMethod)
+        {
+            case FIFO:
+                purchasePricePerShare = r.get().getFifoCostPerSharesHeld().get();
+                break;
+            case MOVING_AVERAGE:
+                purchasePricePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
 
         return purchasePricePerShare.isZero() ? Optional.empty()
                         : Optional.of(purchasePricePerShare.getAmount() / Values.Quote.divider());
