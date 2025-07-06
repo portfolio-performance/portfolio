@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -144,7 +145,7 @@ public class PerformanceView extends AbstractHistoricView
 
             manager.add(new LabelOnly(Messages.LabelCapitalGainsMethod));
 
-            SimpleAction useFifoAction = new SimpleAction(Messages.LabelCapitalGainsMethodFIFO, a -> {
+            SimpleAction useFifoAction = new SimpleAction(CostMethod.FIFO.getLabel(), a -> {
                 this.useFifo = true;
                 getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
                 reportingPeriodUpdated();
@@ -152,7 +153,7 @@ public class PerformanceView extends AbstractHistoricView
             useFifoAction.setChecked(this.useFifo);
             manager.add(useFifoAction);
 
-            SimpleAction movingAverageMethod = new SimpleAction(Messages.LabelCapitalGainsMethodMovingAverage, a -> {
+            SimpleAction movingAverageMethod = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(), a -> {
                 this.useFifo = false;
                 getPreferenceStore().setValue(CAPITAL_GAIN_USE_FIFO, String.valueOf(useFifo));
                 reportingPeriodUpdated();

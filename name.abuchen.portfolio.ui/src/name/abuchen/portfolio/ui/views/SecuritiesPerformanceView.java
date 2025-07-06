@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -1280,7 +1281,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         // FIFO
         Column column = new Column("cg", //$NON-NLS-1$
                         Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
-        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + Messages.LabelCapitalGainsMethodFIFO); //$NON-NLS-1$
+        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + CostMethod.FIFO.getLabel()); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setDescription(Messages.ColumnRealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnCapitalGainsGeneric_Description);
@@ -1364,10 +1365,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         // Moving Average
         column = new Column("cgMA", //$NON-NLS-1$
-                        Messages.ColumnRealizedCapitalGains + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr //$NON-NLS-1$
+                        Messages.ColumnRealizedCapitalGains + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() //$NON-NLS-1$
                                         + ")", //$NON-NLS-1$
                         SWT.RIGHT, 80);
-        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + Messages.LabelCapitalGainsMethodMovingAverage); //$NON-NLS-1$
+        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + CostMethod.MOVING_AVERAGE.getLabel()); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setMenuLabel(Messages.ColumnRealizedCapitalGains);
         column.setDescription(Messages.ColumnRealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
@@ -1390,7 +1391,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         column = new Column("cgforexMA", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains + " (" //$NON-NLS-1$ //$NON-NLS-2$
-                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                                        + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains); //$NON-NLS-1$
@@ -1408,7 +1409,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         recordColumns.addColumn(column);
 
         column = new Column("ucgMA", //$NON-NLS-1$
-                        Messages.ColumnUnrealizedCapitalGains + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr //$NON-NLS-1$
+                        Messages.ColumnUnrealizedCapitalGains + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() //$NON-NLS-1$
                                         + ")", //$NON-NLS-1$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
@@ -1433,7 +1434,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         column = new Column("ucgforexMA", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains + " (" //$NON-NLS-1$ //$NON-NLS-2$
-                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                                        + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains); //$NON-NLS-1$
@@ -1594,7 +1595,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private void createForeignCurrencyColumns()
     {
-        Column column = new Column("quoteReportingCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, 75); //$NON-NLS-1$
+        Column column = new Column("quoteReportingCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, //$NON-NLS-1$
+                        75);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         column.setDescription(Messages.ColumnQuote_DescriptionEndOfReportingPeriod);
         column.setLabelProvider(new RowElementLabelProvider(new ColumnLabelProvider()
@@ -1603,7 +1605,8 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             public String getText(Object element)
             {
                 LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
-                return Values.CalculatedQuote.format(entry.getQuoteInTermCurrency().get(), getClient().getBaseCurrency());
+                return Values.CalculatedQuote.format(entry.getQuoteInTermCurrency().get(),
+                                getClient().getBaseCurrency());
             }
 
             @Override

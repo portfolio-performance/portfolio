@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -198,7 +199,7 @@ public class TradesTableViewer
 
         column = new Column("entryvalue", Messages.ColumnEntryValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnEntryValue + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -212,10 +213,10 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("entryvalue-mvavg", //$NON-NLS-1$
-                        Messages.ColumnEntryValue + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.ColumnEntryValue + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnEntryValue);
-        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnEntryValue + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -239,7 +240,7 @@ public class TradesTableViewer
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnEntryValue);
         column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$
+                        + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -260,11 +261,11 @@ public class TradesTableViewer
 
         column = new Column("entryvalue-mvavg-pershare", //$NON-NLS-1$
                         Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                                        + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnEntryValue);
         column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$
+                        + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -315,7 +316,7 @@ public class TradesTableViewer
 
         column = new Column("pl", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(
                         new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLoss(), view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLoss()));
@@ -323,7 +324,7 @@ public class TradesTableViewer
 
         column = new Column("gpl", Messages.ColumnGrossProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnGrossProfitLoss + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnGrossProfitLoss + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((Trade) element).getProfitLossWithoutTaxesAndFees(), view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLossWithoutTaxesAndFees()));
@@ -331,10 +332,10 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("pl-mvavg", //$NON-NLS-1$
-                        Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLossMovingAverage(),
                         view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLossMovingAverage()));
@@ -342,11 +343,10 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("gpl-mavg", //$NON-NLS-1$
-                        Messages.ColumnGrossProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.ColumnGrossProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(
-                        Messages.ColumnGrossProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnGrossProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((Trade) element).getProfitLossMovingAverageWithoutTaxesAndFees(),
                         view.getClient()));
@@ -383,17 +383,17 @@ public class TradesTableViewer
 
         column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnReturn);
-        column.setMenuLabel(Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnReturn + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("return-mavg", //$NON-NLS-1$
-                        Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.ColumnReturn + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnReturn);
-        column.setMenuLabel(Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnReturn + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(
                         new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturnMovingAverage()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturnMovingAverage()));

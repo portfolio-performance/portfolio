@@ -256,9 +256,9 @@ public class SecuritiesChart
         EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
         FIFOPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodFIFO)), //
+                        CostMethod.FIFO.getLabel())), //
         FLOATINGAVGPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodMovingAverage)), //
+                        CostMethod.MOVING_AVERAGE.getLabel())), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
         MACD(Messages.LabelChartDetailIndicatorMacd), //
         SMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
@@ -570,9 +570,9 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
         toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodFIFO), calculatedFormat);
+                        CostMethod.FIFO.getLabel()), calculatedFormat);
         toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodMovingAverage), calculatedFormat);
+                        CostMethod.MOVING_AVERAGE.getLabel()), calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
@@ -1810,8 +1810,8 @@ public class SecuritiesChart
         if (security.getCurrencyCode() == null)
             return;
 
-        // create a list of dates that are relevant for FIFO or moving average purchase price
-        // changes (i.e. all purchase and sell events)
+        // create a list of dates that are relevant for FIFO or moving average
+        // purchase price changes (i.e. all purchase and sell events)
 
         Client filteredClient = new ClientSecurityFilter(security).filter(client);
         CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
@@ -1829,11 +1829,10 @@ public class SecuritiesChart
                         .toList();
 
         var color = costMethod == CostMethod.FIFO ? colorFifoPurchasePrice : colorMovingAveragePurchasePrice;
-        var costMethodLabel = costMethod == CostMethod.FIFO ? Messages.LabelCapitalGainsMethodFIFO
-                        : Messages.LabelCapitalGainsMethodMovingAverage;
+        var costMethodLabel = costMethod.getLabel();
 
-        // calculate FIFO or moving average purchase price for each event - separate lineSeries
-        // per holding period
+        // calculate FIFO or moving average purchase price for each event -
+        // separate lineSeries per holding period
 
         List<Double> values = new ArrayList<>();
         List<LocalDate> dates = new ArrayList<>();
@@ -1859,9 +1858,8 @@ public class SecuritiesChart
                     dates.add(eventDate);
                     values.add(values.get(values.size() - 1));
 
-                    createPriceLineSeries(values, dates, seriesCounter++, color,
-                                    MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                                    costMethodLabel));
+                    createPriceLineSeries(values, dates, seriesCounter++, color, MessageFormat.format(
+                                    Messages.LabelWithQualifier, Messages.ColumnPurchasePrice, costMethodLabel));
                     values.clear();
                     dates.clear();
                 }
@@ -1876,14 +1874,13 @@ public class SecuritiesChart
         // add today if needed
         getPurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd(), security, costMethod)
                         .ifPresent(price -> {
-            dates.add(chartInterval.getEnd());
-            values.add(price);
-        });
+                            dates.add(chartInterval.getEnd());
+                            values.add(price);
+                        });
 
         if (!dates.isEmpty())
-            createPriceLineSeries(values, dates, seriesCounter, color,
-                            MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                            costMethodLabel));
+            createPriceLineSeries(values, dates, seriesCounter, color, MessageFormat.format(Messages.LabelWithQualifier,
+                            Messages.ColumnPurchasePrice, costMethodLabel));
     }
 
     private void createPriceLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter, Color color,
