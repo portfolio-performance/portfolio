@@ -9,3 +9,5 @@ workspace
 *.iws
 *.iml
 *.ipr
+
+.claude/settings.local.json
