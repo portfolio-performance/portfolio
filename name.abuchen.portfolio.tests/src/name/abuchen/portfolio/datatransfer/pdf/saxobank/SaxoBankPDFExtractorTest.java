@@ -437,6 +437,27 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testCashTransfer02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CashTransfer02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-06-20"), hasAmount("EUR", 10.00), //
+                        hasSource("CashTransfer02.txt"), hasNote("45108148786"))));
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
