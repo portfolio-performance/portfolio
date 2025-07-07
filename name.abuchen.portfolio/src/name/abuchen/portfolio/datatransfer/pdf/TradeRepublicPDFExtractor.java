@@ -1290,6 +1290,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ (Pcs|unit)\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // NVIDIA 0.04 USD
+                                        // 4.171585 unit. 0.01 USD
+                                        // US67066G1040
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION (QUANTITY|QUANTIT.) (YIELD|TAUX) (AMOUNT|MONTANT)")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [A-Z]{3}")
+                                                        .match("^[\\.,\\d]+ (Pcs|unit)\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // Registered Shares DL 0,2095238
                                         // GB00BH4HKS39
@@ -1339,6 +1352,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // 4.171585 unit. 0.01 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 32.000000 Stücke 0.01 USD
@@ -4269,6 +4289,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // NVIDIA 0.04 USD
+                                        // 4.171585 unit. 0.01 USD
+                                        // US67066G1040
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION (QUANTITY|QUANTIT.) (YIELD|TAUX) (AMOUNT|MONTANT)")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [A-Z]{3}")
+                                                        .match("^[\\.,\\d]+ (Pcs|unit)\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // Registered Shares DL 0,2095238
                                         // GB00BH4HKS39
@@ -4319,6 +4352,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // 4.171585 unit. 0.01 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 32.000000 Stücke 0.01 USD
@@ -4562,6 +4602,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Finanztransaktionssteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Zinssteuer -2,64 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Zinssteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
