@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+kbEhtBF zvIiphrdN SEITE 1 von 1
+ptTnmieRmfVrrjSejE 1 DATUM 02.07.2025
+8625 KxpA AUSFÜHRUNG 0073-f716
+SPARPLAN 85ea-l3Nv
+DEPOT 5305937910
+WERTPAPIERABRECHNUNG SAVEBACK
+ÜBERSICHT
+Ausführung von Saveback am 02.07.2025 an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+MSCI All Country World Investable Market Unhedged 0,047644 Stk. 221,85 EUR 10,57 EUR
+USD (Acc)
+ISIN: IE00B3YLTY66
+GESAMT 10,57 EUR
+ABRECHNUNG
+POSITION BETRAG
+Zinssteuer -2,64 EUR
+GESAMT -13,21 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+AT123456789012345678 2025-07-04 -13,21 EUR
+MSCI All Country World Investable Market Unhedged USD (Acc) nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.com/de-at Sitz der Gesellschaft: Trade Republic Bank GmbH, Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Brunnenstrasse 19-21, 10119 Berlin, Deutschland Andreas Torner
+1010 Wien, Österreich AG Charlottenburg HRB 244347 B Gernot Mittendorfer
+FN 630983 t Christian Hecker
+Thomas Pischke
