@@ -2674,6 +2674,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Jan. Outgoing transfer for Möbel Heidenreich GmbH 359,37 € 188,25 €
                                         // Echtzeitüberweisung
                                         // 2025
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
@@ -2689,6 +2690,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 08 
+                                        // Schloss Laufen Rheinfall, 9,00 CHF, exchange rate: 1,0688889, ECB rate: 
+                                        // Juni Kartentransaktion 9,62 € 1.293,12 €
+                                        // 1,0657572205, markup: 0,29384549 %
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "note", "month", "amountAfter", "currencyAfter", "year") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]*$") //
+                                                        .match("^(?<note>.*), ([\\.,\\d]+) (\\p{Sc}|[A-Z]{3}).*$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Kartentransaktion " //
+                                                                        + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^.*$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+                                                            var amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            var accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            var item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                var amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currencyAfter")));
+                                                            t.setAmount(asAmount(v.get("amountAfter")));
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // 02

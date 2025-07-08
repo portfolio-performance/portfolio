@@ -3478,6 +3478,36 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug34()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug34.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-06-08"), hasAmount("EUR", 313.42),
+                        hasSource("Kontoauszug34.txt"), hasNote("Vorname Nachname"))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 10.680),
+                        hasSource("Kontoauszug34.txt"), hasNote("Schloss Laufen Rheinfall"))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 9.62),
+                        hasSource("Kontoauszug34.txt"), hasNote("Schloss Laufen Rheinfall"))));
+
+        assertThat(results, hasItem(removal(hasDate("2025-06-29"), hasAmount("EUR", 12.90),
+                        hasSource("Kontoauszug34.txt"), hasNote("TROELSCH GMBH BAECKERE"))));
+    }
+
+    @Test
     public void testReleveDeCompte01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
