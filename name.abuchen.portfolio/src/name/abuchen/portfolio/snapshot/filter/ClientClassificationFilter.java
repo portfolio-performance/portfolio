@@ -67,13 +67,13 @@ public class ClientClassificationFilter implements ClientFilter
         public boolean isCategorized(Account account)
         {
             return categorizedAccounts
-                            .contains((account instanceof ReadOnlyAccount readOnly) ? readOnly.unwrap() : account);
+                            .contains(account instanceof ReadOnlyAccount readOnly ? readOnly.unwrap() : account);
         }
 
         public BigDecimal getWeight(InvestmentVehicle vehicle)
         {
             BigDecimal w = vehicle2weight
-                            .get((vehicle instanceof ReadOnlyAccount readOnly) ? readOnly.unwrap() : vehicle);
+                            .get(vehicle instanceof ReadOnlyAccount readOnly ? readOnly.unwrap() : vehicle);
             return w == null ? BigDecimal.ZERO : w;
         }
 
