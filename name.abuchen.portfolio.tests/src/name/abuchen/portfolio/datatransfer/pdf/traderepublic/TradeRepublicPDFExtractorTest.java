@@ -3497,7 +3497,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2025-06-08"), hasAmount("EUR", 313.42),
                         hasSource("Kontoauszug34.txt"), hasNote("Vorname Nachname"))));
 
-        assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 10.680),
+        assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 10.68),
                         hasSource("Kontoauszug34.txt"), hasNote("Schloss Laufen Rheinfall"))));
 
         assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 9.62),
