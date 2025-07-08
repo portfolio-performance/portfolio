@@ -2165,7 +2165,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "year", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ (\\p{Sc}|[A-Z]{3}).*$") //
                                                         .match("^(?<year>[\\d]{4}) con tarjeta .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             var context = type.getCurrentContext();
@@ -2191,10 +2191,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 26 Dez. BACKBLAZE INC, 5,34 $, exchange rate: 0,9625468, ECB rate:
                                         // Kartentransaktion 5,14 € 5.969,04 €
                                         // 2024 0,962000962, markup: 0,05673986 %
+                                        //                
+                                        // 07 Juni _BAZG VIA WebShop, 40,00 CHF, exchange rate: 1,07225, ECB rate: 
+                                        // Kartentransaktion 42,89 € 3.762,94 €
+                                        // 2025 1,0657572205, markup: 0,6092175 %                
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "year", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s](?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s](?<note>.*), [\\.,\\d]+ (\\p{Sc}|[A-Z]{3}).*$") //
                                                         .match("^Kartentransaktion (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}) [\\.,\\d]+, .*$") //
                                                         .assign((t, v) -> {

@@ -3448,6 +3448,36 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug33()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug33.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-06-07"), hasAmount("EUR", 42.89),
+                        hasSource("Kontoauszug33.txt"), hasNote("_BAZG VIA WebShop"))));
+        
+        assertThat(results, hasItem(removal(hasDate("2025-06-07"), hasAmount("EUR", 0.93),
+                        hasSource("Kontoauszug33.txt"), hasNote("GENVOICE.COM"))));
+        
+        assertThat(results, hasItem(removal(hasDate("2025-06-08"), hasAmount("EUR", 26.18),
+                        hasSource("Kontoauszug33.txt"), hasNote("Schloss Laufen Rheinfall"))));
+        
+        assertThat(results, hasItem(removal(hasDate("2025-06-11"), hasAmount("EUR", 21.84),
+                        hasSource("Kontoauszug33.txt"), hasNote("Lidl sagt Danke"))));
+    }
+
+    @Test
     public void testReleveDeCompte01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
