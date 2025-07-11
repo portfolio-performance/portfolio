@@ -1744,6 +1744,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         + "(Depotgeb.hren .*," //
                         + "|Depotservicegeb.hr .*" //
                         + "|flatex trader [\\d]\\.[\\d] Basis" //
+                        + "|Bearbeitungsgeb.hr \\-" //
+                        + "|Portokosten \\- Versand Kundenformular" //
                         + "|Geb.hr .*)" //
                         + "[\\s]{1,}[\\.,\\d]+\\-$");
         type.addBlock(feeblock);
@@ -1776,15 +1778,17 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // 13.04.     04.03.  Depotservicegebühr US09075V1026                       0,09-
                                         // 28.03.     28.03.  flatex trader 2.0 Basis                              10,00-
                                         // 21.06.     21.06.  Gebühr Tax Voucher WKN A0NFN3                         5,90-
+                                        // 30.04.     30.04.  Portokosten - Versand Kundenformular                  5,90-
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
-                                                                        + "(?<note>Depotservicegeb.hr .*" //
+                                                                        + "(?<note>(Depotservicegeb.hr .*" //
                                                                         + "|flatex trader [\\d]\\.[\\d] Basis" //
-                                                                        + "|Geb.hr Tax Voucher.*)" //
+                                                                        + "|Geb.hr Tax Voucher.*" //
+                                                                        + "|Portokosten.*))" //
                                                                         + "[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
@@ -1792,6 +1796,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 25.04.     25.04.  Bearbeitungsgebühr -                                 15,90-
+                                        //                    Erträgnisaufstellung erstellen
+                                        //                    darin enthalten USt 19,00% 2,54 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note1", "amount", "note2") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note1>Bearbeitungsgeb.hr \\-)" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^[\\s]{1,}(?<note2>Ertr.gnisaufstellung).*") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")));
                                                         }),
                                         // @formatter:off
                                         // 26.10.     25.10.  Gebühr Kapitaltransaktion Ausland                     5,90-

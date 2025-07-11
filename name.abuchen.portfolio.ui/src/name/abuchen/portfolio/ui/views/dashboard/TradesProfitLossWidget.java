@@ -16,6 +16,7 @@ public class TradesProfitLossWidget extends AbstractTradesWidget
     public TradesProfitLossWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
+        addConfig(new CostMethodConfig(this));
     }
 
     @Override
@@ -24,8 +25,13 @@ public class TradesProfitLossWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
+        boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
 
-        Money profitLoss = trades.stream().map(Trade::getProfitLoss)
+        Money profitLoss = useFifo
+                        ? trades.stream().map(Trade::getProfitLoss)
+                                        .collect(MoneyCollectors.sum(
+                                                        getDashboardData().getCurrencyConverter().getTermCurrency()))
+                        : trades.stream().map(Trade::getProfitLossMovingAverage)
                         .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()));
 
         this.indicator.setText(

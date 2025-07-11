@@ -62,41 +62,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         }
     }
 
-    enum CostMethod
-    {
-        FIFO(Messages.LabelCapitalGainsMethodFIFO, true), //
-        MOVING_AVERAGE(Messages.LabelCapitalGainsMethodMovingAverage, false);
-
-        private String label;
-        private boolean useFifo;
-
-        private CostMethod(String label, boolean useFifo)
-        {
-            this.label = label;
-            this.useFifo = useFifo;
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-
-        public boolean useFifo()
-        {
-            return useFifo;
-        }
-    }
-
-    static class CostMethodConfig extends EnumBasedConfig<CostMethod>
-    {
-        public CostMethodConfig(WidgetDelegate<?> delegate)
-        {
-            super(delegate, Messages.LabelCapitalGainsMethod, CostMethod.class, Dashboard.Config.COST_METHOD,
-                            Policy.EXACTLY_ONE);
-        }
-    }
-
     static class PositionToolTip extends ToolTip
     {
         private static final int MAX_NO_OF_ROWS = 10;

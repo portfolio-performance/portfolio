@@ -575,9 +575,6 @@ public class Messages extends NLS
     public static String LabelBlueGrayOrange;
     public static String LabelCapitalGains;
     public static String LabelCapitalGainsMethod;
-    public static String LabelCapitalGainsMethodFIFO;
-    public static String LabelCapitalGainsMethodMovingAverage;
-    public static String LabelCapitalGainsMethodMovingAverageAbbr;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartDevelopment;
     public static String LabelChartDetailChartDevelopmentClosing;

@@ -51,6 +51,7 @@ import com.google.common.primitives.Doubles;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -62,6 +63,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
@@ -255,9 +257,9 @@ public class SecuritiesChart
         EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
         FIFOPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodFIFO)), //
+                        CostMethod.FIFO.getLabel())), //
         FLOATINGAVGPURCHASE(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodMovingAverage)), //
+                        CostMethod.MOVING_AVERAGE.getLabel())), //
         BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
         MACD(Messages.LabelChartDetailIndicatorMacd), //
         SMA_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
@@ -569,9 +571,9 @@ public class SecuritiesChart
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsLower, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorBollingerBandsUpper, calculatedFormat);
         toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodFIFO), calculatedFormat);
+                        CostMethod.FIFO.getLabel()), calculatedFormat);
         toolTip.overrideValueFormat(MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                        Messages.LabelCapitalGainsMethodMovingAverage), calculatedFormat);
+                        CostMethod.MOVING_AVERAGE.getLabel()), calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacd, calculatedFormat);
         toolTip.overrideValueFormat(Messages.LabelChartDetailIndicatorMacdSignal, calculatedFormat);
 
@@ -995,28 +997,24 @@ public class SecuritiesChart
                 boolean showAreaRelativeToFirstQuote = chartConfigPainting.contains(ChartDetails.CLOSING)
                                 || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
                                 || chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA);
-                if (!chartConfigPainting.contains(ChartDetails.PURCHASEPRICE)
-                                && !chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
+
+                CostMethod costMethod = null;
+                if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE))
+                    costMethod = CostMethod.FIFO;
+                else if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
+                    costMethod = CostMethod.MOVING_AVERAGE;
+
+                if (costMethod != null)
+                {
+                    Optional<Double> purchasePrice = getLatestPurchasePrice(security, costMethod);
+                    if (purchasePrice.isPresent())
+                        firstQuote = purchasePrice.get();
+                    else
+                        showAreaRelativeToFirstQuote = false;
+                }
+                else
                 {
                     firstQuote = referenceQuote;
-                }
-                else if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE))
-                {
-                    Optional<Double> purchasePrice = getLatestPurchasePrice(security);
-
-                    if (purchasePrice.isPresent())
-                        firstQuote = purchasePrice.get();
-                    else
-                        showAreaRelativeToFirstQuote = false;
-                }
-                else if (chartConfigPainting.contains(ChartDetails.PURCHASEPRICE_MA))
-                {
-                    Optional<Double> purchasePrice = getLatestMovingAveragePurchasePrice(security);
-
-                    if (purchasePrice.isPresent())
-                        firstQuote = purchasePrice.get();
-                    else
-                        showAreaRelativeToFirstQuote = false;
                 }
 
                 addChartMarkerBackground(chartInterval, range, security, chartConfigPainting);
@@ -1231,10 +1229,10 @@ public class SecuritiesChart
             return;
 
         if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
-            addFIFOPurchasePrice(chartInterval, security);
+            addPurchasePrice(chartInterval, security, CostMethod.FIFO);
 
         if (chartConfig.contains(ChartDetails.FLOATINGAVGPURCHASE))
-            addMovingAveragePurchasePrice(chartInterval, security);
+            addPurchasePrice(chartInterval, security, CostMethod.MOVING_AVERAGE);
 
         if (chartConfig.contains(ChartDetails.INVESTMENT))
             addInvestmentMarkerLines(chartInterval, security, chartConfig);
@@ -1808,15 +1806,15 @@ public class SecuritiesChart
         }
     }
 
-    private void addFIFOPurchasePrice(ChartInterval chartInterval, Security security)
+    private void addPurchasePrice(ChartInterval chartInterval, Security security, CostMethod costMethod)
     {
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
         if (security.getCurrencyCode() == null)
             return;
 
-        // create a list of dates that are relevant for FIFO purchase price
-        // changes (i.e. all purchase and sell events)
+        // create a list of dates that are relevant for FIFO or moving average
+        // purchase price changes (i.e. all purchase and sell events)
 
         Client filteredClient = new ClientSecurityFilter(security).filter(client);
         CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
@@ -1833,8 +1831,22 @@ public class SecuritiesChart
                         .sorted() //
                         .toList();
 
-        // calculate FIFO purchase price for each event - separate lineSeries
-        // per holding period
+        var costMethodLabel = costMethod.getLabel();
+        Color color;
+        switch (costMethod)
+        {
+            case FIFO:
+                color = colorFifoPurchasePrice;
+                break;
+            case MOVING_AVERAGE:
+                color = colorMovingAveragePurchasePrice;
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
+
+        // calculate FIFO or moving average purchase price for each event -
+        // separate lineSeries per holding period
 
         List<Double> values = new ArrayList<>();
         List<LocalDate> dates = new ArrayList<>();
@@ -1842,7 +1854,8 @@ public class SecuritiesChart
 
         for (LocalDate eventDate : candidates)
         {
-            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, eventDate, security);
+            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, eventDate, security,
+                            costMethod);
 
             if (purchasePrice.isPresent())
             {
@@ -1859,10 +1872,8 @@ public class SecuritiesChart
                     dates.add(eventDate);
                     values.add(values.get(values.size() - 1));
 
-                    createPriceLineSeries(values, dates, seriesCounter++, colorFifoPurchasePrice,
-                                    MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                                    Messages.LabelCapitalGainsMethodFIFO));
-
+                    createPriceLineSeries(values, dates, seriesCounter++, color, MessageFormat.format(
+                                    Messages.LabelWithQualifier, Messages.ColumnPurchasePrice, costMethodLabel));
                     values.clear();
                     dates.clear();
                 }
@@ -1875,99 +1886,15 @@ public class SecuritiesChart
         }
 
         // add today if needed
-
-        getPurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd(), security).ifPresent(price -> {
-            dates.add(chartInterval.getEnd());
-            values.add(price);
-        });
-
-        if (!dates.isEmpty())
-            createPriceLineSeries(values, dates, seriesCounter, colorFifoPurchasePrice,
-                            MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                            Messages.LabelCapitalGainsMethodFIFO));
-    }
-
-    private void addMovingAveragePurchasePrice(ChartInterval chartInterval, Security security)
-    {
-        // securities w/o currency (e.g. index) cannot be bought and hence have
-        // no purchase price
-        if (security.getCurrencyCode() == null)
-            return;
-
-        // create a list of dates that are relevant for floating avg purchase
-        // price
-        // changes (i.e. all purchase and sell events)
-
-        Client filteredClient = new ClientSecurityFilter(security).filter(client);
-        CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
-
-        List<LocalDate> candidates = client.getPortfolios().stream() //
-                        .flatMap(p -> p.getTransactions().stream()) //
-                        .filter(t -> t.getSecurity().equals(security))
-                        .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
-                                        || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT))
-                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(chartInterval.getEnd()))
-                        .map(t -> chartInterval.contains(t.getDateTime()) ? t.getDateTime().toLocalDate()
-                                        : chartInterval.getStart())
-                        .distinct() //
-                        .sorted() //
-                        .toList();
-
-        // calculate floating avg purchase price for each event - separate
-        // lineSeries
-        // per holding period
-
-        List<Double> values = new ArrayList<>();
-        List<LocalDate> dates = new ArrayList<>();
-        int seriesCounter = 0;
-
-        for (LocalDate eventDate : candidates)
-        {
-            Optional<Double> purchasePrice = getMovingAveragePurchasePrice(filteredClient, securityCurrency, eventDate,
-                            security);
-
-            if (purchasePrice.isPresent())
-            {
-                dates.add(eventDate);
-                values.add(purchasePrice.get());
-            }
-            else
-            {
-                if (!dates.isEmpty())
-                {
-                    // add previous value if the data series ends here (no more
-                    // future events)
-
-                    dates.add(eventDate);
-                    values.add(values.get(values.size() - 1));
-
-                    createPriceLineSeries(values, dates, seriesCounter++, colorMovingAveragePurchasePrice,
-                                    MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                                    Messages.LabelCapitalGainsMethodMovingAverage));
-
-                    values.clear();
-                    dates.clear();
-                }
-                else if (dates.isEmpty())
-                {
-                    // if no holding period exists, then do not add the event at
-                    // all
-                }
-            }
-        }
-
-        // add today if needed
-
-        getMovingAveragePurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd(), security)
+        getPurchasePrice(filteredClient, securityCurrency, chartInterval.getEnd(), security, costMethod)
                         .ifPresent(price -> {
                             dates.add(chartInterval.getEnd());
                             values.add(price);
                         });
 
         if (!dates.isEmpty())
-            createPriceLineSeries(values, dates, seriesCounter, colorMovingAveragePurchasePrice,
-                            MessageFormat.format(Messages.LabelWithQualifier, Messages.ColumnPurchasePrice,
-                                            Messages.LabelCapitalGainsMethodMovingAverage));
+            createPriceLineSeries(values, dates, seriesCounter, color, MessageFormat.format(Messages.LabelWithQualifier,
+                            Messages.ColumnPurchasePrice, costMethodLabel));
     }
 
     private void createPriceLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter, Color color,
@@ -1990,7 +1917,7 @@ public class SecuritiesChart
         setupTooltipDisplayCalculatedQuote(label);
     }
 
-    private Optional<Double> getLatestPurchasePrice(Security security)
+    private Optional<Double> getLatestPurchasePrice(Security security, CostMethod costMethod)
     {
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
@@ -1998,22 +1925,11 @@ public class SecuritiesChart
             return Optional.empty();
 
         return getPurchasePrice(new ClientSecurityFilter(security).filter(client),
-                        converter.with(security.getCurrencyCode()), LocalDate.now(), security);
-    }
-
-    private Optional<Double> getLatestMovingAveragePurchasePrice(Security security)
-    {
-        // securities w/o currency (e.g. index) cannot be bought and hence have
-        // no purchase price
-        if (security.getCurrencyCode() == null)
-            return Optional.empty();
-
-        return getMovingAveragePurchasePrice(new ClientSecurityFilter(security).filter(client),
-                        converter.with(security.getCurrencyCode()), LocalDate.now(), security);
+                        converter.with(security.getCurrencyCode()), LocalDate.now(), security, costMethod);
     }
 
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
-                    LocalDate date, Security security)
+                    LocalDate date, Security security, CostMethod costMethod)
     {
         var r = LazySecurityPerformanceSnapshot
                         .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date))
@@ -2022,26 +1938,21 @@ public class SecuritiesChart
         if (r.isEmpty())
             return Optional.empty();
 
-        var fifoPerShare = r.get().getFifoCostPerSharesHeld().get();
+        Quote purchasePricePerShare;
+        switch (costMethod)
+        {
+            case FIFO:
+                purchasePricePerShare = r.get().getFifoCostPerSharesHeld().get();
+                break;
+            case MOVING_AVERAGE:
+                purchasePricePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
+                break;
+            default:
+                throw new IllegalArgumentException("unsupported cost method: " + costMethod); //$NON-NLS-1$
+        }
 
-        return fifoPerShare.isZero() ? Optional.empty()
-                        : Optional.of(fifoPerShare.getAmount() / Values.Quote.divider());
-    }
-
-    private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
-                    LocalDate date, Security security)
-    {
-        var r = LazySecurityPerformanceSnapshot
-                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date))
-                        .getRecord(security);
-
-        if (r.isEmpty())
-            return Optional.empty();
-
-        var movingAveragePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
-
-        return movingAveragePerShare.isZero() ? Optional.empty()
-                        : Optional.of(movingAveragePerShare.getAmount() / Values.Quote.divider());
+        return purchasePricePerShare.isZero() ? Optional.empty()
+                        : Optional.of(purchasePricePerShare.getAmount() / Values.Quote.divider());
     }
 
     private static class MessagePainter implements PaintListener, DisposeListener

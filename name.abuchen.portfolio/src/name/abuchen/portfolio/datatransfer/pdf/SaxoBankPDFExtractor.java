@@ -363,22 +363,41 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Bargeldtransfer
-                        // CHF CHF
-                        // Einlage 39482097030 28-Nov-2024 28-Nov-2024 4.600,00 1,000000 0,00 4.600,00
-                        // Währung: CHF 28-Nov-2024 - 28-Nov-2024
-                        // @formatter:on
-                        .section("note", "date", "amount", "currency") //
-                        .find("Bargeldtransfer") //
-                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
-                        .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote(trim(v.get("note")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Bargeldtransfer
+                                        // CHF CHF
+                                        // Einlage 39482097030 28-Nov-2024 28-Nov-2024 4.600,00 1,000000 0,00 4.600,00
+                                        // Währung: CHF 28-Nov-2024 - 28-Nov-2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "currency") //
+                                                        .find("Bargeldtransfer") //
+                                                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // Cash Transfer
+                                        // EUR EUR
+                                        // Deposit 45108148786 20-Jun-2025 20-Jun-2025 10,00 1,000000 0,00 10,00
+                                        // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount", "currency") //
+                                                        .find("Cash Transfer") //
+                                                        .match("^Deposit (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.*Currency: (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
 
                         .wrap(TransactionItem::new);
     }
