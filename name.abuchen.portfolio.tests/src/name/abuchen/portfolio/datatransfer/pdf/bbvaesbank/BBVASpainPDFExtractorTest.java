@@ -33,7 +33,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.BBVAesPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.BBVASpainPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -42,16 +42,16 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
-public class BBVAesPDFExtractorTest
+public class BBVASpainPDFExtractorTest
 {
     @Test
-    public void bbvaCompra()
+    public void bbvaPurchase()
     {
-        BBVAesPDFExtractor extractor = new BBVAesPDFExtractor(new Client());
+        BBVASpainPDFExtractor extractor = new BBVASpainPDFExtractor(new Client());
         
         List<Exception> errors = new ArrayList<>();
         
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-compra.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-purchase.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -75,21 +75,21 @@ public class BBVAesPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-06-20T16:50:47"), hasShares(100), //
-                        hasSource("bbva-compra.txt"), //
-                        hasAmount("EUR", 1854.38), // TODO check
-                        hasGrossValue("EUR", 1826.25), // TODO Check
+                        hasSource("bbva-purchase.txt"), //
+                        hasAmount("EUR", 1854.38), //
+                        hasGrossValue("EUR", 1826.25), //
                         hasTaxes("EUR", 0.0), //
                         hasFees("EUR", 28.13))));
     }
     
     @Test
-    public void bbvaVenta()
+    public void bbvaSale()
     {
-        BBVAesPDFExtractor extractor = new BBVAesPDFExtractor(new Client());
+        BBVASpainPDFExtractor extractor = new BBVASpainPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-venta.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-sale.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -113,21 +113,21 @@ public class BBVAesPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-17T20:18:37"), hasShares(10), //
-                        hasSource("bbva-venta.txt"), //
-                        hasAmount("EUR", 1081.36), // TODO check
-                        hasGrossValue("EUR", 1105.59), // TODO Check
+                        hasSource("bbva-sale.txt"), //
+                        hasAmount("EUR", 1081.36), //
+                        hasGrossValue("EUR", 1105.59), //
                         hasTaxes("EUR", 0.0), //
                         hasFees("EUR", 24.23))));
     }
     
     @Test
-    public void bbvaCompraFondo()
+    public void bbvaPurchaseFund()
     {
-        BBVAesPDFExtractor extractor = new BBVAesPDFExtractor(new Client());
+        BBVASpainPDFExtractor extractor = new BBVASpainPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-compra-fondo.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-purchase-fund.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -151,7 +151,7 @@ public class BBVAesPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-01-02T00:00"), hasShares(451.5550246), //
-                        hasSource("bbva-compra-fondo.txt"), //
+                        hasSource("bbva-purchase-fund.txt"), //
                         hasAmount("EUR", 15000.00), //
                         hasGrossValue("EUR", 15000.00), //
                         hasTaxes("EUR", 0.0), //
@@ -159,13 +159,13 @@ public class BBVAesPDFExtractorTest
     }
     
     @Test
-    public void bbvaVentaFondo()
+    public void bbvaSaleFund()
     {
-        BBVAesPDFExtractor extractor = new BBVAesPDFExtractor(new Client());
+        BBVASpainPDFExtractor extractor = new BBVASpainPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-venta-fondo.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-sale-fund.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -189,7 +189,7 @@ public class BBVAesPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-05-28T00:00"), hasShares(483.2315919), //
-                        hasSource("bbva-venta-fondo.txt"), //
+                        hasSource("bbva-sale-fund.txt"), //
                         hasAmount("EUR", 16000.00), //
                         hasGrossValue("EUR", 16000.00), //
                         hasTaxes("EUR", 0.0), //
@@ -197,13 +197,13 @@ public class BBVAesPDFExtractorTest
     }
     
     @Test
-    public void bbvaDividendos()
+    public void bbvaDividends()
     {
-        BBVAesPDFExtractor extractor = new BBVAesPDFExtractor(new Client());
+        BBVASpainPDFExtractor extractor = new BBVASpainPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-dividendos.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "bbva-dividends.txt"), errors);
         
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -227,7 +227,7 @@ public class BBVAesPDFExtractorTest
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-05-28T00:00"), hasShares(33), //
-                        hasSource("bbva-dividendos.txt"), //
+                        hasSource("bbva-dividends.txt"), //
                         hasAmount("EUR", 3.57), //
                         hasGrossValue("EUR", 7.83), //
                         hasTaxes("EUR", 2.44), //
@@ -235,34 +235,3 @@ public class BBVAesPDFExtractorTest
     }
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -13,10 +13,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class BBVAesPDFExtractor extends AbstractPDFExtractor
+public class BBVASpainPDFExtractor extends AbstractPDFExtractor
 {
 
-    public BBVAesPDFExtractor(Client client)
+    public BBVASpainPDFExtractor(Client client)
     {
         super(client);
 
@@ -30,7 +30,7 @@ public class BBVAesPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "BBVA (es)";
+        return "BBVA (Spain)";
     }
 
     private void addBuySellTransaction()

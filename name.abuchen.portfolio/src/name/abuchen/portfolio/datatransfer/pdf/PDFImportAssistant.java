@@ -43,7 +43,7 @@ public class PDFImportAssistant
         extractors.add(new BarclaysBankIrelandPLCPDFExtractor(client));
         extractors.add(new BasellandschaftlicheKantonalbankPDFExtractor(client));
         extractors.add(new BawagAGPDFExtractor(client));
-        extractors.add(new BBVAesPDFExtractor(client));
+        extractors.add(new BBVASpainPDFExtractor(client));
         extractors.add(new BigbankPDFExtractor(client));
         extractors.add(new BisonPDFExtractor(client));
         extractors.add(new BondoraCapitalPDFExtractor(client));
