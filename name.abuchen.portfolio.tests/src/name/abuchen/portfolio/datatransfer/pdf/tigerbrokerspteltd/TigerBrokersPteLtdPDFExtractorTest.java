@@ -9,6 +9,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValu
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -938,5 +939,126 @@ public class TigerBrokersPteLtdPDFExtractorTest
                         hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
                         hasAmount("USD", 38.28), hasGrossValue("USD", 45.03), //
                         hasTaxes("USD", 6.75), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement09()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement09_late24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VT"), //
+                        hasName("Vanguard Total World Stock ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VOO"), //
+                        hasName("Vanguard S&P 500 ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasTicker("VT")), //
+                        hasDate("2024-12-19T13:01:49"), hasShares(3), //
+                        hasSource("AccountStatement09_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 356.90), hasGrossValue("USD", 354.90), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.01 + 0.99 + 1.00))));
+
+        // check 1st dividend transaction (VT)
+        assertThat(results, hasItem(dividend( //
+                        hasSecurity(hasTicker("VT")), //
+                        hasDate("2024-12-26"), hasShares(72), //
+                        hasSource("AccountStatement09_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 53.69), hasGrossValue("USD", 63.17), //
+                        hasTaxes("USD", 9.48), hasFees("USD", 0.00))));
+
+        // check 2nd dividend transaction (VOO)
+        assertThat(results, hasItem(dividend( //
+                        hasSecurity(hasTicker("VOO")), //
+                        hasDate("2024-12-30"), hasShares(25), //
+                        hasSource("AccountStatement09_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 36.94), hasGrossValue("USD", 43.46), //
+                        hasTaxes("USD", 6.52), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement10()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement10_late24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("QQQ"), //
+                        hasName("Invesco QQQ"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasSecurity(hasTicker("QQQ")), //
+                        hasDate("2025-01-02"), hasShares(54), //
+                        hasSource("AccountStatement10_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 38.31), hasGrossValue("USD", 45.07), //
+                        hasTaxes("USD", 6.76), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement11()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement11_late24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasTicker("VT")), //
+                        hasDate("2024-12-19T13:01:49"), hasShares(3), //
+                        hasSource("AccountStatement11_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 356.90), hasGrossValue("USD", 354.90), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.01 + 0.99 + 1.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasSecurity(hasTicker("VT")), //
+                        hasDate("2025-06-24"), hasShares(73), //
+                        hasSource("AccountStatement11_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 36.90), hasGrossValue("USD", 43.41), //
+                        hasTaxes("USD", 6.51), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasSecurity(hasTicker("VOO")), //
+                        hasDate("2025-07-03"), hasShares(25), //
+                        hasSource("AccountStatement11_late24.txt"), hasNote(null), //
+                        hasAmount("USD", 37.08), hasGrossValue("USD", 43.62), //
+                        hasTaxes("USD", 6.54), hasFees("USD", 0.00))));
+
     }
 }

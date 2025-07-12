@@ -1,0 +1,269 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+sIAxHB UBuBbPLi
+Account Information
+Account Address Account Category Base Currency
+38277815 OBFUSCATED-AaZolEGus OBFUSCATED. 406 / QUSmz 2 oS vtqUpl rehNUi 08335 Cash USD
+Account Overview
+Cash Stock Bond Option Future Funds in Transit Interest Accruals Dividend Accruals Total
+Beginning Of The Period 375.93 50,132.71 0.00 0.00 0.00 0.00 0.00 0.00 50,508.64
+End Of The Period 208.45 53,891.05 0.00 0.00 0.00 0.00 0.00 27.13 54,126.63
+Cash Report
+Currency: USD
+Total Securities Futures
+Starting Cash 375.93 375.93 0.00
+Commissions -1.98 -1.98 0
+Platform Fees -2 -2 0
+Dividends 350.41 350.41 0
+Net Trades (Purchase) -461.33 -461.33 0
+Settlement Fees -0.01 -0.01 0
+Withholding Tax -52.57 -52.57 0
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 1/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Total Securities Futures
+Ending Cash 208.45 208.45 0.00
+Ending Settled Cash 208.45 208.45 0.00
+Notes:
+1. Net Trades:
+Sales: Cash received from selling securities
+Purchases: Cash paid for buying securities
+2. Other Fees: Including IPO fees, withdraw fees, bond custody fees and other expenses.
+3. Futures are traded on margin; therefore, changes in futures positions are not shown in this module.
+4. Withholding Tax: This refers to the tax automatically deducted from the cash dividends you receive from stocks or funds, in accordance with applicable tax rates.
+Trades
+Stock
+Activity Trade Accrued Interest in Realized Settle 
+Symbol Market Exchange Quantity Amount Comm/Fee GST Notes Trade Time Currency
+Type Price Trade P/L Date
+Settlement Fee: 
+-0.01 2024-12-19
+Vanguard Total World Stock ETF
+US ARCA Open 3 118.29960 354.90 0.00 Commission: 2024-
+-0.99 0.00 0.00 13:01:49, US USD
+(VT) 12-20
+Platform Fee: /Eastern
+-1.00
+Commission: 2025-04-08
+Vanguard Total World Stock ETF 2025-
+US ARCA Open 1 106.43000 106.43 0.00 -0.99
+(VT) Platform Fee: 0.00 0.00 11:28:50, US USD
+04-09
+-1.00 /Eastern
+Total Vanguard Total World Stock 
+4 461.33 0.00 -3.99 0.00 0.00 USD
+ETF (VT)
+Total 461.33 0.00 -3.99 0.00 0.00 USD
+Note: We calculate realized P&L using the FIFO (First In, First Out) method. This means that when you sell a position, we assume you’re selling the earliest (oldest) shares you bought first.
+Holdings
+Stock
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 2/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Symbol Quantity Multiplier Cost Price Close Price Value Unrealized P/L Initial Margin Maint Margin Currency
+Invesco QQQ
+54 1.0 334.8934944 556.22000 30,035.88 11,951.63 0.00 0.00 USD
+(QQQ)
+Vanguard S&P 500 ETF
+25 1.0 391.4812000 575.22000 14,380.50 4,593.47 0.00 0.00 USD
+(VOO)
+Vanguard Total World Stock ETF
+73 1.0 97.9023123 129.79000 9,474.67 2,327.80 0.00 0.00 USD
+(VT)
+Total(In Base) 152 53,891.05 18,872.90 0.00 0.00 USD
+Note: The multiplier represents the fixed number used to calculate the total contract value by multiplying it with the price of the underlying asset in equity options or futures trading.
+Dividends
+Dividend Reinvestment Cash Net Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Currency
+Plan Dividends Value
+Vanguard Total World Stock Quantity: 72
+2024-12-
+Stock ETF Gross Rate: 0.88 Dividend Accruals Increase 63.17 0 Dividend tax: 9.48 53.69 USD
+20
+(VT) /Share
+Vanguard Total World Stock Quantity: 72
+2024-12- Dividend Accruals Dividend tax: 
+Stock ETF Gross Rate: 0.88 -63.17 0 -53.69 USD
+26 Reduction -9.48
+(VT) /Share
+Vanguard Total World Stock Quantity: 72
+2024-12-
+Stock ETF Gross Rate: 0.88 Paid 63.17 0 Dividend tax: 9.48 53.69 USD
+26
+(VT) /Share
+Quantity: 25
+2024-12- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.74 Dividend Accruals Increase 43.46 0 Dividend tax: 6.52 36.94 USD
+23 (VOO)
+/Share
+Quantity: 25
+2024-12- Vanguard S&P 500 ETF Dividend Accruals Dividend tax: 
+Stock Gross Rate: 1.74 -43.46 0 -36.94 USD
+30 (VOO) Reduction -6.52
+/Share
+Quantity: 25
+2024-12- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.74 Paid 43.46 0 Dividend tax: 6.52 36.94 USD
+30 (VOO)
+/Share
+Quantity: 54
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 3/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Dividend Reinvestment Cash Net Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Currency
+Plan Dividends Value
+2024-12- Stock Invesco QQQ Gross Rate: 0.83 Dividend Accruals Increase 45.07 0 Dividend tax: 6.76 38.31 USD
+23 (QQQ) /Share
+Quantity: 54
+2025-01- Invesco QQQ Dividend Accruals Dividend tax: 
+Stock Gross Rate: 0.83 -45.07 0 -38.31 USD
+02 (QQQ) Reduction -6.76
+/Share
+Quantity: 54
+2025-01- Invesco QQQ
+Stock Gross Rate: 0.83 Paid 45.07 0 Dividend tax: 6.76 38.31 USD
+02 (QQQ)
+/Share
+Vanguard Total World Stock Quantity: 72
+2025-03-
+Stock ETF Gross Rate: 0.39 Dividend Accruals Increase 27.73 0 Dividend tax: 4.16 23.57 USD
+21
+(VT) /Share
+Vanguard Total World Stock Quantity: 72
+2025-03- Dividend Accruals Dividend tax: 
+Stock ETF Gross Rate: 0.39 -27.73 0 -23.57 USD
+25 Reduction -4.16
+(VT) /Share
+Vanguard Total World Stock Quantity: 72
+2025-03-
+Stock ETF Gross Rate: 0.39 Paid 27.73 0 Dividend tax: 4.16 23.57 USD
+25
+(VT) /Share
+Quantity: 54
+2025-03- Invesco QQQ
+Stock Gross Rate: 0.72 Dividend Accruals Increase 38.65 0 Dividend tax: 5.80 32.85 USD
+24 (QQQ)
+/Share
+Quantity: 54
+2025-05- Invesco QQQ Dividend Accruals Dividend tax: 
+Stock Gross Rate: 0.72 -38.65 0 -32.85 USD
+01 (QQQ) Reduction -5.80
+/Share
+Quantity: 54
+2025-05- Invesco QQQ
+Stock Gross Rate: 0.72 Paid 38.65 0 Dividend tax: 5.80 32.85 USD
+01 (QQQ)
+/Share
+Quantity: 25
+2025-03- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.81 Dividend Accruals Increase 45.30 0 Dividend tax: 6.80 38.50 USD
+27 (VOO)
+/Share
+Quantity: 25
+2025-03- Vanguard S&P 500 ETF Dividend Accruals Dividend tax: 
+Stock Gross Rate: 1.81 -45.30 0 -38.50 USD
+31 (VOO) Reduction -6.80
+/Share
+Quantity: 25
+2025-03- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.81 Paid 45.30 0 Dividend tax: 6.80 38.50 USD
+31 (VOO)
+/Share
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 4/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Dividend Reinvestment Cash Net Cash 
+Date Product Symbol Quantity/Gross Rate Phase Shares Fees & Tax Currency
+Plan Dividends Value
+Vanguard Total World Stock Quantity: 73
+2025-06-
+Stock ETF Gross Rate: 0.59 Dividend Accruals Increase 43.41 0 Dividend tax: 6.51 36.90 USD
+20 Cash
+(VT) /Share
+Vanguard Total World Stock Quantity: 73
+2025-06- Dividend Accruals Dividend tax: 
+Stock ETF Gross Rate: 0.59 -43.41 0 -36.90 USD
+24 Reduction -6.51
+(VT) /Share
+Vanguard Total World Stock Quantity: 73
+2025-06-
+Stock ETF Gross Rate: 0.59 Paid 43.41 0 Dividend tax: 6.51 36.90 USD
+24
+(VT) /Share
+Quantity: 54
+2025-06- Invesco QQQ
+Stock Gross Rate: 0.59 Dividend Accruals Increase 31.92 0 Dividend tax: 4.79 27.13 USD
+23 (QQQ) Cash
+/Share
+Quantity: 25
+2025-06- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.74 Dividend Accruals Increase 43.62 0 Dividend tax: 6.54 37.08 USD
+30 (VOO) Cash
+/Share
+Quantity: 25
+2025-07- Vanguard S&P 500 ETF Dividend Accruals Dividend tax: 
+Stock Gross Rate: 1.74 -43.62 0 -37.08 USD
+03 (VOO) Reduction -6.54
+/Share
+Quantity: 25
+2025-07- Vanguard S&P 500 ETF
+Stock Gross Rate: 1.74 Paid 43.62 0 Dividend tax: 6.54 37.08 USD
+03 (VOO)
+/Share
+Total(In Base) Accruals/Paid 27.13/297.84 USD
+Notes: Accrued Dividends refers to the expected amount of cash or number of shares you will receive after a company announces a dividend. Before the payment is made, the amount or shares will appear as “accrued.” Once the 
+dividend is officially distributed, the cash will be credited to your account balance, or the shares will be added to your holdings.
+Financial Instrument Information
+Stock
+Symbol Issuer Description Multiplier Expiry Strike Right
+QQQ Invesco QQQ 1
+VOO Vanguard S&P 500 ETF 1
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 5/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Symbol Issuer Description Multiplier Expiry Strike Right
+VT Vanguard Total World Stock ETF 1
+Base Currency Exchange Rate
+Date 2025-07-06
+USD 1
+AUD 0.65540
+CAD 0.73462
+CHF 1.25876
+CNH 0.14044
+EUR 1.17787
+GBP 1.36540
+HKD 0.12740
+IDR 0.00006
+JPY 0.00692
+MXN 0.05368
+MYR 0.23691
+NOK 0.09914
+NZD 0.60640
+PLN 0.27754
+SEK 0.10459
+SGD 0.78530
+TRY 0.02510
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 6/7
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2024.12.03 - 2025.07.06
+Note: You can refer to the USD index table to view the exchange rate information as of the report cutoff date, with USD as the quote currency.
+Notes:
+1. Please examine the details in the monthly statement and promptly report any inaccuracy or discrepancy found to service@tigerbrokers.com.sg within 14 calendar days from the date of the statement. All the above details shall be 
+deemed correct and conclusive if no written notice of objection is received by us within 14 days from the date of the monthly statement.
+2. Tiger Brokers (Singapore) Pte Ltd is a member of Financial Institutions Dispute Resolution Centre (FIDReC), which is an independent and impartial institution specialising in the resolution of disputes between financial institutions 
+and consumers. Unresolved issues can also be brought up to FIDReC at www.fidrec.com.sg for mediation.
+3. Information on our fees can be found at https://www.tigerbrokers.com.sg/commissions/fees
+4. Information regarding your account can be found in the Terms and Conditions at https://www.tigerbrokers.com.sg/info/terms-n-conditions
+5. Customer money and assets are deposited in trust and held in custody, respectively in accordance with the Securities and Futures (Licensing and Conduct of Business) Regulations, governing the protection of client money and 
+assets.;
+[1] TIGER BROKERS (HK) GLOBAL LIMITED AS THE PRINCIPAL
+TIGER BROKERS (SINGAPORE) PTE. LTD.
++65 6331 2277
+WhatsApp +65 6331 2277
+service@tigerbrokers.com.sg
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 7/7

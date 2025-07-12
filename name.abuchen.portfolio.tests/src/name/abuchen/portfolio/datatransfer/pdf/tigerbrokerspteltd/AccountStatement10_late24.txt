@@ -1,0 +1,120 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2025.01.01 - 2025.03.17
+bIKfnW CPCDMjVz
+Account Information
+Account Address Account Category Base Currency
+28526221 SESDFEEG-KwgpcERVI SDFSESER. 289 / nYsWY 2 zw nkjaFD rmMpge 29802 Cash USD
+Account Overview
+Cash Stock Bond Option Future Funds in Transit Interest Accruals Dividend Accruals Total
+Beginning Of The Period 109.66 49,535.23 0.00 0.00 0.00 0.00 0.00 38.31 49,683.20
+End Of The Period 147.97 47,646.91 0.00 0.00 0.00 0.00 0.00 0.00 47,794.88
+Cash Report
+Currency: USD
+Total Securities Futures
+Starting Cash 109.66 109.66 0.00
+Dividends 45.07 45.07 0
+Withholding Tax -6.76 -6.76 0
+Ending Cash 147.97 147.97 0.00
+Ending Settled Cash 147.97 147.97 0.00
+Holdings
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 1/5
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2025.01.01 - 2025.03.17
+Stock
+Symbol Quantity Multiplier Cost Price Close Price Value Unrealized P/L Initial Margin Maint Margin Currency
+Invesco QQQ
+54 1.0 334.8934944 482.77000 26,069.58 7,985.33 0.00 0.00 USD
+(QQQ)
+Vanguard S&P 500 ETF
+25 1.0 391.4812000 521.41000 13,035.25 3,248.22 0.00 0.00 USD
+(VOO)
+Vanguard Total World Stock ETF
+72 1.0 97.7562333 118.64000 8,542.08 1,503.63 0.00 0.00 USD
+(VT)
+Total(In Base) 151 47,646.91 12,737.18 0.00 0.00 USD
+Dividends
+Date Product Symbol Dividend Reinvestment Plan Quantity/Gross Rate Phase Cash Dividends Shares Fees & Tax Net Cash Value Currency
+Invesco QQQ Quantity: 54
+2025-01-02 Stock Dividend Accruals Reduction -45.07 0 Dividend tax: -6.76 -38.31 USD
+(QQQ) Gross Rate: 0.83/Share
+Invesco QQQ Quantity: 54
+2025-01-02 Stock Paid 45.07 0 Dividend tax: 6.76 38.31 USD
+(QQQ) Gross Rate: 0.83/Share
+Total(In Base) Accruals/Paid -38.31/38.31 USD
+Financial Instrument Information
+Stock
+Symbol Issuer Description Multiplier Expiry Strike Right
+QQQ Invesco QQQ 1
+VOO Vanguard S&P 500 ETF 1
+VT Vanguard Total World Stock ETF 1
+Base Currency Exchange Rate
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 2/5
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2025.01.01 - 2025.03.17
+Date 2025-03-17
+USD 1
+AUD 0.63376
+CAD 0.69617
+CHF 1.13142
+CNH 0.13807
+EUR 1.08769
+GBP 1.29370
+HKD 0.12867
+IDR 0.00006
+JPY 0.00672
+MXN 0.05018
+MYR 0.22485
+NOK 0.09424
+NZD 0.57690
+PLN 0.25985
+SEK 0.09869
+SGD 0.74968
+TRY 0.02726
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 3/5
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2025.01.01 - 2025.03.17
+Annotation
+1.Accrued dividends: when the company declares the dividends of shares, this part will calculate the dividends to be paid to the account, and the dividends paid to the account during form checking period will be included into cash.
+2.Accrued interest: interest is charged on a monthly basis, so this part will calculate the total interest earned by the account during the statement period, not including the interest received.
+3.Net Trades (Sales): Cash from selling securities
+4.Net Trades (Purchase): Cash spent on buying securities
+5.Other Fees: Including ADR fees, IPO fees, withdraw fees, dividends, bond custody fees and other expenses.
+6.Withholding Tax: Hong Kong stocks dividend tax
+7.Segment Transfer: Record of internal fund transfers within your account. Your total assets will not decrease. When purchasing or selling products with shared purchasing power, the system will automatically allocate funds
+8.Multiplier: in an individual stock option or futures transaction, the value of the contract is expressed as the product of a certain monetary amount and the underlying index. The certain monetary amount is fixed by the contract, 
+which is referred to as the contract multiplier. At present, the stock is 1 by default and the individual stock option is 100.
+9.Settle Price: Futures settlement price is not equal to the closing price, futures is based on the settlement price to calculate the profit and loss of position.
+10.Proceeds: Trading amount is trading price multiplied by trading volume
+11.Net Amount: When buying, the net amount is recorded as the transaction amount of the purchased financial asset plus the amount of commission and tax
+when selling, the net amount is recorded as the cost amortization when selling the financial asset, including the realized profit and loss.
+12.Comm/Fee: In the trades module, for trades before December 2021, 'commission' includes commission + platform fee + transaction levy + stamp tax + transaction fee + settlement fee, etc. For trades after December 2021, 
+'commission' only includes commission, and other expenses are shown separately.
+13.Custodian fees: no charge, $0
+14.Exchange rate: You could view U.S. Dollar Currency Index chart to see the exchange rate at the last day for searching. (USD is transaction currency)
+15.Transaction is based on FIFO method
+16.Futures' Starting Cash and Ending Cash represents the starting and ending asset value of futures account, the difference between Starting and Ending Cash includes changes in position value and cash transactions (not showing 
+up on statement)
+17.Funds in Transit includes IPO transit subscription and IPO transit subscription fee
+18.The external legal costs arose from letter sent by lawyer regarding outstanding amounts
+Notes:
+1. Please examine the details in the monthly statement and promptly report any inaccuracy or discrepancy found to service@tigerbrokers.com.sg within 14 calendar days from the date of the statement. All the above details shall be 
+deemed correct and conclusive if no written notice of objection is received by us within 14 days from the date of the monthly statement.
+2. Tiger Brokers (Singapore) Pte Ltd is a member of Financial Institutions Dispute Resolution Centre (FIDReC), which is an independent and impartial institution specialising in the resolution of disputes between financial institutions 
+and consumers. Unresolved issues can also be brought up to FIDReC at www.fidrec.com.sg for mediation.
+3. Information on our fees can be found at https://www.tigerbrokers.com.sg/commissions/fees
+4. Information regarding your account can be found in the Terms and Conditions at https://www.tigerbrokers.com.sg/info/terms-n-conditions
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 4/5
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2025.01.01 - 2025.03.17
+5. Customer money and assets are deposited in trust and held in custody, respectively in accordance with the Securities and Futures (Licensing and Conduct of Business) Regulations, governing the protection of client money and 
+assets.;
+[1] TIGER BROKERS (HK) GLOBAL LIMITED AS THE PRINCIPAL
+TIGER BROKERS (SINGAPORE) PTE. LTD.
++65 6331 2277
+WhatsApp +65 6331 2277
+service@tigerbrokers.com.sg
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 5/5
