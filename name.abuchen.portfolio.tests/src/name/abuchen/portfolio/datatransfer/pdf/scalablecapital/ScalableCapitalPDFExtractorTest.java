@@ -305,6 +305,38 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSparplanausfuehrung04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000052292"), hasWkn(null), hasTicker(null), //
+                        hasName("Hermes Intl"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-10T16:39:01"), hasShares(0.24321), //
+                        hasSource("Sparplanausfuehrung04.txt"), //
+                        hasNote("Ord.-Nr.: SCALz2xgFkvDZbm"), //
+                        hasAmount("EUR", 602.40), hasGrossValue("EUR", 600.00), //
+                        hasTaxes("EUR", 2.40), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testSavingsplan01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());

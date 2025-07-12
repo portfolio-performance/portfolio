@@ -342,35 +342,42 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 2,48 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag 0,14 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Solidarit.tszuschlag (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Kirchensteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Finanztransaktionssteuer +2,40 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Finanztransaktionssteuer \\+(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Ausländische Quellensteuer -0,01 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Ausl.ndische Quellensteuer (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Ausl.ndische Quellensteuer (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Verrechnung anrechenbarer Quellensteuer -0,12 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Verrechnung anrechenbarer Quellensteuer (\\-)?(?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Verrechnung anrechenbarer Quellensteuer (\\-)?(?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
@@ -383,7 +390,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Ordergebühren -0,99 EUR
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Ordergeb.hren [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Ordergeb.hren [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
