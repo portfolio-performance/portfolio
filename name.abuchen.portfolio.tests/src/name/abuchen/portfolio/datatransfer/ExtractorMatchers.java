@@ -188,6 +188,18 @@ public class ExtractorMatchers
     }
 
     @SafeVarargs
+    public static Matcher<Extractor.Item> sellOption(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("sellOption", AccountTransaction.Type.SELL_OPTION, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> buyOption(Matcher<Transaction>... properties)
+    {
+        return new AccountTransactionMatcher("buyOption", AccountTransaction.Type.BUY_OPTION, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
     public static Matcher<Extractor.Item> interest(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("interest", AccountTransaction.Type.INTEREST, properties); //$NON-NLS-1$

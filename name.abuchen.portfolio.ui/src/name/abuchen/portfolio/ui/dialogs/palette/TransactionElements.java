@@ -60,8 +60,8 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
             if (transaction instanceof PortfolioTransaction.Type)
                 return true;
 
-            return EnumSet.of(AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.TAXES,
-                            AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
+            return EnumSet.of(AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION, 
+                            AccountTransaction.Type.TAXES, AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
                             AccountTransaction.Type.FEES_REFUND).contains(transaction);
         }
 
@@ -116,7 +116,9 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
                         AccountTransaction.Type.FEES_REFUND, //
                         AccountTransaction.Type.INTEREST, //
                         AccountTransaction.Type.INTEREST_CHARGE, //
-                        AccountTransaction.Type.DIVIDENDS))
+                        AccountTransaction.Type.DIVIDENDS, //
+                        AccountTransaction.Type.SELL_OPTION, //
+                        AccountTransaction.Type.BUY_OPTION))
         {
             elements.add(new AccountTransactionElement(AccountTransactionDialog.class, type, selection));
         }

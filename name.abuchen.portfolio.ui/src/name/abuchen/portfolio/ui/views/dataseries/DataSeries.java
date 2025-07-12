@@ -44,6 +44,8 @@ public final class DataSeries implements Adaptable
         ABSOLUTE_DELTA_ALL_RECORDS(Messages.LabelAbsoluteDelta), //
         DIVIDENDS(Messages.LabelDividends), //
         DIVIDENDS_ACCUMULATED(Messages.LabelAccumulatedDividends), //
+        OPTION_PREMIUMS(Messages.LabelOptionPremiums), //
+        OPTION_PREMIUMS_ACCUMULATED(Messages.LabelAccumulatedOptionPremiums), //
         INTEREST(Messages.LabelInterest), //
         INTEREST_ACCUMULATED(Messages.LabelAccumulatedInterest), //
         INTEREST_CHARGE(Messages.LabelInterestCharge), //
