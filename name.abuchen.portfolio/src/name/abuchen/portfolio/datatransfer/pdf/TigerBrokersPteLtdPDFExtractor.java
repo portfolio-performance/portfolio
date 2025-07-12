@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -36,6 +37,15 @@ import name.abuchen.portfolio.money.Values;
  *           When there is no trade in progress, the securities currency is not issued.
  *           We then set the securities currency to USD.
  *           @see Test file --> AccountStatement06.txt
+ *           
+ *           Late 2024 Format
+ *           ================
+ *           Apparently, the format has changed in late 2024.
+ *           https://forum.portfolio-performance.info/t/pdf-import-from-tiger-brokers/20484/37
+ *           https://forum.portfolio-performance.info/t/pdf-import-from-tiger-brokers/20484/41
+ *           The PDF contains a table with each cell containing a multi-line text with different line wrapping (2-3 lines) which is centered.
+ *           We do not use the currency from the context (anymore), but parse it as part of each transaction.
+ *           Examples only contain purchases and dividend payments. Therefore we do not yet know if other transaction types (tax refund, deposit) still work.
  *
  * @implSpec In case of purchase and sale, the amount is given in gross.
  *           To get the correct net amount, we need to add the fees.
@@ -428,6 +438,74 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
         addFeesSectionsTransaction(buyBlock_Format04, type);
 
+        Transaction<BuySellEntry> buyBlock_late24 = new Transaction<>();
+
+        // @formatter:off
+        // Settlement Fee: 
+        // -0.01 2024-12-19
+        // Vanguard Total World Stock ETF
+        // US ARCA Open 3 118.29960 354.90 0.00 Commission: 2024-
+        // -0.99 0.00 0.00 13:01:49, US USD
+        // (VT) 12-20
+        // Platform Fee: /Eastern
+        // -1.00
+        // @formatter:on
+        Block firstRelevantLineForBuyBlock_late24 = new Block("^Settlement Fee:\\s*$", "^\\-[\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForBuyBlock_late24);
+        firstRelevantLineForBuyBlock_late24.setMaxSize(9);
+        firstRelevantLineForBuyBlock_late24.set(buyBlock_late24);
+
+        buyBlock_late24 //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        .section("settlementFee", "date", "name", "shares", "gross", "commissionFee", "time", "tickerSymbol", "platformFee", "currency") //
+                        .match("^Settlement Fee:\\s*$") //
+                        .match("^\\-(?<settlementFee>[\\.,\\d]+) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^.* (?<shares>[\\.,\\d]+) [\\.,\\d]+ (?<gross>[\\.,\\d]+) [\\.,\\d]+ Commission: [\\d]{4}\\-$") //
+                        .match("^\\-(?<commissionFee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* (?<currency>[\\w]{3})$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) [\\d]{2}\\-[\\d]{2}$") //
+                        .match("^Platform Fee:.*$") //
+                        .match("^\\-(?<platformFee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var context = type.getCurrentContext();
+
+                            var security = context.getType(SecurityListHelper.class)
+                                            .get()
+                                            .findItem(v.get("tickerSymbol"));
+                            security.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                            });
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+                            
+                            // fees
+                            var currency = asCurrencyCode(v.get("currency"));
+                            var fee = Money.of(currency, asAmount(v.get("settlementFee")) + asAmount(v.get("commissionFee")) + asAmount(v.get("platformFee")));
+                            
+                            // The amount is stated in gross, add all fees
+                            t.setAmount(asAmount(v.get("gross")) + fee.getAmount());
+                            t.setCurrencyCode(currency);
+
+                            checkAndSetFee(fee, t, type.getCurrentContext());
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                return new BuySellEntryItem(t);
+                            return null;
+                        });
+
         Transaction<AccountTransaction> dividendBlock = new Transaction<>();
 
         // @formatter:off
@@ -508,6 +586,150 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                             type.getCurrentContext().removeType(DividendTaxesTransactionItem.class);
 
                             return new TransactionItem(t);
+                        });
+
+        Transaction<AccountTransaction> dividendBlock_late24 = new Transaction<>();
+
+        Block firstRelevantLineForDividendBlock_late24 = new Block("^.*Quantity: [\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForDividendBlock_late24);
+        firstRelevantLineForDividendBlock_late24.setMaxSize(6);
+        firstRelevantLineForDividendBlock_late24.set(dividendBlock_late24);
+
+        dividendBlock_late24 //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf(
+                                        // Pattern 1: three-line instrument
+                                        //
+                                        // @formatter:off
+                                        // Vanguard Total World Stock Quantity: 72
+                                        // 2024-12-
+                                        // Stock ETF Gross Rate: 0.88 Paid 63.17 0 Dividend tax: 9.48 53.69 USD
+                                        // 26
+                                        // (VT) /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes",
+                                                                        "amount", "dateDay", "tickerSymbol", "currency") //
+                                                        .match("^.* Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\-$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2})$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\/Share$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var security = context.getType(SecurityListHelper.class)
+                                                                            .get().findItem(v.get("tickerSymbol"));
+                                                            security.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                            });
+
+                                                            var date = v.get("dateYear") + "-" + v.get("dateDay");
+                                                            t.setDateTime(asDate(date));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")),
+                                                                            asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        // Pattern 2: two-line instrument
+                                        //
+                                        // @formatter:off
+                                        // Quantity: 25
+                                        // 2024-12- Vanguard S&P 500 ETF
+                                        // Stock Gross Rate: 1.74 Paid 43.46 0 Dividend tax: 6.52 36.94 USD
+                                        // 30 (VOO)
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes",
+                                                                        "amount", "dateDay", "tickerSymbol", "currency") //
+                                                        .match("^Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
+                                                        .match("^\\/Share$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var security = context.getType(SecurityListHelper.class)
+                                                                            .get().findItem(v.get("tickerSymbol"));
+                                                            security.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                            });
+
+                                                            var date = v.get("dateYear") + "-" + v.get("dateDay");
+                                                            t.setDateTime(asDate(date));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")),
+                                                                            asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+
+                                        // Pattern 3: two-line Quantity/Gross
+                                        // Rate
+                                        //
+                                        // @formatter:off
+                                        // Invesco QQQ Quantity: 54
+                                        // 2025-01-02 Stock Paid 45.07 0 Dividend tax: 6.76 38.31 USD
+                                        // (QQQ) Gross Rate: 0.83/Share
+                                        // @formatter:on
+
+                                        section -> section //
+                                                        .attributes("shares", "date", "grossAmount", "taxes", "amount",
+                                                                        "tickerSymbol", "currency") //
+                                                        .match("^.* Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .* Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) .*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var security = context.getType(SecurityListHelper.class)
+                                                                            .get().findItem(v.get("tickerSymbol"));
+                                                            security.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                            });
+
+                                                            t.setDateTime(asDate(v.get("date")));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")),
+                                                                            asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                        })
+
+                        )
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getDateTime() == null)
+                                return null;
+                            else
+                                return new TransactionItem(t);
                         });
 
         Transaction<AccountTransaction> taxRefundBlock = new Transaction<>();
