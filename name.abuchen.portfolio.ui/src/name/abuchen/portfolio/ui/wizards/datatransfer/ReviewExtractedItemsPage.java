@@ -1024,21 +1024,20 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         entry.addStatus(actionStatus);
                         if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
                         {
-                            allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
-                                            + entry.getItem().toString()));
+                            String msg = actionStatus.getMessage() + ": " + entry.getItem().toString(); //$NON-NLS-1$
+                            if (allErrors.stream().noneMatch(e -> Objects.equals(e.getMessage(), msg)))
+                            {
+                                allErrors.add(new IOException(msg));
+                            }
                         }
                     }
                     catch (Exception e)
                     {
-                        // if any of the import action fails to due unexpected
-                        // error, we must not abort but mark the item as not
-                        // importable and continue
-
                         entry.addStatus(new ImportAction.Status(ImportAction.Status.Code.ERROR, e.getMessage()));
-                        allErrors.add(e);
-
-                        // write to application log as this is most likely than
-                        // not a programming error
+                        if (allErrors.stream().noneMatch(err -> Objects.equals(err.getMessage(), e.getMessage())))
+                        {
+                            allErrors.add(e);
+                        }
                         PortfolioPlugin.log(e);
                     }
                 }
