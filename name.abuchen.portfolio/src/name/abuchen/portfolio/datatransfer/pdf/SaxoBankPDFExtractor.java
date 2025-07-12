@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class SaxoBankPDFExtractor extends AbstractPDFExtractor
@@ -68,6 +69,15 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Instrument Republic of France 3.75% 25 May 2056, EUR Trade time 20-Jun-2025 08:45:38
+                                        // ISIN FR001400XJJ3 Value Date 24-Jun-2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^Instrument (?<name>.*), (?<currency>[A-Z]{3}) Trade time.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
                                         // ISIN IE00B4L5Y983 Valuta 09-Dez-2024
                                         // Symbol SWDA:xswx Order-ID 5236807355
@@ -114,6 +124,21 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^K\\/V Kauf Menge (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Order Type Limit Order Quantity 10.000,00
+                                        // Bond Traded Value
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
+                                                        .find("Bond Traded Value") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
                                         // @formatter:off
                                         // B/S Buy Quantity 49,00
                                         // Order Type Limit Order Quantity 49,00
@@ -208,6 +233,23 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note") //
                                                         .match("^.*(?<note>Trade ID [\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Bond Accrued
+                                        // 45126758574 20-Jun-2025 24-Jun-2025 -30,82 1,000000 0,00 -30,82
+                                        // Interest
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^(?<note1>Bond Accrued).*$") //
+                                                        .match("[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<note2>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+$") //
+                                                        .find("Interest.*") //
+                                                        .assign((t, v) -> {
+
+                                                            var note = v.get("note1") + " " + trim(v.get("note2")) + " " + t.getPortfolioTransaction().getCurrencyCode();
+                                                            t.setNote(concatenate(t.getNote(), note, " | "));
+                                                        }))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -498,6 +540,18 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                             checkAndSetFee(fees, t, type.getCurrentContext());
                         })
+
+                        // @formatter:off
+                        // Bond Accrued
+                        // 45126758574 20-Jun-2025 24-Jun-2025 -30,82 1,000000 0,00 -30,82
+                        // Interest
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find("Bond Accrued.*") //
+                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+$") //
+                        .find("Interest.*") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Saxo is counterparty No Total Trading Costs -1,00 USD
