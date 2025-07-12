@@ -1043,25 +1043,26 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     {
                         ImportAction.Status actionStatus = entry.getItem().apply(action, this);
                         entry.addStatus(actionStatus);
-                        if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
-                        {
-                            String msg = actionStatus.getMessage() + ": " + entry.getItem().toString(); //$NON-NLS-1$
-                            if (allErrors.stream().noneMatch(e -> Objects.equals(e.getMessage(), msg)))
-                            {
-                                allErrors.add(new IOException(msg));
-                            }
-                        }
                     }
                     catch (Exception e)
                     {
+                        // if any of the import action fails to due unexpected
+                        // error, we must not abort but mark the item as not
+                        // importable and continue
+
                         entry.addStatus(new ImportAction.Status(ImportAction.Status.Code.ERROR, e.getMessage()));
-                        if (allErrors.stream().noneMatch(err -> Objects.equals(err.getMessage(), e.getMessage())))
-                        {
-                            allErrors.add(e);
-                        }
+                        allErrors.add(e);
+
+                        // write to application log as this is most likely than
+                        // not a programming error
                         PortfolioPlugin.log(e);
                     }
                 }
+
+                entry.getStatus().filter(s -> s.getCode() == ImportAction.Status.Code.ERROR)
+                                .forEach(status -> allErrors
+                                                .add(new IOException(MessageFormat.format(Messages.LabelColonSeparated,
+                                                                status.getMessage(), entry.getItem().toString()))));
             }
         }
 

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -66,6 +67,11 @@ public class ExtractedEntry
 
     public void addStatus(ImportAction.Status status)
     {
+        // do not add the status if the message is already present
+        if (this.status.stream().anyMatch(
+                        s -> Objects.equals(s.getMessage(), status.getMessage()) && s.getCode() == status.getCode()))
+            return;
+
         this.status.add(status);
         if (status.getCode().isHigherSeverityAs(maxCode))
             maxCode = status.getCode();
