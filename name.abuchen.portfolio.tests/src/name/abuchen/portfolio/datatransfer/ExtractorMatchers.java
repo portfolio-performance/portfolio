@@ -133,6 +133,50 @@ public class ExtractorMatchers
         }
     }
 
+    private static class TransactionSecurityMatcher extends TypeSafeDiagnosingMatcher<Transaction>
+    {
+        private Matcher<Security>[] properties;
+
+        public TransactionSecurityMatcher(Matcher<Security>[] properties)
+        {
+            this.properties = properties;
+        }
+
+        @Override
+        protected boolean matchesSafely(Transaction transaction, Description mismatchDescription)
+        {
+            var security = transaction.getSecurity();
+            if (security == null)
+            {
+                mismatchDescription.appendText("\n* has no 'security'"); //$NON-NLS-1$
+                return false;
+            }
+
+            for (var property : properties)
+            {
+                if (!property.matches(security))
+                {
+                    mismatchDescription.appendText("\n* a security with "); //$NON-NLS-1$
+                    property.describeMismatch(security, mismatchDescription);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public void describeTo(Description description)
+        {
+            description.appendText("security with:"); //$NON-NLS-1$
+            for (var p : properties)
+            {
+                description.appendText("\n   - "); //$NON-NLS-1$
+                p.describeTo(description);
+            }
+        }
+    }
+
     private static class FailureMessageItemMatcher extends TypeSafeDiagnosingMatcher<Extractor.Item>
     {
         private String message;
@@ -310,6 +354,12 @@ public class ExtractorMatchers
                                                         ? entry.getSourceTransaction()
                                                         : null, //
                         properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Transaction> hasSecurity(Matcher<Security>... properties)
+    {
+        return new TransactionSecurityMatcher(properties);
     }
 
     public static Matcher<Transaction> hasDate(String dateString)
