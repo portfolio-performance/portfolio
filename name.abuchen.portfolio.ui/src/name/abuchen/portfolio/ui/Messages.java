@@ -647,6 +647,7 @@ public class Messages extends NLS
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
     public static String LabelCountry;
+    public static String LabelCreateAccountFirst;
     public static String LabelCrosshair;
     public static String LabelCurrencies;
     public static String LabelCurrencyConverter;
