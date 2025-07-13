@@ -285,6 +285,7 @@ public class Messages extends NLS
     public static String MsgErrorNoneOfSubSectionsMatched;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorNotAValidDate;
+    public static String MsgErrorNotAValidTime;
     public static String MsgErrorNumberOfDateAndCloseRecordsDoNotMatch;
     public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorParseErrorWithGivenPattern;
