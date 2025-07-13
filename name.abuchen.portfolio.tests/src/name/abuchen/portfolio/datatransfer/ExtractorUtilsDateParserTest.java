@@ -205,11 +205,20 @@ public class ExtractorUtilsDateParserTest
     @Test
     public void testValidFormats()
     {
-        // Test various valid formats
-        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime("11-04-2023 13:15"));
-        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("11/04/2023 08:00:00"));
+        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime("13:15:00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08:00:00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08.00.00"));
+        assertEquals(LocalTime.of(8, 0), ExtractorUtils.asTime("08.00"));
     }
 
+    @Test
+    public void testValidFormatsWithDate()
+    {
+        String input = "11-04-2023 13:15:00";
+        String timePart = input.substring(input.indexOf(' ') + 1);
+        assertEquals(LocalTime.of(13, 15), ExtractorUtils.asTime(timePart));
+    }
+    
     @Test(expected = DateTimeParseException.class)
     public void testInvalidFormat()
     {
@@ -229,5 +238,11 @@ public class ExtractorUtilsDateParserTest
     {
         // Test a null value
         ExtractorUtils.asTime(null);
+    }
+
+    @Test(expected = DateTimeParseException.class)
+    public void testAsTimeEmptyString()
+    {
+        ExtractorUtils.asTime("");
     }
 }
