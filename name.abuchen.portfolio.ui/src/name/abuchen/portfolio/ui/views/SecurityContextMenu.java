@@ -73,6 +73,22 @@ public class SecurityContextMenu
                         .with(portfolio) //
                         .addTo(manager);
 
+        new OpenDialogAction(owner, Messages.SecurityMenuOptionSell + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.SELL_OPTION) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .with(portfolio) //
+                        .addTo(manager);
+
+        new OpenDialogAction(owner, Messages.SecurityMenuOptionBuy + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.BUY_OPTION) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .with(portfolio) //
+                        .addTo(manager);
+
         new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAXES) //

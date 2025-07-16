@@ -1040,6 +1040,18 @@ public final class SecuritiesTable implements ModificationListener
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(view, Messages.SecurityMenuOptionSell + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.SELL_OPTION) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuOptionBuy + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.BUY_OPTION) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //

@@ -316,6 +316,22 @@ public class ClientClassificationFilter implements ClientFilter
                         addSecurityRelatedAccountT(state, account, t);
                     break;
 
+                case BUY_OPTION:
+                    if (!state.isCategorized(t.getSecurity()))
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    else
+                        addSecurityRelatedAccountT(state, account, t);
+                    break;
+
+                case SELL_OPTION:
+                    if (!state.isCategorized(t.getSecurity()))
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    else
+                        addSecurityRelatedAccountT(state, account, t);
+                    break;
+
                 case FEES_REFUND:
                     if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
                         addSecurityRelatedAccountT(state, account, t);
@@ -493,6 +509,7 @@ public class ClientClassificationFilter implements ClientFilter
             switch (t.getType())
             {
                 case DIVIDENDS:
+                case SELL_OPTION:
                     long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
                     long amount = value(t.getAmount(), weight);
 
@@ -504,6 +521,19 @@ public class ClientClassificationFilter implements ClientFilter
                     readOnlyAccount.internalAddTransaction(copy);
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     amount + taxes, null, AccountTransaction.Type.REMOVAL));
+                    break;
+                case BUY_OPTION:
+                    taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
+                    amount = value(t.getAmount(), weight);
+
+                    copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    amount + taxes, t.getSecurity(), t.getType());
+
+                    t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, weight)));
+
+                    readOnlyAccount.internalAddTransaction(copy);
+                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    amount + taxes, null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case FEES:
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
