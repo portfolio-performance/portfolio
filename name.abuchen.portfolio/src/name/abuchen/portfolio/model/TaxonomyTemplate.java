@@ -114,7 +114,7 @@ public final class TaxonomyTemplate
             throw new IllegalArgumentException(
                             "missing labels in resource bundle with id " + id + " with locale " + Locale.getDefault()); //$NON-NLS-1$ //$NON-NLS-2$
 
-        // Arrays.asList is not serialized niceyl with XStream
+        // Arrays.asList is not serialized nicely with XStream
         taxonomy.setDimensions(new ArrayList<>(Arrays.asList(labels.split(",")))); //$NON-NLS-1$
 
         readClassification(bundle, root);

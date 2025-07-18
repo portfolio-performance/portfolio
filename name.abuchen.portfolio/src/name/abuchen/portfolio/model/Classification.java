@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import com.google.protobuf.NullValue;
 
@@ -98,12 +99,12 @@ public class Classification implements Named
             return copy;
         }
 
-        /* protobuf only */ List<PKeyValue> getData()
+        /* protobuf only */ List<PKeyValue> getProtobufData()
         {
             return toProtobuf(data);
         }
 
-        /* protobuf only */ void setData(List<PKeyValue> list)
+        /* protobuf only */ void setProtobufData(List<PKeyValue> list)
         {
             this.data = fromProtobuf(list);
         }
@@ -164,6 +165,9 @@ public class Classification implements Named
         this(parent, id, name, null);
     }
 
+    /**
+     * Classification key can be edited by the user.
+     */
     public void setKey(String key)
     {
         setData(PORTFOLIO_CLASSIFICATION_KEY, key);
@@ -302,12 +306,20 @@ public class Classification implements Named
         return data.get(key);
     }
 
-    /* protobuf only */ List<PKeyValue> getData()
+    public Stream<Map.Entry<String, Object>> getData()
+    {
+        if (data == null)
+            return Stream.empty();
+        else
+            return data.entrySet().stream();
+    }
+
+    /* protobuf only */ List<PKeyValue> getProtobufData()
     {
         return toProtobuf(data);
     }
 
-    /* protobuf only */ void setData(List<PKeyValue> list)
+    /* protobuf only */ void setProtobufData(List<PKeyValue> list)
     {
         this.data = fromProtobuf(list);
     }

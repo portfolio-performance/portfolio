@@ -646,7 +646,7 @@ import name.abuchen.portfolio.money.Money;
                 classification.setWeight(newClassification.getWeight());
                 classification.setRank(newClassification.getRank());
 
-                classification.setData(newClassification.getDataList());
+                classification.setProtobufData(newClassification.getDataList());
 
                 for (PTaxonomy.Assignment newAssignment : newClassification.getAssignmentsList())
                 {
@@ -660,7 +660,7 @@ import name.abuchen.portfolio.money.Money;
                     assignment.setWeight(newAssignment.getWeight());
                     assignment.setRank(newAssignment.getRank());
 
-                    assignment.setData(newAssignment.getDataList());
+                    assignment.setProtobufData(newAssignment.getDataList());
 
                     classification.addAssignment(assignment);
                 }
@@ -1187,7 +1187,7 @@ import name.abuchen.portfolio.money.Money;
                 newClassification.setRank(classification.getRank());
                 newClassification.setWeight(classification.getWeight());
 
-                newClassification.addAllData(classification.getData());
+                newClassification.addAllData(classification.getProtobufData());
 
                 for (Assignment assignment : classification.getAssignments())
                 {
@@ -1196,7 +1196,7 @@ import name.abuchen.portfolio.money.Money;
                     newAssignment.setWeight(assignment.getWeight());
                     newAssignment.setRank(assignment.getRank());
 
-                    newAssignment.addAllData(assignment.getData());
+                    newAssignment.addAllData(assignment.getProtobufData());
 
                     newClassification.addAssignments(newAssignment);
                 }

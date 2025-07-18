@@ -51,6 +51,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Values;
@@ -64,6 +65,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -360,6 +362,12 @@ import name.abuchen.portfolio.util.TextUtil;
     {
         manager.add(new SimpleAction(Messages.MenuExportData, action -> new TreeViewerCSVExporter(nodeViewer)
                         .export(getModel().getTaxonomy().getName() + ".csv"))); //$NON-NLS-1$
+
+        manager.add(new Separator());
+        
+        manager.add(new SimpleAction(Messages.MenuExportTaxonomy,
+                        action -> new JSONExporterDialog(nodeViewer.getTree().getShell(),
+                                        new TaxonomyJSONExporter(getModel().getTaxonomy())).export()));
     }
 
     @Override
