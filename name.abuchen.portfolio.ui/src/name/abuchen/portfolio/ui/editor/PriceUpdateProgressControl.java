@@ -59,6 +59,7 @@ public class PriceUpdateProgressControl implements PriceUpdateProgress.Listener
             progressBar.setMaximum(status.getCount());
             progressBar.setSelection(status.getCompleted());
             progressBar.setVisible(status.getCount() != status.getCompleted());
+            progressBar.setToolTipText(status.getCompleted() + " / " + status.getCount()); //$NON-NLS-1$
         }
     }
 }
