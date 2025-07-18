@@ -642,6 +642,7 @@ public class Messages extends NLS
     public static String LabelColumns;
     public static String LabelColumnsInReverseOrder;
     public static String LabelCommon;
+    public static String LabelCompleted;
     public static String LabelConfigureSharpeRatioRisklessIRR;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
@@ -725,6 +726,7 @@ public class Messages extends NLS
     public static String LabelIncludeSecuritiesInPieChart;
     public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
+    public static String LabelInProgress;
     public static String LabelInputValidationFailed;
     public static String LabelInstallationDetails;
     public static String LabelInterest;

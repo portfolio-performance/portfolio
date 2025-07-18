@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.function.Function;
 
 import jakarta.inject.Inject;
@@ -20,6 +23,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -47,6 +51,7 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -56,6 +61,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
+import org.eclipse.jface.viewers.Viewer;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -86,6 +92,12 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
      * Last status of the price update job.
      */
     private PriceUpdateSnapshot statuses = new PriceUpdateSnapshot(0, new HashMap<>());
+
+    /**
+     * Active filters for status types. Default: WAITING, LOADING and ERROR.
+     */
+    private Set<UpdateStatus> activeFilters = EnumSet.of(UpdateStatus.WAITING, UpdateStatus.LOADING,
+                    UpdateStatus.ERROR);
 
     @Override
     protected String getDefaultTitle()
@@ -140,6 +152,29 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
         toolBar.add(CommandAction.forCommand(getContext(), Messages.JobLabelUpdateQuotes,
                         UIConstants.Command.UPDATE_QUOTES));
 
+        toolBar.add(new Separator());
+
+        toolBar.add(new LabelOnly(null, Images.FILTER_ON.descriptor()));
+
+        var showInProgressAction = new SimpleAction(Messages.LabelInProgress,
+                        a -> toggleFilter(UpdateStatus.WAITING, UpdateStatus.LOADING));
+        showInProgressAction.setChecked(
+                        activeFilters.contains(UpdateStatus.WAITING) || activeFilters.contains(UpdateStatus.LOADING));
+        toolBar.add(showInProgressAction);
+
+        var showCompletedAction = new SimpleAction(Messages.LabelCompleted,
+                        a -> toggleFilter(UpdateStatus.MODIFIED, UpdateStatus.UNMODIFIED, UpdateStatus.SKIPPED));
+        showCompletedAction.setChecked(
+                        activeFilters.contains(UpdateStatus.MODIFIED) || activeFilters.contains(UpdateStatus.UNMODIFIED)
+                                        || activeFilters.contains(UpdateStatus.SKIPPED));
+        toolBar.add(showCompletedAction);
+
+        var showErrorAction = new SimpleAction(Messages.LabelError, a -> toggleFilter(UpdateStatus.ERROR));
+        showErrorAction.setChecked(activeFilters.contains(UpdateStatus.ERROR));
+        toolBar.add(showErrorAction);
+
+        toolBar.add(new Separator());
+
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> columns.menuAboutToShow(manager)));
     }
@@ -167,6 +202,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
         securities.getTable().setLinesVisible(true);
 
         securities.setContentProvider(ArrayContentProvider.getInstance());
+        securities.addFilter(createStatusFilter());
 
         securities.addSelectionChangedListener(event -> {
             var selection = SecuritySelection.from(getClient(), event.getStructuredSelection());
@@ -182,6 +218,41 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
         container.addDisposeListener(e -> PriceUpdateProgress.getInstance().unregister(getClient(), this));
 
         return container;
+    }
+
+    private ViewerFilter createStatusFilter()
+    {
+        return new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                Security security = (Security) element;
+
+                boolean historicMatch = statuses.getHistoricStatus(security)
+                                .map(s -> activeFilters.contains(s.getStatus())).orElse(false);
+
+                boolean latestMatch = statuses.getLatestStatus(security).map(s -> activeFilters.contains(s.getStatus()))
+                                .orElse(false);
+
+                return historicMatch || latestMatch;
+            }
+        };
+    }
+
+    private void toggleFilter(UpdateStatus... statuses)
+    {
+        var hasAll = Arrays.asList(statuses).stream().allMatch(activeFilters::contains);
+
+        if (hasAll)
+        {
+            Arrays.asList(statuses).forEach(activeFilters::remove);
+        }
+        else
+        {
+            Arrays.asList(statuses).forEach(activeFilters::add);
+        }
+        securities.refresh();
     }
 
     private void createColumns()
