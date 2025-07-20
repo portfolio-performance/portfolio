@@ -118,6 +118,16 @@ public class AccountBuilder
         return transaction(Type.DIVIDENDS, date, amount, taxes, security);
     }
 
+    public AccountBuilder sellOption(String date, long amount, Security security)
+    {
+        return transaction(Type.SELL_OPTION, date, amount, 0L, security);
+    }
+
+    public AccountBuilder buyOption(String date, long amount, long taxes, Security security)
+    {
+        return transaction(Type.BUY_OPTION, date, amount, taxes, security);
+    }
+
     private AccountBuilder transaction(Type type, String date, long amount)
     {
         return transaction(type, asDateTime(date), amount, 0L, null);

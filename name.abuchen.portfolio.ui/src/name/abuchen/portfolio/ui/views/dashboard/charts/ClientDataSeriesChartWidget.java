@@ -51,6 +51,8 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     private static final Color colorAbsoluteDeltaAllRecord = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
     private static final Color colorDividends = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
     private static final Color colorDividendsAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
+    private static final Color colorOptionPremiums = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+    private static final Color colorAccumulatedOptionPremiums = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
     private static final Color colorInterest = Colors.DARK_GREEN;
     private static final Color colorInterestAccumulated = Colors.DARK_GREEN;
     private static final Color colorInterestCharge = Colors.DARK_GREEN;
@@ -74,6 +76,8 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         ABSOLUTE_DELTA_ALL_RECORDS(Messages.LabelAbsoluteDelta), //
         DIVIDENDS(Messages.LabelDividends), //
         DIVIDENDS_ACCUMULATED(Messages.LabelAccumulatedDividends), //
+        OPTION_PREMIUMS(Messages.LabelOptionPremiums), //
+        OPTION_PREMIUMS_ACCUMULATED(Messages.LabelAccumulatedOptionPremiums), //
         INTEREST(Messages.LabelInterest), //
         INTEREST_ACCUMULATED(Messages.LabelAccumulatedInterest), //
         INTEREST_CHARGE(Messages.LabelInterestCharge), //
@@ -254,6 +258,18 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
                 addLineSerie(values, index.getDates(), colorDividendsAccumulated, Messages.LabelAccumulatedDividends);
             }
 
+            if (metrics.contains(ClientDataSeriesType.OPTION_PREMIUMS))
+            {
+                double[] values = toDouble(index.getOptionPremiums(), Values.Amount.divider());
+                addBarSerie(values, index.getDates(), colorOptionPremiums, Messages.LabelOptionPremiums);
+            }
+
+            if (metrics.contains(ClientDataSeriesType.OPTION_PREMIUMS_ACCUMULATED))
+            {
+                double[] values = accumulateAndToDouble(index.getOptionPremiums(), Values.Amount.divider());
+                addLineSerie(values, index.getDates(), colorAccumulatedOptionPremiums, Messages.LabelAccumulatedOptionPremiums);
+            }
+
             if (metrics.contains(ClientDataSeriesType.INTEREST))
             {
                 double[] values = toDouble(index.getInterest(), Values.Amount.divider());
@@ -281,13 +297,13 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
 
             if (metrics.contains(ClientDataSeriesType.EARNINGS))
             {
-                double[] values = toDouble(add(index.getDividends(), index.getInterest()), Values.Amount.divider());
+                double[] values = toDouble(add(index.getDividends(), index.getInterest(), index.getOptionPremiums()), Values.Amount.divider());
                 addBarSerie(values, index.getDates(), colorEarnings, Messages.LabelEarnings);
             }
 
             if (metrics.contains(ClientDataSeriesType.EARNINGS_ACCUMULATED))
             {
-                double[] values = accumulateAndToDouble(add(index.getDividends(), index.getInterest()),
+                double[] values = accumulateAndToDouble(add(index.getDividends(), index.getInterest(), index.getOptionPremiums()),
                                 Values.Amount.divider());
                 addLineSerie(values, index.getDates(), colorEarningsAccumulated, Messages.LabelAccumulatedEarnings);
             }

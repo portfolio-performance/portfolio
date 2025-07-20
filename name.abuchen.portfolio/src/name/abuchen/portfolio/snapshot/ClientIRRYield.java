@@ -100,6 +100,8 @@ public class ClientIRRYield
                                     case FEES_REFUND:
                                     case TAXES:
                                     case DIVIDENDS:
+                                    case SELL_OPTION:
+                                    case BUY_OPTION:
                                     case INTEREST:
                                     case INTEREST_CHARGE:
                                     case TAX_REFUND:

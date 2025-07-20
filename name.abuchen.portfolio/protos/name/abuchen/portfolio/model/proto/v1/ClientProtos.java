@@ -242,7 +242,7 @@ public final class ClientProtos {
       "uchen.portfolio.PDecimalValueH\002\210\001\001\")\n\004Ty" +
       "pe\022\017\n\013GROSS_VALUE\020\000\022\007\n\003TAX\020\001\022\007\n\003FEE\020\002B\013\n" +
       "\t_fxAmountB\021\n\017_fxCurrencyCodeB\017\n\r_fxRate" +
-      "ToBase\"\230\007\n\014PTransaction\022\014\n\004uuid\030\001 \001(\t\0227\n" +
+      "ToBase\"\271\007\n\014PTransaction\022\014\n\004uuid\030\001 \001(\t\0227\n" +
       "\004type\030\002 \001(\0162).name.abuchen.portfolio.PTr" +
       "ansaction.Type\022\024\n\007account\030\003 \001(\tH\000\210\001\001\022\026\n\t" +
       "portfolio\030\004 \001(\tH\001\210\001\001\022\031\n\014otherAccount\030\005 \001" +
@@ -255,95 +255,95 @@ public final class ClientProtos {
       "\010security\030\016 \001(\tH\010\210\001\001\0227\n\005units\030\017 \003(\0132(.na" +
       "me.abuchen.portfolio.PTransactionUnit\022-\n" +
       "\tupdatedAt\030\020 \001(\0132\032.google.protobuf.Times" +
-      "tamp\022\023\n\006source\030\021 \001(\tH\t\210\001\001\"\362\001\n\004Type\022\014\n\010PU" +
+      "tamp\022\023\n\006source\030\021 \001(\tH\t\210\001\001\"\223\002\n\004Type\022\014\n\010PU" +
       "RCHASE\020\000\022\010\n\004SALE\020\001\022\024\n\020INBOUND_DELIVERY\020\002" +
       "\022\025\n\021OUTBOUND_DELIVERY\020\003\022\025\n\021SECURITY_TRAN" +
       "SFER\020\004\022\021\n\rCASH_TRANSFER\020\005\022\013\n\007DEPOSIT\020\006\022\013" +
       "\n\007REMOVAL\020\007\022\014\n\010DIVIDEND\020\010\022\014\n\010INTEREST\020\t\022" +
       "\023\n\017INTEREST_CHARGE\020\n\022\007\n\003TAX\020\013\022\016\n\nTAX_REF" +
-      "UND\020\014\022\007\n\003FEE\020\r\022\016\n\nFEE_REFUND\020\016B\n\n\010_accou" +
-      "ntB\014\n\n_portfolioB\017\n\r_otherAccountB\021\n\017_ot" +
-      "herPortfolioB\014\n\n_otherUuidB\021\n\017_otherUpda" +
-      "tedAtB\t\n\007_sharesB\007\n\005_noteB\013\n\t_securityB\t" +
-      "\n\007_source\"\335\003\n\017PInvestmentPlan\022\014\n\004name\030\001 " +
-      "\001(\t\022\021\n\004note\030\002 \001(\tH\000\210\001\001\022\025\n\010security\030\003 \001(\t" +
-      "H\001\210\001\001\022\026\n\tportfolio\030\004 \001(\tH\002\210\001\001\022\024\n\007account" +
-      "\030\005 \001(\tH\003\210\001\001\0225\n\nattributes\030\006 \003(\0132!.name.a" +
-      "buchen.portfolio.PKeyValue\022\024\n\014autoGenera" +
-      "te\030\007 \001(\010\022\014\n\004date\030\010 \001(\003\022\020\n\010interval\030\t \001(\005" +
-      "\022\016\n\006amount\030\n \001(\003\022\014\n\004fees\030\013 \001(\003\022\024\n\014transa" +
-      "ctions\030\014 \003(\t\022\r\n\005taxes\030\r \001(\003\022:\n\004type\030\016 \001(" +
-      "\0162,.name.abuchen.portfolio.PInvestmentPl" +
-      "an.Type\"H\n\004Type\022\030\n\024PURCHASE_OR_DELIVERY\020" +
-      "\000\022\013\n\007DEPOSIT\020\001\022\013\n\007REMOVAL\020\002\022\014\n\010INTEREST\020" +
-      "\003B\007\n\005_noteB\013\n\t_securityB\014\n\n_portfolioB\n\n" +
-      "\010_account\"\252\004\n\tPTaxonomy\022\n\n\002id\030\001 \001(\t\022\014\n\004n" +
-      "ame\030\002 \001(\t\022\023\n\006source\030\003 \001(\tH\000\210\001\001\022\022\n\ndimens" +
-      "ions\030\004 \003(\t\022I\n\017classifications\030\005 \003(\01320.na" +
-      "me.abuchen.portfolio.PTaxonomy.Classific" +
-      "ation\032v\n\nAssignment\022\031\n\021investmentVehicle" +
-      "\030\001 \001(\t\022\016\n\006weight\030\002 \001(\005\022\014\n\004rank\030\003 \001(\005\022/\n\004" +
-      "data\030\004 \003(\0132!.name.abuchen.portfolio.PKey" +
-      "Value\032\213\002\n\016Classification\022\n\n\002id\030\001 \001(\t\022\025\n\010" +
-      "parentId\030\002 \001(\tH\000\210\001\001\022\014\n\004name\030\003 \001(\t\022\021\n\004not" +
-      "e\030\004 \001(\tH\001\210\001\001\022\r\n\005color\030\005 \001(\t\022\016\n\006weight\030\006 " +
-      "\001(\005\022\014\n\004rank\030\007 \001(\005\022/\n\004data\030\010 \003(\0132!.name.a" +
-      "buchen.portfolio.PKeyValue\022A\n\013assignment" +
-      "s\030\t \003(\0132,.name.abuchen.portfolio.PTaxono" +
-      "my.AssignmentB\013\n\t_parentIdB\007\n\005_noteB\t\n\007_" +
-      "source\"\357\003\n\nPDashboard\022\014\n\004name\030\001 \001(\t\022L\n\rc" +
-      "onfiguration\030\002 \003(\01325.name.abuchen.portfo" +
-      "lio.PDashboard.ConfigurationEntry\022:\n\007col" +
-      "umns\030\003 \003(\0132).name.abuchen.portfolio.PDas" +
-      "hboard.Column\022\n\n\002id\030\004 \001(\t\032\260\001\n\006Widget\022\014\n\004" +
-      "type\030\001 \001(\t\022\r\n\005label\030\002 \001(\t\022S\n\rconfigurati" +
-      "on\030\003 \003(\0132<.name.abuchen.portfolio.PDashb" +
-      "oard.Widget.ConfigurationEntry\0324\n\022Config" +
-      "urationEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t" +
-      ":\0028\001\032T\n\006Column\022\016\n\006weight\030\001 \001(\005\022:\n\007widget" +
-      "s\030\002 \003(\0132).name.abuchen.portfolio.PDashbo" +
-      "ard.Widget\0324\n\022ConfigurationEntry\022\013\n\003key\030" +
-      "\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"+\n\tPBookmark\022\r\n" +
-      "\005label\030\001 \001(\t\022\017\n\007pattern\030\002 \001(\t\"\307\001\n\016PAttri" +
-      "buteType\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\013co" +
-      "lumnLabel\030\003 \001(\t\022\023\n\006source\030\004 \001(\tH\000\210\001\001\022\016\n\006" +
-      "target\030\005 \001(\t\022\014\n\004type\030\006 \001(\t\022\026\n\016converterC" +
-      "lass\030\007 \001(\t\0220\n\nproperties\030\010 \001(\0132\034.name.ab" +
-      "uchen.portfolio.PMapB\t\n\007_source\"J\n\021PConf" +
-      "igurationSet\022\013\n\003key\030\001 \001(\t\022\014\n\004uuid\030\002 \001(\t\022" +
-      "\014\n\004name\030\003 \001(\t\022\014\n\004data\030\004 \001(\t\"\307\001\n\tPSetting" +
-      "s\0224\n\tbookmarks\030\001 \003(\0132!.name.abuchen.port" +
-      "folio.PBookmark\022>\n\016attributeTypes\030\002 \003(\0132" +
-      "&.name.abuchen.portfolio.PAttributeType\022" +
-      "D\n\021configurationSets\030\003 \003(\0132).name.abuche" +
-      "n.portfolio.PConfigurationSet\"\233\005\n\007PClien" +
-      "t\022\017\n\007version\030\001 \001(\005\0225\n\nsecurities\030\002 \003(\0132!" +
-      ".name.abuchen.portfolio.PSecurity\0222\n\010acc" +
-      "ounts\030\003 \003(\0132 .name.abuchen.portfolio.PAc" +
-      "count\0226\n\nportfolios\030\004 \003(\0132\".name.abuchen" +
-      ".portfolio.PPortfolio\022:\n\014transactions\030\005 " +
-      "\003(\0132$.name.abuchen.portfolio.PTransactio" +
-      "n\0226\n\005plans\030\006 \003(\0132\'.name.abuchen.portfoli" +
-      "o.PInvestmentPlan\0226\n\nwatchlists\030\007 \003(\0132\"." +
-      "name.abuchen.portfolio.PWatchlist\0225\n\ntax" +
-      "onomies\030\010 \003(\0132!.name.abuchen.portfolio.P" +
-      "Taxonomy\0226\n\ndashboards\030\t \003(\0132\".name.abuc" +
-      "hen.portfolio.PDashboard\022C\n\nproperties\030\n" +
-      " \003(\0132/.name.abuchen.portfolio.PClient.Pr" +
-      "opertiesEntry\0223\n\010settings\030\013 \001(\0132!.name.a" +
-      "buchen.portfolio.PSettings\022\024\n\014baseCurren" +
-      "cy\030\014 \001(\t\0321\n\017PropertiesEntry\022\013\n\003key\030\001 \001(\t" +
-      "\022\r\n\005value\030\002 \001(\t:\0028\001\"S\n\rPExchangeRate\022\014\n\004" +
-      "date\030\001 \001(\003\0224\n\005value\030\002 \001(\0132%.name.abuchen" +
-      ".portfolio.PDecimalValue\"\203\001\n\027PExchangeRa" +
-      "teTimeSeries\022\024\n\014baseCurrency\030\001 \001(\t\022\024\n\014te" +
-      "rmCurrency\030\002 \001(\t\022<\n\rexchangeRates\030\003 \003(\0132" +
-      "%.name.abuchen.portfolio.PExchangeRate\"a" +
-      "\n\010PECBData\022\024\n\014lastModified\030\001 \001(\003\022?\n\006seri" +
-      "es\030\002 \003(\0132/.name.abuchen.portfolio.PExcha" +
-      "ngeRateTimeSeriesB7\n%name.abuchen.portfo" +
-      "lio.model.proto.v1B\014ClientProtosP\001b\006prot" +
-      "o3"
+      "UND\020\014\022\007\n\003FEE\020\r\022\016\n\nFEE_REFUND\020\016\022\017\n\013SELL_O" +
+      "PTION\020\017\022\016\n\nBUY_OPTION\020\020B\n\n\010_accountB\014\n\n_" +
+      "portfolioB\017\n\r_otherAccountB\021\n\017_otherPort" +
+      "folioB\014\n\n_otherUuidB\021\n\017_otherUpdatedAtB\t" +
+      "\n\007_sharesB\007\n\005_noteB\013\n\t_securityB\t\n\007_sour" +
+      "ce\"\335\003\n\017PInvestmentPlan\022\014\n\004name\030\001 \001(\t\022\021\n\004" +
+      "note\030\002 \001(\tH\000\210\001\001\022\025\n\010security\030\003 \001(\tH\001\210\001\001\022\026" +
+      "\n\tportfolio\030\004 \001(\tH\002\210\001\001\022\024\n\007account\030\005 \001(\tH" +
+      "\003\210\001\001\0225\n\nattributes\030\006 \003(\0132!.name.abuchen." +
+      "portfolio.PKeyValue\022\024\n\014autoGenerate\030\007 \001(" +
+      "\010\022\014\n\004date\030\010 \001(\003\022\020\n\010interval\030\t \001(\005\022\016\n\006amo" +
+      "unt\030\n \001(\003\022\014\n\004fees\030\013 \001(\003\022\024\n\014transactions\030" +
+      "\014 \003(\t\022\r\n\005taxes\030\r \001(\003\022:\n\004type\030\016 \001(\0162,.nam" +
+      "e.abuchen.portfolio.PInvestmentPlan.Type" +
+      "\"H\n\004Type\022\030\n\024PURCHASE_OR_DELIVERY\020\000\022\013\n\007DE" +
+      "POSIT\020\001\022\013\n\007REMOVAL\020\002\022\014\n\010INTEREST\020\003B\007\n\005_n" +
+      "oteB\013\n\t_securityB\014\n\n_portfolioB\n\n\010_accou" +
+      "nt\"\252\004\n\tPTaxonomy\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001" +
+      "(\t\022\023\n\006source\030\003 \001(\tH\000\210\001\001\022\022\n\ndimensions\030\004 " +
+      "\003(\t\022I\n\017classifications\030\005 \003(\01320.name.abuc" +
+      "hen.portfolio.PTaxonomy.Classification\032v" +
+      "\n\nAssignment\022\031\n\021investmentVehicle\030\001 \001(\t\022" +
+      "\016\n\006weight\030\002 \001(\005\022\014\n\004rank\030\003 \001(\005\022/\n\004data\030\004 " +
+      "\003(\0132!.name.abuchen.portfolio.PKeyValue\032\213" +
+      "\002\n\016Classification\022\n\n\002id\030\001 \001(\t\022\025\n\010parentI" +
+      "d\030\002 \001(\tH\000\210\001\001\022\014\n\004name\030\003 \001(\t\022\021\n\004note\030\004 \001(\t" +
+      "H\001\210\001\001\022\r\n\005color\030\005 \001(\t\022\016\n\006weight\030\006 \001(\005\022\014\n\004" +
+      "rank\030\007 \001(\005\022/\n\004data\030\010 \003(\0132!.name.abuchen." +
+      "portfolio.PKeyValue\022A\n\013assignments\030\t \003(\013" +
+      "2,.name.abuchen.portfolio.PTaxonomy.Assi" +
+      "gnmentB\013\n\t_parentIdB\007\n\005_noteB\t\n\007_source\"" +
+      "\357\003\n\nPDashboard\022\014\n\004name\030\001 \001(\t\022L\n\rconfigur" +
+      "ation\030\002 \003(\01325.name.abuchen.portfolio.PDa" +
+      "shboard.ConfigurationEntry\022:\n\007columns\030\003 " +
+      "\003(\0132).name.abuchen.portfolio.PDashboard." +
+      "Column\022\n\n\002id\030\004 \001(\t\032\260\001\n\006Widget\022\014\n\004type\030\001 " +
+      "\001(\t\022\r\n\005label\030\002 \001(\t\022S\n\rconfiguration\030\003 \003(" +
+      "\0132<.name.abuchen.portfolio.PDashboard.Wi" +
+      "dget.ConfigurationEntry\0324\n\022Configuration" +
+      "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032T\n" +
+      "\006Column\022\016\n\006weight\030\001 \001(\005\022:\n\007widgets\030\002 \003(\013" +
+      "2).name.abuchen.portfolio.PDashboard.Wid" +
+      "get\0324\n\022ConfigurationEntry\022\013\n\003key\030\001 \001(\t\022\r" +
+      "\n\005value\030\002 \001(\t:\0028\001\"+\n\tPBookmark\022\r\n\005label\030" +
+      "\001 \001(\t\022\017\n\007pattern\030\002 \001(\t\"\307\001\n\016PAttributeTyp" +
+      "e\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\013columnLab" +
+      "el\030\003 \001(\t\022\023\n\006source\030\004 \001(\tH\000\210\001\001\022\016\n\006target\030" +
+      "\005 \001(\t\022\014\n\004type\030\006 \001(\t\022\026\n\016converterClass\030\007 " +
+      "\001(\t\0220\n\nproperties\030\010 \001(\0132\034.name.abuchen.p" +
+      "ortfolio.PMapB\t\n\007_source\"J\n\021PConfigurati" +
+      "onSet\022\013\n\003key\030\001 \001(\t\022\014\n\004uuid\030\002 \001(\t\022\014\n\004name" +
+      "\030\003 \001(\t\022\014\n\004data\030\004 \001(\t\"\307\001\n\tPSettings\0224\n\tbo" +
+      "okmarks\030\001 \003(\0132!.name.abuchen.portfolio.P" +
+      "Bookmark\022>\n\016attributeTypes\030\002 \003(\0132&.name." +
+      "abuchen.portfolio.PAttributeType\022D\n\021conf" +
+      "igurationSets\030\003 \003(\0132).name.abuchen.portf" +
+      "olio.PConfigurationSet\"\233\005\n\007PClient\022\017\n\007ve" +
+      "rsion\030\001 \001(\005\0225\n\nsecurities\030\002 \003(\0132!.name.a" +
+      "buchen.portfolio.PSecurity\0222\n\010accounts\030\003" +
+      " \003(\0132 .name.abuchen.portfolio.PAccount\0226" +
+      "\n\nportfolios\030\004 \003(\0132\".name.abuchen.portfo" +
+      "lio.PPortfolio\022:\n\014transactions\030\005 \003(\0132$.n" +
+      "ame.abuchen.portfolio.PTransaction\0226\n\005pl" +
+      "ans\030\006 \003(\0132\'.name.abuchen.portfolio.PInve" +
+      "stmentPlan\0226\n\nwatchlists\030\007 \003(\0132\".name.ab" +
+      "uchen.portfolio.PWatchlist\0225\n\ntaxonomies" +
+      "\030\010 \003(\0132!.name.abuchen.portfolio.PTaxonom" +
+      "y\0226\n\ndashboards\030\t \003(\0132\".name.abuchen.por" +
+      "tfolio.PDashboard\022C\n\nproperties\030\n \003(\0132/." +
+      "name.abuchen.portfolio.PClient.Propertie" +
+      "sEntry\0223\n\010settings\030\013 \001(\0132!.name.abuchen." +
+      "portfolio.PSettings\022\024\n\014baseCurrency\030\014 \001(" +
+      "\t\0321\n\017PropertiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val" +
+      "ue\030\002 \001(\t:\0028\001\"S\n\rPExchangeRate\022\014\n\004date\030\001 " +
+      "\001(\003\0224\n\005value\030\002 \001(\0132%.name.abuchen.portfo" +
+      "lio.PDecimalValue\"\203\001\n\027PExchangeRateTimeS" +
+      "eries\022\024\n\014baseCurrency\030\001 \001(\t\022\024\n\014termCurre" +
+      "ncy\030\002 \001(\t\022<\n\rexchangeRates\030\003 \003(\0132%.name." +
+      "abuchen.portfolio.PExchangeRate\"a\n\010PECBD" +
+      "ata\022\024\n\014lastModified\030\001 \001(\003\022?\n\006series\030\002 \003(" +
+      "\0132/.name.abuchen.portfolio.PExchangeRate" +
+      "TimeSeriesB7\n%name.abuchen.portfolio.mod" +
+      "el.proto.v1B\014ClientProtosP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

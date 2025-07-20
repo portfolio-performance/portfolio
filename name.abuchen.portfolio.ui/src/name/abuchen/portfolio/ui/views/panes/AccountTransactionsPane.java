@@ -361,6 +361,14 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 {
                     return t.getShares();
                 }
+                else if (t.getType() == Type.SELL_OPTION && t.getShares() != 0)
+                {
+                    return t.getShares();
+                }
+                else if (t.getType() == Type.BUY_OPTION && t.getShares() != 0)
+                {
+                    return t.getShares();
+                }
                 else
                 {
                     return null;
@@ -392,6 +400,18 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return pt.getGrossPricePerShare();
             }
             else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+            {
+                long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
+                                * Values.Quote.factorToMoney() / t.getShares());
+                return Quote.of(t.getCurrencyCode(), perShare);
+            }
+            else if (t.getType() == Type.SELL_OPTION && t.getShares() != 0)
+            {
+                long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
+                                * Values.Quote.factorToMoney() / t.getShares());
+                return Quote.of(t.getCurrencyCode(), perShare);
+            }
+            else if (t.getType() == Type.BUY_OPTION && t.getShares() != 0)
             {
                 long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
                                 * Values.Quote.factorToMoney() / t.getShares());

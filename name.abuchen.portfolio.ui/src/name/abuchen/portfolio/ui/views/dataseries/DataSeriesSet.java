@@ -195,6 +195,16 @@ public class DataSeriesSet
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.OPTION_PREMIUMS, Messages.LabelOptionPremiums,
+                        Display.getDefault().getSystemColor(SWT.COLOR_GREEN).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.OPTION_PREMIUMS_ACCUMULATED,
+                        Messages.LabelAccumulatedOptionPremiums,
+                        Display.getDefault().getSystemColor(SWT.COLOR_GREEN).getRGB());
+        availableSeries.add(series);
+
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
                         Colors.DARK_GREEN.getRGB());
         series.setLineChart(false);
