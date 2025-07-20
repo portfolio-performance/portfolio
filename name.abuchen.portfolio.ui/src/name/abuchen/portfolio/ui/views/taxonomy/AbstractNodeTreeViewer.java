@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -58,6 +59,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -294,6 +296,9 @@ import name.abuchen.portfolio.util.TextUtil;
     @Inject
     private PortfolioPart part;
 
+    @Inject
+    private IStylingEngine stylingEngine;
+
     private boolean useIndirectQuotation = false;
 
     private final AbstractFinanceView view;
@@ -364,10 +369,24 @@ import name.abuchen.portfolio.util.TextUtil;
                         .export(getModel().getTaxonomy().getName() + ".csv"))); //$NON-NLS-1$
 
         manager.add(new Separator());
-        
+
         manager.add(new SimpleAction(Messages.MenuExportTaxonomy,
                         action -> new JSONExporterDialog(nodeViewer.getTree().getShell(),
                                         new TaxonomyJSONExporter(getModel().getTaxonomy())).export()));
+
+        manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
+            var dialog = new TaxonomyImportDialog(nodeViewer.getTree().getShell(), stylingEngine,
+                            getModel().getClient(), getModel().getTaxonomy());
+            if (dialog.open() == TaxonomyImportDialog.DIRTY)
+            {
+                // do a complete reload of the view including taxonomy model
+                // because there can be structural changes which are not
+                // reflected in TaxonomyNode objects.
+
+                getModel().getClient().markDirty();
+                part.activateView(TaxonomyView.class, getModel().getTaxonomy());
+            }
+        }));
     }
 
     @Override

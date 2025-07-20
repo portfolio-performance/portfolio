@@ -25,7 +25,7 @@ public class Classification implements Named
 {
     private static final String PORTFOLIO_CLASSIFICATION_KEY = "portfolioClassificationKey"; //$NON-NLS-1$
 
-    public static class Assignment
+    public static class Assignment implements Adaptable
     {
         private InvestmentVehicle investmentVehicle;
         private int weight;
@@ -108,6 +108,18 @@ public class Classification implements Named
         {
             this.data = fromProtobuf(list);
         }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            if (type == Named.class || type == Annotated.class)
+                return type.cast(this.getInvestmentVehicle());
+            else if (type == Account.class && this.getInvestmentVehicle() instanceof Account)
+                return type.cast(this.getInvestmentVehicle());
+            else
+                return null;
+        }
+
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();

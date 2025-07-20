@@ -527,8 +527,24 @@ public class PortfolioPart implements ClientInputListener
 
     public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
     {
-        getClientInput().getNavigation().findAll(i -> view.equals(i.getViewClass())).findAny()
-                        .ifPresent(item -> activateView(item, parameter));
+        var items = getClientInput().getNavigation().findAll(i -> view.equals(i.getViewClass())).toList();
+
+        if (items.isEmpty())
+            return;
+
+        // check if we have a matching parameter (e.g. taxonomy, watchlist,
+        // etc.), then activate exactly this item.
+
+        for (var item : items)
+        {
+            if (Objects.equals(item.getParameter(), parameter))
+            {
+                activateView(item, parameter);
+                return;
+            }
+        }
+
+        activateView(items.getFirst(), parameter);
     }
 
     public void activateView(Navigation.Item item)
