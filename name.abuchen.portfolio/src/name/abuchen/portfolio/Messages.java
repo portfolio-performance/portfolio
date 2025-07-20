@@ -302,6 +302,7 @@ public class Messages extends NLS
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;
+    public static String MsgJSONFormatInvalid;
     public static String MsgKeyLengthNotSupported;
     public static String MsgLoadingExchangeRates;
     public static String MsgMissingFeedURL;
