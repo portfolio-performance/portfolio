@@ -305,12 +305,12 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Uw Uitbetaling dividenden van 2.130 FIRST MAJESTIC SILVER CORP aan 0,0057 USD 12,14 USD
-                                        // Waardecode ES0000012I08
+                                        // Cash Dividend CA32076V1031ex 2025-02-28 pd 2025-03-14
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
