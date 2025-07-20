@@ -68,15 +68,17 @@
     <security>
       <uuid>dfd4a396-34fe-484c-8130-4fecde91039d</uuid>
       <name>MSCI World</name>
-      <tickerSymbol></tickerSymbol>
-      <feed>GENERIC_HTML_TABLE</feed>
-      <feedURL>http://www.onvista.de/index/MSCI-WORLD-Index-3194141</feedURL>
+      <tickerSymbol>3193857</tickerSymbol>
+      <feed>GENERIC-JSON</feed>
+      <feedURL>https://api.onvista.de/api/v1/instruments/FUND/{TICKER}/eod_history?idNotation=7070261&amp;range=Y5&amp;startDate={TODAY:yyyy-MM-dd:-P5Y}</feedURL>
       <prices/>
       <latestFeed>MANUAL</latestFeed>
       <attributes>
         <map/>
       </attributes>
       <events/>
+      <property type="FEED" name="GENERIC-JSON-DATE">$.datetimeLast[*]</property>
+      <property type="FEED" name="GENERIC-JSON-CLOSE">$.last[*]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
