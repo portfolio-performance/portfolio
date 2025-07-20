@@ -32,14 +32,11 @@ import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -55,7 +52,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
@@ -76,29 +72,29 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -110,32 +106,32 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getNote(), is("Referenz: 153557048"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2850.24))));
+                        is(Money.of("EUR", Values.Amount.factorize(2850.24))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2837.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(2837.40))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.26))));
+                        is(Money.of("EUR", Values.Amount.factorize(4.26))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
+                        is(Money.of("EUR", Values.Amount.factorize(8.58))));
     }
 
     @Test
     public void testWertpapierKauf02()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0025751329"));
         assertNull(security.getWkn());
@@ -144,7 +140,7 @@ public class PostfinancePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -168,29 +164,29 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000PAH0038"));
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("PORSCHE AUTOMOBIL HOLDING PRF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -210,32 +206,32 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.60 * 1.08279))));
 
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2736.80))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("EUR", Values.Amount.factorize(2736.80))));
     }
 
     @Test
     public void testWertpapierKauf03WithSecurityInCHF()
     {
-        Security security = new Security("PORSCHE AUTOMOBIL HOLDING PRF", "CHF");
+        var security = new Security("PORSCHE AUTOMOBIL HOLDING PRF", "CHF");
         security.setIsin("DE000PAH0038");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -255,30 +251,30 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.60 * 1.08279))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode("CHF");
-        Status s = c.process(entry, account, entry.getPortfolio());
+        var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testWertpapierKauf04()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0188802960"));
         assertNull(security.getWkn());
@@ -287,7 +283,7 @@ public class PostfinancePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("JPY"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -307,7 +303,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("JPY", Values.Amount.factorize(34019.00))));
     }
@@ -315,24 +311,24 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testWertpapierKauf04WithSecurityInCHF()
     {
-        Security security = new Security("Pictet - Japan Index - I", "CHF");
+        var security = new Security("Pictet - Japan Index - I", "CHF");
         security.setIsin("LU0188802960");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -352,21 +348,21 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode("CHF");
-        Status s = c.process(entry, account, entry.getPortfolio());
+        var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testWertpapierKauf05()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -393,20 +389,20 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+        var extractor = new PostfinancePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BD4TYL27"));
         assertNull(security.getWkn());
@@ -415,7 +411,7 @@ public class PostfinancePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -441,7 +437,7 @@ public class PostfinancePDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -471,28 +467,28 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testDividende01()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0000009355"));
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UNILEVER DUTCH CERT"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -501,31 +497,27 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Referenz: 169933304"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.93))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.62))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.69))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.93))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(24.62))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(3.69))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testDividende02()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0032912732"));
         assertNull(security.getWkn());
@@ -534,8 +526,8 @@ public class PostfinancePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -544,31 +536,27 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Referenz: 130516418"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(36.69))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(56.44))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(19.75))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(36.69))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(19.75))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testDividende03()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0019396990"));
         assertNull(security.getWkn());
@@ -577,8 +565,8 @@ public class PostfinancePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -587,25 +575,20 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Referenz: 149619136"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(26.60))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(26.60))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testZahlungsverkehr01()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -622,12 +605,11 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testZahlungsverkehr02()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -644,19 +626,19 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testJahresgebuehr01()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Jahresgebuehr01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Jahresgebuehr01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check fees transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
@@ -664,25 +646,20 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Jahresgebuehr01.txt"));
         assertThat(transaction.getNote(), is("Jahresgebühr | Referenz: 161333839"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(90.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(90.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testGiroKontoauszug10()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehr01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehr01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -699,19 +676,19 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testZinsabschluss01()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check 1st interest transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
@@ -719,14 +696,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss01.txt"));
         assertThat(transaction.getNote(), is("01.01.2019 – 31.10.2019"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(4.17))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(4.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(4.17))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(4.17))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check 2nd interest transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
@@ -738,32 +711,28 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss01.txt"));
         assertThat(transaction.getNote(), is("01.11.2019 – 31.12.2019"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(0.42))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(0.42))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.42))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testZinsabschluss02()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "CHF");
 
         // check 1st interest transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
@@ -771,14 +740,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
         assertThat(transaction.getNote(), is("01.01.2019 – 31.10.2019"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(83.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(83.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(83.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(83.33))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check 2nd interest transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
@@ -790,14 +755,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
         assertThat(transaction.getNote(), is("01.11.2019 – 31.12.2019"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(33.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(33.33))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(33.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(33.33))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check taxes transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
@@ -809,32 +770,28 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss02.txt"));
         assertThat(transaction.getNote(), is("Verrechnungssteuer 01.01.2019 - 31.12.2019"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(40.83))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(40.83))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(40.83))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testZinsabschluss03()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
@@ -842,13 +799,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss03.txt"));
         assertThat(transaction.getNote(), is("01.01.2015 - 31.12.2015"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(1.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check fees transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
@@ -860,32 +814,28 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss03.txt"));
         assertThat(transaction.getNote(), is("Gebührenausweis 01.01.2015 - 31.12.2015"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testZinsabschluss04()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabschluss04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "CHF");
 
         // check interest transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
@@ -893,14 +843,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
         assertThat(transaction.getNote(), is("01.01.2017 - 31.12.2017"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(400.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(400.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(400.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check taxes transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1)
@@ -912,14 +858,10 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
         assertThat(transaction.getNote(), is("Verrechnungssteuer 01.01.2017 - 31.12.2017"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(140.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(140.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(140.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         // check fees transaction
         transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(2)
@@ -931,37 +873,33 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getSource(), is("Zinsabschluss04.txt"));
         assertThat(transaction.getNote(), is("Gebührenausweis 01.01.2017 - 31.12.2017"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(60.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(60.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
     public void testKontoauszug01()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(73));
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
         assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(73L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(100.00))));
@@ -1692,24 +1630,24 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
         assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(6L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(20000.00))));
@@ -1770,24 +1708,24 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(54));
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
         assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(54L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(250.00))));
@@ -2328,24 +2266,24 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
         // check transaction
         // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
         assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(2L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(111.00))));
@@ -2366,12 +2304,11 @@ public class PostfinancePDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+        var extractor = new PostfinancePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05MitTwintKauf.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05MitTwintKauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2571,5 +2508,27 @@ public class PostfinancePDFExtractorTest
                         hasAmount("CHF", 5.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote(""))));
+    }
+
+    @Test
+    public void testKontoauszug06()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2025-01-04"), hasAmount("CHF", 70.30), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Kauf/Dienstleistung"))));
     }
 }
