@@ -7,21 +7,41 @@ Portfolio Performance is an Eclipse RCP (Rich Client Platform) application for t
 ## Build and Development Commands
 
 ### Build Commands
+
+The Maven build is using Maven Tycho. Therefore the following commands must be used to compile and test the code.
+
 ```bash
 mvn -f portfolio-app/pom.xml clean verify
 ```
 
-### Test Commands
 ```bash
-# Run all tests via Maven
-mvn -f portfolio-app/pom.xml test
+# Build only the core module
+mvn -f portfolio-app/pom.xml clean compile -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio -am -amd
+```
 
+```bash
+# Build the core and UI module
+mvn -f portfolio-app/pom.xml clean compile -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.bootstrap,:name.abuchen.portfolio.ui -am -amd
+```
+
+
+### Test Commands
+
+```bash
 # Run core tests
-mvn -f portfolio-app/pom.xml clean verify -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.tests -am -amd
+mvn -f portfolio-app/pom.xml verify -o -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.tests -am -amd
+
+# Run only one class of the core tests
+mvn -f portfolio-app/pom.xml verify -o -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.tests -am -amd -Dtest=<fully qualified name of the test class>
 
 # Run UI tests
-mvn -f portfolio-app/pom.xml clean verify -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.ui,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.ui.tests -am -amd
+mvn -f portfolio-app/pom.xml verify -pl :portfolio-target-definition,:name.abuchen.portfolio.pdfbox1,:name.abuchen.portfolio.pdfbox3,:name.abuchen.portfolio,:name.abuchen.portfolio.ui,:name.abuchen.portfolio.junit,:name.abuchen.portfolio.ui.tests -am -amd
 ```
+
+## Code Style
+
+- Use 'var' keyword where possible
+- Do not the comment $NON-NLS-1$ to suppress warnings about missing internationalization
 
 ## Architecture Overview
 
