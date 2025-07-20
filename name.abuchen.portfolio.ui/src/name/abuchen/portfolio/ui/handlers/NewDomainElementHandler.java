@@ -61,6 +61,8 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.views.SecurityListView;
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -97,10 +99,10 @@ public class NewDomainElementHandler
                 portfolioPart.get().getCurrentView().ifPresent(this::createNewConsumerPriceIndex);
                 break;
             case TAXONOMY:
-                createNewTaxonomy(portfolioPart.get().getClient());
+                createNewTaxonomy(portfolioPart.get(), portfolioPart.get().getClient());
                 break;
             case WATCHLIST:
-                createNewWatchlist(portfolioPart.get().getClient());
+                createNewWatchlist(portfolioPart.get(), portfolioPart.get().getClient());
                 break;
             default:
         }
@@ -247,7 +249,7 @@ public class NewDomainElementHandler
         }
     }
 
-    private void createNewTaxonomy(Client client)
+    private void createNewTaxonomy(PortfolioPart part, Client client)
     {
         TaxonomyCreationDialog dialog = new TaxonomyCreationDialog(Display.getDefault().getActiveShell());
         if (dialog.open() != Window.OK)
@@ -257,25 +259,28 @@ public class NewDomainElementHandler
         if (name == null || name.isEmpty())
             return;
 
+        Taxonomy taxonomy;
+
         final Optional<TaxonomyTemplate> template = dialog.getTemplate();
         if (template.isPresent())
         {
-            Taxonomy taxonomy = template.get().build();
+            taxonomy = template.get().build();
             taxonomy.setName(name);
             taxonomy.getRoot().setName(name);
-            client.addTaxonomy(taxonomy);
-            client.touch();
         }
         else
         {
-            Taxonomy taxonomy = new Taxonomy(name);
+            taxonomy = new Taxonomy(name);
             taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), name));
-            client.addTaxonomy(taxonomy);
-            client.touch();
         }
+
+        client.addTaxonomy(taxonomy);
+        client.touch();
+
+        part.activateView(TaxonomyView.class, taxonomy);
     }
 
-    private void createNewWatchlist(Client client)
+    private void createNewWatchlist(PortfolioPart part, Client client)
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.WatchlistNewLabel,
                         Messages.WatchlistEditDialogMsg, Messages.WatchlistNewLabel, null);
@@ -290,6 +295,8 @@ public class NewDomainElementHandler
         watchlist.setName(name);
         client.addWatchlist(watchlist);
         client.touch();
+
+        part.activateView(SecurityListView.class, watchlist);
     }
 }
 

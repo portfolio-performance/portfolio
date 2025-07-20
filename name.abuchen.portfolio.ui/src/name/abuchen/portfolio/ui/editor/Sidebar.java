@@ -56,9 +56,9 @@ public final class Sidebar<I> extends Composite
 
         void select(I item);
 
-        IMenuListener getActionMenu(I item);
+        Navigation.MenuListener getActionMenu(I item);
 
-        IMenuListener getContextMenu(I item);
+        Navigation.MenuListener getContextMenu(I item);
     }
 
     public static final int STEP = 10;
@@ -69,6 +69,7 @@ public final class Sidebar<I> extends Composite
     private Font boldFont;
     private Font sectionFont;
 
+    private final PortfolioPart part;
     private final Model<I> model;
 
     private List<Entry> entries = new ArrayList<>();
@@ -76,9 +77,10 @@ public final class Sidebar<I> extends Composite
     private Entry selection = null;
     private Entry focus = null;
 
-    public Sidebar(Composite parent, Model<I> model)
+    public Sidebar(Composite parent, PortfolioPart part, Model<I> model)
     {
         super(parent, SWT.NONE);
+        this.part = part;
         this.model = model;
 
         this.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
@@ -109,11 +111,11 @@ public final class Sidebar<I> extends Composite
     private void build(int indent, I item, List<Entry> existingList, List<Entry> targetList)
     {
         Entry entry = existingList.stream().filter(i -> item.equals(i.getSubject())).findAny()
-                        .orElseGet(() -> new Entry(this, item));
+                        .orElseGet(() -> new Entry(this, part, item));
 
         entry.setIndent(indent);
 
-        IMenuListener contextMenu = model.getContextMenu(item);
+        var contextMenu = model.getContextMenu(item);
         if (contextMenu != null)
             entry.addContextMenu(contextMenu);
 
@@ -318,6 +320,7 @@ public final class Sidebar<I> extends Composite
         private static final int MARGIN_X = 6;
         private static final int MARGIN_Y = 4;
 
+        private final PortfolioPart part;
         private final I subject;
 
         private int indent;
@@ -328,9 +331,10 @@ public final class Sidebar<I> extends Composite
 
         private boolean isDragTarget;
 
-        public Entry(Composite parent, I subject)
+        public Entry(Composite parent, PortfolioPart part, I subject)
         {
             super(parent, SWT.NO_FOCUS);
+            this.part = part;
             this.subject = Objects.requireNonNull(subject);
 
             this.image = model.getImage(subject).map(Images::image).orElse(null);
@@ -347,14 +351,14 @@ public final class Sidebar<I> extends Composite
             return subject;
         }
 
-        public void addContextMenu(IMenuListener listener)
+        public void addContextMenu(Navigation.MenuListener listener)
         {
             if (contextMenu != null)
                 contextMenu.dispose();
 
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(listener);
+            menuMgr.addMenuListener(manager -> listener.menuAboutToShow(part, manager));
 
             contextMenu = menuMgr.createContextMenu(this);
             setMenu(contextMenu);
@@ -395,7 +399,7 @@ public final class Sidebar<I> extends Composite
         {
             if (event.button == 1)
             {
-                IMenuListener action = model.getActionMenu(subject);
+                var action = model.getActionMenu(subject);
                 if (action != null)
                 {
                     boolean doIt = true;
@@ -411,7 +415,7 @@ public final class Sidebar<I> extends Composite
 
                     if (doIt)
                     {
-                        showMenu(action);
+                        showMenu(manager -> action.menuAboutToShow(part, manager));
                         return;
                     }
                 }

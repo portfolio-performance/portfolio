@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
@@ -73,8 +73,8 @@ public final class Navigation
         private String label;
         private Images image;
 
-        private IMenuListener actionMenu;
-        private IMenuListener contextMenu;
+        private MenuListener actionMenu;
+        private MenuListener contextMenu;
 
         private Class<? extends AbstractFinanceView> viewClass;
         private boolean hideInformationPane;
@@ -125,12 +125,12 @@ public final class Navigation
             return image;
         }
 
-        public IMenuListener getActionMenu()
+        public MenuListener getActionMenu()
         {
             return actionMenu;
         }
 
-        public IMenuListener getContextMenu()
+        public MenuListener getContextMenu()
         {
             return contextMenu;
         }
@@ -179,6 +179,12 @@ public final class Navigation
         {
             return this.tags.contains(tag);
         }
+    }
+
+    @FunctionalInterface
+    public interface MenuListener
+    {
+        public void menuAboutToShow(PortfolioPart part, IMenuManager manager);
     }
 
     @FunctionalInterface
@@ -325,7 +331,7 @@ public final class Navigation
     private void createGeneralDataSection(Client client)
     {
         Item generalData = new Item(Messages.LabelSecurities);
-        generalData.actionMenu = manager -> {
+        generalData.actionMenu = (part, manager) -> {
 
             manager.add(CommandAction.forCommand(context, DomainElement.WATCHLIST.getPaletteLabel(),
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
@@ -381,7 +387,7 @@ public final class Navigation
         Item item = new Item(watchlist.getName(), Images.WATCHLIST, SecurityListView.class);
         item.parameter = watchlist;
 
-        item.contextMenu = manager -> {
+        item.contextMenu = (part, manager) -> {
             manager.add(new SimpleAction(Messages.WatchlistRename, a -> {
                 String newName = askWatchlistName(watchlist.getName());
                 if (newName != null)
@@ -394,7 +400,10 @@ public final class Navigation
                 }
             }));
 
-            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> client.removeWatchlist(watchlist)));
+            manager.add(new SimpleAction(Messages.WatchlistDelete, a -> {
+                client.removeWatchlist(watchlist);
+                part.activateView(SecurityListView.class, null);
+            }));
 
             manager.add(new Separator());
 
@@ -483,7 +492,7 @@ public final class Navigation
         Item section = new Item(Messages.LabelTaxonomies);
         roots.add(section);
 
-        section.actionMenu = manager -> {
+        section.actionMenu = (part, manager) -> {
 
             manager.add(CommandAction.forCommand(context, DomainElement.TAXONOMY.getPaletteLabel(),
                             UIConstants.Command.NEW_DOMAIN_ELEMENT, UIConstants.Parameter.TYPE,
@@ -497,6 +506,7 @@ public final class Navigation
                 manager.add(new SimpleAction(template.getName(), a -> {
                     Taxonomy taxonomy = template.build();
                     client.addTaxonomy(taxonomy);
+                    part.activateView(TaxonomyView.class, taxonomy);
                 }));
             }
         };
@@ -536,7 +546,7 @@ public final class Navigation
         item.hideInformationPane = true;
         item.parameter = taxonomy;
 
-        item.contextMenu = manager -> {
+        item.contextMenu = (part, manager) -> {
             manager.add(new SimpleAction(Messages.MenuTaxonomyRename, a -> {
                 String newName = askTaxonomyName(taxonomy.getName());
                 if (newName != null)
@@ -546,6 +556,8 @@ public final class Navigation
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
+
+                    part.activateView(TaxonomyView.class, taxonomy);
                 }
             }));
 
@@ -556,12 +568,15 @@ public final class Navigation
                     Taxonomy copy = taxonomy.copy();
                     copy.setName(newName);
                     client.addTaxonomy(copy);
+
+                    part.activateView(TaxonomyView.class, copy);
                 }
             }));
 
             manager.add(new ConfirmAction(Messages.MenuTaxonomyDelete,
                             MessageFormat.format(Messages.MenuTaxonomyDeleteConfirm, taxonomy.getName()), a -> {
                                 client.removeTaxonomy(taxonomy);
+                                part.activateView(StatementOfAssetsView.class, null);
                             }));
 
             manager.add(new Separator());

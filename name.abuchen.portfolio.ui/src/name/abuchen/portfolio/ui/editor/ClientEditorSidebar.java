@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -72,13 +71,13 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
             }
 
             @Override
-            public IMenuListener getActionMenu(Navigation.Item item)
+            public Navigation.MenuListener getActionMenu(Navigation.Item item)
             {
                 return item.getActionMenu();
             }
 
             @Override
-            public IMenuListener getContextMenu(Navigation.Item item)
+            public Navigation.MenuListener getContextMenu(Navigation.Item item)
             {
                 return item.getContextMenu();
             }
@@ -86,7 +85,7 @@ import name.abuchen.portfolio.ui.views.SecurityListView;
 
         ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
 
-        sidebar = new Sidebar<>(scrolledComposite, model);
+        sidebar = new Sidebar<>(scrolledComposite, editor, model);
 
         editor.getClientInput().getNavigation().findAll(item -> item.getViewClass() == SecurityListView.class)
                         .forEach(this::setupAllSecuritesAndWatchlistDnD);
