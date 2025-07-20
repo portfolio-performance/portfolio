@@ -21,12 +21,14 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
         return Messages.LabelYahooFinanceAdjustedClose;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected JSONObject extractQuotesObject(JSONObject indicators) throws IOException
     {
         JSONObject quote = null;
 
-        // High, low and volume are not available in the adjclose array, thus try and get them from the super class
+        // High, low and volume are not available in the adjclose array, thus
+        // try and get them from the super class
         try
         {
             quote = super.extractQuotesObject(indicators);
@@ -44,11 +46,12 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
         if (adjquote == null)
             throw new IOException();
 
-        quote.put("adjclose", extractCloseArray(adjquote));
+        quote.put("adjclose", extractCloseArray(adjquote)); //$NON-NLS-1$
 
         return quote;
     }
 
+    @Override
     protected JSONArray extractCloseArray(JSONObject quotes) throws IOException
     {
         JSONArray adjclose = (JSONArray) quotes.get("adjclose"); //$NON-NLS-1$
