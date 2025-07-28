@@ -61,12 +61,15 @@ public class TradeDetailsView extends AbstractFinanceView
         private final Interval interval;
         private final List<Trade> trades;
         private final List<TradeCollectorException> errors;
+        private final boolean useSecurityCurrency;
 
-        public Input(Interval interval, List<Trade> trades, List<TradeCollectorException> errors)
+        public Input(Interval interval, List<Trade> trades, List<TradeCollectorException> errors,
+                        boolean useSecurityCurrency)
         {
             this.interval = interval;
             this.trades = trades;
             this.errors = errors;
+            this.useSecurityCurrency = useSecurityCurrency;
         }
 
         public Interval getInterval()
@@ -82,6 +85,11 @@ public class TradeDetailsView extends AbstractFinanceView
         public List<TradeCollectorException> getErrors()
         {
             return errors;
+        }
+
+        public boolean useSecurityCurrency()
+        {
+            return useSecurityCurrency;
         }
     }
 
@@ -192,8 +200,12 @@ public class TradeDetailsView extends AbstractFinanceView
     @Optional
     public void setTrades(@Named(UIConstants.Parameter.VIEW_PARAMETER) Input input)
     {
-        this.input = input;
-        this.usePreselectedTrades.setValue(true);
+        if (input != null)
+        {
+            this.input = input;
+            this.usePreselectedTrades.setValue(true);
+            this.useSecurityCurrency = input.useSecurityCurrency();
+        }
     }
 
     @PostConstruct
@@ -205,7 +217,9 @@ public class TradeDetailsView extends AbstractFinanceView
     @PostConstruct
     private void readPreferences(IPreferenceStore preferences)
     {
-        useSecurityCurrency = preferences.getBoolean(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY);
+        // read preferences only if not preselected by the setTrades method
+        if (usePreselectedTrades.isFalse())
+            useSecurityCurrency = preferences.getBoolean(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY);
     }
 
     @Override
@@ -242,20 +256,21 @@ public class TradeDetailsView extends AbstractFinanceView
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
             table.getShowHideColumnHelper().menuAboutToShow(manager);
 
-            // add the action to use the security currency only the user is not
-            // using the preselected trades
-            if (usePreselectedTrades.isFalse())
-            {
-                manager.add(new Separator());
-                var action = new SimpleAction(Messages.LabelUseSecurityCurrency, a -> {
-                    useSecurityCurrency = !useSecurityCurrency;
-                    getPreferenceStore().setValue(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY,
-                                    useSecurityCurrency);
-                    update();
-                });
-                action.setChecked(useSecurityCurrency);
-                manager.add(action);
-            }
+            manager.add(new Separator());
+            var action = new SimpleAction(Messages.LabelUseSecurityCurrency, a -> {
+                useSecurityCurrency = !useSecurityCurrency;
+                getPreferenceStore().setValue(this.getClass().getSimpleName() + PREF_USE_SECURITY_CURRENCY,
+                                useSecurityCurrency);
+                update();
+            });
+            action.setChecked(useSecurityCurrency);
+
+            // enable the action to use the security currency only the user is
+            // not using the preselected trades (because only then we can
+            // recalculate the trades)
+            action.setEnabled(usePreselectedTrades.isFalse());
+
+            manager.add(action);
         }));
     }
 
@@ -496,6 +511,6 @@ public class TradeDetailsView extends AbstractFinanceView
             }
         });
 
-        return new Input(null, trades, errors);
+        return new Input(null, trades, errors, useSecurityCurrency);
     }
 }
