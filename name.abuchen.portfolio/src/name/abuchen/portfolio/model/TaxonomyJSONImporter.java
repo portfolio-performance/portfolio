@@ -120,13 +120,20 @@ public class TaxonomyJSONImporter
 
     private final Client client;
     private final Taxonomy taxonomy;
+    private final boolean preserveNameAndDescription;
 
     private final Map<String, Classification> key2classification;
 
     public TaxonomyJSONImporter(Client client, Taxonomy taxonomy)
     {
+        this(client, taxonomy, false);
+    }
+
+    public TaxonomyJSONImporter(Client client, Taxonomy taxonomy, boolean preserveNameAndDescription)
+    {
         this.client = client;
         this.taxonomy = taxonomy;
+        this.preserveNameAndDescription = preserveNameAndDescription;
 
         var keys = new HashMap<String, Classification>();
         this.taxonomy.foreach(new Taxonomy.Visitor()
@@ -237,7 +244,7 @@ public class TaxonomyJSONImporter
             {
                 // update properties of existing classification
 
-                if (!Objects.equals(name, classification.getName()))
+                if (!preserveNameAndDescription && !Objects.equals(name, classification.getName()))
                 {
                     result.addModifiedObject(classification);
                     result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat.format(
@@ -246,7 +253,7 @@ public class TaxonomyJSONImporter
                     classification.setName(name);
                 }
 
-                if (description != null && !description.equals(classification.getNote()))
+                if (!preserveNameAndDescription && description != null && !description.equals(classification.getNote()))
                 {
                     result.addModifiedObject(classification);
                     result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat

@@ -376,7 +376,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
         manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
             var dialog = new TaxonomyImportDialog(nodeViewer.getTree().getShell(), stylingEngine,
-                            getModel().getClient(), getModel().getTaxonomy());
+                            part.getPreferenceStore(), getModel().getClient(), getModel().getTaxonomy());
             if (dialog.open() == TaxonomyImportDialog.DIRTY)
             {
                 // do a complete reload of the view including taxonomy model

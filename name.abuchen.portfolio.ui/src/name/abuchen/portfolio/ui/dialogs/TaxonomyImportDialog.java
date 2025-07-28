@@ -18,6 +18,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -62,24 +63,30 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 public class TaxonomyImportDialog extends TitleAreaDialog
 {
     public static final int DIRTY = 42;
+    private static final String PREF_PRESERVE_NAME_DESCRIPTION = TaxonomyImportDialog.class.getSimpleName()
+                    + "-preserve.name.description"; //$NON-NLS-1$
 
     private final IStylingEngine stylingEngine;
 
+    private final IPreferenceStore preferences;
     private final Client client;
     private final Taxonomy taxonomy;
 
     private Text filePathText;
     private TreeViewer nodeViewer;
     private TableViewer changeViewer;
+    private Button preserveNameDescriptionCheckbox;
     private ImportResult importResult;
     private String selectedFilePath;
 
-    public TaxonomyImportDialog(Shell parentShell, IStylingEngine stylingEngine, Client client, Taxonomy taxonomy)
+    public TaxonomyImportDialog(Shell parentShell, IStylingEngine stylingEngine, IPreferenceStore preferences,
+                    Client client, Taxonomy taxonomy)
     {
         super(parentShell);
 
         this.stylingEngine = stylingEngine;
 
+        this.preferences = preferences;
         this.client = client;
         this.taxonomy = taxonomy;
 
@@ -145,6 +152,17 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         var browseButton = new Button(fileSection, SWT.PUSH);
         browseButton.setText(Messages.LabelPickFile);
         browseButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectFile()));
+
+        preserveNameDescriptionCheckbox = new Button(fileSection, SWT.CHECK);
+        preserveNameDescriptionCheckbox.setText(Messages.LabelOptionPreserveNamesAndDescriptions);
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(preserveNameDescriptionCheckbox);
+
+        preserveNameDescriptionCheckbox.setSelection(preferences.getBoolean(PREF_PRESERVE_NAME_DESCRIPTION));
+
+        preserveNameDescriptionCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            if (selectedFilePath != null)
+                performDryRun();
+        }));
     }
 
     private void createPreviewSection(Composite parent)
@@ -336,7 +354,8 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         try (FileInputStream fis = new FileInputStream(selectedFilePath))
         {
             var copy = taxonomy.copy();
-            TaxonomyJSONImporter importer = new TaxonomyJSONImporter(client, copy);
+            boolean preserveNameDescription = preserveNameDescriptionCheckbox.getSelection();
+            TaxonomyJSONImporter importer = new TaxonomyJSONImporter(client, copy, preserveNameDescription);
             importResult = importer.importTaxonomy(new InputStreamReader(fis, StandardCharsets.UTF_8));
 
             var hasChanges = importResult.hasChanges();
@@ -394,10 +413,13 @@ public class TaxonomyImportDialog extends TitleAreaDialog
             return;
         }
 
+        var preserveNameDescription = preserveNameDescriptionCheckbox.getSelection();
+        preferences.setValue(PREF_PRESERVE_NAME_DESCRIPTION, preserveNameDescription);
+
         // Perform the actual import
         try (FileInputStream fis = new FileInputStream(selectedFilePath))
         {
-            var importer = new TaxonomyJSONImporter(client, taxonomy);
+            var importer = new TaxonomyJSONImporter(client, taxonomy, preserveNameDescription);
             var result = importer.importTaxonomy(new InputStreamReader(fis, StandardCharsets.UTF_8));
 
             var hasChanges = result.hasChanges();
