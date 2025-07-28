@@ -55,7 +55,10 @@ public class CSVExporter
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
 
-            for (AccountTransaction t : account.getTransactions())
+            var txs = account.getTransactions();
+            Collections.sort(txs, Transaction.BY_DATE);
+
+            for (AccountTransaction t : txs)
             {
                 printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());
@@ -102,7 +105,10 @@ public class CSVExporter
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
 
-            for (PortfolioTransaction t : portfolio.getTransactions())
+            var txs = portfolio.getTransactions();
+            Collections.sort(txs, Transaction.BY_DATE);
+
+            for (PortfolioTransaction t : txs)
             {
                 printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());
