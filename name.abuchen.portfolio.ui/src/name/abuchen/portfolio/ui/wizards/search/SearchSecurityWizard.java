@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards.security;
+package name.abuchen.portfolio.ui.wizards.search;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;

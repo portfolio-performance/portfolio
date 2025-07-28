@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards.security;
+package name.abuchen.portfolio.ui.wizards.search;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;

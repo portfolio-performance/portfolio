@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards.security;
+package name.abuchen.portfolio.ui.wizards.search;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardDialog;

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.wizards.security;
+package name.abuchen.portfolio.ui.wizards.search;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

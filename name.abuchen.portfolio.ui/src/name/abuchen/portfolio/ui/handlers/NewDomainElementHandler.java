@@ -63,8 +63,8 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.views.SecurityListView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
+import name.abuchen.portfolio.ui.wizards.search.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class NewDomainElementHandler
