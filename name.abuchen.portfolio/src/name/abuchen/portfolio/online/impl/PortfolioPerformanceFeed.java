@@ -55,6 +55,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
 
     private static final String PATH_PREFIX_SAMPLE = "/sample"; //$NON-NLS-1$
 
+    private static final String PATH_QUOTE = "/v1/quote"; //$NON-NLS-1$
     private static final String PATH_HISTORIC = "/v1/candle"; //$NON-NLS-1$
 
     /**
@@ -74,6 +75,11 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                     "X014.DE", // Lyxor MSCI Pacific UCITS ETF
                     "IQQE.DE" // iShares MSCI EM UCITS ETF (Dist)
     );
+
+    @SuppressWarnings("nls")
+    private static final Set<String> EU_EXCHANGES = Set.of( //
+                    "AS", "AT", "BD", "BE", "BR", "CO", "DE", "DU", "F", "HA", "HE", "HM", "IR", "IS", "L", "LS", "MC",
+                    "ME", "MI", "MU", "OL", "PA", "PR", "RG", "SC", "ST", "SW", "SX", "TG", "TL", "VI", "VS", "WA");
 
     private static final OAuthClient oauthClient = OAuthClient.INSTANCE;
 
@@ -107,9 +113,93 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
-        return Optional.empty();
+        if (security.getTickerSymbol() == null)
+            return Optional.empty();
+
+        // latest prices only supported for US equities
+        var isEUEquity = isEUEquity(security.getTickerSymbol());
+        if (isEUEquity)
+            return Optional.empty();
+
+        var isSample = SAMPLE_SYMBOLS.contains(security.getTickerSymbol());
+        var isAuthenticated = oauthClient != null && oauthClient.isAuthenticated();
+
+        if (!isSample && !isAuthenticated)
+            return Optional.empty();
+
+        Optional<AccessToken> accessToken = Optional.empty();
+
+        if (!isSample)
+        {
+            try
+            {
+                accessToken = oauthClient.getAPIAccessToken();
+            }
+            catch (AuthenticationException e)
+            {
+                PortfolioLog.error(e);
+            }
+
+            // silently return. The historic feed will already throw an
+            // exception and we do not want to pollute the user experience.
+            if (accessToken.isEmpty())
+                return Optional.empty();
+
+            if (!"premium".equals(accessToken.get().getClaims().getPlan())) //$NON-NLS-1$
+                return Optional.empty();
+        }
+
+        try
+        {
+            var path = isSample ? PATH_PREFIX_SAMPLE + PATH_QUOTE : PATH_QUOTE;
+            path += "/us"; //$NON-NLS-1$
+
+            @SuppressWarnings("nls")
+            WebAccess webaccess = new WebAccess(ENDPOINT, path) //
+                            .addParameter("symbol", security.getTickerSymbol());
+
+            if (accessToken.isPresent())
+                webaccess.addBearer(accessToken.get().getToken());
+
+            String response = webaccess.get();
+
+            JSONObject json = (JSONObject) JSONValue.parse(response);
+
+            Number t = (Number) json.get("t"); //$NON-NLS-1$
+            Number h = (Number) json.get("h"); //$NON-NLS-1$
+            Number l = (Number) json.get("l"); //$NON-NLS-1$
+            Number c = (Number) json.get("c"); //$NON-NLS-1$
+
+            LatestSecurityPrice price = new LatestSecurityPrice();
+            price.setDate(LocalDateTime.ofEpochSecond((Long) t, 0, ZoneOffset.UTC).toLocalDate());
+            price.setValue(c == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(c.doubleValue()));
+            price.setHigh(h == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(h.doubleValue()));
+            price.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
+            price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
+            return price.getValue() > 0 ? Optional.of(price) : Optional.empty();
+        }
+        catch (WebAccessException e)
+        {
+            switch (e.getHttpErrorCode())
+            {
+                case HttpStatus.SC_TOO_MANY_REQUESTS:
+                    throw new RateLimitExceededException(Duration.ofMinutes(1),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
+                case HttpStatus.SC_NOT_FOUND, HttpStatus.SC_FORBIDDEN:
+                    throw new FeedConfigurationException();
+                default:
+                    PortfolioLog.error(e);
+                    return Optional.empty();
+            }
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -376,5 +466,16 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
             errors.add(e);
             return Collections.emptyList();
         }
+    }
+
+    private boolean isEUEquity(String symbol)
+    {
+        // strip away exchange suffix
+        int p = symbol.lastIndexOf('.');
+
+        if (p <= 0)
+            return false;
+        else
+            return EU_EXCHANGES.contains(symbol.substring(p + 1));
     }
 }
