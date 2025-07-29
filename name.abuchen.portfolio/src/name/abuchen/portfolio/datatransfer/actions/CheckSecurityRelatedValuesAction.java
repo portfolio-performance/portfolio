@@ -19,7 +19,7 @@ public class CheckSecurityRelatedValuesAction implements ImportAction
         boolean hasSecurity = transaction.getSecurity() != null;
 
         Set<Type> typesWithOptionalSecurity = EnumSet.of(Type.DIVIDENDS, Type.TAXES, Type.TAX_REFUND, Type.FEES,
-                        Type.FEES_REFUND);
+                        Type.FEES_REFUND, Type.BUY_OPTION, Type.SELL_OPTION);
 
         if (hasSecurity && !typesWithOptionalSecurity.contains(transaction.getType()))
             return new Status(Status.Code.ERROR,
@@ -28,6 +28,9 @@ public class CheckSecurityRelatedValuesAction implements ImportAction
 
         if (!hasSecurity && transaction.getType() == Type.DIVIDENDS)
             return new Status(Status.Code.ERROR, Messages.MsgCheckDividendsMustHaveASecurity);
+
+        if (!hasSecurity && (transaction.getType() == Type.BUY_OPTION || transaction.getType() == Type.SELL_OPTION))
+            return new Status(Status.Code.ERROR, Messages.MsgCheckOptionPremiumMustHaveASecurity);
 
         if (transaction.getShares() != 0
                         && (!hasSecurity || !typesWithOptionalSecurity.contains(transaction.getType())))

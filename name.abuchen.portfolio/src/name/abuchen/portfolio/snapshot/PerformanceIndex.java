@@ -51,6 +51,7 @@ public class PerformanceIndex
     protected long[] taxes;
     protected long[] dividends;
     protected long[] fees;
+    protected long[] optionPremiums;
     protected long[] interest;
     protected long[] interestCharge;
     protected long[] buys;
@@ -296,6 +297,12 @@ public class PerformanceIndex
     public long[] getDividends()
     {
         return dividends;
+    }
+
+
+    public long[] getOptionPremiums()
+    {
+        return optionPremiums;
     }
 
     public long[] getFees()

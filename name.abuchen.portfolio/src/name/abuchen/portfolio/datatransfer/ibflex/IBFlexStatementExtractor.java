@@ -363,6 +363,89 @@ public class IBFlexStatementExtractor implements Extractor
         };
 
         /**
+         * Constructs an AccountTransactionItem based on the information provided in the XML element.
+         */
+        private Consumer<Element> buildOptionTransaction = element -> {
+            AccountTransaction optionPremiumTransaction = new AccountTransaction();
+
+            if (!ASSETKEY_OPTION.equals(element.getAttribute("assetCategory")))
+                return;
+
+            // Check if the level of detail is supported
+            String lod = element.getAttribute("levelOfDetail");
+            if (lod.contains("ASSET_SUMMARY")
+                            || lod.contains("SYMBOL_SUMMARY")
+                            || lod.contains("ORDER")) {
+                return;
+            }
+
+            if (!element.getAttribute("transactionType").contains("ExchTrade")) {
+                return;
+            }
+
+            optionPremiumTransaction.setDateTime(extractDate(element));
+
+            String tType = element.getAttribute("buySell");
+            switch (tType)
+            {
+                case "BUY":
+                    optionPremiumTransaction.setType(AccountTransaction.Type.BUY_OPTION);
+                    break;
+                case "SELL":
+                    optionPremiumTransaction.setType(AccountTransaction.Type.SELL_OPTION);
+                    break;
+                default:
+                    throw new IllegalArgumentException("unsupported transaction type '" + tType + "'");
+            }
+
+            // @formatter:off
+            // Set amount and check if the element contains the "netCash"
+            // attribute. If the element contains only the "cost" attribute, the
+            // amount will be set based on this attribute.
+            // @formatter:on
+            if (element.hasAttribute("netCash"))
+            {
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
+                setAmount(element, optionPremiumTransaction, amount);
+            }
+            else
+            {
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
+                setAmount(element, optionPremiumTransaction, amount);
+            }
+
+            // Set share quantity
+            Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
+            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
+            optionPremiumTransaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
+
+            // Set fees
+            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
+            Unit feeUnit = createUnit(element, Unit.Type.FEE, fees);
+            optionPremiumTransaction.addUnit(feeUnit);
+
+            // Set taxes
+            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
+            Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes);
+            optionPremiumTransaction.addUnit(taxUnit);
+
+            optionPremiumTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+
+            // Set note
+            if (optionPremiumTransaction.getNote() == null || !optionPremiumTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+            {
+                optionPremiumTransaction.setNote(element.getAttribute("symbol") + " " + extractNote(element));
+            }
+
+            ExtractorUtils.fixGrossValueA().accept(optionPremiumTransaction);
+
+            // Transactions without an account-id will not be imported.
+            if (!"-".equals(element.getAttribute("accountId"))) {
+                results.add(new TransactionItem(optionPremiumTransaction));
+            }
+        };
+
+        /**
          * Constructs a AccountTransferItem based on the information provided in the XML element.
          */
         private Consumer<Element> buildCashTransaction = element -> {
@@ -486,7 +569,6 @@ public class IBFlexStatementExtractor implements Extractor
             // Check if the asset category is supported
             if (!Arrays.asList(ASSETKEY_STOCK, //
                             ASSETKEY_FUND, //
-                            ASSETKEY_OPTION, //
                             ASSETKEY_CERTIFICATE, //
                             ASSETKEY_FUTURE_OPTION, //
                             ASSETKEY_WARRANTS).contains(element.getAttribute("assetCategory")))
@@ -899,6 +981,9 @@ public class IBFlexStatementExtractor implements Extractor
             // Process all cash related trades
             importModelObjects("Trade", buildCashTransaction);
 
+            // Process all options
+            importModelObjects("Trade", buildOptionTransaction);
+
             // Process all CashTransaction
             importModelObjects("CashTransaction", buildAccountTransaction);
 
@@ -945,10 +1030,18 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (Arrays.asList(ASSETKEY_OPTION, ASSETKEY_FUTURE_OPTION).contains(element.getAttribute("assetCategory")))
             {
-                computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+", ""));
-                // e.g a put option for oracle: ORCL 171117C00050000
-                if (computedTickerSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
+                if (element.hasAttribute("underlyingSymbol")) {
+                    // Using the underlying symbol if possible
+                    computedTickerSymbol = Optional.ofNullable(element.getAttribute("underlyingSymbol"));
+                    description = computedTickerSymbol.get();
                     quoteFeed = YahooFinanceQuoteFeed.ID;
+                }
+                else
+                {
+                    // Converting symbol into the trading asset (SPXW  20251207...) -> SPXW
+                    computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+.*", ""));
+                    description = computedTickerSymbol.get();
+                }
             }
 
             if (Arrays.asList(ASSETKEY_STOCK, ASSETKEY_FUND, ASSETKEY_CERTIFICATE)
