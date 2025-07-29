@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +24,8 @@ import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 
 public class SearchSecurityPreviewPricesWizardPage extends WizardPage
 {
+    public static final String PAGE_ID = "preview"; //$NON-NLS-1$
+
     private final SearchSecurityDataModel model;
 
     private QuotesTableViewer tableSampleData;
@@ -40,7 +43,7 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
 
     public SearchSecurityPreviewPricesWizardPage(SearchSecurityDataModel model)
     {
-        super("preview"); //$NON-NLS-1$
+        super(PAGE_ID);
         setTitle(Messages.SecurityMenuAddNewSecurity);
 
         this.model = model;
@@ -59,6 +62,14 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
     }
 
     @Override
+    public IWizardPage getPreviousPage()
+    {
+        return getWizard().getPage(
+                        model.getSelectedInstrument() == model.getSelectedMarket() ? SearchSecurityWizardPage.PAGE_ID
+                                        : SelectMarketsWizardPage.PAGE_ID);
+    }
+
+    @Override
     public void setVisible(boolean visible)
     {
         super.setVisible(visible);
@@ -67,9 +78,27 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
         {
             // check if need to load data
             var displayedItem = tableSampleData.getTable().getData();
-            var selectedItem = model.getSelectedItem();
+            var selectedItem = model.getSelectedMarket();
             if (selectedItem == displayedItem)
                 return;
+
+            // if selected item is null, clear the table
+            if (selectedItem == null)
+            {
+                tableSampleData.getTable().setData(null);
+                tableSampleData.setInput(Collections.emptyList());
+                return;
+            }
+
+            if (selectedItem.getExchange() != null)
+            {
+                setTitle(MessageFormat.format(Messages.LabelColonSeparated, selectedItem.getName(),
+                                MarketIdentifierCodes.getLabel(selectedItem.getExchange())));
+            }
+            else
+            {
+                setTitle(selectedItem.getName());
+            }
 
             // check the cache
             QuoteFeedData data = cache.get(selectedItem);

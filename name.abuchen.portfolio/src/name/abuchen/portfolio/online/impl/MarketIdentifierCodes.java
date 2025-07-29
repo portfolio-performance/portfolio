@@ -75,6 +75,9 @@ public class MarketIdentifierCodes
     {
         try
         {
+            if (marketIdentifierCode == null)
+                return "";
+
             // we have translations available for exchange codes used by Yahoo
             // but not for market identifier code (MIC). Use the translated
             // labels if available. In the future, the code should prefer market

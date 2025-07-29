@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.nebula.widgets.chips.Chips;
 import org.eclipse.swt.SWT;
@@ -35,7 +36,6 @@ import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -56,7 +56,6 @@ public class SearchSecurityWizardPage extends WizardPage
     private List<ResultItem> rawResults;
     private Map<String, Boolean> rawSources = new HashMap<>();
 
-    private Set<CurrencyUnit> filterByCurrency = new HashSet<>();
     private Set<String> filterByType = new HashSet<>();
 
     public SearchSecurityWizardPage(SearchSecurityDataModel model)
@@ -127,9 +126,9 @@ public class SearchSecurityWizardPage extends WizardPage
             if (data instanceof CurrencyUnit currency)
             {
                 if (chip.getSelection())
-                    filterByCurrency.add(currency);
+                    model.addCurrency(currency);
                 else
-                    filterByCurrency.remove(currency);
+                    model.removeCurrency(currency);
             }
             else if (data instanceof String type)
             {
@@ -210,7 +209,7 @@ public class SearchSecurityWizardPage extends WizardPage
     {
         super.setPageComplete(complete);
 
-        var selectedItem = model.getSelectedItem();
+        var selectedItem = model.getSelectedInstrument();
         if (selectedItem != null && PortfolioPerformanceFeed.ID.equals(selectedItem.getFeedId())
                         && !OAuthClient.INSTANCE.isAuthenticated())
         {
@@ -220,6 +219,23 @@ public class SearchSecurityWizardPage extends WizardPage
         {
             setErrorMessage(null);
         }
+    }
+
+    @Override
+    public IWizardPage getNextPage()
+    {
+        if (getWizard() == null || model.getSelectedInstrument() == null)
+            return null;
+
+        return getWizard().getPage(Objects.equals(model.getSelectedMarket(), model.getSelectedInstrument())
+                        ? SearchSecurityPreviewPricesWizardPage.PAGE_ID
+                        : SelectMarketsWizardPage.PAGE_ID);
+    }
+
+    @Override
+    public IWizardPage getPreviousPage()
+    {
+        return null;
     }
 
     private void setSearchResults(List<ResultItem> elements)
@@ -262,128 +278,22 @@ public class SearchSecurityWizardPage extends WizardPage
             @Override
             public void onSelection(ResultItem element)
             {
-                if (element.getMarkets().isEmpty())
-                {
-                    model.setSelectedItem(element);
-                    setPageComplete(true);
-                }
-                else
-                {
-                    model.clearSelectedItem();
-                    setPageComplete(false);
-                }
+                model.setSelectedInstrument(element);
+                model.setSelectedMarket(element.getMarkets().isEmpty() ? element : null);
+                setPageComplete(true);
             }
 
             @Override
             public void onDoubleClick(ResultItem element)
             {
-                if (element.getMarkets().isEmpty())
-                {
-                    model.setSelectedItem(element);
-                    setPageComplete(true);
-                    getWizard().getContainer().showPage(getNextPage());
-                }
-                else
-                {
-                    model.clearSelectedItem();
-                    setPageComplete(false);
-                    setMarkets(element);
-                }
+                model.setSelectedInstrument(element);
+                model.setSelectedMarket(element.getMarkets().isEmpty() ? element : null);
+                setPageComplete(true);
+                getWizard().getContainer().showPage(getNextPage());
             }
         };
 
         table.setInput(filtered, labelProvider, selectionListener);
-    }
-
-    private void setMarkets(ResultItem parent)
-    {
-        var labelProvider = new PaginatedTable.LabelProvider<ResultItem>()
-        {
-            @Override
-            public String getText(ResultItem e)
-            {
-                if (e == parent)
-                {
-                    StringBuilder buffer = new StringBuilder();
-                    buffer.append("<strong>").append(TextUtil.escapeHtml(e.getName())).append("</strong>"); //$NON-NLS-1$ //$NON-NLS-2$
-                    if (e.getType() != null)
-                        buffer.append("   <em>").append(e.getType()).append("</em>"); //$NON-NLS-1$ //$NON-NLS-2$
-                    buffer.append("\n"); //$NON-NLS-1$
-
-                    if (e.getIsin() != null)
-                        buffer.append(e.getIsin()).append(" "); //$NON-NLS-1$
-                    buffer.append("     <gray>[").append(e.getSource()).append("]</gray>"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    return buffer.toString();
-                }
-                else
-                {
-                    StringBuilder buffer = new StringBuilder();
-
-                    var exchange = MarketIdentifierCodes.getLabel(e.getExchange());
-                    buffer.append("<strong>").append(exchange).append("</strong>"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    if (e.getType() != null)
-                        buffer.append("   <em>").append(e.getType()).append("</em>"); //$NON-NLS-1$ //$NON-NLS-2$
-                    buffer.append("\n"); //$NON-NLS-1$
-
-                    buffer.append("<strong>").append(TextUtil.limit(e.getCurrencyCode(), 20)).append("</strong> "); //$NON-NLS-1$ //$NON-NLS-2$
-
-                    if (e.getSymbol() != null)
-                        buffer.append(TextUtil.limit(e.getSymbol(), 20)).append(" "); //$NON-NLS-1$
-
-                    return buffer.toString();
-                }
-            }
-
-            @Override
-            public Images getLeadingImage(ResultItem e)
-            {
-                return e == parent ? Images.ARROW_BACK : null;
-            }
-        };
-
-        var selectionListener = new PaginatedTable.SelectionListener<ResultItem>()
-        {
-            @Override
-            public void onSelection(ResultItem element)
-            {
-                if (element.getMarkets().isEmpty())
-                {
-                    model.setSelectedItem(element);
-                    setPageComplete(true);
-                }
-                else
-                {
-                    model.clearSelectedItem();
-                    setPageComplete(false);
-                }
-            }
-
-            @Override
-            public void onDoubleClick(ResultItem element)
-            {
-                if (element == parent)
-                {
-                    table.popInput();
-                }
-                else
-                {
-                    model.setSelectedItem(element);
-                    setPageComplete(true);
-                    getWizard().getContainer().showPage(getNextPage());
-                }
-            }
-        };
-
-        var elements = new ArrayList<ResultItem>();
-        elements.add(parent);
-
-        // filter markets
-        var markets = doFilter(parent.getMarkets());
-        elements.addAll(markets);
-
-        table.pushInput(elements, labelProvider, selectionListener);
     }
 
     private List<ResultItem> doFilter(List<ResultItem> elements)
@@ -393,7 +303,7 @@ public class SearchSecurityWizardPage extends WizardPage
                         .map(Map.Entry::getKey) //
                         .collect(Collectors.toSet());
 
-        if (skippedProvider.isEmpty() && filterByCurrency.isEmpty() && filterByType.isEmpty())
+        if (skippedProvider.isEmpty() && model.getCurrencies().isEmpty() && filterByType.isEmpty())
             return elements;
 
         var filtered = new ArrayList<ResultItem>();
@@ -403,8 +313,8 @@ public class SearchSecurityWizardPage extends WizardPage
             if (skippedProvider.contains(item.getSource()))
                 continue;
 
-            var foundCurrency = filterByCurrency.isEmpty();
-            for (CurrencyUnit currency : filterByCurrency)
+            var foundCurrency = model.getCurrencies().isEmpty();
+            for (CurrencyUnit currency : model.getCurrencies())
             {
                 var c = item.getCurrencyCode();
                 if (c != null && c.contains(currency.getCurrencyCode()))
@@ -479,7 +389,7 @@ public class SearchSecurityWizardPage extends WizardPage
                                 .forEach(entry -> sources.put(entry.getKey(), false));
 
                 Display.getDefault().asyncExec(() -> {
-                    model.clearSelectedItem();
+                    model.clearSelectedInstrument();
                     this.rawResults = result;
                     this.rawSources = sources;
                     setSearchResults(result);

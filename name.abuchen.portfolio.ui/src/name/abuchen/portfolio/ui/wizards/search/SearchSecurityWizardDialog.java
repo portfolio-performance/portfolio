@@ -36,7 +36,9 @@ public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
         // never triggered to show scroll bars.
 
         // workaround: prevent the user from resizing the dialog smaller than
-        // the initial size
+        // the hard-coded minimum size of 650x700 pixels. We cannot use the
+        // initial size of the dialog, because we remember the last size via the
+        // dialog settings.
 
         newShell.addControlListener(new ControlAdapter()
         {
@@ -47,8 +49,7 @@ public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
             {
                 if (!initialized)
                 {
-                    Point size = newShell.getSize();
-                    newShell.setMinimumSize(size);
+                    newShell.setMinimumSize(new Point(650, 700));
                     initialized = true;
                 }
             }

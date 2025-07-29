@@ -162,17 +162,22 @@ public class PaginatedTable
         }
     }
 
-    private static final int PAGE_SIZE = 10;
-
     private final Color selectionColor = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION);
 
     private List<Element> pageControls = new ArrayList<>();
     private CLabel pageLabel;
+    private final int pageSize;
 
     private List<Level<?>> stack = new ArrayList<>();
 
     public PaginatedTable()
     {
+        this(10);
+    }
+
+    public PaginatedTable(int pageSize)
+    {
+        this.pageSize = pageSize;
         SelectionListener<Object> selectionListener = new SelectionListener<Object>()
         {
         };
@@ -237,7 +242,7 @@ public class PaginatedTable
 
         table.setBackground(Colors.theme().defaultBackground());
 
-        for (int ii = 0; ii < PAGE_SIZE; ii++)
+        for (int ii = 0; ii < pageSize; ii++)
         {
             Element element = createElement(table);
             pageControls.add(element);
@@ -384,7 +389,7 @@ public class PaginatedTable
             if (size == 0)
                 return;
 
-            var numPages = size / PAGE_SIZE + (size % PAGE_SIZE == 0 ? 0 : 1);
+            var numPages = size / pageSize + (size % pageSize == 0 ? 0 : 1);
             stack.getLast().page = Math.min(numPages - 1, stack.getLast().page + 1);
             renderPage();
         }));
@@ -392,9 +397,9 @@ public class PaginatedTable
 
     private void renderPage()
     {
-        final int index = stack.getLast().page * PAGE_SIZE;
+        final int index = stack.getLast().page * pageSize;
 
-        for (int ii = 0; ii < PAGE_SIZE; ii++)
+        for (int ii = 0; ii < pageSize; ii++)
         {
             Element element = pageControls.get(ii);
             if (index + ii < stack.getLast().elements.size())
@@ -422,12 +427,11 @@ public class PaginatedTable
         updateSelectionColor();
 
         pageControls.getFirst().getParent()
-                        .setTabList(pageControls
-                                        .subList(0, Math.min(PAGE_SIZE, stack.getLast().elements.size() - index))
+                        .setTabList(pageControls.subList(0, Math.min(pageSize, stack.getLast().elements.size() - index))
                                         .toArray(new Element[0]));
 
-        int numPages = stack.getLast().elements.size() / PAGE_SIZE
-                        + (stack.getLast().elements.size() % PAGE_SIZE == 0 ? 0 : 1);
+        int numPages = stack.getLast().elements.size() / pageSize
+                        + (stack.getLast().elements.size() % pageSize == 0 ? 0 : 1);
         pageLabel.setText(String.valueOf(stack.getLast().page + 1) + "/" + numPages); //$NON-NLS-1$
 
         pageControls.getFirst().getParent().layout(true);
@@ -447,5 +451,29 @@ public class PaginatedTable
             element.label.setForeground(Colors.getTextColor(background));
         }
 
+    }
+
+    public Object getSelection()
+    {
+        return stack.getLast().selectedItem;
+    }
+
+    public void setSelection(Object element)
+    {
+        @SuppressWarnings("unchecked")
+        var level = (Level<Object>) stack.getLast();
+
+        var index = level.elements.indexOf(element);
+        if (index < 0)
+            level.selectedItem = null;
+        else
+            level.selectedItem = element;
+        updateSelectionColor();
+    }
+
+    public void clearSelection()
+    {
+        stack.getLast().selectedItem = null;
+        updateSelectionColor();
     }
 }

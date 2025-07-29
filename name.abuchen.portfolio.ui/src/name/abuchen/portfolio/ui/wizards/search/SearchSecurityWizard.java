@@ -30,12 +30,13 @@ public class SearchSecurityWizard extends Wizard
     public void addPages()
     {
         addPage(new SearchSecurityWizardPage(model));
+        addPage(new SelectMarketsWizardPage(model));
         addPage(new SearchSecurityPreviewPricesWizardPage(model));
     }
 
     public Security getSecurity()
     {
-        var item = model.getSelectedItem();
+        var item = model.getSelectedMarket();
 
         if (item == null)
             return null;
@@ -49,8 +50,14 @@ public class SearchSecurityWizard extends Wizard
     }
 
     @Override
+    public boolean canFinish()
+    {
+        return model.getSelectedMarket() != null;
+    }
+
+    @Override
     public boolean performFinish()
     {
-        return model.getSelectedItem() != null;
+        return model.getSelectedMarket() != null;
     }
 }
