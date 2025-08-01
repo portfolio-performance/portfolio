@@ -318,7 +318,7 @@
   <commands xmi:id="_FunoEOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.command.restoresourceattribute" commandName="restoresourceattribute"/>
   <commands xmi:id="_Ca3mkGJCEe-2EbXDPkYHbQ" elementId="name.abuchen.portfolio.ui.command.focussearch" commandName="focussearch"/>
   <commands xmi:id="_0BsloM8uEe-ZgKOG6pCmYQ" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-diff" commandName="importCommand.pdf.create-diff"/>
-  <commands xmi:id="_gfBZEEzWEfCcpO9Ays2KhA" elementId="name.abuchen.portfolio.ui.command.tools.MigratePortfolioReportHandler" commandName="migratePortfolioReportHandler"/>
+  <commands xmi:id="_gfBZEEzWEfCcpO9Ays2KhA" elementId="name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler" commandName="migratePortfolioReportHandler"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

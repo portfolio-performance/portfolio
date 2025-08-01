@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.EnumSet;
-import java.util.Arrays;
 import java.util.function.Function;
 
 import jakarta.inject.Inject;
@@ -23,6 +23,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
@@ -61,7 +62,6 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
-import org.eclipse.jface.viewers.Viewer;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -149,6 +149,11 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(CommandAction.forCommand(getContext(), "\u25B6 " + Messages.CmdMigratePortfolioReport + " \u25C0", //$NON-NLS-1$ //$NON-NLS-2$
+                        UIConstants.Command.MIGRATE_PORTFOLIO_REPORT));
+
+        toolBar.add(new Separator());
+
         toolBar.add(CommandAction.forCommand(getContext(), Messages.JobLabelUpdateQuotes,
                         UIConstants.Command.UPDATE_QUOTES));
 

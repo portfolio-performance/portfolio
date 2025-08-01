@@ -87,6 +87,7 @@ public class Messages extends NLS
     public static String ClientEditorPerformanceCalculation;
     public static String CmdLogin;
     public static String CmdLogout;
+    public static String CmdMigratePortfolioReport;
     public static String CmdNotNow;
     public static String CmdUpdateSubscriptionStatus;
     public static String ColumnAbsolutePerformance;

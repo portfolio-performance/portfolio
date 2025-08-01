@@ -88,6 +88,7 @@ public interface UIConstants
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
         String UPDATE_QUOTES = "name.abuchen.portfolio.ui.command.updatequotes"; //$NON-NLS-1$
+        String MIGRATE_PORTFOLIO_REPORT = "name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler"; //$NON-NLS-1$
     }
 
     /**
