@@ -130,16 +130,22 @@ public class TradeCollector
 
             Portfolio portfolio = (Portfolio) txp.getOwner();
             PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
+            List<TransactionPair<PortfolioTransaction>> openList = openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>());
 
             Type type = t.getType();
             switch (type)
             {
                 case BUY, DELIVERY_INBOUND:
-                    openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
-                    break;
-
                 case SELL, DELIVERY_OUTBOUND:
-                    trades.add(createNewTradeFromSell(openTransactions, pair));
+                    // If fifo is empty or contains the same type of transactions
+                    // as incoming one, add it to the fifo. Otherwise, we create
+                    // a new trade. (Note: it's an invariant that fifo contains
+                    // transaction of the same type (purchase vs !purchase), so
+                    // we test 0th element in fifo).
+                    if (openList.isEmpty() || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
+                        openList.add(pair);
+                    else
+                        trades.add(createNewTrade(openTransactions, pair));
                     break;
 
                 case TRANSFER_IN:
@@ -179,7 +185,7 @@ public class TradeCollector
         return trades;
     }
 
-    private Trade createNewTradeFromSell(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+    private Trade createNewTrade(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
                     TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
         Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
