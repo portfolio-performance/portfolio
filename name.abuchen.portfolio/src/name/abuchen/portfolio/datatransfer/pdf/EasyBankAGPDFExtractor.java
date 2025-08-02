@@ -175,7 +175,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^(Abgang|Zugang): Nom\\. (?<shares>[\\.,\\d]+)$") //
-                                                        .find("Kurs: [\\.,\\d]+([\\s])?%$") //
+                                                        .find("Kurs: [\\.,\\d]+[\\s]*%$") //
                                                         .assign((t, v) -> {
                                                         // @formatter:off
                                                         // Percentage quotation, workaround for bonds
@@ -580,7 +580,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Abgang: Nom. (?<shares>[\\.,\\d]+)$") //
-                                                        .find("Kurs: [\\.,\\d]+([\\s])?%$") //
+                                                        .find("Kurs: [\\.,\\d]+[\\s]*%") //
                                                         .assign((t, v) -> {
                                                         // @formatter:off
                                                         // Percentage quotation, workaround for bonds
@@ -613,7 +613,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .find("Steuerkorrektur KESt aus Neubestand: \\-[\\.,\\d]+ [A-Z]{3}.*$") //
+                                                        .find("Steuerkorrektur KESt aus Neubestand: \\-[\\.,\\d]+ [A-Z]{3}.*") //
                                                         .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAXES);
@@ -622,16 +622,35 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
+                                        // KESt aus Neubestand: -2,02 EUR
+                                        // Auslands-KESt neu: -36,22 EUR
+                                        // Zu Lasten IBAN dy78 6263 9990 0993 9533 Valuta 30.07.2025 -38,24 EUR
+                                        // KESt-Gutschrift 7,48 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency", "taxRefund", "taxRefundCurrency") //
+                                                        .find("KESt aus Neubestand: \\-[\\.,\\d]+ [A-Z]{3}.*") //
+                                                        .find("Auslands\\-KESt neu: \\-[\\.,\\d]+ [A-Z]{3}.*") //
+                                                        .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                                        .match("^KESt\\-Gutschrift (?<taxRefund>[\\.,\\d]+) (?<taxRefundCurrency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                            var taxRefund = Money.of(asCurrencyCode(v.get("taxRefundCurrency")), asAmount(v.get("taxRefund")));
+
+                                                            t.setType(AccountTransaction.Type.TAXES);
+
+                                                            // Subtract tax refund from amount
+                                                            t.setMonetaryAmount(amount.subtract(taxRefund));
+                                                        }),
+                                        // @formatter:off
                                         // KESt aus Neubestand: -8,81 USD
                                         // Auslands-KESt neu: -15,14 USD
-                                        // -23,95 USD
-                                        // Devisenkurs: 1,0366 (09.01.2025) -23,11 EUR
                                         // Zu Lasten IBAN gW23 6257 9138 2168 9133 Valuta 10.01.2025 -23,11 E
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .find("KESt aus Neubestand: \\-[\\.,\\d]+ [A-Z]{3}.*$") //
-                                                        .find("Auslands\\-KESt neu: \\-[\\.,\\d]+ [A-Z]{3}.*$") //
+                                                        .find("KESt aus Neubestand: \\-[\\.,\\d]+ [A-Z]{3}.*") //
+                                                        .find("Auslands\\-KESt neu: \\-[\\.,\\d]+ [A-Z]{3}.*") //
                                                         .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAXES);

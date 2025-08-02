@@ -2901,6 +2901,37 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testSteuerkorrektur03()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0F5UH1"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-07-30T00:00"), hasShares(172.811), //
+                        hasSource("Steuerkorrektur03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 38.24 - 7.48), hasGrossValue("EUR", 38.24 - 7.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotauszug01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
