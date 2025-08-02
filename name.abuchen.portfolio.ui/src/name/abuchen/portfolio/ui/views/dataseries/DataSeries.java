@@ -120,6 +120,7 @@ public final class DataSeries implements Adaptable
     private int lineWidth = 2;
 
     private RGB color;
+    private RGB colorNegative;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
@@ -142,6 +143,7 @@ public final class DataSeries implements Adaptable
         this.instance = instance;
         this.label = label;
         this.color = color;
+        this.colorNegative = color;
     }
 
     public Type getType()
@@ -204,9 +206,19 @@ public final class DataSeries implements Adaptable
         this.color = color;
     }
 
+    public void setColorNegative(RGB color)
+    {
+        this.colorNegative = color;
+    }
+
     public RGB getColor()
     {
         return color;
+    }
+
+    public RGB getColorNegative()
+    {
+        return colorNegative;
     }
 
     public boolean isLineChart()

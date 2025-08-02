@@ -231,11 +231,17 @@ public class TimelineChart extends Chart // NOSONAR
 
     public IBarSeries<Integer> addDateBarSeries(String id, LocalDate[] dates, double[] values, String label)
     {
+        return addDateBarSeries(id, dates, values, Colors.DARK_GRAY, label);
+    }
+
+    public IBarSeries<Integer> addDateBarSeries(String id, LocalDate[] dates, double[] values, Color color,
+                    String label)
+    {
         @SuppressWarnings("unchecked")
         var barSeries = (IBarSeries<Integer>) getSeriesSet().createSeries(SeriesType.BAR, id);
         barSeries.setDescription(label);
         barSeries.setDataModel(new TimelineSeriesModel(dates, values));
-        barSeries.setBarColor(Colors.DARK_GRAY);
+        barSeries.setBarColor(color);
         barSeries.setBarPadding(100);
         return barSeries;
     }
