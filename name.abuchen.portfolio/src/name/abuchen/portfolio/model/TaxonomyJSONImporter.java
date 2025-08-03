@@ -150,13 +150,8 @@ public class TaxonomyJSONImporter
         this.key2classification = Collections.unmodifiableMap(keys);
     }
 
-    public ImportResult importTaxonomy(Reader reader) throws IOException
-    {
-        return performImport(reader);
-    }
-
     @SuppressWarnings("unchecked")
-    private ImportResult performImport(Reader reader) throws IOException
+    public ImportResult importTaxonomy(Reader reader) throws IOException
     {
         try
         {
@@ -169,6 +164,12 @@ public class TaxonomyJSONImporter
 
             if (jsonData == null)
                 throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "null")); //$NON-NLS-1$
+
+            var name = (String) jsonData.get("name"); //$NON-NLS-1$
+            updateNameIfNeeded(taxonomy.getRoot(), name, result);
+
+            var color = (String) jsonData.get("color"); //$NON-NLS-1$
+            updateColorIfNeeded(taxonomy.getRoot(), color, result);
 
             var categories = (List<Map<String, Object>>) jsonData.get("categories"); //$NON-NLS-1$
             var instruments = (List<Map<String, Object>>) jsonData.get("instruments"); //$NON-NLS-1$
@@ -244,14 +245,7 @@ public class TaxonomyJSONImporter
             {
                 // update properties of existing classification
 
-                if (!preserveNameAndDescription && !Objects.equals(name, classification.getName()))
-                {
-                    result.addModifiedObject(classification);
-                    result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat.format(
-                                    "Update name for category ''{0}'' to ''{1}''", classification.getName(), name)));
-
-                    classification.setName(name);
-                }
+                updateNameIfNeeded(classification, name, result);
 
                 if (!preserveNameAndDescription && description != null && !description.equals(classification.getNote()))
                 {
@@ -262,14 +256,7 @@ public class TaxonomyJSONImporter
                     classification.setNote(description);
                 }
 
-                if (color != null && !color.equals(classification.getColor()))
-                {
-                    result.addModifiedObject(classification);
-                    result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat
-                                    .format("Update color for category ''{0}''", classification.getName())));
-
-                    classification.setColor(color);
-                }
+                updateColorIfNeeded(classification, color, result);
             }
             else
             {
@@ -562,6 +549,28 @@ public class TaxonomyJSONImporter
         }
 
         return null;
+    }
+
+    private void updateNameIfNeeded(Classification classification, String newName, ImportResult result)
+    {
+        if (!preserveNameAndDescription && newName != null && !newName.equals(classification.getName()))
+        {
+            result.addModifiedObject(classification);
+            result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE, MessageFormat
+                            .format("Update name for category ''{0}'' to ''{1}''", classification.getName(), newName)));
+            classification.setName(newName);
+        }
+    }
+
+    private void updateColorIfNeeded(Classification classification, String newColor, ImportResult result)
+    {
+        if (!preserveNameAndDescription && newColor != null && !newColor.equals(classification.getColor()))
+        {
+            result.addModifiedObject(classification);
+            result.addChange(new ChangeEntry(Classification.class, Operation.UPDATE,
+                            MessageFormat.format("Update color for category ''{0}''", classification.getName())));
+            classification.setColor(newColor);
+        }
     }
 
     private String getPathString(Classification classification)
