@@ -38,6 +38,7 @@ public class PDFImportAssistant
         extractors.add(new AvivaPLCPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
         extractors.add(new Bank11PDFExtractor(client));
+        extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(client));
         extractors.add(new BankSLMPDFExtractor(client));
         extractors.add(new BarclaysBankIrelandPLCPDFExtractor(client));
         extractors.add(new BasellandschaftlicheKantonalbankPDFExtractor(client));
@@ -122,6 +123,7 @@ public class PDFImportAssistant
         extractors.add(new SuresseDirektBankPDFExtractor(client));
         extractors.add(new SutorBankGmbHPDFExtractor(client));
         extractors.add(new SwissquotePDFExtractor(client));
+        extractors.add(new SydbankASPDFExtractor(client));
         extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TigerBrokersPteLtdPDFExtractor(client));
         extractors.add(new TradegateAGPDFExtractor(client));

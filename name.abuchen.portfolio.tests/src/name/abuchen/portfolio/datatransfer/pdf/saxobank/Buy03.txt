@@ -1,0 +1,54 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Dirk Ackermann - 20305991
+Trade Details Report
+Reporting period: 20-Jun-2025 - 20-Jun-2025
+Generated at: 01-Jul-2025 07:23:37 19:23:37 (GMT+01)
+zuVr SKNMkYimz
+SYMtbKPq 14a 21
+03-525 JXaKIEOv
+Poland
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark Dirk Ackermann Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+Page 1 of 3 Account(s): EUR 923975INET Generated at: 01-Jul-2025
+Trade details, EUR
+Reporting period
+20-Jun-2025 to 20-Jun-2025
+Bond
+Instrument Republic of France 3.75% 25 May 2056, EUR Trade time 20-Jun-2025 08:45:38
+ISIN FR001400XJJ3 Value Date 24-Jun-2025
+Symbol FRANCE-3.75-25MAY56 Order ID 5298178479
+BLOOMBERG TRADING FACILITY B.V.
+Exchange Description Trade ID 6310729230
+(BTFE)
+Primary Exchange Bonds Europe Government Traded Value -9.564,92 EUR
+Venue Exchange Price 95,341 EUR
+Order Type Limit Order Quantity 10.000,00
+B/S Buy Dirty price 95,65 EUR
+Open/Close OPEN Spread Costs 0,00 EUR
+Saxo is counterparty No Total Trading Costs -20,00 EUR
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Bond Accrued
+45126758574 20-Jun-2025 24-Jun-2025 -30,82 1,000000 0,00 -30,82
+Interest
+Bond Traded Value
+45126556841 20-Jun-2025 24-Jun-2025 -9.534,10 1,000000 0,00 -9.534,10
+Amount
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark QjXq qpfHsJPEQ Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+Page 2 of 3 Account(s): EUR 923975INET Generated at: 01-Jul-2025
+Trade details, EUR
+Reporting period
+20-Jun-2025 to 20-Jun-2025
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Commission 45119243492 20-Jun-2025 24-Jun-2025 -20,00 1,000000 0,00 -20,00
+Net Amount - - - - - 0,00 -9.584,92
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark DeuX PFKXHWnHY Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+Page 3 of 3 Account(s): EUR 923975INET Generated at: 01-Jul-2025

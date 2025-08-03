@@ -79,6 +79,7 @@ public class Messages extends NLS
     public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
     public static String CSVFormatYYYYMMDDSlashes;
+    public static String CSVFormatYYYYMMDDTHHMM;
     public static String CSVImportedSecurityLabel;
     public static String CSVImportGenericColumnLabel;
     public static String CSVImportMissingField;
@@ -124,6 +125,11 @@ public class Messages extends NLS
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssueTransactionWithoutDate;
     public static String LabelAssetAllocation;
+    public static String LabelCloseBrowserWindowAndGoBackToApplication;
+    public static String LabelCommodity;
+    public static String LabelCostMethodFIFO;
+    public static String LabelCostMethodMovingAverage;
+    public static String LabelCostMethodMovingAverageAbbr;
     public static String LabelCreditSuisseHTMLTable;
     public static String LabelCryptocurrency;
     public static String LabelDefaultReferenceAccountName;
@@ -154,6 +160,8 @@ public class Messages extends NLS
     public static String LabelJointPortfolio;
     public static String LabelJPYGBBY10Y;
     public static String LabelJPYLIBOR3M;
+    public static String LabelLoginSuccessful;
+    public static String LabelLoginToRetrieveHistoricalPrices;
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
@@ -166,6 +174,8 @@ public class Messages extends NLS
     public static String LabelReportingPeriodCurrentQuarter;
     public static String LabelReportingPeriodCurrentWeek;
     public static String LabelReportingPeriodFromXtoY;
+    public static String LabelReportingPeriodInTheFuture;
+    public static String LabelReportingPeriodInThePast;
     public static String LabelReportingPeriodLastXDays;
     public static String LabelReportingPeriodLastXTradingDays;
     public static String LabelReportingPeriodMonths;
@@ -277,6 +287,7 @@ public class Messages extends NLS
     public static String MsgErrorNoneOfSubSectionsMatched;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorNotAValidDate;
+    public static String MsgErrorNotAValidTime;
     public static String MsgErrorNumberOfDateAndCloseRecordsDoNotMatch;
     public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorParseErrorWithGivenPattern;
@@ -293,6 +304,7 @@ public class Messages extends NLS
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;
+    public static String MsgJSONFormatInvalid;
     public static String MsgKeyLengthNotSupported;
     public static String MsgLoadingExchangeRates;
     public static String MsgMissingFeedURL;
@@ -307,11 +319,22 @@ public class Messages extends NLS
     public static String MsgNotANumber;
     public static String MsgNotAPortfolioFile;
     public static String MsgPasswordMissing;
+    public static String MsgRateLimitExceeded;
     public static String MsgReadingFile;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
+    public static String OAuthAuthenticationFailedDueToStateMismatch;
+    public static String OAuthCallbackServerNotRunning;
+    public static String OAuthCallbackServerStarted;
+    public static String OAuthErrorGeneratingPKCE;
+    public static String OAuthFailedToRequestAccessToken;
+    public static String OAuthFailedToStartCallbackServer;
+    public static String OAuthNotAuthenticated;
+    public static String OAuthNotConfigured;
+    public static String OAuthOngoingAuthentication;
+    public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;

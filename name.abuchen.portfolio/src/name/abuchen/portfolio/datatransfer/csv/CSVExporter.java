@@ -18,6 +18,7 @@ import org.apache.commons.csv.DuplicateHeaderMode;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -45,6 +46,7 @@ public class CSVExporter
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_TransactionCurrency, //
+                            Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
                             Messages.CSVColumn_ISIN, //
@@ -53,16 +55,19 @@ public class CSVExporter
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
 
-            for (AccountTransaction t : account.getTransactions())
+            var txs = account.getTransactions();
+            Collections.sort(txs, Transaction.BY_DATE);
+
+            for (AccountTransaction t : txs)
             {
                 printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
-                printer.print(t.getType() == AccountTransaction.Type.DIVIDENDS
-                                ? Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount())
-                                : ""); //$NON-NLS-1$
-                printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
+                var transaction = t.getCrossEntry() instanceof BuySellEntry entry ? entry.getPortfolioTransaction() : t;
+                printer.print(Values.Amount.formatNonZero(transaction.getUnitSum(Unit.Type.FEE).getAmount()));
+                printer.print(Values.Amount.formatNonZero(transaction.getUnitSum(Unit.Type.TAX).getAmount()));
+                printer.print(Values.Share.formatNonZero(transaction.getShares()));
 
                 printSecurityInfo(printer, t);
 
@@ -100,7 +105,10 @@ public class CSVExporter
                             Messages.CSVColumn_SecurityName, //
                             Messages.CSVColumn_Note);
 
-            for (PortfolioTransaction t : portfolio.getTransactions())
+            var txs = portfolio.getTransactions();
+            Collections.sort(txs, Transaction.BY_DATE);
+
+            for (PortfolioTransaction t : txs)
             {
                 printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());

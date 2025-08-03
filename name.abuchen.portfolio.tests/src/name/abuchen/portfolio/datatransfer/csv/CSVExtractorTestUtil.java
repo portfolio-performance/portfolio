@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
@@ -33,6 +34,11 @@ final class CSVExtractorTestUtil
             {
                 // when running the tests, do not set a format and convert the
                 // raw string directly to the enum (see CSVExtractor#getEnum)
+            }
+            else if (f instanceof DateField)
+            {
+                // use a ISO date format as default import format when testing
+                column.setFormat(f.textToFormat("yyyy-MM-dd")); //$NON-NLS-1$
             }
             else
             {

@@ -1,0 +1,33 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH FRANCE  75 BOULEVARD HAUSSMANN  75008 PARIS
+YLQJC gSjHE PAGE 1 de 1
+5 Rue des UtFs DATE 03.07.2025
+39072 OBERHOFFEN-LES-zMQmagyJIrO COMPTE-TITRES 2774796690
+DIVIDENDE EN ESPÈCES
+RÉCAPITULATIF
+Dividende en espèces avec la date d'exécution au -11.06.2025.
+POSITION QUANTITÉ TAUX MONTANT
+NVIDIA 0.04 USD
+4.171585 unit. 0.01 USD
+US67066G1040
+TOTAL 0.04 USD
+RELEVÉ
+POSITION MONTANT
+Impôt à la source pour les émetteurs américains -0.01 USD
+Sous-total 0.03 USD
+Sous-total 1.1755 USD/EUR 0.02 EUR
+TOTAL 0.02 EUR
+RÉGLEMENT
+COMPTE DE RÈGLEMENT DATE DE PAIEMENT MONTANT
+FR7631233199950083565834758 03.07.2025 0.02 EUR
+US67066G1040 en giro stockage en Allemagne
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe de vente n'est indiquée, il s'agit d'un service exempt de taxe de vente conformément à l'article § 4 Nr. 8 UStG
+Trade Republic Bank GmbH, Branch France www.traderepublic.fr Siège social : Trade Republic Bank GmbH Directeurs Généraux
+c/o Regus, 75 boulevard Haussmann TVA DE307510626 Brunnenstrasse 19-21, 10119 Berlin, Allemagne Andreas Torner
+75008 Paris Registre du commerce du tribunal local de Gernot Mittendorfer
+900 796 855 R.C.S. Paris Charlottenburg, HRB 244347 B, Allemagne Christian Hecker
+Thomas Pischke

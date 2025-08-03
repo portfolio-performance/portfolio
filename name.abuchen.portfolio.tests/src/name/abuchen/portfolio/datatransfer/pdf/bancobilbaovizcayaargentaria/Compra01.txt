@@ -1,0 +1,39 @@
+Te facilitamos el detalle de la operación COMPRA DE VALORES  que hemos liquidado en tu cuenta.
+DATOS DE LA OPERACIÓN
+Titular/es bJNPpX GXDisIauA FBOEFWddLO
+Identificación Fiscal  m9242825w
+Nº cuenta de valores 9328 0756 36 2940832974
+Nº de cuenta corriente asociada 4369 2003 80 3725305056
+Valor ACC.INTEL CORPORATION -USD-
+ISIN Valor US4581401001
+Nº de valores 100
+Precio unitario 21,0000
+Nº de orden 6911527650407670
+Fecha ejecución 20/06/2025
+Hora ejecución 16.50.47
+Centro de negociación NASDAQ
+Canal BANCA A DISTANCIA
+Cambio divisa 1,1448 USD/EUR
+Fecha valor liquidación 20/06
+CONCEPTO DIVISA BASE PRECIO IMPORTE
+IMPORTE EFECTIVO
+S/títulos USD                  100         21,00000000            2.100,00
+                         SUBTOTAL EN
+ORIGEN USD            2.100,00
+CONTRAVALOR  EUR
+SUBTOTAL EN ORIGEN EUR             2.100,00          0,87351502            1.834,38
+CONTRAVALOR  EUR
+IMPORTE EFECTIVO EUR             2.100,00          0,87351502            1.834,38
+TARIFA BBVA TRADER
+BOLSA (comisión fija) EUR         20,00000000               20,00
+GESTION DIVISA(SOBRE
+SUBTOTAL EN ORIGEN) EUR                8,13
+02654_4
+BANCO BILBAO VIZCAYA ARGENTARIA, S.A., domiciliada en Bilbao, Plaza de San Nicolás número 4, inscrito en el Registro Mercantil de Vizcaya al Tomo 2.083, Folio 1, Hoja BI-17-A, inscripción 1ª. CIF A - 48265169
+IMPORTE TOTAL GASTOS EUR               28,13
+IMPORTE TOTAL EUR            1.854,38
+ Le informamos que hemos CARGADO en su cuenta, por el concepto indicado, la cantidad reseñada en
+IMPORTE TOTAL.
+02654_4
+
+```

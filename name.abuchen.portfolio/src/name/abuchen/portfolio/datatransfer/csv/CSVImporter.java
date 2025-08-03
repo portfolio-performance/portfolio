@@ -265,6 +265,7 @@ public final class CSVImporter
     public static class DateField extends CSVImporter.Field
     {
         private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList( //
+                        new DateFieldFormat(Messages.CSVFormatYYYYMMDDTHHMM, "yyyy-MM-dd'T'HH:mm"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDD, "yyyy-MM-dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDDSlashes, "yyyy/MM/dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatISO, "yyyyMMdd"), //$NON-NLS-1$

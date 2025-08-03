@@ -1,0 +1,79 @@
+```
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME NACHNAME SEITE 1 von 5
+Straße 1, 12345 DATUM 01 Juni 2025 - 30 Juni 2025
+Ort, DE IBAN DE00000000000000000000
+BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 1.000,00 € 313,42 € 33,20 € 1.280,22 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+08 
+SEPA 
+Juni Incoming transfer from Vorname Nachname 313,42 € 1.313,42 €
+Echtzeitüberweisung
+2025
+08 
+Schloss Laufen Rheinfall, 10,00 CHF, exchange rate: 1,068, ECB rate: 
+Juni Kartentransaktion 10,68 € 1.302,74 €
+1,0657572205, markup: 0,21044 %
+2025
+08 
+Schloss Laufen Rheinfall, 9,00 CHF, exchange rate: 1,0688889, ECB rate: 
+Juni Kartentransaktion 9,62 € 1.293,12 €
+1,0657572205, markup: 0,29384549 %
+2025
+29 
+Juni Kartentransaktion TROELSCH GMBH BAECKERE 12,90 € 1.280,22 €
+2025
+BARMITTELÜBERSICHT
+Zum 30 Juni 2025
+TREUHANDKONTEN SALDO
+Deutsche Bank 15.000,00 €
+GELDMARKTFONDS ISIN STK. / NOMINALE KURS PRO STÜCK KURSWERT IN EUR
+BlackRock ICS Euro Liquidity Fund IE000GWTNRJ7 1.614,26 1,00 € 1.614,26 €
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 Juli 2025 Seite 3 von 5
+TRANSAKTIONSÜBERSICHT
+DATUM ZAHLUNGSART GELDMARKTFONDS STÜCK KURS PRO STÜCK BETRAG
+BlackRock ICS Euro Liquidity Fund
+25 Juni 2025 Kauf 1.741,74 1,00 € 1.741,74 €
+IE000GWTNRJ7
+BlackRock ICS Euro Liquidity Fund
+26 Juni 2025 Verkauf 18,48 1,00 € 18,48 €
+IE000GWTNRJ7
+BlackRock ICS Euro Liquidity Fund
+30 Juni 2025 Verkauf 55,71 1,00 € 55,71 €
+IE000GWTNRJ7
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 Juli 2025 Seite 4 von 5
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der angegebene 
+Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. Nennbetrag also nicht dem für 
+die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als genehmigt, sofern du innerhalb von 6 Wochen keine 
+Einwendungen erhebst. Zur Fristwahrung genügt die rechtzeitige Absendung an den Bereich Internal Audit von Trade Republic. Dieser Kontoauszug gilt 
+im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG.  Die Guthaben, die bei 
+Treuhandbanken verwahrt werden, sind jeweils bis zu 100.000 € von der Einlagensicherung der Treuhandbank gesichert. Die Anteile an qualifizierten 
+Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic geschützt. Weitere Informationen zur Sicherung deiner 
+Gelder findest du unter https://support.traderepublic.com/de-de/3070-How-is-my-money-protected.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 Juli 2025 Seite 5 von 5
+
+```

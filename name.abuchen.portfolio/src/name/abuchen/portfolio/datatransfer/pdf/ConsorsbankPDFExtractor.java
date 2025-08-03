@@ -483,7 +483,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+).*$") //
+                                                        .match("^(?i)WERT [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -529,6 +529,30 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .match("^(?i)UMGER\\.ZUM DEV\\.\\-KURS[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Quellensteuer in EUR
+                                        // 69,68 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Quellensteuer in [A-Z]{3}") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Brutto in EUR
+                                        // 69,68 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Brutto in [A-Z]{3}") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));

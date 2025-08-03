@@ -1,0 +1,78 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+        Frankfurt, 17.06.2025
+1111111111111111111
+Auftragsdatum      16.06.2025
+Herrn Handelstag         17.06.2025
+Max Mustermann
+Muster Str. 3 Ausführungszeit    00:00 Uhr
+01157 Muster Valuta             19.06.2025
+Auftragsnummer     123456789/1
+Ausf.platz/-art    KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer: 123456789
+Depotinhaber:     Mustermann, Max
+Nr.123456789/1     Kauf         ISHARES STOXX EUROPE 600 (DE0002635307/263530)
+Ausgeführt    :        1,291528 St.     Kurswert      :              69,82 EUR
+Kurs          :       54,060000 EUR     Provision     :               0,00 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                       *Fremde Spesen :               0,00 EUR
+Verwahrart    : GS-Verwahrung
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :             -69,82 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               0,00 EUR
+                             Regulierung              :               0,00 EUR
+                             Schlussnoten             :               0,00 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    4338026845.
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Stefan Müller  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Steffen Jentsch, Jens Möbitz
+2000004908444460 0113202270000102
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA) abzg. Rabatt
+Rabattierung                     keine  gezahlter AA                  0,00 EUR
+Kurs                    54,0600 EUR     Kurswert                   69,8200 EUR
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1014175944
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Stefan Müller  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Steffen Jentsch, Jens Möbitz
+11111111111111 0113202270000202
+
+```

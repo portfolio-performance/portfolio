@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -23,7 +21,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -36,6 +33,15 @@ import name.abuchen.portfolio.money.Values;
  *           When there is no trade in progress, the securities currency is not issued.
  *           We then set the securities currency to USD.
  *           @see Test file --> AccountStatement06.txt
+ *
+ *           Late 2024 Format
+ *           ================
+ *           Apparently, the format has changed in late 2024.
+ *           https://forum.portfolio-performance.info/t/pdf-import-from-tiger-brokers/20484/37
+ *           https://forum.portfolio-performance.info/t/pdf-import-from-tiger-brokers/20484/41
+ *           The PDF contains a table with each cell containing a multi-line text with different line wrapping (2-3 lines) which is centered.
+ *           We do not use the currency from the context (anymore), but parse it as part of each transaction.
+ *           Examples only contain purchases and dividend payments. Therefore we do not yet know if other transaction types (tax refund, deposit) still work.
  *
  * @implSpec In case of purchase and sale, the amount is given in gross.
  *           To get the correct net amount, we need to add the fees.
@@ -64,27 +70,27 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Activity Statement", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile("^.* Base Currency : (?<currency>[\\w]{3})$");
-            Pattern pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
-            Pattern pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[\\w]{3})$");
-            Pattern pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
+        final var type = new DocumentType("Activity Statement", (context, lines) -> {
+            var pCurrency = Pattern.compile("^.* (Base Currency :|Cash) (?<currency>[A-Z]{3})$");
+            var pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
+            var pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[A-Z]{3})$");
+            var pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
 
             String securityCurrency = null;
 
             for (String line : lines)
             {
-                Matcher mCurrency = pCurrency.matcher(line);
+                var mCurrency = pCurrency.matcher(line);
                 if (mCurrency.matches())
                     context.put("currency", mCurrency.group("currency"));
 
-                Matcher mSecurityCurrency = pSecurityCurrency.matcher(line);
+                var mSecurityCurrency = pSecurityCurrency.matcher(line);
                 if (mSecurityCurrency.matches())
                     securityCurrency = mSecurityCurrency.group("securityCurrency");
             }
 
             // Create a helper to store the list of security items found in the document
-            SecurityListHelper securityListHelper = new SecurityListHelper();
+            var securityListHelper = new SecurityListHelper();
             context.putType(securityListHelper);
 
             // Extract security information using pSecurity pattern and add
@@ -93,20 +99,20 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher mSecurity = pSecurity.matcher(line);
+                var mSecurity = pSecurity.matcher(line);
                 if (mSecurity.matches())
                 {
-                    SecurityItem securityItem = new SecurityItem();
+                    var securityItem = new SecurityItem();
                     securityItem.tickerSymbol = mSecurity.group("tickerSymbol");
                     securityItem.name = mSecurity.group("name");
-                    securityItem.currency = (securityCurrency == null) ? CurrencyUnit.USD : asCurrencyCode(securityCurrency);
+                    securityItem.currency = (securityCurrency == null) ? "USD" : asCurrencyCode(securityCurrency);
                     securityItems.add(securityItem);
                     securityListHelper.items.add(securityItem);
                 }
             }
 
             // Create a helper to store the list of dividend taxes items
-            DividendTaxesTransactionListHelper dividendTaxesTransactionListHelper = new DividendTaxesTransactionListHelper();
+            var dividendTaxesTransactionListHelper = new DividendTaxesTransactionListHelper();
             context.putType(dividendTaxesTransactionListHelper);
 
             // Extract dividend taxes using pDividendTaxes pattern
@@ -114,10 +120,10 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
             for (String line : lines)
             {
-                Matcher mDividendTaxes = pDividendTaxes.matcher(line);
+                var mDividendTaxes = pDividendTaxes.matcher(line);
                 if (mDividendTaxes.matches())
                 {
-                    DividendTaxesTransactionItem dividendTaxesTransactionItem = new DividendTaxesTransactionItem();
+                    var dividendTaxesTransactionItem = new DividendTaxesTransactionItem();
                     dividendTaxesTransactionItem.tickerSymbol = mDividendTaxes.group("tickerSymbol");
                     dividendTaxesTransactionItem.date = LocalDate.parse(mDividendTaxes.group("date"), DATEFORMAT);
                     dividendTaxesTransactionItem.taxes = asAmount(mDividendTaxes.group("tax"));
@@ -128,14 +134,14 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> buyBlock_Format01 = new Transaction<>();
+        var buyBlock_Format01 = new Transaction<BuySellEntry>();
 
         // @formatter:off
         // Settlement Fee: -0.14
         // QQQ 2022-03-10, 01:52:40, GMT+8 48 334.80000 334.99000 16,070.40 Commission: -0.99 -0.15 0.00 9.12
         // Platform Fee: -1.00
         // @formatter:on
-        Block firstRelevantLineForBuyBlock_Format01 = new Block("^Settlement Fee: \\-[\\.,\\d]+$", "^Platform Fee: \\-[\\.,\\d]+$");
+        var firstRelevantLineForBuyBlock_Format01 = new Block("^Settlement Fee: \\-[\\.,\\d]+$", "^Platform Fee: \\-[\\.,\\d]+$");
         type.addBlock(firstRelevantLineForBuyBlock_Format01);
         firstRelevantLineForBuyBlock_Format01.setMaxSize(3);
         firstRelevantLineForBuyBlock_Format01.set(buyBlock_Format01);
@@ -143,13 +149,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         buyBlock_Format01 //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
 
                         .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3") //
-                        .match("^Settlement Fee: \\-[\\.,\\d]+$") //
+                        .find("Settlement Fee: \\-[\\.,\\d]+") //
                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
                                         + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* " //
@@ -161,18 +167,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$") //
                         .match("^Platform Fee: \\-(?<fee3>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            var context = type.getCurrentContext();
 
-                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                            .orElseGet(SecurityListHelper::new);
-                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
 
-                            if (securityItem.isPresent())
-                            {
-                                v.put("name", securityItem.get().name);
-                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                v.put("currency", securityItem.get().currency);
-                            }
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                                v.put("currency", s.currency);
+                            });
 
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -189,17 +193,18 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                                 return new BuySellEntryItem(t);
+
                             return null;
                         });
 
         addFeesSectionsTransaction(buyBlock_Format01, type);
 
-        Transaction<BuySellEntry> buyBlock_Format02 = new Transaction<>();
+        var buyBlock_Format02 = new Transaction<BuySellEntry>();
 
         // @formatter:off
         // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
         // @formatter:on
-        Block firstRelevantLineForBuyBlock_Format02 = new Block("^[A-Z0-9]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$");
+        var firstRelevantLineForBuyBlock_Format02 = new Block("^[A-Z0-9]{2,4} [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}, [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$");
         type.addBlock(firstRelevantLineForBuyBlock_Format02);
         firstRelevantLineForBuyBlock_Format02.setMaxSize(1);
         firstRelevantLineForBuyBlock_Format02.set(buyBlock_Format02);
@@ -207,7 +212,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         buyBlock_Format02 //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -224,18 +229,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<fee3>[\\.,\\d]+) " //
                                         + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            var context = type.getCurrentContext();
 
-                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                            .orElseGet(SecurityListHelper::new);
-                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
 
-                            if (securityItem.isPresent())
-                            {
-                                v.put("name", securityItem.get().name);
-                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                v.put("currency", securityItem.get().currency);
-                            }
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                                v.put("currency", s.currency);
+                            });
 
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -252,17 +255,18 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                                 return new BuySellEntryItem(t);
+
                             return null;
                         });
 
         addFeesSectionsTransaction(buyBlock_Format02, type);
 
-        Transaction<BuySellEntry> buyBlock_Format03 = new Transaction<>();
+        var buyBlock_Format03 = new Transaction<BuySellEntry>();
 
         // @formatter:off
         // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
         // @formatter:on
-        Block firstRelevantLineForBuyBlock_Format03 = new Block("^[A-Z0-9]{2,4} [A-Z]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ .*$");
+        var firstRelevantLineForBuyBlock_Format03 = new Block("^[A-Z0-9]{2,4} [A-Z]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ .*$");
         type.addBlock(firstRelevantLineForBuyBlock_Format03);
         firstRelevantLineForBuyBlock_Format03.setMaxSize(1);
         firstRelevantLineForBuyBlock_Format03.set(buyBlock_Format03);
@@ -270,7 +274,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         buyBlock_Format03 //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -287,18 +291,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "(\\s)?Platform Fee: \\-(?<fee3>[\\.,\\d]+) " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            var context = type.getCurrentContext();
 
-                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                            .orElseGet(SecurityListHelper::new);
-                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
 
-                            if (securityItem.isPresent())
-                            {
-                                v.put("name", securityItem.get().name);
-                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                v.put("currency", securityItem.get().currency);
-                            }
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                                v.put("currency", s.currency);
+                            });
 
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -315,14 +317,15 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                                 return new BuySellEntryItem(t);
+
                             return null;
                         });
 
         addFeesSectionsTransaction(buyBlock_Format03, type);
 
-        Transaction<BuySellEntry> buyBlock_Format04 = new Transaction<>();
+        var buyBlock_Format04 = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLineForBuyBlock_Format04 = new Block("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$");
+        var firstRelevantLineForBuyBlock_Format04 = new Block("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$");
         type.addBlock(firstRelevantLineForBuyBlock_Format04);
         firstRelevantLineForBuyBlock_Format04.setMaxSize(3);
         firstRelevantLineForBuyBlock_Format04.set(buyBlock_Format04);
@@ -330,7 +333,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         buyBlock_Format04 //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -355,18 +358,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                                                         .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            DocumentContext context = type.getCurrentContext();
+                                                            var context = type.getCurrentContext();
 
-                                                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                                                            .orElseGet(SecurityListHelper::new);
-                                                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
 
-                                                            if (securityItem.isPresent())
-                                                            {
-                                                                v.put("name", securityItem.get().name);
-                                                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                                                v.put("currency", securityItem.get().currency);
-                                                            }
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                                v.put("currency", s.currency);
+                                                            });
 
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -395,18 +396,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                                                         .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            DocumentContext context = type.getCurrentContext();
+                                                            var context = type.getCurrentContext();
 
-                                                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                                                            .orElseGet(SecurityListHelper::new);
-                                                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
 
-                                                            if (securityItem.isPresent())
-                                                            {
-                                                                v.put("name", securityItem.get().name);
-                                                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                                                v.put("currency", securityItem.get().currency);
-                                                            }
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                                v.put("currency", s.currency);
+                                                            });
 
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -423,25 +422,92 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
                                 return new BuySellEntryItem(t);
+
                             return null;
                         });
 
         addFeesSectionsTransaction(buyBlock_Format04, type);
 
-        Transaction<AccountTransaction> dividendBlock = new Transaction<>();
+        var buyBlock_Format05 = new Transaction<BuySellEntry>();
+
+        // @formatter:off
+        // Settlement Fee:
+        // -0.01 2024-12-19
+        // Vanguard Total World Stock ETF
+        // US ARCA Open 3 118.29960 354.90 0.00 Commission: 2024-
+        // -0.99 0.00 0.00 13:01:49, US USD
+        // (VT) 12-20
+        // Platform Fee: /Eastern
+        // -1.00
+        // @formatter:on
+        var firstRelevantLineForBuyBlock_late24 = new Block("^Settlement Fee:\\s*$", "^\\-[\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForBuyBlock_late24);
+        firstRelevantLineForBuyBlock_late24.setMaxSize(9);
+        firstRelevantLineForBuyBlock_late24.set(buyBlock_Format05);
+
+        buyBlock_Format05 //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+                        .section("fee1", "date", "name", "shares", "gross", "fee2", "time", "tickerSymbol", "fee3") //
+                        .find("Settlement Fee:[\\s]*") //
+                        .match("^\\-(?<fee1>[\\.,\\d]+) (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^.*(?<shares>[\\.,\\d]+) [\\.,\\d]+ (?<gross>[\\.,\\d]+) [\\.,\\d]+ Commission: [\\d]{4}\\-$") //
+                        .match("^\\-(?<fee2>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* [A-Z]{3}$") //
+                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) [\\d]{2}\\-[\\d]{2}$") //
+                        .find("Platform Fee:.*") //
+                        .match("^\\-(?<fee3>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var context = type.getCurrentContext();
+
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
+
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                                v.put("currency", s.currency);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setShares(asShares(v.get("shares")));
+
+                            // The amount is stated in gross
+                            t.setAmount(asAmount(v.get("gross")) + asAmount(v.get("fee1")) + asAmount(v.get("fee2")) + asAmount(v.get("fee3")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                return new BuySellEntryItem(t);
+
+                            return null;
+                        });
+        
+        addFeesSectionsTransaction(buyBlock_Format05, type);
+
+        var dividendBlock = new Transaction<AccountTransaction>();
 
         // @formatter:off
         // 2022-03-24 VT Cash Dividend 0.2572 USD per Share (Ordinary Dividend) 17.75
         // 2022-12-22 VT Cash Dividend 0.6381 USD per Share (Ordinary Dividend) 44.03 USD
         // @formatter:on
-        Block firstRelevantLineForDividendBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]{2,4} Cash Dividend .* [\\.,\\d]+.*$");
+        var firstRelevantLineForDividendBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} [A-Z0-9]{2,4} Cash Dividend .* [\\.,\\d]+.*$");
         type.addBlock(firstRelevantLineForDividendBlock);
         firstRelevantLineForDividendBlock.set(dividendBlock);
 
         dividendBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -451,29 +517,29 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
                                         + "Cash Dividend " //
                                         + "(?<amountPerShare>[\\.,\\d]+) " //
-                                        + "[\\w]{3} per Share " //
+                                        + "[A-Z]{3} per Share " //
                                         + "\\((?<note>.*)\\) " //
                                         + "(?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            var context = type.getCurrentContext();
 
-                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
-                                            .orElseGet(SecurityListHelper::new);
-                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                            .findItem(v.get("tickerSymbol"));
 
-                            if (securityItem.isPresent())
-                            {
-                                v.put("name", securityItem.get().name);
-                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
-                                v.put("currency", securityItem.get().currency);
-                            }
+                            securityItem.ifPresent(s -> {
+                                v.put("name", s.name);
+                                v.put("tickerSymbol", s.tickerSymbol);
+                                v.put("currency", s.currency);
+                            });
+
+                            t.setSecurity(getOrCreateSecurity(v));
 
                             t.setDateTime(asDate(v.get("date")));
 
                             // Calculation of dividend shares and rounding to
                             // whole shares
-                            BigDecimal amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
-                            BigDecimal amount = BigDecimal.valueOf(asAmount(v.get("amount")));
+                            var amountPerShare = BigDecimal.valueOf(asAmount(v.get("amountPerShare")));
+                            var amount = BigDecimal.valueOf(asAmount(v.get("amount")));
                             t.setShares(amount.divide(amountPerShare, Values.Share.precision(), RoundingMode.HALF_UP) //
                                             .setScale(0, RoundingMode.HALF_UP) //
                                             .movePointRight(Values.Share.precision()) //
@@ -481,18 +547,17 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setSecurity(getOrCreateSecurity(v));
 
                             // Set dividend taxes, if available
-                            DividendTaxesTransactionListHelper divdendTaxesTransactionListHelper = context
+                            var divdendTaxesTransactionListHelper = context
                                             .getType(DividendTaxesTransactionListHelper.class)
                                             .orElseGet(DividendTaxesTransactionListHelper::new);
-                            Optional<DividendTaxesTransactionItem> divdendTaxesTransactionItem = divdendTaxesTransactionListHelper
+                            var divdendTaxesTransactionItem = divdendTaxesTransactionListHelper
                                             .findItem(v.get("tickerSymbol"), LocalDate.parse(v.get("date"), DATEFORMAT));
 
                             if (divdendTaxesTransactionItem.isPresent())
                             {
-                                Money tax = Money.of(asCurrencyCode(context.get("currency")), divdendTaxesTransactionItem.get().taxes);
+                                var tax = Money.of(asCurrencyCode(context.get("currency")), divdendTaxesTransactionItem.get().taxes);
                                 checkAndSetTax(tax, t, type.getCurrentContext());
 
                                 // Dividend are stated in gross.
@@ -510,27 +575,176 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                             return new TransactionItem(t);
                         });
 
-        Transaction<AccountTransaction> taxRefundBlock = new Transaction<>();
+        var dividendBlock_late24 = new Transaction<AccountTransaction>();
+
+        var firstRelevantLineForDividendBlock_late24 = new Block("^.*Quantity: [\\.,\\d]+$");
+        type.addBlock(firstRelevantLineForDividendBlock_late24);
+        firstRelevantLineForDividendBlock_late24.setMaxSize(6);
+        firstRelevantLineForDividendBlock_late24.set(dividendBlock_late24);
+
+        dividendBlock_late24 //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf(
+                                        // Pattern 1: three-line instrument
+                                        //
+                                        // @formatter:off
+                                        // Vanguard Total World Stock Quantity: 72
+                                        // 2024-12-
+                                        // Stock ETF Gross Rate: 0.88 Paid 63.17 0 Dividend tax: 9.48 53.69 USD
+                                        // 26
+                                        // (VT) /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes", "amount", "dateDay", "tickerSymbol", "currency") //
+                                                        .match("^.* Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\-$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2})$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) \\/Share$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
+
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                                v.put("currency", s.currency);
+                                                            });
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            var date = v.get("dateYear") + "-" + v.get("dateDay");
+                                                            t.setDateTime(asDate(date));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        // Pattern 2: two-line instrument
+                                        //
+                                        // @formatter:off
+                                        // Quantity: 25
+                                        // 2024-12- Vanguard S&P 500 ETF
+                                        // Stock Gross Rate: 1.74 Paid 43.46 0 Dividend tax: 6.52 36.94 USD
+                                        // 30 (VOO)
+                                        // /Share
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "dateYear", "grossAmount", "taxes",
+                                                                        "amount", "dateDay", "tickerSymbol", "currency") //
+                                                        .match("^Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateYear>[\\d]{4}\\-[\\d]{2})\\- .*$") //
+                                                        .match("^.* Gross Rate: [\\.,\\d]+ Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(?<dateDay>[\\d]{2}) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
+                                                        .match("^\\/Share$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
+
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                                v.put("currency", s.currency);
+                                                            });
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            var date = v.get("dateYear") + "-" + v.get("dateDay");
+                                                            t.setDateTime(asDate(date));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+
+                                        // Pattern 3: two-line Quantity/Gross
+                                        // Rate
+                                        //
+                                        // @formatter:off
+                                        // Invesco QQQ Quantity: 54
+                                        // 2025-01-02 Stock Paid 45.07 0 Dividend tax: 6.76 38.31 USD
+                                        // (QQQ) Gross Rate: 0.83/Share
+                                        // @formatter:on
+
+                                        section -> section //
+                                                        .attributes("shares", "date", "grossAmount", "taxes", "amount",
+                                                                        "tickerSymbol", "currency") //
+                                                        .match("^.* Quantity: (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) .* Paid (?<grossAmount>[\\.,\\d]+) [\\.,\\d]+ Dividend tax: (?<taxes>[\\.,\\d]+) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) .*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+
+                                                            var securityItem = context.getType(SecurityListHelper.class).get()
+                                                                            .findItem(v.get("tickerSymbol"));
+
+                                                            securityItem.ifPresent(s -> {
+                                                                v.put("name", s.name);
+                                                                v.put("tickerSymbol", s.tickerSymbol);
+                                                                v.put("currency", s.currency);
+                                                            });
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDateTime(asDate(v.get("date")));
+
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxes")));
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+
+                                                        })
+
+                        )
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getDateTime() == null)
+                                return null;
+                            else
+                                return new TransactionItem(t);
+                        });
+
+        var taxRefundBlock = new Transaction<AccountTransaction>();
 
         // @formatter:off
         // 2023-09-21 Cash Dividend USD per Share - Tax 12.29 USD
         // @formatter:on
-        Block firstRelevantLineForTaxRefundBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Cash Dividend [\\w]{3} per Share \\- Tax [\\.,\\d]+ [\\w]{3}$");
+        var firstRelevantLineForTaxRefundBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Cash Dividend [A-Z]{3} per Share \\- Tax [\\.,\\d]+ [A-Z]{3}$");
         type.addBlock(firstRelevantLineForTaxRefundBlock);
         firstRelevantLineForTaxRefundBlock.set(taxRefundBlock);
 
         taxRefundBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
 
                         .section("date", "amount", "currency") //
                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
-                                        + "Cash Dividend [\\w]{3} per Share \\- Tax " //
-                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                        + "Cash Dividend [A-Z]{3} per Share \\- Tax " //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -539,19 +753,19 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-        Transaction<AccountTransaction> depositBlock = new Transaction<>();
+        var depositBlock = new Transaction<AccountTransaction>();
 
         // @formatter:off
         // 2022-03-02 Deposit DR-3649942 30,000.00
         // @formatter:on
-        Block firstRelevantLineForDepositBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Deposit .* [\\.,\\d]+$");
+        var firstRelevantLineForDepositBlock = new Block("^[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} Deposit .* [\\.,\\d]+$");
         type.addBlock(firstRelevantLineForDepositBlock);
         firstRelevantLineForDepositBlock.set(depositBlock);
 
         depositBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -706,6 +920,36 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
+                        // Settlement Fee:
+                        // -0.01 2024-12-19
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find("Platform Fee:.*") //
+                        .match("^\\-(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // US ARCA Open 3 118.29960 354.90 0.00 Commission: 2024-
+                        // -0.99 0.00 0.00 13:01:49, US USD
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find("^.*[\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ Commission: [\\d]{4}\\-$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Settlement Fee:
+                        // -0.01 2024-12-19
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find("Settlement Fee:[\\s]*") //
+                        .match("^\\-(?<fee>[\\.,\\d]+) [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        
+                        // @formatter:off
                         // Settlement Fee: -0.14
                         // @formatter:on
                         .section("fee").optional() //
@@ -737,7 +981,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
     private static class SecurityListHelper
     {
-        private List<SecurityItem> items = new ArrayList<>();
+        private final List<SecurityItem> items = new ArrayList<>();
 
         // Finds a SecurityItem in the list
         public Optional<SecurityItem> findItem(String tickerSymbol)
@@ -773,7 +1017,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
     private static class DividendTaxesTransactionListHelper
     {
-        private List<DividendTaxesTransactionItem> items = new ArrayList<>();
+        private final List<DividendTaxesTransactionItem> items = new ArrayList<>();
 
         public Optional<DividendTaxesTransactionItem> findItem(String tickerSymbol, LocalDate date)
         {

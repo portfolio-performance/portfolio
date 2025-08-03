@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+xZXjB
+GySLNmF YOcCildGX
+WfVrSBbNlAjZcfOoME 1
+3633 VgPm
+Wien, den 30.07.2025
+Wir haben für Sie am 30.07.2025 unten angeführtes Geschäft abgerechnet:
+Depot: 80984-612-281
+Verlusttopf Nr.: 604999890074
+Geschäftsart: Ertrag/Steueranteil
+Bestand: Stk 172,811
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 172,811
+Titel: DE000A0F5UH1 iSh.ST.Gl.Sel.Div.100 U.ETF DE
+Inhaber-Anteile
+Ertrag/Steueranteil pro Stk.: 0,0117 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+KESt aus Neubestand: -2,02 EUR
+Auslands-KESt neu: -36,22 EUR
+Zu Lasten IBAN dy78 6263 9990 0993 9533 Valuta 30.07.2025 -38,24 EUR
+Eingang vorbehalten
+Datum/Uhrzeit Auftragseingang: 30.07.2025 13.41.41
+Verwaltungsgesellschaft: iShares [DE] I Investmentaktiengese
+Für ausschüttungsgleiche Erträge von ausländischen Fonds erfolgt eine Belastung in Höhe der zu
+entrichtenden KESt. Neubestand: Steuerliche Anschaffungswerte werden erhöht.
+Extag: 30.07.2025
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2025073001761P30_a/1092
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 4.930,55 EUR
+Anschaffungswertreduzierender Betrag*: 0,00 EUR
+Anschaffungswerterhöhender Betrag**: 164,14 EUR
+Steuerrelevanter Anschaffungswert aktuell: 5.094,69 EUR
+* Das sind unter anderem Ausschüttungen, Einlagenrückzahlungen und sonstige Kapitalmaßnahmen.
+** Entspricht in der Regel den ausschüttungsgleichen Erträgen. Diese unterliegen dem KESt-Abzug.
+Hinweis für den Verlustausgleichstopf:
+Bemessungsgrundlage KESt
+Einkünfteüberhang bisher 205,20 34,90 EUR
+Einkünfte 180,79 38,24 EUR
+Verlustausgleich -7,48 EUR
+Einkünfteüberhang aktuell 385,99 65,66 EUR
+Durch Verlustausgleich bisher nicht verwertete KESt 46,81 EUR
+Veränderung -7,48 EUR
+Durch Verlustausgleich aktuell nicht verwertete KESt 39,33 EUR
+KESt-Gutschrift 7,48 EUR
+KESt auf Dividende ohne Amtshilfe
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2025073001761P30_a/1093

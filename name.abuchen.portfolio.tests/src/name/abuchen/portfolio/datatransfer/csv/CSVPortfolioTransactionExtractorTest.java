@@ -20,6 +20,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -99,6 +100,100 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(source.getNote(), is("Notiz"));
         assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
+        assertThat(source.getSecurity(), is(security));
+        // security transfers do not support fees and taxes at the moment
+        assertThat(source.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0)));
+        assertThat(source.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
+
+        PortfolioTransaction target = entry.getTargetTransaction();
+        assertThat(target.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
+        assertThat(target.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0)));
+        assertThat(target.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
+    }
+
+    @Test
+    public void testTransferTransactionDateContainsTime()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("SAP.DE");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var field2Column = buildField2Column(extractor);
+
+        // configure the formatter to use the date time format
+        var dateTimeField = extractor.getField("date");
+        var column = new Column(0, dateTimeField.getName());
+        column.setField(dateTimeField);
+        column.setFormat(dateTimeField.textToFormat("yyyy-MM-dd'T'HH:mm"));
+        field2Column.put(dateTimeField.getName(), column);
+
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2013-01-01T14:05", "", "DE0007164600", "SAP", "",
+                                        "SAP SE", "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN",
+                                        "Notiz" }),
+                        field2Column, errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        PortfolioTransferEntry entry = (PortfolioTransferEntry) results.stream()
+                        .filter(PortfolioTransferItem.class::isInstance).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        PortfolioTransaction source = entry.getSourceTransaction();
+        assertThat(source.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(source.getNote(), is("Notiz"));
+        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T14:05")));
+        assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
+        assertThat(source.getSecurity(), is(security));
+        // security transfers do not support fees and taxes at the moment
+        assertThat(source.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0)));
+        assertThat(source.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
+
+        PortfolioTransaction target = entry.getTargetTransaction();
+        assertThat(target.getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
+        assertThat(target.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0)));
+        assertThat(target.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
+    }
+
+    @Test
+    public void testTransferTransactionDateContainsTimeAndTimeColumn()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("SAP.DE");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2013-01-01T14:05", "10:07", "DE0007164600", "SAP", "",
+                                        "SAP SE", "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN",
+                                        "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        PortfolioTransferEntry entry = (PortfolioTransferEntry) results.stream()
+                        .filter(PortfolioTransferItem.class::isInstance).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        PortfolioTransaction source = entry.getSourceTransaction();
+        assertThat(source.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
+        assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(source.getNote(), is("Notiz"));
+        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T10:07")));
         assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
         assertThat(source.getSecurity(), is(security));
         // security transfers do not support fees and taxes at the moment

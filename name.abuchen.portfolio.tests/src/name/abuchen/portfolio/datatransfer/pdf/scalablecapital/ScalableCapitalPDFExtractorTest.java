@@ -177,6 +177,38 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IT0004176001"), hasWkn(null), hasTicker(null), //
+                        hasName("Prysmian Group"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-06-13T11:16:30"), hasShares(21.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ord.-Nr.: SCAL1SRff6HgHQD"), //
+                        hasAmount("EUR", 1125.91), hasGrossValue("EUR", 1176.42), //
+                        hasTaxes("EUR", 47.87 + 2.64), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testSparplanausfuehrung01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -269,6 +301,38 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote("Ord.-Nr.: 000000000000000"), //
                         hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
+    public void testSparplanausfuehrung04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000052292"), hasWkn(null), hasTicker(null), //
+                        hasName("Hermes Intl"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-07-10T16:39:01"), hasShares(0.24321), //
+                        hasSource("Sparplanausfuehrung04.txt"), //
+                        hasNote("Ord.-Nr.: SCALz2xgFkvDZbm"), //
+                        hasAmount("EUR", 602.40), hasGrossValue("EUR", 600.00), //
+                        hasTaxes("EUR", 2.40), hasFees("EUR", 0.00))));
 
     }
 
@@ -433,9 +497,9 @@ public class ScalableCapitalPDFExtractorTest
                         hasDate("2025-06-16T00:00"), hasShares(0.284285), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.18), //
-                        hasForexGrossValue("USD", 0.16), //
-                        hasTaxes("EUR", 0.03), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.20), //
+                        hasForexGrossValue("USD", 0.23), //
+                        hasTaxes("EUR", 0.03 + 0.02), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -465,8 +529,8 @@ public class ScalableCapitalPDFExtractorTest
                         hasDate("2025-06-16T00:00"), hasShares(0.284285), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.18), //
-                        hasTaxes("EUR", 0.03), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.20), //
+                        hasTaxes("EUR", 0.03 + 0.02), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -474,6 +538,37 @@ public class ScalableCapitalPDFExtractorTest
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007274136"), hasWkn(null), hasTicker(null), //
+                        hasName("Sto SE & Co. KGaA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-18T00:00"), hasShares(3.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 7.31), hasGrossValue("EUR", 9.93), //
+                        hasTaxes("EUR", 2.48 + 0.14), hasFees("EUR", 0.00))));
     }
 
     @Test

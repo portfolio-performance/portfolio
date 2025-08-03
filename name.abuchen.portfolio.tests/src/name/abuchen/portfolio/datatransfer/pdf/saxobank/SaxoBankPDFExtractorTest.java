@@ -416,6 +416,37 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy03()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR001400XJJ3"), hasWkn(null), hasTicker(null), //
+                        hasName("Republic of France 3.75% 25 May 2056"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-20T08:45:38"), hasShares(100.00), //
+                        hasSource("Buy03.txt"), //
+                        hasNote("Order ID 5298178479 | Trade ID 6310729230 | Bond Accrued 30,82 EUR"), //
+                        hasAmount("EUR", 9584.92), hasGrossValue("EUR", 9534.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 20.00 + 30.82))));
+    }
+
+    @Test
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
@@ -434,6 +465,48 @@ public class SaxoBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-11-28"), hasAmount("CHF", 4600.00), //
                         hasSource("CashTransfer01.txt"), hasNote("39482097030"))));
+    }
+
+    @Test
+    public void testCashTransfer02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CashTransfer02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-06-20"), hasAmount("EUR", 10.00), //
+                        hasSource("CashTransfer02.txt"), hasNote("45108148786"))));
+    }
+
+    @Test
+    public void testCashTransfer03()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CashTransfer03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "PLN");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-06-16"), hasAmount("PLN", 85207.65), //
+                        hasSource("CashTransfer03.txt"), hasNote("44951434298"))));
     }
 
     @Test
