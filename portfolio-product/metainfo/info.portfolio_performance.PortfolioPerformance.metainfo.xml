@@ -37,6 +37,36 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+     <release version="0.78.0" date="2025-08-03">
+      <description>
+        <ul>
+          <li>New: The structures of an taxonomy can now be exported and imported via JSON.</li>
+          <li>Improvement: Moving average can now be selected in the Trades widget.</li>
+          <li>Improvement: Trades widget can use the security's currency to count positive or negative trades.</li>
+          <li>Improvement: CSV export now includes taxes, fees, and quantity for accounts.</li>
+          <li>Improvement: Transactions are exported sorted by date in the CSV export.</li>
+          <li>Improvement: Special formatting of numeric values (e.g. non-breaking spaces) is removed in CSV export.</li>
+          <li>Improvement: Internal rate of return is now calculated for short trades as well.</li>
+          <li>Improvement: PDF imports updated for OnVista, Easybank, Deutsche Bank, PostFinance, Sydbank, KBC Group, Tiger Broker, BBVA, Saxo, Scalable, and Trade Republic.</li>
+          <li>Fix: IRR of a classification was not calculated correctly when a filter was applied and grouped by classification in the statement of assets view.</li>
+          <li>Fix: Resolved an issue where deleted classifications remained visible temporarily.</li>
+          <li>Fix: Resolved an issue with sorting trades when multiple transactions occurred on the same day.</li>
+          <li>Beta: New view for the status of price updates.</li>
+          <li xml:lang="de">Neu: Die Struktur der Klassifizierungen kann nun via JSON exportiert und importiert werden.</li>
+          <li xml:lang="de">Verbesserung: Gleitender Durchschnitt jetzt auch im Trade-Widget auswählbar.</li>
+          <li xml:lang="de">Verbesserung: Trade-Widget kann auch die Währung des Wertpapiers für die Anzahl positiver oder negativer Trades verwenden.</li>
+          <li xml:lang="de">Verbesserung: CSV-Export enthält jetzt Steuern, Gebühren und die Stückzahl für Konten.</li>
+          <li xml:lang="de">Verbesserung: Buchungen werden im CSV-Export nach Datum sortiert.</li>
+          <li xml:lang="de">Verbesserung: Beim CSV-Export wird spezielle Formatierung von Zahlenwerten entfernt (z.B. geschützte Leerzeichen).</li>
+          <li xml:lang="de">Verbesserung: Berechnung des internen Zinsfußes auch für Short-Trades.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für OnVista, Easybank, Deutsche Bank, PostFinance, Sydbank, KBC Group, Tiger Broker, BBVA, Saxo, Scalable, Trade Republic.</li>
+          <li xml:lang="de">Fix: IZF der Klassifikation wurde nicht korrekt berechnet, wenn in der Vermögensaufstellung ein Filter aktiv und nach Klassifikationen gruppiert war.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem gelöschte Klassifizierungen zunächst noch sichtbar blieben.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Sortierung von Trades, wenn mehrere Buchungen am selben Tag vorhanden waren.</li>
+          <li xml:lang="de">Beta: Neue Ansicht zum Status der Preisaktualisierung.</li>
+        </ul>
+      </description>
+    </release>
      <release version="0.77.3" date="2025-06-24">
       <description>
         <ul>
