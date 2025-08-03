@@ -10,18 +10,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
@@ -29,11 +32,13 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
@@ -195,6 +200,9 @@ public final class Navigation
 
     @Inject
     private IEclipseContext context;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private List<Item> roots = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -509,6 +517,25 @@ public final class Navigation
                     part.activateView(TaxonomyView.class, taxonomy);
                 }));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
+
+                var taxonomy = new Taxonomy(Messages.LabelNewTaxonomy);
+                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), Messages.LabelNewTaxonomy));
+
+                var dialog = new TaxonomyImportDialog(ActiveShell.get(), stylingEngine, part.getPreferenceStore(),
+                                client, taxonomy);
+                if (dialog.open() == TaxonomyImportDialog.DIRTY)
+                {
+                    // set the name of the taxonomy to the name of the root node
+                    // (which might have changed during the import)
+                    taxonomy.setName(taxonomy.getRoot().getName());
+
+                    client.addTaxonomy(taxonomy);
+                    part.activateView(TaxonomyView.class, taxonomy);
+                }
+            }));
         };
 
         for (Taxonomy taxonomy : client.getTaxonomies())
@@ -518,7 +545,7 @@ public final class Navigation
 
         // no need to remove the listener as the Navigation object is only a
         // singleton and lives as long as the client (plus: no option to attach
-        // oneself here ot a dispose listener)
+        // oneself here to a dispose listener)
         client.addPropertyChangeListener(Client.Properties.TAXONOMIES, e -> {
             if (e.getNewValue() != null)
             {
