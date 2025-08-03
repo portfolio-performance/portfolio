@@ -43,6 +43,7 @@ import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -52,6 +53,8 @@ import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceSearchProvider;
+import name.abuchen.portfolio.online.impl.PortfolioReportCoins;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -104,6 +107,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         {
             monitor.beginTask(Messages.LabelSearchForQuoteFeeds, items.size());
 
+            var coins = new PortfolioReportCoins();
+
             for (SecurityItem item : items) // NOSONAR
             {
                 try
@@ -116,6 +121,16 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                                     || item.security.getCurrencyCode() == null //
                                     || (item.security.getFeed() != null && wellKnown.contains(item.security.getFeed())))
                     {
+                        monitor.worked(1);
+                        continue;
+                    }
+
+                    // check for crypto currencies on Portfolio Report
+                    if (PortfolioReportQuoteFeed.ID.equals(item.security.getFeed())
+                                    && coins.contains(item.security.getOnlineId()))
+                    {
+                        setupCoinMigration(coins, item);
+
                         monitor.worked(1);
                         continue;
                     }
@@ -154,6 +169,32 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             }
 
             monitor.done();
+        }
+
+        private void setupCoinMigration(PortfolioReportCoins coins, SecurityItem item)
+        {
+            var coin = coins.getCoinByOnlineId(item.security.getOnlineId());
+
+            var heading = MessageFormat.format("{0} * {1}", //$NON-NLS-1$
+                            coin.getName(), coin.getCoinGeckoCoindId());
+            item.actions.add(new LabelOnly(heading));
+
+            var label = MessageFormat.format("CoinGecko * {0} * {1} * {2}", //$NON-NLS-1$
+                            item.security.getCurrencyCode(), //
+                            coin.getTickerSymbol().toUpperCase(), //
+                            coin.getCoinGeckoCoindId());
+
+            var action = new SimpleAction(label, a -> {
+                item.security.setFeed(CoinGeckoQuoteFeed.ID);
+                item.security.setTickerSymbol(coin.getTickerSymbol().toUpperCase());
+                item.security.setPropertyValue(SecurityProperty.Type.FEED, CoinGeckoQuoteFeed.COINGECKO_COIN_ID,
+                                coin.getCoinGeckoCoindId());
+            });
+
+            item.actions.add(action);
+            item.selectedAction = action;
+
+            listener.accept(item);
         }
 
         private boolean searchByIdentifier(SecurityItem item, String identifier, Function<ResultItem, String> property)

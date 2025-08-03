@@ -413,6 +413,8 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
 
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
+            else if (hasDemoAccount())
+                webaccess.addHeader("x-cg-demo-api-key", this.demoApiKey); //$NON-NLS-1$
 
             String html = webaccess.get();
 

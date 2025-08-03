@@ -8,7 +8,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.handlers.MenuHelper;
@@ -34,14 +33,8 @@ public class MigratePortfolioReportHandler
         if (client == null)
             return;
 
-        // collect securities that are configured to use Portfolio Report and
-        // are (already) supported by the built-in provider (configured to use
-        // EUR because they are traded on Xetra)
-
         var securities = client.getSecurities().stream() //
-                        .filter(s -> PortfolioReportQuoteFeed.ID.equals(s.getFeed()))
-                        .filter(s -> CurrencyUnit.EUR.equals(s.getCurrencyCode())) //
-                        .toList();
+                        .filter(s -> PortfolioReportQuoteFeed.ID.equals(s.getFeed())).toList();
 
         FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(shell, client, securities);
         dialog.open();
