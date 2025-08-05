@@ -25,7 +25,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 
         var dt1 = t1.getDateTime();
         var dt2 = t2.getDateTime();
-        
+
         // Compare year, month, day
         if (dt1.getYear() != dt2.getYear())
             return Integer.compare(dt1.getYear(), dt2.getYear());
@@ -34,23 +34,16 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         if (dt1.getDayOfMonth() != dt2.getDayOfMonth())
             return Integer.compare(dt1.getDayOfMonth(), dt2.getDayOfMonth());
 
-        // Adjust hour and minute if both are 00:00
-        int hour1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 12 : dt1.getHour();
-        int minute1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 0 : dt1.getMinute();
-
-        int hour2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 12 : dt2.getHour();
-        int minute2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 0 : dt2.getMinute();
+        var sortOrder = Integer.compare(getSortOrder(t1), getSortOrder(t2));
+        if (sortOrder != 0)
+            return sortOrder;
 
         // Compare hour
-        if (hour1 != hour2)
-            return Integer.compare(hour1, hour2);
+        if (dt1.getHour() != dt2.getHour())
+            return Integer.compare(dt1.getHour(), dt2.getHour());
 
         // Compare minute
-        if (minute1 != minute2)
-            return Integer.compare(minute1, minute2);
-
-        // otherwise sort: inbounds, transfers, outbounds
-        return Integer.compare(getSortOrder(t1), getSortOrder(t2));
+        return Integer.compare(dt1.getMinute(), dt2.getMinute());
     }
 
     private int typeOrder(CalculationLineItem item)
