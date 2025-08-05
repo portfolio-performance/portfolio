@@ -387,10 +387,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
                                         // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
                                         // Ejecución del plan de inversión el día 02.05.2024 en Lang & Schwarz Exchange.
+                                        // Kindergeld-Ausführung am 04.08.2025 an der Lang und Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(Sparplanausf.hrung"
+                                                                        + "|Kindergeld\\-Ausf.hrung"
                                                                         + "|Ejecuci.n del plan de inversi.n"
                                                                         + "|(Savings plan|Saveback) execution) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
@@ -2133,10 +2135,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 feb Transacción con
                                         // LA MARMOTTE 20,00 € 47.269,99 €
                                         // 2025 tarjeta
+                                        //
+                                        // @formatter:off
+                                        // 27 jun Transacción
+                                        // WWW.AMAZON.* 646JH4Q44 10,71 € 40.148,28 €
+                                        // 2025 con tarjeta
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n con.*$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n.*$") //
                                                         .match("^(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
@@ -2191,10 +2198,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 26 Dez. BACKBLAZE INC, 5,34 $, exchange rate: 0,9625468, ECB rate:
                                         // Kartentransaktion 5,14 € 5.969,04 €
                                         // 2024 0,962000962, markup: 0,05673986 %
-                                        //                
-                                        // 07 Juni _BAZG VIA WebShop, 40,00 CHF, exchange rate: 1,07225, ECB rate: 
+                                        //
+                                        // 07 Juni _BAZG VIA WebShop, 40,00 CHF, exchange rate: 1,07225, ECB rate:
                                         // Kartentransaktion 42,89 € 3.762,94 €
-                                        // 2025 1,0657572205, markup: 0,6092175 %                
+                                        // 2025 1,0657572205, markup: 0,6092175 %
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "year", "amount", "currency", "amountAfter", "currencyAfter") //
@@ -2693,8 +2700,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
-                                        // 08 
-                                        // Schloss Laufen Rheinfall, 9,00 CHF, exchange rate: 1,0688889, ECB rate: 
+                                        // 08
+                                        // Schloss Laufen Rheinfall, 9,00 CHF, exchange rate: 1,0688889, ECB rate:
                                         // Juni Kartentransaktion 9,62 € 1.293,12 €
                                         // 1,0657572205, markup: 0,29384549 %
                                         // 2025
@@ -4112,10 +4119,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
                                         // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
                                         // Ejecución del plan de inversión el día 02.05.2024 en Lang & Schwarz Exchange.
+                                        // Kindergeld-Ausführung am 04.08.2025 an der Lang und Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(Sparplanausf.hrung"
+                                                                        + "|Kindergeld\\-Ausf.hrung"
                                                                         + "|Ejecuci.n del plan de inversi.n"
                                                                         + "|(Savings plan|Saveback) execution) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"

@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+TuEgKf vVkBXMn sxVwlYl SEITE 1 von 1
+VvhrAsNmZDkNRfqwRBXpq 15 DATUM 04.08.2025
+76252 GeDrfnX AUSFÜHRUNG 3837-baeb
+SPARPLAN 3dbf-1e4b
+DEPOT 8897677436
+WERTPAPIERABRECHNUNG FÜR KINDERGELD
+ÜBERSICHT
+Kindergeld-Ausführung am 04.08.2025 an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+FTSE All-World USD (Acc) 0,000074 Stk. 133,42 EUR 0,01 EUR
+ISIN: IE00BK5BQT80
+GESAMT 0,01 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE15100123451234567891 2025-08-06 -0,01 EUR
+FTSE All-World USD (Acc) nicht in Sammelverwahrung
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
