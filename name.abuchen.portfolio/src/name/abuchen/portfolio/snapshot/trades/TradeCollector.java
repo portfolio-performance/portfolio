@@ -54,23 +54,24 @@ public class TradeCollector
             if (dt1.getDayOfMonth() != dt2.getDayOfMonth())
                 return Integer.compare(dt1.getDayOfMonth(), dt2.getDayOfMonth());
 
-            // Adjust hour and minute if both are 00:00
-            int hour1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 12 : dt1.getHour();
-            int minute1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 0 : dt1.getMinute();
+            // Compare year, month, day
+            if (dt1.getYear() != dt2.getYear())
+                return Integer.compare(dt1.getYear(), dt2.getYear());
+            if (dt1.getMonthValue() != dt2.getMonthValue())
+                return Integer.compare(dt1.getMonthValue(), dt2.getMonthValue());
+            if (dt1.getDayOfMonth() != dt2.getDayOfMonth())
+                return Integer.compare(dt1.getDayOfMonth(), dt2.getDayOfMonth());
 
-            int hour2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 12 : dt2.getHour();
-            int minute2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 0 : dt2.getMinute();
+            var sortOrder = Integer.compare(getSortOrder(t1), getSortOrder(t2));
+            if (sortOrder != 0)
+                return sortOrder;
 
             // Compare hour
-            if (hour1 != hour2)
-                return Integer.compare(hour1, hour2);
+            if (dt1.getHour() != dt2.getHour())
+                return Integer.compare(dt1.getHour(), dt2.getHour());
 
             // Compare minute
-            if (minute1 != minute2)
-                return Integer.compare(minute1, minute2);
-
-            // otherwise sort: inbounds, transfers, outbounds
-            return Integer.compare(getSortOrder(t1), getSortOrder(t2));
+            return Integer.compare(dt1.getMinute(), dt2.getMinute());
         }
 
         /**
@@ -130,19 +131,22 @@ public class TradeCollector
 
             Portfolio portfolio = (Portfolio) txp.getOwner();
             PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
-            List<TransactionPair<PortfolioTransaction>> openList = openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>());
+            List<TransactionPair<PortfolioTransaction>> openList = openTransactions.computeIfAbsent(portfolio,
+                            p -> new ArrayList<>());
 
             Type type = t.getType();
             switch (type)
             {
                 case BUY, DELIVERY_INBOUND:
                 case SELL, DELIVERY_OUTBOUND:
-                    // If fifo is empty or contains the same type of transactions
+                    // If fifo is empty or contains the same type of
+                    // transactions
                     // as incoming one, add it to the fifo. Otherwise, we create
                     // a new trade. (Note: it's an invariant that fifo contains
                     // transaction of the same type (purchase vs !purchase), so
                     // we test 0th element in fifo).
-                    if (openList.isEmpty() || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
+                    if (openList.isEmpty()
+                                    || openList.get(0).getTransaction().getType().isPurchase() == type.isPurchase())
                         openList.add(pair);
                     else
                         trades.add(createNewTrade(openTransactions, pair));
