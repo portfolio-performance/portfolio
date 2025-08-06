@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ public class UpdatePricesJob extends AbstractClientJob
     private final Set<Target> target;
     private final Predicate<Security> filter;
     private long repeatPeriod;
+    private final AtomicBoolean authenticationDialogShown = new AtomicBoolean(false);
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -113,9 +115,7 @@ public class UpdatePricesJob extends AbstractClientJob
 
             if (feedNeedsUser)
             {
-                // inform the user but go ahead with the remaining updates
-                Display.getDefault().asyncExec(
-                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+                showAuthenticationDialogOnce();
             }
         }
 
@@ -185,6 +185,15 @@ public class UpdatePricesJob extends AbstractClientJob
             schedule(repeatPeriod);
 
         return Status.OK_STATUS;
+    }
+
+    private void showAuthenticationDialogOnce()
+    {
+        if (authenticationDialogShown.compareAndSet(false, true))
+        {
+            Display.getDefault()
+                            .asyncExec(() -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+        }
     }
 
     private List<Task> prepareHistoricalTasks(PriceUpdateRequest request, List<Security> securities)

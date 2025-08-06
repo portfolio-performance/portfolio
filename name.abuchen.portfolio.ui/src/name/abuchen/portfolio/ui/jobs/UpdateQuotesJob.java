@@ -146,6 +146,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
     private final Set<Target> target;
     private final Predicate<Security> filter;
     private long repeatPeriod;
+    private final AtomicBoolean authenticationDialogShown = new AtomicBoolean(false);
 
     public UpdateQuotesJob(Client client, Set<Target> target)
     {
@@ -215,9 +216,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
             if (feedNeedsUser)
             {
-                // inform the user but go ahead with the remaining updates
-                Display.getDefault().asyncExec(
-                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+                showAuthenticationDialogOnce();
             }
         }
 
@@ -277,6 +276,15 @@ public final class UpdateQuotesJob extends AbstractClientJob
             schedule(repeatPeriod);
 
         return Status.OK_STATUS;
+    }
+
+    private void showAuthenticationDialogOnce()
+    {
+        if (authenticationDialogShown.compareAndSet(false, true))
+        {
+            Display.getDefault()
+                            .asyncExec(() -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+        }
     }
 
     private void runJobs(IProgressMonitor monitor, List<Job> jobs)
@@ -522,6 +530,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     catch (AuthenticationExpiredException e)
                     {
                         PortfolioPlugin.log(e);
+                        showAuthenticationDialogOnce();
                         return Status.OK_STATUS;
                     }
                     catch (FeedConfigurationException e)
