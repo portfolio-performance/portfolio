@@ -46,31 +46,20 @@ public class TradeCollector
             var dt1 = t1.getTransaction().getDateTime();
             var dt2 = t2.getTransaction().getDateTime();
 
-            // Compare year, month, day
-            if (dt1.getYear() != dt2.getYear())
-                return Integer.compare(dt1.getYear(), dt2.getYear());
-            if (dt1.getMonthValue() != dt2.getMonthValue())
-                return Integer.compare(dt1.getMonthValue(), dt2.getMonthValue());
-            if (dt1.getDayOfMonth() != dt2.getDayOfMonth())
-                return Integer.compare(dt1.getDayOfMonth(), dt2.getDayOfMonth());
+            // the date differs, just sort by date (no need to check types)
+            if (dt1.getYear() != dt2.getYear() || dt1.getMonth() != dt2.getMonth()
+                            || dt1.getDayOfMonth() != dt2.getDayOfMonth())
+                return dt1.compareTo(dt2);
 
-            // Adjust hour and minute if both are 00:00
-            int hour1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 12 : dt1.getHour();
-            int minute1 = (dt1.getHour() == 0 && dt1.getMinute() == 0) ? 0 : dt1.getMinute();
+            var hasTime1 = dt1.getHour() != 0 || dt1.getMinute() != 0;
+            var hasTime2 = dt2.getHour() != 0 || dt2.getMinute() != 0;
 
-            int hour2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 12 : dt2.getHour();
-            int minute2 = (dt2.getHour() == 0 && dt2.getMinute() == 0) ? 0 : dt2.getMinute();
-
-            // Compare hour
-            if (hour1 != hour2)
-                return Integer.compare(hour1, hour2);
-
-            // Compare minute
-            if (minute1 != minute2)
-                return Integer.compare(minute1, minute2);
+            // if both transactions have a time, then sort by time
+            if (hasTime1 && hasTime2)
+                return dt1.compareTo(dt2);
 
             // otherwise sort: inbounds, transfers, outbounds
-            return Integer.compare(getSortOrder(t1), getSortOrder(t2));
+            return getSortOrder(t1) - getSortOrder(t2);
         }
 
         /**

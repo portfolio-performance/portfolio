@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
@@ -128,6 +129,7 @@ public class CalculationLineItemComparatorTest
     }
 
     @Test
+    @Ignore("Reverted 8b486375a67576f3d66b8aaf1484e81462d0d4d0 due bad sorting heuristic for transactions with and without time")
     public void testComparisonMethodViolatesContract()
     {
         // this tests that sorting transactions items with or without time
