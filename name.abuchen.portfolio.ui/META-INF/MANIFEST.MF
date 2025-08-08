@@ -117,6 +117,7 @@ Import-Package: com.google.common.base,
  org.osgi.service.prefs
 Require-Bundle: name.abuchen.portfolio;bundle-version="0.78.2",
  org.eclipse.nebula.cwt,
+ name.abuchen.portfolio.bootstrap;bundle-version="0.78.2",
  org.eclipse.ui.forms,
  org.eclipse.e4.ui.css.core,
  org.eclipse.ui.themes,
