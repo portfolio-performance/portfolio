@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
+import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
@@ -396,6 +397,14 @@ public final class Navigation
         item.parameter = watchlist;
 
         item.contextMenu = (part, manager) -> {
+
+            manager.add(CommandAction.forCommand(context, Messages.JobLabelUpdateQuotes,
+                            UIConstants.Command.UPDATE_QUOTES, UIConstants.Parameter.FILTER,
+                            UpdateQuotesHandler.FilterType.WATCHLIST.name(), UIConstants.Parameter.WATCHLIST,
+                            watchlist.getName()));
+
+            manager.add(new Separator());
+
             manager.add(new SimpleAction(Messages.WatchlistRename, a -> {
                 String newName = askWatchlistName(watchlist.getName());
                 if (newName != null)

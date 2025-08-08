@@ -24,7 +24,7 @@ public class UpdateQuotesHandler
 {
     public enum FilterType
     {
-        SECURITY, ACTIVE
+        SECURITY, ACTIVE, WATCHLIST
     }
 
     @CanExecute
@@ -52,7 +52,8 @@ public class UpdateQuotesHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService,
-                    @Named(UIConstants.Parameter.FILTER) @Optional String filter)
+                    @Named(UIConstants.Parameter.FILTER) @Optional String filter,
+                    @Named(UIConstants.Parameter.WATCHLIST) @Optional String watchlist)
     {
         MenuHelper.getActiveClient(part).ifPresent(client -> {
 
@@ -68,6 +69,16 @@ public class UpdateQuotesHandler
                 new UpdateQuotesJob(client, s -> !s.isRetired(), EnumSet.allOf(UpdateQuotesJob.Target.class))
                                 .schedule();
                 new UpdateDividendsJob(client, s -> !s.isRetired()).schedule(5000);
+            }
+            else if (FilterType.WATCHLIST.name().equalsIgnoreCase(filter) && watchlist != null)
+            {
+                client.getWatchlists().stream() //
+                                .filter(w -> w.getName().equals(watchlist)) //
+                                .findFirst().ifPresent(w -> {
+                                    var securities = w.getSecurities();
+                                    new UpdateQuotesJob(client, securities).schedule();
+                                    new UpdateDividendsJob(client, securities).schedule(5000);
+                                });
             }
             else
             {
