@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -580,21 +582,18 @@ public class ClientInput
                             EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
-            CreateInvestmentPlanTxJob checkInvestmentPlans = new CreateInvestmentPlanTxJob(client,
-                            exchangeRateProviderFacory);
+            var checkInvestmentPlans = new CreateInvestmentPlanTxJob(client, exchangeRateProviderFacory);
             checkInvestmentPlans.startAfter(initialQuoteUpdate);
             checkInvestmentPlans.schedule(1100);
 
-            int thirtyMinutes = 1000 * 60 * 30;
-            Job job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.LATEST))
-                            .repeatEvery(thirtyMinutes);
-            job.schedule(thirtyMinutes);
+            // always schedule the period jobs. The job will check the
+            // preferences and skip the run if not enabled.
+            var job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.LATEST, Duration.ofMinutes(30));
+            job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
-            int sixHours = 1000 * 60 * 60 * 6;
-            job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.HISTORIC))
-                            .repeatEvery(sixHours);
-            job.schedule(sixHours);
+            job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.HISTORIC, Duration.ofHours(6));
+            job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(5000);

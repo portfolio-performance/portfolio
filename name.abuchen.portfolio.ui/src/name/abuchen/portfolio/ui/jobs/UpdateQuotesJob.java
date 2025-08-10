@@ -145,8 +145,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private final Set<Target> target;
     private final Predicate<Security> filter;
-    private long repeatPeriod;
-    private final AtomicBoolean authenticationDialogShown = new AtomicBoolean(false);
+
+    private boolean suppressAuthenticationDialog = false;
 
     public UpdateQuotesJob(Client client, Set<Target> target)
     {
@@ -171,10 +171,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
         this.filter = filter;
     }
 
-    public UpdateQuotesJob repeatEvery(long milliseconds)
+    public void suppressAuthenticationDialog(boolean suppressAuthenticationDialog)
     {
-        this.repeatPeriod = milliseconds;
-        return this;
+        this.suppressAuthenticationDialog = suppressAuthenticationDialog;
     }
 
     @Override
@@ -184,7 +183,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         if (isExperimentEnabled)
         {
             var job = new UpdatePricesJob(getClient(), filter, target);
-            job.repeatEvery(repeatPeriod);
+            job.suppressAuthenticationDialog(suppressAuthenticationDialog);
             job.schedule();
             return Status.OK_STATUS;
         }
@@ -214,9 +213,10 @@ public final class UpdateQuotesJob extends AbstractClientJob
             var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
             var feedNeedsUser = feed.requiresAuthentication(securities);
 
-            if (feedNeedsUser)
+            if (feedNeedsUser && !suppressAuthenticationDialog)
             {
-                showAuthenticationDialogOnce();
+                Display.getDefault().asyncExec(
+                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
             }
         }
 
@@ -272,19 +272,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         dirtyable.flushIfDue();
 
-        if (repeatPeriod > 0)
-            schedule(repeatPeriod);
-
         return Status.OK_STATUS;
-    }
-
-    private void showAuthenticationDialogOnce()
-    {
-        if (authenticationDialogShown.compareAndSet(false, true))
-        {
-            Display.getDefault()
-                            .asyncExec(() -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
-        }
     }
 
     private void runJobs(IProgressMonitor monitor, List<Job> jobs)
@@ -530,7 +518,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     catch (AuthenticationExpiredException e)
                     {
                         PortfolioPlugin.log(e);
-                        showAuthenticationDialogOnce();
                         return Status.OK_STATUS;
                     }
                     catch (FeedConfigurationException e)
@@ -580,5 +567,4 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         return status;
     }
-
 }

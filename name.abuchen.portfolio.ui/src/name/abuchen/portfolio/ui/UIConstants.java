@@ -172,6 +172,18 @@ public interface UIConstants
         String UPDATE_QUOTES_AFTER_FILE_OPEN = "UPDATE_QUOTES_AFTER_FILE_OPEN"; //$NON-NLS-1$
 
         /**
+         * Preference key whether to periodically update quotes. It is only
+         * check if quotes are updated after opening the file at all.
+         */
+        String UPDATE_QUOTES_PERIODICALLY = "UPDATE_QUOTES_PERIODICALLY"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the update strategy; see
+         * {@link name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateStrategy}
+         */
+        String UPDATE_QUOTES_STRATEGY = "UPDATE_QUOTES_STRATEGY"; //$NON-NLS-1$
+
+        /**
          * Preference key whether to automatically update quotes after opening a
          * data file.
          */

@@ -549,6 +549,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
     public static String LabelAccumulatedTransferals;
+    public static String LabelActiveSecurities;
     public static String LabelAdditionsAndModifications;
     public static String LabelAdhocFilter;
     public static String LabelAfterTaxAndFees;
@@ -723,6 +724,7 @@ public class Messages extends NLS
     public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
     public static String LabelHeatmapTaxes;
+    public static String LabelHeldSecurities;
     public static String LabelHide;
     public static String LabelHideMarkings;
     public static String LabelHistoricalReturnsAndVolatiltity;
@@ -827,6 +829,8 @@ public class Messages extends NLS
     public static String LabelPreTax;
     public static String LabelPreviousTradingDay;
     public static String LabelPriceUpdateProgress;
+    public static String LabelPriceUpdateStrategy;
+    public static String LabelPriceUpdateStrategyInfo;
     public static String LabelPurchasePrice;
     public static String LabelPurchaseTransactionsOnly;
     public static String LabelQuandlCode;
@@ -1266,6 +1270,7 @@ public class Messages extends NLS
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;
+    public static String PrefUpdateQuotesPeriodically;
     public static String PrefUpdateSite;
     public static String PresetsPrefPageDescription;
     public static String PresetsPrefPageNow;
