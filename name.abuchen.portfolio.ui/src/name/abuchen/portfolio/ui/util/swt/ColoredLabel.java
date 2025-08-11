@@ -112,6 +112,7 @@ public class ColoredLabel extends Canvas // NOSONAR
         e.type = SWT.None;
     }
 
+    @SuppressWarnings("restriction")
     private void initAccessibility()
     {
         getAccessible().addAccessibleControlListener(new AccessibleControlAdapter()

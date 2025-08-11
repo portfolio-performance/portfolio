@@ -238,6 +238,7 @@ public class Messages extends NLS
     public static String LabelXwithCurrencyY;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String LabelTaseFinance;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
