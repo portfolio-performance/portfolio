@@ -230,6 +230,37 @@ public class DataSeriesSet
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
                         Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
         availableSeries.add(series);
+
+        // Capital Gains
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.CAPITAL_GAINS,
+                        Messages.LabelCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_GREEN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.CAPITAL_GAINS_ACCUMULATED,
+                        Messages.LabelAccumulatedCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_GREEN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.REALIZED_CAPITAL_GAINS,
+                        Messages.LabelRealizedCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.REALIZED_CAPITAL_GAINS_ACCUMULATED,
+                        Messages.LabelAccumulatedRealizedCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.UNREALIZED_CAPITAL_GAINS,
+                        Messages.LabelUnrealizedCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_CYAN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.UNREALIZED_CAPITAL_GAINS_ACCUMULATED,
+                        Messages.LabelAccumulatedUnrealizedCapitalGains, Display.getDefault().getSystemColor(SWT.COLOR_CYAN).getRGB());
+        // series.setLineChart(false);
+        availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
