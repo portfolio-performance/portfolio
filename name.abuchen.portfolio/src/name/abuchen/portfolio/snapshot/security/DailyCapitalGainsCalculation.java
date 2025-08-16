@@ -293,12 +293,14 @@ public class DailyCapitalGainsCalculation
             sharesToSell -= sharesFromThisItem;
         }
 
+        // Handle short selling (remaining shares after exhausting FIFO queue)
         if (sharesToSell > 0)
         {
-            // Report that more was sold than bought to log
-            PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                            Values.Share.format(sold), t.getSecurity().getName(),
-                            Values.DateTime.format(t.getDateTime())));
+            // Calculate short selling gain
+            long shortSellingGain = Math.round((double) sharesToSell / shares * convertedGrossValue.getAmount());
+            
+            // Add to realized gains
+            realizedGainsForDate.addCapitalGains(Money.of(termCurrency, shortSellingGain));
         }
     }
 
