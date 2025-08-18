@@ -55,6 +55,10 @@ public class DataSeriesSerializer
                 if (data.length >= 4)
                 {
                     s.setColor(ColorConversion.hex2RGB(data[1]));
+                    // For backward compatibility: in case the configuration
+                    // does not specify a negative color,
+                    // set the negative color to the same value as the main
+                    // color.
                     s.setColorNegative(ColorConversion.hex2RGB(data[1]));
                     s.setLineStyle(LineStyle.valueOf(data[2]));
                     s.setShowArea(Boolean.parseBoolean(data[3]));
