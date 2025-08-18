@@ -161,6 +161,7 @@ public class InvestmentPlanModel extends AbstractModel
         setAutoGenerate(false);
         setAmount(0);
         setFees(0);
+        setTaxes(0);
     }
 
     public void setSource(InvestmentPlan plan)
@@ -185,7 +186,20 @@ public class InvestmentPlanModel extends AbstractModel
         this.start = plan.getStart();
         this.interval = plan.getInterval();
         this.amount = plan.getAmount();
-        this.grossAmount = plan.getAmount() - plan.getFees() + plan.getTaxes();
+        switch (planType)
+        {
+            case PURCHASE_OR_DELIVERY:
+                this.grossAmount = plan.getAmount() - plan.getFees() - plan.getTaxes();
+                break;
+            case INTEREST:
+                this.grossAmount = plan.getAmount() + plan.getTaxes();
+                break;
+            case DEPOSIT, REMOVAL:
+                this.grossAmount = plan.getAmount();
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
         this.fees = plan.getFees();
         this.taxes = plan.getTaxes();
     }
@@ -215,7 +229,10 @@ public class InvestmentPlanModel extends AbstractModel
             return ValidationStatus
                             .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnGrossValue));
 
-        if (grossAmount + fees - taxes != amount)
+        if (grossAmount - fees - taxes != amount && planType != InvestmentPlan.Type.PURCHASE_OR_DELIVERY)
+            return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
+
+        if (grossAmount + fees + taxes != amount && planType == InvestmentPlan.Type.PURCHASE_OR_DELIVERY)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
         return ValidationStatus.ok();
@@ -323,7 +340,22 @@ public class InvestmentPlanModel extends AbstractModel
     {
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount); // NOSONAR
 
-        var newGrossAmount = Math.abs(amount - fees + taxes);
+        long newGrossAmount;
+        switch (planType)
+        {
+            case PURCHASE_OR_DELIVERY:
+                newGrossAmount = Math.abs(amount - fees - taxes);
+                break;
+            case INTEREST:
+                newGrossAmount = Math.abs(amount + taxes);
+                break;
+            case DEPOSIT, REMOVAL:
+                newGrossAmount = Math.abs(amount);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = newGrossAmount); // NOSONAR
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -339,7 +371,22 @@ public class InvestmentPlanModel extends AbstractModel
     {
         firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = grossAmount); // NOSONAR
 
-        var newAmount = grossAmount + fees - taxes;
+        long newAmount;
+        switch (planType)
+        {
+            case PURCHASE_OR_DELIVERY:
+                newAmount = grossAmount + fees + taxes;
+                break;
+            case INTEREST:
+                newAmount = grossAmount - taxes;
+                break;
+            case DEPOSIT, REMOVAL:
+                newAmount = grossAmount;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
@@ -354,7 +401,22 @@ public class InvestmentPlanModel extends AbstractModel
     {
         firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
 
-        var newAmount = grossAmount + fees - taxes;
+        long newAmount;
+        switch (planType)
+        {
+            case PURCHASE_OR_DELIVERY:
+                newAmount = grossAmount + fees + taxes;
+                break;
+            case INTEREST:
+                newAmount = grossAmount - taxes;
+                break;
+            case DEPOSIT, REMOVAL:
+                newAmount = grossAmount;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
@@ -369,7 +431,22 @@ public class InvestmentPlanModel extends AbstractModel
     {
         firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes); // NOSONAR
 
-        var newAmount = grossAmount + fees - taxes;
+        long newAmount;
+        switch (planType)
+        {
+            case PURCHASE_OR_DELIVERY:
+                newAmount = grossAmount + fees + taxes;
+                break;
+            case INTEREST:
+                newAmount = grossAmount - taxes;
+                break;
+            case DEPOSIT, REMOVAL:
+                newAmount = grossAmount;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
