@@ -94,7 +94,7 @@ public class ColoredLabel extends Canvas // NOSONAR
         if (secondColor != null)
         {
             e.gc.setBackground(secondColor);
-            e.gc.fillPolygon(new int[] { bounds.x, bounds.y, bounds.width, bounds.y, bounds.width, bounds.height });
+            GCUtil.drawBottomRightTriangleOverlay(e.gc, bounds);
         }
 
         if (text != null)

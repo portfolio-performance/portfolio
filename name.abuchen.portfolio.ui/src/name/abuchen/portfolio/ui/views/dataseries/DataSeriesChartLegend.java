@@ -48,6 +48,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.GCUtil;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -202,7 +203,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
             if (!getSecondColor().equals(getColor()))
             {
                 gc.setBackground(getSecondColor());
-                gc.fillPolygon(new int[] { r.x, r.y, r.width, r.y, r.width, r.height });
+                GCUtil.drawBottomRightTriangleOverlay(gc, r);
             }
 
             gc.setForeground(getForeground());
