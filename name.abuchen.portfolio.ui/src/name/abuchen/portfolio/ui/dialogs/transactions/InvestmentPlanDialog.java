@@ -158,6 +158,16 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
             grossAmount.bindCurrency(Properties.transactionCurrencyCode.name());
         }
 
+        // fees
+
+        Input fees = null;
+        if (planType == Type.PURCHASE_OR_DELIVERY)
+        {
+            fees = new Input(editArea, "+ " + Messages.ColumnFees); //$NON-NLS-1$
+            fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
+            fees.bindCurrency(Properties.transactionCurrencyCode.name());
+        }
+
         // taxes
 
         Input taxes = null;
@@ -168,14 +178,11 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
             taxes.bindCurrency(Properties.transactionCurrencyCode.name());
         }
 
-        // fees
-
-        Input fees = null;
         if (planType == Type.PURCHASE_OR_DELIVERY)
         {
-            fees = new Input(editArea, "+ " + Messages.ColumnFees); //$NON-NLS-1$
-            fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
-            fees.bindCurrency(Properties.transactionCurrencyCode.name());
+            taxes = new Input(editArea, "+ " + Messages.ColumnTaxes); //$NON-NLS-1$
+            taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+            taxes.bindCurrency(Properties.transactionCurrencyCode.name());
         }
 
         // amount
