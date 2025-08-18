@@ -248,6 +248,10 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                     if (newColor != null)
                     {
                         series.setColor(newColor);
+                        // the Negative Color of a data series shall be
+                        // equal to the main color, unless the positive or
+                        // negative color is specifically modified, which is not
+                        // the goal of this Action
                         series.setColorNegative(newColor);
                         configurator.fireUpdate();
                     }
