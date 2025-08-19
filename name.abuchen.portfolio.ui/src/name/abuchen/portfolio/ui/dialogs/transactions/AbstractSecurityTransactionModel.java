@@ -276,8 +276,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
 
-        updateSharesAndQuote();
         updateExchangeRate();
+        updateSharesAndQuote();
     }
 
     protected void updateSharesAndQuote()
@@ -302,6 +302,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 if (position != null)
                 {
                     setShares(position.getShares());
+                    // position.calculateValue().getAmount() is in the security
+                    // currency
                     setTotal(position.calculateValue().getAmount());
                     hasPosition = true;
                 }
@@ -564,13 +566,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public void setTotal(long total)
     {
-        triggerTotal(total);
-
+        firePropertyChange(Properties.grossValue.name(), this.grossValue, this.grossValue = total);
         firePropertyChange(Properties.convertedGrossValue.name(), this.convertedGrossValue,
-                        this.convertedGrossValue = calculateConvertedGrossValue());
-
-        firePropertyChange(Properties.grossValue.name(), this.grossValue,
-                        this.grossValue = Math.round(convertedGrossValue / exchangeRate.doubleValue()));
+                        this.convertedGrossValue = Math.round(exchangeRate.doubleValue() * grossValue));
+        triggerTotal(calculateTotal());
 
         if (shares != 0)
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = BigDecimal
