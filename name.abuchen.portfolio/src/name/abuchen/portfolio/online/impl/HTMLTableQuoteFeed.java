@@ -129,6 +129,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             String text = value.text().trim();
 
+            // Remove blanks inside the text that would parsing failures.
+            // Because we only parse German, English, Switzerland number
+            // formats, removing the blanks should not be an issue.
+
+            text = TextUtil.stripBlanks(text);
+
             DecimalFormat format = null;
 
             if ("de".equals(languageHint)) //$NON-NLS-1$
