@@ -289,8 +289,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         LocalDateTime valuationAtEndDate = valuationsAtEnd.get(0).getDateTime();
 
-        Money endValue = valuationsAtEnd.stream().map(
-                        item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
+        Money endValue = valuationsAtEnd.stream()
+                        .filter(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).getShares() > 0)
+                        .map(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
         TrailRecord endTrail = TrailRecord.of(valuationsAtEnd.stream()
                         .map(item -> TrailRecord.ofPosition(valuationAtEndDate.toLocalDate(),
