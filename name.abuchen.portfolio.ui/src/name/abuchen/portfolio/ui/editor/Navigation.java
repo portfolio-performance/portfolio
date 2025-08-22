@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
@@ -36,6 +37,7 @@ import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
@@ -534,6 +536,10 @@ public final class Navigation
                                                 stylingEngine);
                                 new WizardDialog(ActiveShell.get(), wizard).open();
                             }));
+
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                            Images.EXPORT_FILE, action -> new JSONExporterDialog(ActiveShell.get(),
+                                            new TaxonomyJSONExporter.AllTaxonomies(client)).export()));
         };
 
         for (Taxonomy taxonomy : client.getTaxonomies())

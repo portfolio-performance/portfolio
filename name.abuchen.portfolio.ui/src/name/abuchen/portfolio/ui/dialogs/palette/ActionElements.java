@@ -88,6 +88,9 @@ import name.abuchen.portfolio.ui.util.CommandAction;
         answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
                         Images.IMPORT_FILE, UIConstants.Command.IMPORT_TAXONOMY));
 
+        answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                        Images.EXPORT_FILE, UIConstants.Command.EXPORT_TAXONOMY));
+
         return answer;
     }
 }
