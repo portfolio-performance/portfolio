@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
@@ -31,15 +32,18 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -136,6 +140,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String identifierGroupHeading;
     /** preference key: color schema used in the tree map */
     private String identifierColorSchema;
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
@@ -318,7 +325,30 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private void addExportButton(ToolBarManager toolBar)
     {
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
-                        manager -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager))));
+                        manager -> getCurrentPage().ifPresent(p -> {
+                            p.exportMenuAboutToShow(manager);
+
+                            manager.add(new Separator());
+
+                            manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
+                                var dialog = new TaxonomyImportDialog(container.getShell(), stylingEngine,
+                                                getPart().getPreferenceStore(), model.getClient(), model.getTaxonomy());
+                                if (dialog.open() == TaxonomyImportDialog.DIRTY)
+                                {
+                                    // do a complete reload of the view
+                                    // including taxonomy model because there
+                                    // can be structural changes which are not
+                                    // reflected in TaxonomyNode objects.
+
+                                    model.getClient().markDirty();
+                                    getPart().activateView(TaxonomyView.class, model.getTaxonomy());
+                                }
+                            }));
+
+                            manager.add(new SimpleAction(Messages.MenuExportTaxonomy,
+                                            action -> new JSONExporterDialog(container.getShell(),
+                                                            new TaxonomyJSONExporter(model.getTaxonomy())).export()));
+                        })));
     }
 
     private void addConfigButton(ToolBarManager toolBar)
