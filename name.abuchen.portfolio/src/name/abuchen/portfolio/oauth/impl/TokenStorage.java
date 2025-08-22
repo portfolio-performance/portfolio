@@ -84,7 +84,7 @@ public class TokenStorage
         ISecurePreferences node = preferences.node(TOKEN_STORAGE);
         try
         {
-            node.put(REFRESH_TOKEN, refreshToken, true);
+            node.put(ID_TOKEN, idToken, true);
             node.flush();
         }
         catch (StorageException | IOException e)
