@@ -47,6 +47,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<skip>${jacoco.skip}</skip>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
