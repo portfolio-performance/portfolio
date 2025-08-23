@@ -1,0 +1,22 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+JÜRGEN HVCZLOB SEITE 1 von 1
+KovPCypulo 10 DATUM 21.08.2025
+29222 RXPLqPNpp IBAN DE96100122738473057201
+BIC TRBKDEBBXXX
+ÜBERWEISUNGSBESTÄTIGUNG
+ÜBERWEISUNGSDETAILS
+BETRAG GEBÜHR STATUS ÜBERWEISUNGSDATUM TYP REFERENZ
+1.000,00 € 0,00 € Ausgeführt 21.08.2025 SEPA Überweisung
+ANGABEN ZUM EMPFÄNGER
+NAME IBAN BIC
+Jürgen HVCZLOB DE035002447509273980201 DGHTRDFVXXX
+Bitte beachte, dass dieses Dokument lediglich eine Bestätigung deiner Transaktionsanfrage und keinen Nachweis für die Ausführung darstellt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
