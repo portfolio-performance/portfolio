@@ -163,6 +163,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                             {
                                 case DEPOSIT:
                                 case DIVIDENDS:
+                                case SELL_OPTION:
+                                case BUY_OPTION:
                                 case INTEREST:
                                 case SELL:
                                 case TRANSFER_IN:

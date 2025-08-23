@@ -115,6 +115,14 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     FEE_REFUND(14),
+    /**
+     * <code>SELL_OPTION = 15;</code>
+     */
+    SELL_OPTION(15),
+    /**
+     * <code>BUY_OPTION = 16;</code>
+     */
+    BUY_OPTION(16),
     UNRECOGNIZED(-1),
     ;
 
@@ -178,6 +186,14 @@ private static final long serialVersionUID = 0L;
      * <code>FEE_REFUND = 14;</code>
      */
     public static final int FEE_REFUND_VALUE = 14;
+    /**
+     * <code>SELL_OPTION = 15;</code>
+     */
+    public static final int SELL_OPTION_VALUE = 15;
+    /**
+     * <code>BUY_OPTION = 16;</code>
+     */
+    public static final int BUY_OPTION_VALUE = 16;
 
 
     public final int getNumber() {
@@ -219,6 +235,8 @@ private static final long serialVersionUID = 0L;
         case 12: return TAX_REFUND;
         case 13: return FEE;
         case 14: return FEE_REFUND;
+        case 15: return SELL_OPTION;
+        case 16: return BUY_OPTION;
         default: return null;
       }
     }
