@@ -101,6 +101,24 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case FEES_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getFees(), Values.Amount.divider());
                 break;
+            case CAPITAL_GAINS:
+                values = toDouble(clientIndex.getCapitalGains(), Values.Amount.divider());
+                break;
+            case CAPITAL_GAINS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getCapitalGains(), Values.Amount.divider());
+                break;
+            case REALIZED_CAPITAL_GAINS:
+                values = toDouble(clientIndex.getRealizedCapitalGains(), Values.Amount.divider());
+                break;
+            case REALIZED_CAPITAL_GAINS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getRealizedCapitalGains(), Values.Amount.divider());
+                break;
+            case UNREALIZED_CAPITAL_GAINS:
+                values = toDouble(clientIndex.getUnrealizedCapitalGains(), Values.Amount.divider());
+                break;
+            case UNREALIZED_CAPITAL_GAINS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getUnrealizedCapitalGains(), Values.Amount.divider());
+                break;
             default:
                 throw new IllegalArgumentException(String.valueOf(series.getInstance()));
         }
