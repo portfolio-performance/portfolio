@@ -4550,6 +4550,54 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroSammelabrechnungCrypto01()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnungCrypto01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("ETH"), //
+                        hasName("Ethereum"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ethereum"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-21T08:08"), hasShares(0.0325), //
+                        hasSource("FlatExDegiroSammelabrechnungCrypto01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3190.11), hasGrossValue("EUR", 3174.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.87))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-21T16:36"), hasShares(0.10), //
+                        hasSource("FlatExDegiroSammelabrechnungCrypto01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 371.84), hasGrossValue("EUR", 369.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.85))));
+    }
+
+    @Test
     public void testFlatExDegiroDividende01WithNegativeAmount()
     {
         /***
@@ -6627,7 +6675,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2025-04-25"), hasAmount("EUR", 15.90), //
-                        hasSource("FlatExDegiroKontoauszug08.txt"), hasNote("Bearbeitungsgebühr - Erträgnisaufstellung"))));
+                        hasSource("FlatExDegiroKontoauszug08.txt"),
+                        hasNote("Bearbeitungsgebühr - Erträgnisaufstellung"))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2025-04-30"), hasAmount("EUR", 5.90), //
