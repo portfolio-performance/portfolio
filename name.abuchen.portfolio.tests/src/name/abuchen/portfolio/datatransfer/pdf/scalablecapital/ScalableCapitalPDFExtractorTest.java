@@ -81,6 +81,38 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy01()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3YLTY66"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI All Country World Investable Market (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-12T09:16:57"), hasShares(21.00), //
+                        hasSource("Buy01.txt"), //
+                        hasNote("Order ID: SCALkWztnWYGVpk"), //
+                        hasAmount("EUR", 4846.74), hasGrossValue("EUR", 4845.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
