@@ -13,6 +13,6 @@ Polish by Marcin Wichtowski and Arkadiusz Wojtowicz
 Chinese (simplified) by [Jiahao Li](https://github.com/TheJiahao)
 Chinese (traditional) by Darius, yehchihtao, and others
 Danish by Arthur Madsen
-Turkish by ALGO IT, Alp ŞEBER, and others
+Turkish by ALGO IT, Alp ŞEBER, Ahmet Şar, and others
 Vietnamese by Manh Doan
 German with the help of BeeverTeeth
