@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -23,6 +24,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("easybank Service Center");
+        addBankIdentifier("Ihre easybank AG");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -42,7 +44,8 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Gesch.ftsart: (Kauf" //
                         + "|Kauf aus Dauerauftrag" //
                         + "|Verkauf" //
-                        + "|Tilgung)");
+                        + "|Tilgung" //
+                        + "|Spitze Verkauf)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -61,10 +64,17 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         // Is type --> "Tilgung" change from BUY to SELL
+                        // Is type --> "Spitze Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^Gesch.ftsart: (?<type>(Kauf|Kauf aus Dauerauftrag|Verkauf|Tilgung)).*$") //
+                        .match("^Gesch.ftsart: (?<type>(Kauf" //
+                                        + "|Kauf aus Dauerauftrag" //
+                                        + "|Verkauf" //
+                                        + "|Tilgung" //
+                                        + "|Spitze Verkauf)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Tilgung".equals(v.get("type")))
+                            if ("Verkauf".equals(v.get("type")) //
+                                            || "Tilgung".equals(v.get("type")) //
+                                            || "Spitze Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -163,6 +173,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Zugang|Abgang): Stk (?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
+                                        // Zugang: - Teilausführung Stk 1
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Zugang|Abgang): \\- Teilausf.hrung Stk (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
                                         // Abgang: Nom. 2.000
                                         // Kurs: 20,2 %
                                         //
@@ -243,12 +260,12 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final var type = new DocumentType("Gesch.ftsart: (Dividende|Ertrag)(?!\\/Steueranteil)");
+        final var type = new DocumentType("Gesch.ftsart: (Dividende|Ertrag|Ertrag \\- STORNO)(?!\\/Steueranteil)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} unten angef.hrtes Gesch.ft abgerechnet:$");
+        var firstRelevantLine = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} (unten angef.hrtes Gesch.ft abgerechnet:|das Gesch.ft mit der Ausf.hrungsnummer).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -259,6 +276,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
+
+                        // @formatter:off
+                        // Geschäftsart: Ertrag - STORNO
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Gesch.ftsart: (?<type>Ertrag \\- STORNO).*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -343,17 +367,36 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Zu Lasten IBAN dp14 7923 7170 5086 2037 Valuta 04.01.2021 -7,38 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zu Lasten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Zu Gunsten IBAN AT12 1234 1234 1234 1234 123,75 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zu Lasten IBAN dp14 7923 7170 5086 2037 Valuta 04.01.2021 -7,38 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -383,11 +426,32 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // Ertrag: 0,2885 USD
                                         // Ertrag: 9,18 USD
                                         // Devisenkurs: 1,0684 (12.11.2024) 6,23 EUR
+                                        //
+                                        // Ertrag: -12,60 USD
+                                        // Ertrag: 9,18 USD
+                                        // Devisenkurs: 1,0684 (12.11.2024) 6,23 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[A-Z]{3}).*$") //
                                                         .match("^Ertrag: (?<fxGross>[\\.,\\d]+) [A-Z]{3}.*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Ertrag: -12,60 USD
+                                        // Devisenkurs: 1,23235 (31.12.2020) -7,41 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
+                                                        .match("^Ertrag: \\-(?<fxGross>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}).*$") //
                                                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
@@ -406,8 +470,13 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Zinssatz: (?<note>.* [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} .* [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
 
-                        .wrap(t -> {
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
+                        .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -421,7 +490,12 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesLostAdjustmentTransaction()
     {
-        final var type = new DocumentType("Gesch.ftsart: (Steuerkorrektur|(Dividende|Ertrag)(\\/Steueranteil)?|Verkauf|Tilgung)");
+        final var type = new DocumentType("Gesch.ftsart: (Steuerkorrektur" //
+                        + "|(Dividende" //
+                        + "|Ertrag)(\\/Steueranteil)?" //
+                        + "|Verkauf" //
+                        + "|Tilgung" //
+                        + "|Spitze Verkauf)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -824,7 +898,9 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final var type = new DocumentType("Gesch.ftsart: Umtausch\\/Bezug");
+        final var type = new DocumentType("Gesch.ftsart: (Umtausch\\/Bezug"
+                        + "|Ausbuchung wegen Titelumtausch"
+                        + "|Kapitalmaßnahme wegen Entflechtung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
@@ -841,47 +917,116 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        // @formatter:off
-                        // Titel: AT0000A1Z023 CONWERT IMMOBILIEN INVEST SE
-                        // AKTIEN O.N./ANSPR.NACHZAHLUNG
-                        // Kurs: 0,55 EUR
-                        // @formatter:on
-                        .section("isin", "name", "name1", "currency") //
-                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
-                        .match("^(?<name1>.*)$") //
-                        .match("^Kurs: [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        // Is type --> "Zugang" change from DELIVERY_OUTBOUND to DELIVERY_INBOUND
+                        .section("type").optional() //
+                        .match("^(?<type>(Abgang|Zugang)).*$") //
                         .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Kurs"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                            t.setSecurity(getOrCreateSecurity(v));
+                            if ("Zugang".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                         })
+
+                        // @formatter:off
+                        // Geschäftsart: Umtausch/Bezug Auftrags-Nr.: 17374528 - 28.01.2025
+                        // Geschäftsart: Ausbuchung wegen Titelumtausch
+                        // Geschäftsart: Kapitalmaßnahme wegen Entflechtung
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Gesch.ftsart: (?<type>(Umtausch\\/Bezug" //
+                                        + "|Ausbuchung wegen Titelumtausch" //
+                                        + "|Kapitalmaßnahme wegen Entflechtung)).*$") //
+                        .assign((t, v) -> {
+                            if ("Umtausch/Bezug".equals(v.get("type")))
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            else if ("Ausbuchung wegen Titelumtausch".equals(v.get("type")))
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                            else if ("Kapitalmaßnahme wegen Entflechtung".equals(v.get("type")))
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Titel: AT0000A1Z023 CONWERT IMMOBILIEN INVEST SE
+                                        // AKTIEN O.N./ANSPR.NACHZAHLUNG
+                                        // Kurs: 0,55 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Kurs: [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Kurs"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Titel: GB00B03MLX29 Shell PLC
+                                        // Reg. Shares Class A EO -,07
+                                        // Bezugsverhältnis: 1: 1
+                                        // 0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .find("Bezugsverh.ltnis:.*") //
+                                                        .match("^[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Verwahrart"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // Abgang: Stk 27
+                        // Zugang: Stk 4
                         // @formatter:on
                         .section("shares") //
-                        .match("^Abgang: Stk (?<shares>[\\.,\\d]+)$") //
+                        .match("^(Abgang|Zugang): Stk (?<shares>[\\.,\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Record-Tag: 28.01.2022
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Record\\-Tag: (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Bezugsverhältnis: 1: 1
+                                        // 0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Bezugsverh.ltnis:.*") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         // @formatter:off
                         // Geschäftsart: Umtausch/Bezug Auftrags-Nr.: 17374528 - 28.01.2025
@@ -908,49 +1053,51 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer: -52,25 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertragsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Kapitalertragsteuer: (\\-)?(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // KESt aus Neubestand: -93,23 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^KESt aus Neubestand: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^KESt aus Neubestand: (\\-)?(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Auslands-KESt neu: -0,83 EUR
+                        // Auslands-KESt neu: 1,58 USD
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Auslands\\-KESt neu: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Auslands\\-KESt neu: (\\-)?(?<tax>[\\-\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // USt: -0,50 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^USt: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^USt: (\\-)?(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Umsatzsteuer: -0,62 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Umsatzsteuer: (\\-)?(?<tax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Quellensteuer: -327,58 EUR
+                        // Quellensteuer: 1,89 USD
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Quellensteuer: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Quellensteuer: (\\-)?(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Quellensteuer US-Emittent: -54,80 USD
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Quellensteuer US\\-Emittent: \\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Quellensteuer US\\-Emittent: (\\-)?(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
@@ -962,35 +1109,36 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // Fremde Börsespesen: -3,47 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Fremde B.rsespesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Fremde B.rsespesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Fremde Settlementspesen: -0,24 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Fremde Settlementspesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Fremde Settlementspesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Fremde Spesen: -2,86 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Fremde Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Fremde Spesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Eigene Spesen: -1,28 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Eigene Spesen: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Eigene Spesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Devisenprovision: -0,04 EUR
+                        // Devisenprovision: 0,03 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Devisenprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Devisenprovision: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -998,20 +1146,20 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // Grundgebühr: -7,95 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Grundgeb.hr: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Grundgeb.hr: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Inkassoprovision: -3,11 EUR
                         .section("fee", "currency").optional() //
-                        .match("^Inkassoprovision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Inkassoprovision: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Flat Fee/Provision: -19,95 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Flat Fee\\/Provision: \\-(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^Flat Fee\\/Provision: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
