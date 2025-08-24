@@ -455,11 +455,11 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
                             Messages.MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction,
                             getSecurity().getName()));
 
-        long availableAmount = amount - fees;
+        long availableAmount = amount - fees - taxes;
 
         if (needsCurrencyConversion)
         {
-            Money availableMoney = Money.of(targetCurrencyCode, amount - fees);
+            Money availableMoney = Money.of(targetCurrencyCode, availableAmount);
             availableAmount = converter.with(security.getCurrencyCode()).convert(tDate, availableMoney).getAmount();
 
             forex = new Transaction.Unit(Unit.Type.GROSS_VALUE, //
@@ -488,6 +488,10 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
                 entry.getPortfolioTransaction()
                                 .addUnit(new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
 
+            if (taxes != 0)
+                entry.getPortfolioTransaction()
+                                .addUnit(new Transaction.Unit(Unit.Type.TAX, Money.of(targetCurrencyCode, taxes)));
+
             if (forex != null)
                 entry.getPortfolioTransaction().addUnit(forex);
 
@@ -509,6 +513,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
             if (fees != 0)
                 transaction.addUnit(new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
+
+            if (taxes != 0)
+                transaction.addUnit(new Transaction.Unit(Unit.Type.TAX, Money.of(targetCurrencyCode, taxes)));
 
             if (forex != null)
                 transaction.addUnit(forex);
