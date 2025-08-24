@@ -1017,12 +1017,10 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
-    public static String MenuExportTaxonomy;
     public static String MenuFilterTrades;
     public static String MenuHideColumn;
     public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
-    public static String MenuImportTaxonomy;
     public static String MenuLabelSetAsStartPage;
     public static String MenuMoveDown;
     public static String MenuMoveUp;

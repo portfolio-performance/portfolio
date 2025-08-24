@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONExporter;
@@ -330,22 +331,29 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
                             manager.add(new Separator());
 
-                            manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
-                                var dialog = new TaxonomyImportDialog(container.getShell(), stylingEngine,
-                                                getPart().getPreferenceStore(), model.getClient(), model.getTaxonomy());
-                                if (dialog.open() == TaxonomyImportDialog.DIRTY)
-                                {
-                                    // do a complete reload of the view
-                                    // including taxonomy model because there
-                                    // can be structural changes which are not
-                                    // reflected in TaxonomyNode objects.
+                            manager.add(new SimpleAction(
+                                            BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                                            action -> {
+                                                var dialog = new TaxonomyImportDialog(container.getShell(),
+                                                                stylingEngine, getPart().getPreferenceStore(),
+                                                                model.getClient(), model.getTaxonomy());
+                                                if (dialog.open() == TaxonomyImportDialog.DIRTY)
+                                                {
+                                                    // do a complete reload of
+                                                    // the view including
+                                                    // taxonomy model because
+                                                    // there can be structural
+                                                    // changes which are not
+                                                    // reflected in TaxonomyNode
+                                                    // objects.
 
-                                    model.getClient().markDirty();
-                                    getPart().activateView(TaxonomyView.class, model.getTaxonomy());
-                                }
-                            }));
+                                                    model.getClient().markDirty();
+                                                    getPart().activateView(TaxonomyView.class, model.getTaxonomy());
+                                                }
+                                            }));
 
-                            manager.add(new SimpleAction(Messages.MenuExportTaxonomy,
+                            manager.add(new SimpleAction(
+                                            BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
                                             action -> new JSONExporterDialog(container.getShell(),
                                                             new TaxonomyJSONExporter(model.getTaxonomy())).export()));
                         })));

@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONImporter;
@@ -79,7 +80,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText(Messages.MenuImportTaxonomy);
+        newShell.setText(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     public void create()
     {
         super.create();
-        setTitle(Messages.MenuImportTaxonomy);
+        setTitle(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
     }
 
     @Override
@@ -148,7 +149,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     private void selectFile()
     {
         var dialog = new FileDialog(getShell(), SWT.OPEN);
-        dialog.setText(Messages.MenuImportTaxonomy);
+        dialog.setText(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
         dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
         dialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
 

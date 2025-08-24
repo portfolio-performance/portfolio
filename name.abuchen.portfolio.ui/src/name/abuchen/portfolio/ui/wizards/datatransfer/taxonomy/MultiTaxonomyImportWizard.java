@@ -12,6 +12,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -41,7 +42,7 @@ public class MultiTaxonomyImportWizard extends Wizard
 
         this.importModel = new TaxonomyImportModel(client, preferences);
 
-        setWindowTitle(Messages.MenuImportTaxonomy);
+        setWindowTitle(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
         setNeedsProgressMonitor(false);
         setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
 

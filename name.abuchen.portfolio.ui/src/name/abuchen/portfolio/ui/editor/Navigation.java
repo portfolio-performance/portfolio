@@ -24,6 +24,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
@@ -527,10 +528,12 @@ public final class Navigation
             }
 
             manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
-                var wizard = new MultiTaxonomyImportWizard(client, part.getPreferenceStore(), stylingEngine);
-                new WizardDialog(ActiveShell.get(), wizard).open();
-            }));
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                            Images.IMPORT_FILE, action -> {
+                                var wizard = new MultiTaxonomyImportWizard(client, part.getPreferenceStore(),
+                                                stylingEngine);
+                                new WizardDialog(ActiveShell.get(), wizard).open();
+                            }));
         };
 
         for (Taxonomy taxonomy : client.getTaxonomies())

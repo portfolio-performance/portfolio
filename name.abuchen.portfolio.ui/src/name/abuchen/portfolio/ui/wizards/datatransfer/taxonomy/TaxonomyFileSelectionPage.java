@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Text;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -177,7 +178,7 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
     private void selectFile()
     {
         var dialog = new FileDialog(getShell(), SWT.OPEN);
-        dialog.setText(Messages.MenuImportTaxonomy);
+        dialog.setText(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
         dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
         dialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
 
