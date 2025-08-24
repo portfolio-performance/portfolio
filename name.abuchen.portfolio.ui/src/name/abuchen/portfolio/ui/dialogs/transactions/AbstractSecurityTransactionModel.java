@@ -276,8 +276,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
 
-        updateSharesAndQuote();
         updateExchangeRate();
+        updateSharesAndQuote();
     }
 
     protected void updateSharesAndQuote()
@@ -302,7 +302,14 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 if (position != null)
                 {
                     setShares(position.getShares());
-                    setTotal(position.calculateValue().getAmount());
+
+                    // the position is in the currency of the instrument,
+                    // therefore trigger setting the gross value
+
+                    setQuote(BigDecimal.valueOf(position.getPrice().getValue())
+                                    .movePointLeft(Values.Quote.precision()));
+                    triggerGrossValue(position.calculateValue().getAmount());
+                    
                     hasPosition = true;
                 }
             }
