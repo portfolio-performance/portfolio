@@ -39,7 +39,6 @@ import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -53,6 +52,7 @@ import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportDialog;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener, ReportingPeriodListener
 {

@@ -150,20 +150,35 @@ public class TaxonomyJSONImporter
         this.key2classification = Collections.unmodifiableMap(keys);
     }
 
-    @SuppressWarnings("unchecked")
     public ImportResult importTaxonomy(Reader reader) throws IOException
     {
         try
         {
-            var result = new ImportResult();
-
             Gson gson = new Gson();
             Map<String, Object> jsonData = gson.fromJson(reader, new TypeToken<Map<String, Object>>()
             {
             }.getType());
 
-            if (jsonData == null)
-                throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "null")); //$NON-NLS-1$
+            return importTaxonomy(jsonData);
+        }
+        catch (JsonParseException e)
+        {
+            if (e.getCause() instanceof MalformedJsonException mfe)
+                throw mfe;
+            else
+                throw new IOException(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public ImportResult importTaxonomy(Map<String, Object> jsonData) throws IOException
+    {
+        if (jsonData == null)
+            throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "null")); //$NON-NLS-1$
+
+        try
+        {
+            var result = new ImportResult();
 
             var name = (String) jsonData.get("name"); //$NON-NLS-1$
             updateNameIfNeeded(taxonomy.getRoot(), name, result);
