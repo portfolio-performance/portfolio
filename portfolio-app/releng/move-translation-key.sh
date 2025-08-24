@@ -88,9 +88,11 @@ for file in "${UI_FILES[@]}"; do
         # Match key with optional spaces around the equals sign
         value=$(grep "^${KEY}[ ]*=" "$file" | cut -d'=' -f2- | sed 's/^[ ]*//')
         if [ -n "$value" ]; then
-            filename=$(basename "$file")
-            echo "$value" > "$TRANSLATIONS_DIR/$filename"
-            echo "Found in $filename: $KEY=$value"
+            ui_filename=$(basename "$file")
+            # Convert UI filename to CORE filename pattern (messages -> bundle)
+            core_filename=$(echo "$ui_filename" | sed 's/^messages/bundle/')
+            echo "$value" > "$TRANSLATIONS_DIR/$core_filename"
+            echo "Found in $ui_filename: $KEY=$value"
             found_key=true
         fi
     fi
