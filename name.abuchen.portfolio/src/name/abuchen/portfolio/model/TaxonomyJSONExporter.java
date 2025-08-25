@@ -108,6 +108,7 @@ public class TaxonomyJSONExporter implements Exporter
         addInstrumentsFromTaxonomy(instruments);
 
         result.put("name", taxonomy.getName()); //$NON-NLS-1$
+        result.put("color", taxonomy.getRoot().getColor()); //$NON-NLS-1$
         result.put("categories", categories); //$NON-NLS-1$
         result.put("instruments", instruments); //$NON-NLS-1$
 
