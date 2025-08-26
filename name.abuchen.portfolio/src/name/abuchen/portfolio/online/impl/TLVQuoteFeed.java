@@ -17,14 +17,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-// import java.time.LocalDateTime;
-// import java.time.ZoneId;
-// import java.time.ZoneOffset;
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Optional;
 import java.util.Optional;
-// import java.util.logging.Logger;
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -34,15 +27,11 @@ import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-// import name.abuchen.portfolio.PortfolioLog;
-// import name.abuchen.portfolio.model.Exchange;
-// import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-// import name.abuchen.portfolio.oauh.AccessToken;
-// import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.WebAccess;
@@ -52,19 +41,18 @@ public class TLVQuoteFeed implements QuoteFeed
 
     public static final String ID = "TASE"; //$NON-NLS-1$
 
-    private static final String ENDPOINT = "mayaapi.tase.co.il"; //$NON-NLS-1$
-    private static final String PATH_FUND_DETAILS = "/api/fund/details"; //$NON-NLS-1$
-    private static final String PATH_SECURITY_DETAILS = "/api/fund/details"; //$NON-NLS-1$
-    private static final String PATH_FUND_HISTORIC = "/v1/candle"; //$NON-NLS-1$
-    private static final String PATH_SECURITY_HISTORIC = "/v1/candle"; //$NON-NLS-1$
-    // private Maya maya;
-    // private Logger logger;
+    // private static final String ENDPOINT = "mayaapi.tase.co.il";
+    // //$NON-NLS-1$
+    // private static final String PATH_FUND_DETAILS = "/api/fund/details";
+    // //$NON-NLS-1$
+    // private static final String PATH_SECURITY_DETAILS = "/api/fund/details";
+    // //$NON-NLS-1$
+    // private static final String PATH_FUND_HISTORIC = "/v1/candle";
+    // //$NON-NLS-1$
+    // private static final String PATH_SECURITY_HISTORIC = "/v1/candle";
+    // //$NON-NLS-1$
 
-    // public void TaseQuoteFeed()
-    // {
-    // // logger = Logger.getLogger(TLVQuoteFeed.class.getName());
-    // // maya = new Maya(logger, 1, false);
-    // }
+
 
     @Override
     public String getId()
@@ -102,7 +90,7 @@ public class TLVQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         DayOfWeek day = LocalDate.now().getDayOfWeek();
         LocalDate start;

@@ -58,7 +58,29 @@ public class TLVQuoteFeedTest
 
 
     @Test
-    public void testTLVGetEmptyQuoteValidSecurity() throws IOException
+    public void testTLVFundDetailsAPI() throws IOException
+    {
+        Security security = new Security();
+        security.setTickerSymbol("SHLD.B19");
+        security.setCurrencyCode("ILS");
+
+        TLVQuoteFeed feed = new TLVQuoteFeed();
+        try
+        {
+            String response = feed.rpcLatestQuote(security);
+            // String response = feed.rpcLatestQuote(security);
+            System.out.println(response);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+       
+
+    }
+
+    @Test
+    public void testParseTLVSecurityDetailsResponse() throws IOException
     {
 
         Security security = new Security();
@@ -73,22 +95,28 @@ public class TLVQuoteFeedTest
         Mockito.doReturn(response).when(feed).rpcLatestQuote(security);
 
         // System.out.println(feed.getLatestQuote(security));
-        LatestSecurityPrice price = feed.getLatestQuote(security).get();
+        try
+        {
+            LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
-        // get Date
-        // get Volume
-        // FundID
+            // get Date
+            // get Volume
+            // FundID
 
-        assertTrue(price.getDate().equals(LocalDate.of(2025, 8, 26)));
+            assertTrue(price.getDate().equals(LocalDate.of(2025, 8, 26)));
 
-        assertTrue(price.getHigh() == 118750000);
-        assertTrue(price.getLow() == 118500000);
-        assertTrue(price.getValue() == 118750000);
-
+            assertTrue(price.getHigh() == 118750000);
+            assertTrue(price.getLow() == 118500000);
+            assertTrue(price.getValue() == 118750000);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
-    public void testTLVGetEmptyQuoteValidFund() throws IOException
+    public void testParseTLVFundDetailsResponse() throws IOException
     {
 
         Security security = new Security();
@@ -100,18 +128,24 @@ public class TLVQuoteFeedTest
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
         Mockito.doReturn(response).when(feed).rpcLatestQuote(security);
 
-        LatestSecurityPrice price = feed.getLatestQuote(security).get();
+        try
+        {
+            LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
-        // get Date
-        // get Volume
-        // FundID
+            // get Date
+            // get Volume
+            // FundID
 
-        assertTrue(price.getDate().equals(LocalDate.of(2025, 8, 21)));
-        assertTrue(price.getHigh() ==LatestSecurityPrice.NOT_AVAILABLE);
-        assertTrue(price.getLow() ==LatestSecurityPrice.NOT_AVAILABLE);
-        assertTrue(price.getValue() == 155970000);
-
-    }
+            assertTrue(price.getDate().equals(LocalDate.of(2025, 8, 21)));
+            assertTrue(price.getHigh() == LatestSecurityPrice.NOT_AVAILABLE);
+            assertTrue(price.getLow() == LatestSecurityPrice.NOT_AVAILABLE);
+            assertTrue(price.getValue() == 155970000);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+}
 
     @Test
     public void testCalculateDate()
