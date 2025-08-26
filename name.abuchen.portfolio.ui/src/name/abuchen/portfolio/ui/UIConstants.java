@@ -89,6 +89,8 @@ public interface UIConstants
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
         String UPDATE_QUOTES = "name.abuchen.portfolio.ui.command.updatequotes"; //$NON-NLS-1$
         String MIGRATE_PORTFOLIO_REPORT = "name.abuchen.portfolio.ui.command.tools.migratePortfolioReportHandler"; //$NON-NLS-1$
+        String IMPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.importTaxonomies"; //$NON-NLS-1$
+        String EXPORT_TAXONOMY = "name.abuchen.portfolio.ui.command.exportTaxonomies"; //$NON-NLS-1$
     }
 
     /**
@@ -108,6 +110,7 @@ public interface UIConstants
         String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
         String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
         String FILTER = "name.abuchen.portfolio.ui.param.filter"; //$NON-NLS-1$
+        String WATCHLIST = "name.abuchen.portfolio.ui.param.watchlist"; //$NON-NLS-1$
     }
 
     /**
@@ -169,6 +172,18 @@ public interface UIConstants
          * data file.
          */
         String UPDATE_QUOTES_AFTER_FILE_OPEN = "UPDATE_QUOTES_AFTER_FILE_OPEN"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to periodically update quotes. It is only
+         * check if quotes are updated after opening the file at all.
+         */
+        String UPDATE_QUOTES_PERIODICALLY = "UPDATE_QUOTES_PERIODICALLY"; //$NON-NLS-1$
+
+        /**
+         * Preference key for the update strategy; see
+         * {@link name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateStrategy}
+         */
+        String UPDATE_QUOTES_STRATEGY = "UPDATE_QUOTES_STRATEGY"; //$NON-NLS-1$
 
         /**
          * Preference key whether to automatically update quotes after opening a

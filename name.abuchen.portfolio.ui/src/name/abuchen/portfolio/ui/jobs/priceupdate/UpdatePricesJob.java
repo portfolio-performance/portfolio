@@ -50,7 +50,8 @@ public class UpdatePricesJob extends AbstractClientJob
 
     private final Set<Target> target;
     private final Predicate<Security> filter;
-    private long repeatPeriod;
+
+    private boolean suppressAuthenticationDialog = false;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -77,10 +78,9 @@ public class UpdatePricesJob extends AbstractClientJob
         this.filter = filter;
     }
 
-    public UpdatePricesJob repeatEvery(long milliseconds)
+    public void suppressAuthenticationDialog(boolean suppressAuthenticationDialog)
     {
-        this.repeatPeriod = milliseconds;
-        return this;
+        this.suppressAuthenticationDialog = suppressAuthenticationDialog;
     }
 
     @Override
@@ -111,9 +111,8 @@ public class UpdatePricesJob extends AbstractClientJob
             var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
             var feedNeedsUser = feed.requiresAuthentication(securities);
 
-            if (feedNeedsUser)
+            if (feedNeedsUser && !suppressAuthenticationDialog)
             {
-                // inform the user but go ahead with the remaining updates
                 Display.getDefault().asyncExec(
                                 () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
             }
@@ -180,9 +179,6 @@ public class UpdatePricesJob extends AbstractClientJob
                 request.getClient().markDirty();
             fireSnapshot(request);
         }
-
-        if (repeatPeriod > 0)
-            schedule(repeatPeriod);
 
         return Status.OK_STATUS;
     }

@@ -4589,6 +4589,51 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug33()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug33.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-07-07"), hasAmount("EUR", 1.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-07-10"), hasAmount("EUR", 200.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-07-14"), hasAmount("EUR", 65.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-07-14"), hasAmount("EUR", 65.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Eingang Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-01"), hasAmount("EUR", 7.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-08-01"), hasAmount("EUR", 30.00), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-08-04"), hasAmount("EUR", 4.99), //
+                        hasSource("GiroKontoauszug33.txt"), hasNote("Kartenzahlung"))));
+    }
+
+    @Test
     public void testTagesgeldKontoauszug01()
     {
         var extractor = new DkbPDFExtractor(new Client());

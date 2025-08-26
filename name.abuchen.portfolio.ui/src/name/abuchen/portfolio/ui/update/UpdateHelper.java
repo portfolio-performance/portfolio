@@ -215,7 +215,7 @@ public final class UpdateHelper
 
         if (update == null)
         {
-            return new NewVersion(Messages.LabelUnknownVersion);
+            return new NewVersion(Messages.LabelUnknown);
         }
         else
         {

@@ -9,6 +9,8 @@ import jakarta.inject.Inject;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
@@ -82,6 +84,12 @@ import name.abuchen.portfolio.ui.util.CommandAction;
         var selection = selectionService.getSelection(part.getClient());
         if (selection.isPresent())
             answer.add(new UpdatePricesForSelectedInstrumentsElement(selection.get().getSecurities().size()));
+
+        answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                        Images.IMPORT_FILE, UIConstants.Command.IMPORT_TAXONOMY));
+
+        answer.add(new CommandElement(context, BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                        Images.EXPORT_FILE, UIConstants.Command.EXPORT_TAXONOMY));
 
         return answer;
     }

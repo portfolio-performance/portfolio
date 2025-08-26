@@ -164,7 +164,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
     private void addSale(final DocumentType type)
     {
-        Block sale = new Block("^..-...-.... .*(Redemption|Payment - Units Extinguished).*");
+        Block sale = new Block("^..-...-.... .*(Redemption|Payment - Units Extinguished|S T P Out).*");
         type.addBlock(sale);
         sale.setMaxSize(10);
         sale.set(new Transaction<BuySellEntry>()
@@ -179,7 +179,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                         .optional() //
                         .documentRange("isin1", "isin2", "name") //
                         .match("^(?<date>[\\d]{2}-[\\w]{3}-[\\d]{4}) " //
-                                        + "(?<note>(Redemption|Payment - Units Extinguished).*) " //
+                                        + "(?<note>(Redemption|Payment - Units Extinguished|S T P Out).*) " //
                                         + "\\((?<amount>[.,\\d]+)\\) " //
                                         + "\\((?<units>[.,\\d]+)\\) " //
                                         + "[.,\\d]+ [.,\\d]+$")

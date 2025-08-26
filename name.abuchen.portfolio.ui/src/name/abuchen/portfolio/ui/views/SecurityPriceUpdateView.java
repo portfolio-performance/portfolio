@@ -17,6 +17,7 @@ import jakarta.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -42,6 +44,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateProgress;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateSnapshot;
@@ -154,8 +157,40 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
 
         toolBar.add(new Separator());
 
-        toolBar.add(CommandAction.forCommand(getContext(), Messages.JobLabelUpdateQuotes,
-                        UIConstants.Command.UPDATE_QUOTES));
+        toolBar.add(new DropDown(Messages.JobLabelUpdateQuotes, manager -> {
+            manager.add(CommandAction.forCommand(getContext(), Messages.JobLabelUpdateQuotes,
+                            UIConstants.Command.UPDATE_QUOTES));
+
+            manager.add(CommandAction.forCommand(getContext(),
+                            BundleMessages.getString(BundleMessages.Label.Command.updateQuotesActiveSecurities),
+                            UIConstants.Command.UPDATE_QUOTES, //
+                            UIConstants.Parameter.FILTER, UpdateQuotesHandler.FilterType.ACTIVE.name()));
+
+            manager.add(CommandAction.forCommand(getContext(),
+                            BundleMessages.getString(BundleMessages.Label.Command.updateQuotesHoldings),
+                            UIConstants.Command.UPDATE_QUOTES, //
+                            UIConstants.Parameter.FILTER, UpdateQuotesHandler.FilterType.HOLDINGS.name()));
+
+            var selection = selectionService.getSelection(getClient());
+            var selectionMenu = CommandAction.forCommand(getContext(),
+                            MessageFormat.format(Messages.MenuUpdatePricesForSelectedInstruments,
+                                            selection.isPresent() ? selection.get().getSecurities().size() : 0),
+                            UIConstants.Command.UPDATE_QUOTES, //
+                            UIConstants.Parameter.FILTER, UpdateQuotesHandler.FilterType.SECURITY.name());
+            selectionMenu.setEnabled(selection.isPresent() && !selection.get().getSecurities().isEmpty());
+            manager.add(selectionMenu);
+
+            var watchlistMenu = new MenuManager(
+                            BundleMessages.getString(BundleMessages.Label.Command.updateQuotesWatchlist));
+            for (var watchlist : getClient().getWatchlists())
+            {
+                watchlistMenu.add(CommandAction.forCommand(getContext(), watchlist.getName(),
+                                UIConstants.Command.UPDATE_QUOTES, //
+                                UIConstants.Parameter.FILTER, UpdateQuotesHandler.FilterType.WATCHLIST.name(),
+                                UIConstants.Parameter.WATCHLIST, watchlist.getName()));
+            }
+            manager.add(watchlistMenu);
+        }));
 
         toolBar.add(new Separator());
 

@@ -289,51 +289,66 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
             int size = dates.size();
 
+            // avoid flooding of error messages (as we do not stop processing on
+            // first ParseException) anymore
+            var didLogError = false;
+
             for (int index = 0; index < size; index++)
             {
-                LatestSecurityPrice price = new LatestSecurityPrice();
-
-                // date
-                Object object = dates.get(index);
-                price.setDate(this.extractDate(object, dateFormat, dateTimezone));
-
-                // close
-                object = close.get(index);
-                price.setValue(this.extractValue(object, factor));
-
-                if (price.getDate() != null && price.getValue() > 0)
+                try
                 {
-                    if (high.isPresent())
+                    LatestSecurityPrice price = new LatestSecurityPrice();
+
+                    // date
+                    Object object = dates.get(index);
+                    price.setDate(this.extractDate(object, dateFormat, dateTimezone));
+
+                    // close
+                    object = close.get(index);
+                    price.setValue(this.extractValue(object, factor));
+
+                    if (price.getDate() != null && price.getValue() > 0)
                     {
-                        price.setHigh(this.extractValue(high.get().get(index), factor));
+                        if (high.isPresent())
+                        {
+                            price.setHigh(this.extractValue(high.get().get(index), factor));
+                        }
+                        else
+                        {
+                            price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                        }
+                        if (low.isPresent())
+                        {
+                            price.setLow(this.extractValue(low.get().get(index), factor));
+                        }
+                        else
+                        {
+                            price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                        }
+                        if (volume.isPresent())
+                        {
+                            price.setVolume(this.extractIntegerValue(volume.get().get(index)));
+                        }
+                        else
+                        {
+                            price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+                        }
+                        prices.add(price);
                     }
-                    else
+                }
+                catch (ParseException e)
+                {
+                    if (!didLogError)
                     {
-                        price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                        data.addError(new IOException(url + '\n' + e.getMessage(), e));
+                        didLogError = true;
                     }
-                    if (low.isPresent())
-                    {
-                        price.setLow(this.extractValue(low.get().get(index), factor));
-                    }
-                    else
-                    {
-                        price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
-                    }
-                    if (volume.isPresent())
-                    {
-                        price.setVolume(this.extractIntegerValue(volume.get().get(index)));
-                    }
-                    else
-                    {
-                        price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
-                    }
-                    prices.add(price);
                 }
             }
 
             return prices;
         }
-        catch (JsonPathException | ParseException e)
+        catch (JsonPathException e)
         {
             data.addError(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();

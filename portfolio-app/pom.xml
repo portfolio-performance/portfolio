@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.78.1-SNAPSHOT</version>
+	<version>0.78.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -37,7 +37,6 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
-		<module>../portfolio-product</module>
 	</modules>
 
 	<repositories>
@@ -47,6 +46,41 @@
 			<url>http://portfolio-performance.github.io/bundled-jre/21.0.5</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<target-file-name>portfolio-target-definition</target-file-name>
+				<jacoco.skip>false</jacoco.skip>
+				<checkstyle.skip>false</checkstyle.skip>
+				<protobuf.execution.phase>generate-sources</protobuf.execution.phase>
+			</properties>
+			<modules>
+				<module>../portfolio-product</module>
+			</modules>
+		</profile>
+		<profile>
+			<!--
+				local-dev (activate by appending -Plocal-dev to your Maven command line)
+				
+			    The profile can be used for local development, to speed up the build:
+			    * use a target platform without the babel translation bundles
+			    * skip code coverage and checkstyle checks
+			    * skip protobuf generation
+			-->
+			<id>local-dev</id>
+			<properties>
+				<target-file-name>portfolio-target-definition-local-dev</target-file-name>
+				<jacoco.skip>true</jacoco.skip>
+				<checkstyle.skip>true</checkstyle.skip>
+				<protobuf.execution.phase>none</protobuf.execution.phase>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -96,6 +130,7 @@
 							<groupId>name.abuchen.portfolio</groupId>
 							<artifactId>portfolio-target-definition</artifactId>
 							<version>${project.version}</version>
+							<classifier>${target-file-name}</classifier>
 						</artifact>
 					</target>
 					<environments>
@@ -467,6 +502,13 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>3.6.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>11.0.0</version>
+						</dependency>
+					</dependencies>
 					<executions>
 						<execution>
 							<id>validate</id>
@@ -477,6 +519,7 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<excludes>**/name/abuchen/portfolio/model/proto/v1/*</excludes>
+								<skip>${checkstyle.skip}</skip>
 							</configuration>
 							<goals>
 								<goal>check</goal>

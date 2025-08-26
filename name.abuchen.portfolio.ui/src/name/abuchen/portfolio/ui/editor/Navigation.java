@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -22,20 +21,23 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 
-import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.dialogs.TaxonomyImportDialog;
+import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.JSONExporterDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
@@ -60,6 +62,7 @@ import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
+import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.MultiTaxonomyImportWizard;
 
 public final class Navigation
 {
@@ -396,6 +399,14 @@ public final class Navigation
         item.parameter = watchlist;
 
         item.contextMenu = (part, manager) -> {
+
+            manager.add(CommandAction.forCommand(context, Messages.JobLabelUpdateQuotes,
+                            UIConstants.Command.UPDATE_QUOTES, UIConstants.Parameter.FILTER,
+                            UpdateQuotesHandler.FilterType.WATCHLIST.name(), UIConstants.Parameter.WATCHLIST,
+                            watchlist.getName()));
+
+            manager.add(new Separator());
+
             manager.add(new SimpleAction(Messages.WatchlistRename, a -> {
                 String newName = askWatchlistName(watchlist.getName());
                 if (newName != null)
@@ -519,23 +530,16 @@ public final class Navigation
             }
 
             manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuImportTaxonomy, action -> {
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy),
+                            Images.IMPORT_FILE, action -> {
+                                var wizard = new MultiTaxonomyImportWizard(client, part.getPreferenceStore(),
+                                                stylingEngine);
+                                new WizardDialog(ActiveShell.get(), wizard).open();
+                            }));
 
-                var taxonomy = new Taxonomy(Messages.LabelNewTaxonomy);
-                taxonomy.setRootNode(new Classification(UUID.randomUUID().toString(), Messages.LabelNewTaxonomy));
-
-                var dialog = new TaxonomyImportDialog(ActiveShell.get(), stylingEngine, part.getPreferenceStore(),
-                                client, taxonomy);
-                if (dialog.open() == TaxonomyImportDialog.DIRTY)
-                {
-                    // set the name of the taxonomy to the name of the root node
-                    // (which might have changed during the import)
-                    taxonomy.setName(taxonomy.getRoot().getName());
-
-                    client.addTaxonomy(taxonomy);
-                    part.activateView(TaxonomyView.class, taxonomy);
-                }
-            }));
+            manager.add(new SimpleAction(BundleMessages.getString(BundleMessages.Label.Command.exportTaxonomy),
+                            Images.EXPORT_FILE, action -> new JSONExporterDialog(ActiveShell.get(),
+                                            new TaxonomyJSONExporter.AllTaxonomies(client)).export()));
         };
 
         for (Taxonomy taxonomy : client.getTaxonomies())

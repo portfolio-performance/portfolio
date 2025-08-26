@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.1
+System: linux | x86_64 | 21.0.7+6-Debian-1gl0 | Debian
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+cVImY XSzcetdoPxU
+XVghFNJzkpKWCrzy 48 
+50767 lNEUzKg Date 12.08.2025
+Germany Page 1 / 1
+Contract note 
+for client order 
+Type LIMIT Order ID SCALkWztnWYGVpk
+Execution 12.08.2025 09:16:57 Exchange ID 819778001
+Trading venue EIX Country of custody Luxembourg
+Securities account 5186477530 Kind of custody Non-collective safe custody
+Type Security Quantity Price Amount
+Buy SPDR MSCI All Country World Investable Market (Acc) 21.00 pc. 230.75 EUR 4,845.75 EUR
+IE00B3YLTY66
+Order fees +0.99 EUR
+Debit 4,846.74 EUR
+The amount will be settled via the clearing account DE111111111111111111111 (Value: 14.08.2025). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 1

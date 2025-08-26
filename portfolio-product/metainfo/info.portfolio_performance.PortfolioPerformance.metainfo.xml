@@ -37,6 +37,17 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+     <release version="0.78.1" date="2025-08-06">
+      <description>
+        <ul>
+          <li>Fix: Reverted changes to the sorting heuristic if multiple transactions are on the same day – some with, some without time.</li>
+          <li>Improvement: PDF imports updated for Trade Republic.</li>
+          <li xml:lang="de">Fix: Änderungen an der Sortierlogik zurückgenommen, wenn mehrere Buchungen am selben Tag liegen – einige mit, andere ohne Uhrzeit.</li>
+          <li xml:lang="de">Verbesserung: PDF-Import für Trade Republic aktualisiert.</li>
+        </ul>
+      </description>
+    </release>
+
      <release version="0.78.0" date="2025-08-03">
       <description>
         <ul>
@@ -67,7 +78,7 @@
         </ul>
       </description>
     </release>
-     <release version="0.77.3" date="2025-06-24">
+    <release version="0.77.3" date="2025-06-24">
       <description>
         <ul>
           <li>Improvement: Numeric values are copied to the clipboard without special characters such as non-breaking spaces.</li>

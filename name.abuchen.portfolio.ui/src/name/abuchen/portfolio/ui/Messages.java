@@ -89,6 +89,8 @@ public class Messages extends NLS
     public static String CmdLogout;
     public static String CmdMigratePortfolioReport;
     public static String CmdNotNow;
+    public static String CmdSkip;
+    public static String CmdUpdate;
     public static String CmdUpdateSubscriptionStatus;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Description;
@@ -102,6 +104,7 @@ public class Messages extends NLS
     public static String ColumnAccount2nd;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
+    public static String ColumnAction;
     public static String ColumnActualPercent;
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
@@ -549,6 +552,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
     public static String LabelAccumulatedTransferals;
+    public static String LabelActiveSecurities;
     public static String LabelAdditionsAndModifications;
     public static String LabelAdhocFilter;
     public static String LabelAfterTaxAndFees;
@@ -723,6 +727,7 @@ public class Messages extends NLS
     public static String LabelHeatmapInvestmentsNoSellings;
     public static String LabelHeatmapOrnament;
     public static String LabelHeatmapTaxes;
+    public static String LabelHeldSecurities;
     public static String LabelHide;
     public static String LabelHideMarkings;
     public static String LabelHistoricalReturnsAndVolatiltity;
@@ -827,6 +832,8 @@ public class Messages extends NLS
     public static String LabelPreTax;
     public static String LabelPreviousTradingDay;
     public static String LabelPriceUpdateProgress;
+    public static String LabelPriceUpdateStrategy;
+    public static String LabelPriceUpdateStrategyInfo;
     public static String LabelPurchasePrice;
     public static String LabelPurchaseTransactionsOnly;
     public static String LabelQuandlCode;
@@ -928,7 +935,7 @@ public class Messages extends NLS
     public static String LabelUnexpectedQuotes;
     public static String LabelUnexpectedQuotes_Description;
     public static String LabelUnhide;
-    public static String LabelUnknownVersion;
+    public static String LabelUnknown;
     public static String LabelUnnamedFile;
     public static String LabelUnnamedXml;
     public static String LabelUpdatedConfiguration;
@@ -1010,12 +1017,10 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
-    public static String MenuExportTaxonomy;
     public static String MenuFilterTrades;
     public static String MenuHideColumn;
     public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
-    public static String MenuImportTaxonomy;
     public static String MenuLabelSetAsStartPage;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
@@ -1266,6 +1271,7 @@ public class Messages extends NLS
     public static String PrefTitleTwelveData;
     public static String PrefTwelveDataAPIKey;
     public static String PrefUpdateQuotesAfterFileOpen;
+    public static String PrefUpdateQuotesPeriodically;
     public static String PrefUpdateSite;
     public static String PresetsPrefPageDescription;
     public static String PresetsPrefPageNow;

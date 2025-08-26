@@ -31,9 +31,11 @@ import name.abuchen.portfolio.ui.preferences.ExperimentsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.FormattingPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
+import name.abuchen.portfolio.ui.preferences.HistoricalPricesPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
 import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
+import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
@@ -41,7 +43,6 @@ import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
-import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 @SuppressWarnings("restriction")
@@ -69,17 +70,19 @@ public class OpenPreferenceDialogHandler
                     IThemeEngine themeEngine)
     {
         // the active client
-        var client = MenuHelper.getActiveClient(part, false);
+        var clientInput = MenuHelper.getActiveClientInput(part, false);
 
         PreferenceManager pm = new PreferenceManager('/');
         pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
+        pm.addTo("general", new PreferenceNode("prices", new HistoricalPricesPreferencePage(clientInput))); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("general", new PreferenceNode("presets", new PresetsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("general", new PreferenceNode("backups", new BackupsPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
 
         pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); // NOSONAR //$NON-NLS-1$
         pm.addTo("presentation", new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("presentation", new PreferenceNode("theme", new ThemePreferencePage(themeEngine))); //$NON-NLS-1$ //$NON-NLS-2$
-        pm.addTo("presentation", new PreferenceNode("formatting", new FormattingPreferencePage(client))); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("presentation", new PreferenceNode("formatting", //$NON-NLS-1$ //$NON-NLS-2$
+                        new FormattingPreferencePage(clientInput.map(c -> c.getClient()))));
 
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
