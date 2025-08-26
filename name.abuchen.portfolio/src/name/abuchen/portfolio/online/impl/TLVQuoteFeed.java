@@ -75,7 +75,7 @@ public class TLVQuoteFeed implements QuoteFeed
 
     @SuppressWarnings("nls")
     @VisibleForTesting
-    public String rpcLatestQuote(Security security) throws IOException
+    public String rpcLatestQuoteFund(Security security) throws IOException
     {
         String response = new WebAccess("mayaapi.tase.co.il", "/api/fund/details")
                         .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //
@@ -89,6 +89,20 @@ public class TLVQuoteFeed implements QuoteFeed
         return response;
     }
 
+    @SuppressWarnings("nls")
+    @VisibleForTesting
+    public String rpcLatestQuoteSecurity(Security security) throws IOException
+    {
+        String response = new WebAccess("api.tase.co.il", "/api/company/securitydata")
+                        .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //
+                        .addParameter("lang", "1").addParameter("securityId", security.getTickerSymbol())
+                        .addHeader("referer", "https://www.tase.co.il/").addHeader("Cache-Control", "no-cache")
+                        // .addHeader("X-Maya-With", "allow")
+                        // .addHeader("Accept-Language", "en-US")
+                        .addHeader("Content-Type", "application/json").get();
+        return response;
+    }
+
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
@@ -99,7 +113,7 @@ public class TLVQuoteFeed implements QuoteFeed
         try 
         {
             LatestSecurityPrice price = new LatestSecurityPrice();
-            String json = this.rpcLatestQuote(security);
+            String json = this.rpcLatestQuoteFund(security);
 
 
             // TODO replace with Calendar
@@ -253,7 +267,8 @@ public class TLVQuoteFeed implements QuoteFeed
         }
     }
 
-    private Optional<String> extract(String body, int startIndex, String startToken, String endToken)
+    @VisibleForTesting
+    public Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
         int begin = body.indexOf(startToken, startIndex);
 

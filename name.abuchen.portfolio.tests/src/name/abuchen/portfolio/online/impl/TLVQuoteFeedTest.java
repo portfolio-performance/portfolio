@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 // import java.time.LocalDate;
 // import java.util.NoSuchElementException;
 // import java.util.Optional;
@@ -61,21 +62,47 @@ public class TLVQuoteFeedTest
     public void testTLVFundDetailsAPI() throws IOException
     {
         Security security = new Security();
-        security.setTickerSymbol("SHLD.B19");
+        security.setTickerSymbol("5113428");
         security.setCurrencyCode("ILS");
 
         TLVQuoteFeed feed = new TLVQuoteFeed();
         try
         {
-            String response = feed.rpcLatestQuote(security);
+            String response = feed.rpcLatestQuoteFund(security);
             // String response = feed.rpcLatestQuote(security);
             System.out.println(response);
+            Optional<String> mngrId = feed.extract(response, 0, "\"ManagerId\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            assertTrue(mngrId.get().trim().contentEquals("10047"));
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
        
+
+    }
+
+    @Test
+    public void testTLVSecurityDetailsAPI() throws IOException
+    {
+        Security security = new Security();
+        security.setTickerSymbol("1410307");
+        security.setCurrencyCode("ILS");
+
+        TLVQuoteFeed feed = new TLVQuoteFeed();
+        try
+        {
+            String response = feed.rpcLatestQuoteSecurity(security);
+            // String response = feed.rpcLatestQuote(security);
+            System.out.println(response);
+            Optional<String> mngrId = feed.extract(response, 0, "\"IsTASEUP\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            System.out.println(mngrId.get().trim());
+            assertTrue(mngrId.get().trim().equals("false"));
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
 
     }
 
@@ -92,7 +119,7 @@ public class TLVQuoteFeedTest
         // YahooFinanceQuoteFeed());
 
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuote(security);
+        Mockito.doReturn(response).when(feed).rpcLatestQuoteSecurity(security);
 
         // System.out.println(feed.getLatestQuote(security));
         try
@@ -126,7 +153,7 @@ public class TLVQuoteFeedTest
 
 
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuote(security);
+        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
 
         try
         {
