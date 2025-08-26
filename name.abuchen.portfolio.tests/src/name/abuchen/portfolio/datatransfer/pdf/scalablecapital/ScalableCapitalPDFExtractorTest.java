@@ -22,6 +22,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -641,9 +643,13 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
         new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-03-31"), hasAmount("EUR", 13.69), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-04-04"), hasAmount("EUR", 4.99), //
@@ -658,7 +664,56 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisung"))));
 
         // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-04-10"), hasAmount("EUR", 1.40), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-04-10"), hasAmount("EUR", 25.63), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2025-04-10"), hasAmount("EUR", 1.40), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2025-04-10"), hasAmount("EUR", 25.63), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-04-14"), hasAmount("EUR", 1200.00), //
                         hasSource("Kontoauszug01.txt"), hasNote("Überweisung"))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-06-30"), hasAmount("EUR", 0.77), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-06-30"), hasAmount("EUR", 56.27), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-06-30"), hasAmount("EUR", 14.07), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Kapitalertragssteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-07-24"), hasAmount("EUR", 11344.57), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Überweisung"))));
     }
 }

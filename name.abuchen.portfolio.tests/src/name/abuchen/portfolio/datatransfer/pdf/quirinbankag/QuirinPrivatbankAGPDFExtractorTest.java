@@ -1824,9 +1824,42 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasSource("Depotauszug10.txt"),
                         hasNote("Bestandsprovision LU1233758587 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023693"))));
 
-      // assert transaction
-      assertThat(results, hasItem(fee(hasDate("2025-01-31"), hasAmount("EUR", 507.98), //
-                      hasSource("Depotauszug10.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"))));
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2025-01-31"), hasAmount("EUR", 507.98), //
+                        hasSource("Depotauszug10.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"))));
 
+    }
+
+    @Test
+    public void testDepotauszug11()
+    {
+        var extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-06-02"), hasAmount("EUR", 58.85), //
+                        hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 610616214"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-06-13"), hasAmount("EUR", 14.24), //
+                        hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 615820948"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2025-06-16"), hasAmount("EUR", 7.39), //
+                        hasSource("Depotauszug11.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 616720729"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2025-06-30"), hasAmount("EUR", 469.61), //
+                        hasSource("Depotauszug11.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 620879559"))));
     }
 }
