@@ -26,14 +26,24 @@ public class ArraysUtil
         return answer;
     }
 
-    public static long[] add(long[] a, long[] b)
+    public static long[] add(long[]... arrays)
     {
-        if (a.length != b.length)
-            throw new IllegalArgumentException("length mismatch " + a.length + " != " + b.length); //$NON-NLS-1$ //$NON-NLS-2$
+        if (arrays.length == 0)
+        throw new IllegalArgumentException("At least one array is required");
 
-        long[] result = new long[a.length];
-        for (int ii = 0; ii < result.length; ii++)
-            result[ii] = a[ii] + b[ii];
+        int length = arrays[0].length;
+        // Validate that all arrays have the same length
+        for (int i = 1; i < arrays.length; i++) {
+            if (arrays[i].length != length)
+                throw new IllegalArgumentException("Length mismatch at array " + i + ": " + arrays[i].length + " != " + length); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
+        long[] result = new long[length];
+        for (long[] array : arrays) {
+            for (int i = 0; i < length; i++) {
+                result[i] += array[i];
+            }
+        }
 
         return result;
     }

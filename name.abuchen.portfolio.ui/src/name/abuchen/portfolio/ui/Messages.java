@@ -547,6 +547,7 @@ public class Messages extends NLS
     public static String LabelAccounts;
     public static String LabelAccountTransfer;
     public static String LabelAccumulatedDividends;
+    public static String LabelAccumulatedOptionPremiums;
     public static String LabelAccumulatedEarnings;
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
@@ -677,6 +678,7 @@ public class Messages extends NLS
     public static String LabelDescription;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
+    public static String LabelOptionPremiums;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelDrawdown;
@@ -1315,6 +1317,8 @@ public class Messages extends NLS
     public static String SecurityMenuDeleteSingleSecurity;
     public static String SecurityMenuDeleteSingleSecurityConfirm;
     public static String SecurityMenuDividends;
+    public static String SecurityMenuOptionSell;
+    public static String SecurityMenuOptionBuy;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuEmptyInstrument;
     public static String SecurityMenuErrorMessageRoundingMustBeBetween0AndX;
@@ -1422,6 +1426,9 @@ public class Messages extends NLS
     public static String TransactionFilterDeposit;
     public static String TransactionFilterDepositAndRemoval;
     public static String TransactionFilterDividend;
+    public static String TransactionFilterOptionSell;
+    public static String TransactionFilterOptionBuy;
+    public static String TransactionFilterOptionBuyAndSell;
     public static String TransactionFilterFees;
     public static String TransactionFilterInterest;
     public static String TransactionFilterNone;
