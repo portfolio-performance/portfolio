@@ -186,20 +186,13 @@ public class InvestmentPlanModel extends AbstractModel
         this.start = plan.getStart();
         this.interval = plan.getInterval();
         this.amount = plan.getAmount();
-        switch (planType)
+        this.grossAmount = switch (planType)
         {
-            case PURCHASE_OR_DELIVERY:
-                this.grossAmount = plan.getAmount() - plan.getFees() - plan.getTaxes();
-                break;
-            case INTEREST:
-                this.grossAmount = plan.getAmount() + plan.getTaxes();
-                break;
-            case DEPOSIT, REMOVAL:
-                this.grossAmount = plan.getAmount();
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
+            case PURCHASE_OR_DELIVERY -> plan.getAmount() - plan.getFees() - plan.getTaxes();
+            case INTEREST -> plan.getAmount() + plan.getTaxes();
+            case DEPOSIT, REMOVAL -> plan.getAmount();
+            default -> throw new IllegalArgumentException();
+        };
         this.fees = plan.getFees();
         this.taxes = plan.getTaxes();
     }
