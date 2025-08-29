@@ -9,15 +9,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -29,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
@@ -37,12 +36,13 @@ import com.google.gson.JsonParser;
 
 import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONImporter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportItem;
@@ -122,7 +122,7 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
         TableColumnLayout layout = new TableColumnLayout();
         tableContainer.setLayout(layout);
 
-        Table table = new Table(tableContainer, SWT.BORDER | SWT.FULL_SELECTION);
+        Table table = new Table(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
@@ -172,7 +172,69 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
             }
         });
 
-        actionColumn.setEditingSupport(new ImportActionEditingSupport(importModel.getClient(), tableViewer));
+        hookContextMenu();
+    }
+
+    private void hookContextMenu()
+    {
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(this::fillContextMenu);
+
+        Menu contextMenu = menuMgr.createContextMenu(tableViewer.getTable());
+        tableViewer.getTable().setMenu(contextMenu);
+        tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
+
+        tableViewer.getTable().addDisposeListener(e -> {
+            if (contextMenu != null)
+                contextMenu.dispose();
+        });
+    }
+
+    private void fillContextMenu(IMenuManager manager)
+    {
+        var selection = tableViewer.getStructuredSelection();
+        if (selection.isEmpty())
+            return;
+
+        manager.add(new SimpleAction(ImportAction.NEW.getLabel(), a -> {
+            for (var element : selection)
+            {
+                if (element instanceof ImportItem item)
+                {
+                    item.setImportAction(ImportAction.NEW);
+                    item.setTargetTaxonomy(null);
+                    rerunDryRun(item);
+                }
+            }
+        }));
+
+        manager.add(new SimpleAction(ImportAction.SKIP.getLabel(), a -> {
+            for (var element : selection)
+            {
+                if (element instanceof ImportItem item)
+                {
+                    item.setImportAction(ImportAction.SKIP);
+                    item.setTargetTaxonomy(null);
+                    rerunDryRun(item);
+                }
+            }
+        }));
+
+        if (selection.size() == 1)
+        {
+            var item = (ImportItem) selection.getFirstElement();
+
+            for (var taxonomy : importModel.getClient().getTaxonomies())
+            {
+                manager.add(new SimpleAction(MessageFormat.format(Messages.LabelColonSeparated,
+                                ImportAction.UPDATE.getLabel(), taxonomy.getName()), a -> {
+                                    item.setImportAction(ImportAction.UPDATE);
+                                    item.setTargetTaxonomy(taxonomy);
+                                    rerunDryRun(item);
+                                }));
+            }
+        }
     }
 
     private void selectFile()
@@ -284,6 +346,41 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
         }
     }
 
+    /**
+     * Re-run dry runs for the given item, e.g., when its action changed.
+     */
+    private void rerunDryRun(ImportItem item)
+    {
+        performDryRun(item);
+
+        if (tableViewer != null)
+            tableViewer.refresh(item);
+
+        // notify wizard that import items have changed
+        if (getWizard() instanceof MultiTaxonomyImportWizard wizard)
+            wizard.resetDetailPages();
+
+        setPageComplete(isPageComplete());
+    }
+
+    /**
+     * Re-run dry runs for all items when one the option to keep names or the
+     * replace mode changes
+     */
+    private void rerunDryRun()
+    {
+        for (var item : importModel.getImportItems())
+            performDryRun(item);
+        if (tableViewer != null)
+            tableViewer.refresh();
+
+        // notify wizard that import items have changed
+        if (getWizard() instanceof MultiTaxonomyImportWizard wizard)
+            wizard.resetDetailPages();
+
+        setPageComplete(isPageComplete());
+    }
+
     private Taxonomy createDryrunTaxonomy(ImportItem item)
     {
         if (item.getImportAction() == ImportAction.UPDATE && item.getTargetTaxonomy() != null)
@@ -310,90 +407,6 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
         else
         {
             return item.getImportAction().getLabel();
-        }
-    }
-
-    private class ImportActionEditingSupport extends EditingSupport
-    {
-        private final Client client;
-        private final ComboBoxViewerCellEditor cellEditor;
-
-        public ImportActionEditingSupport(Client client, TableViewer viewer)
-        {
-            super(viewer);
-            this.client = client;
-
-            cellEditor = new ComboBoxViewerCellEditor(viewer.getTable());
-            cellEditor.setLabelProvider(new LabelProvider()
-            {
-                @Override
-                public String getText(Object element)
-                {
-                    if (element instanceof UserAction(ImportAction action, Taxonomy taxonomy))
-                    {
-                        return switch (action)
-                        {
-                            case NEW -> ImportAction.NEW.getLabel();
-                            case SKIP -> ImportAction.SKIP.getLabel();
-                            case UPDATE -> MessageFormat.format(Messages.LabelColonSeparated,
-                                            ImportAction.UPDATE.getLabel(), taxonomy.getName());
-                            default -> super.getText(element);
-                        };
-
-                    }
-                    return super.getText(element);
-                }
-            });
-            cellEditor.setContentProvider(ArrayContentProvider.getInstance());
-        }
-
-        @Override
-        protected CellEditor getCellEditor(Object element)
-        {
-            var actions = new ArrayList<UserAction>();
-
-            actions.add(new UserAction(ImportAction.NEW, null));
-            actions.add(new UserAction(ImportAction.SKIP, null));
-
-            for (var taxonomy : client.getTaxonomies())
-                actions.add(new UserAction(ImportAction.UPDATE, taxonomy));
-
-            cellEditor.setInput(actions);
-
-            return cellEditor;
-        }
-
-        @Override
-        protected boolean canEdit(Object element)
-        {
-            return true;
-        }
-
-        @Override
-        protected Object getValue(Object element)
-        {
-            var item = (ImportItem) element;
-            return new UserAction(item.getImportAction(), item.getTargetTaxonomy());
-        }
-
-        @Override
-        protected void setValue(Object element, Object value)
-        {
-            if (element instanceof ImportItem item
-                            && value instanceof UserAction(ImportAction action, Taxonomy taxonomy))
-            {
-                item.setImportAction(action);
-                item.setTargetTaxonomy(taxonomy);
-                performDryRun(item);
-
-                tableViewer.refresh(element);
-
-                // notify wizard that import items have changed
-                if (getWizard() instanceof MultiTaxonomyImportWizard wizard)
-                    wizard.resetDetailPages();
-
-                setPageComplete(isPageComplete());
-            }
         }
     }
 
