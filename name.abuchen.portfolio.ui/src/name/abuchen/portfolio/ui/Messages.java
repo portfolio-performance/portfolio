@@ -89,6 +89,8 @@ public class Messages extends NLS
     public static String CmdLogout;
     public static String CmdMigratePortfolioReport;
     public static String CmdNotNow;
+    public static String CmdSkip;
+    public static String CmdUpdate;
     public static String CmdUpdateSubscriptionStatus;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Description;
@@ -102,6 +104,7 @@ public class Messages extends NLS
     public static String ColumnAccount2nd;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
+    public static String ColumnAction;
     public static String ColumnActualPercent;
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
@@ -932,7 +935,7 @@ public class Messages extends NLS
     public static String LabelUnexpectedQuotes;
     public static String LabelUnexpectedQuotes_Description;
     public static String LabelUnhide;
-    public static String LabelUnknownVersion;
+    public static String LabelUnknown;
     public static String LabelUnnamedFile;
     public static String LabelUnnamedXml;
     public static String LabelUpdatedConfiguration;
@@ -1014,12 +1017,10 @@ public class Messages extends NLS
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
-    public static String MenuExportTaxonomy;
     public static String MenuFilterTrades;
     public static String MenuHideColumn;
     public static String MenuHideInformationPane;
     public static String MenuHideSidebar;
-    public static String MenuImportTaxonomy;
     public static String MenuLabelSetAsStartPage;
     public static String MenuMoveDown;
     public static String MenuMoveUp;

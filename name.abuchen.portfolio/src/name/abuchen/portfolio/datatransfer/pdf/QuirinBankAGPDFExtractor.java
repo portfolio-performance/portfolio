@@ -787,6 +787,35 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         }));
 
         // @formatter:off
+        // Steueroptimierung 16.06.2025 16.06.2025 -7,39 EUR
+        // Ref.: 616720729
+        // @formatter:on
+        var taxesBlock01 = new Block("^Steueroptimierung .* \\-[\\.,\\d]+[\\s]{1,}[A-Z]{3}.*$");
+        type.addBlock(taxesBlock01);
+        taxesBlock01.setMaxSize(5);
+        taxesBlock01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("note1", "note2", "date", "amount", "currency") //
+                        .match("^(?<note1>Steueroptimierung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}" //
+                                        + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
+                        .match("^Ref\\.: (?<note2>.*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // Vermögensverwaltungshonorar 31.08.2019 31.08.2019 -5,75 EUR
         // Vermögensverwaltungshonorar 0000000000, 01.09.2019 - 30.09.2019 30.09.2019 30.09.2019 -6,98 EUR
         // @formatter:on

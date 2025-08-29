@@ -487,4 +487,141 @@ public class TaxonomyJSONImporterTest
                         hasProperty("target", is(Classification.class)))));
 
     }
+
+    @Test
+    public void testWarningForMultipleMatchingInstruments() throws IOException
+    {
+        // Add another security with the same ISIN to create multiple matches
+        var duplicateSecurity = new Security();
+        duplicateSecurity.setName("Duplicate Security");
+        duplicateSecurity.setIsin("US1234567890");
+        duplicateSecurity.setCurrencyCode(CurrencyUnit.EUR);
+        client.addSecurity(duplicateSecurity);
+
+        // assert the there are no assignments yet
+        assertThat(taxonomy.getRoot().getChildren().getFirst().getAssignments().size(), is(0));
+
+        String json = """
+                        {
+                          "instruments": [
+                            {
+                              "identifiers": {
+                                "isin": "US1234567890",
+                                "name": "Test Security"
+                              },
+                              "categories": [
+                                {
+                                  "key": "existing-key",
+                                  "weight": 50.0
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        """;
+
+        var importer = new TaxonomyJSONImporter(client, taxonomy);
+        var result = importer.importTaxonomy(new StringReader(json));
+
+        // Should have a WARNING for multiple instruments found
+        assertThat(result.getChanges(), hasItem(allOf( //
+                        hasProperty("operation", is(Operation.WARNING)),
+                        hasProperty("target", is(InvestmentVehicle.class)),
+                        hasProperty("comment", containsString("2 instruments found")))));
+
+        // assert the there are no assignments yet
+        assertThat(taxonomy.getRoot().getChildren().getFirst().getAssignments().size(), is(2));
+
+        for (var assignment : taxonomy.getRoot().getChildren().getFirst().getAssignments())
+        {
+            assertThat(assignment.getWeight(), is(Classification.ONE_HUNDRED_PERCENT / 2));
+        }
+    }
+
+    @Test
+    public void testDuplicateVehiclePreventionWithSameInstrument() throws IOException
+    {
+        String json = """
+                        {
+                          "instruments": [
+                            {
+                              "identifiers": {
+                                "isin": "US1234567890"
+                              },
+                              "categories": [
+                                {
+                                  "key": "existing-key",
+                                  "weight": 30.0
+                                }
+                              ]
+                            },
+                            {
+                              "identifiers": {
+                                "name": "Test Security"
+                              },
+                              "categories": [
+                                {
+                                  "key": "existing-key",
+                                  "weight": 40.0
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        """;
+
+        var importer = new TaxonomyJSONImporter(client, taxonomy);
+        var result = importer.importTaxonomy(new StringReader(json));
+
+        // Should have a WARNING for ignoring duplicate assignment
+        assertThat(result.getChanges(), hasItem(allOf( //
+                        hasProperty("operation", is(Operation.WARNING)),
+                        hasProperty("target", is(InvestmentVehicle.class)),
+                        hasProperty("comment", containsString("Ignoring assignment")),
+                        hasProperty("comment", containsString("matched by another entry from the JSON already")))));
+
+        // Should only have one assignment created (not two)
+        var assignmentCreateCount = result.getChanges().stream()
+                        .filter(c -> c.getOperation() == Operation.CREATE && c.getTarget() == Assignment.class).count();
+        assertThat(assignmentCreateCount, is(1L));
+
+        // assert the there there is only one assignment yet
+        assertThat(taxonomy.getRoot().getChildren().getFirst().getAssignments().size(), is(1));
+
+        // assert that the weight is 30% as defined by the first entry
+        assertThat(taxonomy.getRoot().getChildren().getFirst().getAssignments().getFirst().getWeight(),
+                        is(Math.round(0.3f * Classification.ONE_HUNDRED_PERCENT)));
+    }
+
+    @Test
+    public void testImprovedErrorHandlingWithUnknownName() throws IOException
+    {
+        String json = """
+                        {
+                          "instruments": [
+                            {
+                              "identifiers": {
+                                "isin": "NONEXISTENT123"
+                              },
+                              "categories": [
+                                {
+                                  "key": "existing-key",
+                                  "weight": "invalid_weight_format"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                        """;
+
+        var importer = new TaxonomyJSONImporter(client, taxonomy);
+        var result = importer.importTaxonomy(new StringReader(json));
+
+        // Should have a SKIPPED entry for instrument not found with fallback to
+        // "unknown"
+        assertThat(result.getChanges(), hasItem(allOf( //
+                        hasProperty("operation", is(Operation.SKIPPED)),
+                        hasProperty("target", is(InvestmentVehicle.class)),
+                        hasProperty("comment", containsString("unknown")))));
+    }
 }

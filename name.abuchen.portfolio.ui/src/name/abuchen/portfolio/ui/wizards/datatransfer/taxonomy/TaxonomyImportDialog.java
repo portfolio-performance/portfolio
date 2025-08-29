@@ -1,11 +1,10 @@
-package name.abuchen.portfolio.ui.dialogs;
+package name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.dialogs.DialogSettings;
@@ -16,24 +15,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,28 +27,19 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 
-import name.abuchen.portfolio.model.Adaptor;
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.bootstrap.BundleMessages;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONImporter;
-import name.abuchen.portfolio.model.TaxonomyJSONImporter.ChangeEntry;
 import name.abuchen.portfolio.model.TaxonomyJSONImporter.ImportResult;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.LogoManager;
 
 public class TaxonomyImportDialog extends TitleAreaDialog
 {
     public static final int DIRTY = 42;
-    private static final String PREF_PRESERVE_NAME_DESCRIPTION = TaxonomyImportDialog.class.getSimpleName()
-                    + "-preserve.name.description"; //$NON-NLS-1$
 
     private final IStylingEngine stylingEngine;
 
@@ -73,9 +48,9 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     private final Taxonomy taxonomy;
 
     private Text filePathText;
-    private TreeViewer nodeViewer;
-    private TableViewer changeViewer;
     private Button preserveNameDescriptionCheckbox;
+
+    private TaxonomyTabFolder taxonomyTabFolder;
     private ImportResult importResult;
     private String selectedFilePath;
 
@@ -105,7 +80,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     protected void configureShell(Shell newShell)
     {
         super.configureShell(newShell);
-        newShell.setText(Messages.MenuImportTaxonomy);
+        newShell.setText(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
     }
 
     @Override
@@ -118,7 +93,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
     public void create()
     {
         super.create();
-        setTitle(Messages.MenuImportTaxonomy);
+        setTitle(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
     }
 
     @Override
@@ -132,7 +107,10 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         createFileSelectionSection(container);
-        createPreviewSection(container);
+
+        taxonomyTabFolder = new TaxonomyTabFolder(client, stylingEngine);
+        var tabFolder = taxonomyTabFolder.createTabFolder(container, taxonomy.getName());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
         return area;
     }
@@ -157,185 +135,23 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         preserveNameDescriptionCheckbox.setText(Messages.LabelOptionPreserveNamesAndDescriptions);
         GridDataFactory.fillDefaults().span(3, 1).applyTo(preserveNameDescriptionCheckbox);
 
-        preserveNameDescriptionCheckbox.setSelection(preferences.getBoolean(PREF_PRESERVE_NAME_DESCRIPTION));
+        preserveNameDescriptionCheckbox
+                        .setSelection(preferences.getBoolean(TaxonomyImportModel.PREF_PRESERVE_NAME_DESCRIPTION));
 
         preserveNameDescriptionCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            preferences.setValue(TaxonomyImportModel.PREF_PRESERVE_NAME_DESCRIPTION,
+                            preserveNameDescriptionCheckbox.getSelection());
             if (selectedFilePath != null)
                 performDryRun();
         }));
     }
 
-    private void createPreviewSection(Composite parent)
-    {
-        var tabFolder = new CTabFolder(parent, SWT.TOP | SWT.FLAT);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
-        tabFolder.setBorderVisible(true);
-
-        var tree = createTaxonomyTree(tabFolder);
-        var item = new CTabItem(tabFolder, SWT.NONE);
-        item.setControl(tree);
-        item.setText(taxonomy.getName());
-
-        var table = createMessagesTable(tabFolder);
-        item = new CTabItem(tabFolder, SWT.NONE);
-        item.setControl(table);
-        item.setText(Messages.LabelDescription);
-
-        tabFolder.setSelection(0);
-    }
-
-    private Control createTaxonomyTree(Composite parent)
-    {
-        var treeContainer = new Composite(parent, SWT.NONE);
-        var layout = new TreeColumnLayout();
-        treeContainer.setLayout(layout);
-
-        var tree = new Tree(treeContainer, SWT.BORDER | SWT.SINGLE);
-        nodeViewer = new TreeViewer(tree);
-        tree.setHeaderVisible(false);
-        tree.setLinesVisible(true);
-
-        // make sure to apply the styles before creating the fonts.
-        stylingEngine.style(tree);
-
-        var boldFont = JFaceResources.getResources()
-                        .create(FontDescriptor.createFrom(tree.getFont()).setStyle(SWT.BOLD));
-
-        var italicFont = JFaceResources.getResources()
-                        .create(FontDescriptor.createFrom(tree.getFont()).setStyle(SWT.ITALIC));
-
-        TreeColumn column = new TreeColumn(tree, SWT.None);
-        layout.setColumnData(column, new ColumnWeightData(100));
-
-        nodeViewer.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return switch (element)
-                {
-                    case Classification classification -> classification.getName();
-                    case Assignment assignment -> assignment.getInvestmentVehicle().getName();
-                    default -> null;
-                };
-            }
-
-            @Override
-            public Font getFont(Object element)
-            {
-                if (importResult == null)
-                    return null;
-                else if (importResult.isCreated(element))
-                    return boldFont;
-                else if (importResult.isModified(element))
-                    return italicFont;
-                else
-                    return null;
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                Named n = Adaptor.adapt(Named.class, element);
-                return LogoManager.instance().getDefaultColumnImage(n, client.getSettings());
-            }
-        });
-
-        nodeViewer.setContentProvider(new ITreeContentProvider()
-        {
-            @Override
-            public boolean hasChildren(Object element)
-            {
-                if (element instanceof Classification classification)
-                    return !classification.getChildren().isEmpty() || !classification.getAssignments().isEmpty();
-                else
-                    return false;
-            }
-
-            @Override
-            public Object getParent(Object element)
-            {
-                if (element instanceof Classification classification)
-                    return classification.getParent();
-                else
-                    return null;
-            }
-
-            @Override
-            public Object[] getElements(Object inputElement)
-            {
-                return ((Taxonomy) inputElement).getRoot().getChildren().toArray();
-            }
-
-            @Override
-            public Object[] getChildren(Object parentElement)
-            {
-                if (parentElement instanceof Classification classification)
-                {
-                    var children = new ArrayList<Object>();
-                    children.addAll(classification.getChildren());
-                    children.addAll(classification.getAssignments());
-                    return children.toArray();
-                }
-                else
-                {
-                    return new Object[0];
-                }
-            }
-        });
-
-        return treeContainer;
-    }
-
-    private Control createMessagesTable(Composite parent)
-    {
-        var tableContainer = new Composite(parent, SWT.NONE);
-        tableContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        var layout = new TableColumnLayout();
-        tableContainer.setLayout(layout);
-
-        changeViewer = new TableViewer(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        changeViewer.getTable().setHeaderVisible(true);
-        changeViewer.getTable().setLinesVisible(true);
-
-        var typeColumn = new TableViewerColumn(changeViewer, SWT.NONE);
-        typeColumn.getColumn().setText(Messages.IntroLabelActions);
-        layout.setColumnData(typeColumn.getColumn(), new ColumnWeightData(25));
-        typeColumn.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                ChangeEntry entry = (ChangeEntry) element;
-                return entry.getOperation().toString();
-            }
-        });
-
-        var descriptionColumn = new TableViewerColumn(changeViewer, SWT.NONE);
-        descriptionColumn.getColumn().setText(Messages.LabelDescription);
-        layout.setColumnData(descriptionColumn.getColumn(), new ColumnWeightData(75));
-        descriptionColumn.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                ChangeEntry entry = (ChangeEntry) element;
-                return entry.getComment();
-            }
-        });
-
-        changeViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-        return tableContainer;
-    }
-
     private void selectFile()
     {
         var dialog = new FileDialog(getShell(), SWT.OPEN);
-        dialog.setText(Messages.MenuImportTaxonomy);
+        dialog.setText(BundleMessages.getString(BundleMessages.Label.Command.importTaxonomy));
         dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
-        dialog.setFilterExtensions(new String[] { "*.json" }); //$NON-NLS-1$
+        dialog.setFilterExtensions(new String[] { "*.json;*.JSON" }); //$NON-NLS-1$
 
         var filePath = dialog.open();
         if (filePath != null)
@@ -360,8 +176,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
 
             var hasChanges = importResult.hasChanges();
 
-            changeViewer.setInput(importResult.getChanges());
-            nodeViewer.setInput(copy);
+            taxonomyTabFolder.setImportResult(copy, importResult);
 
             Button okButton = getButton(IDialogConstants.OK_ID);
             if (okButton != null)
@@ -385,8 +200,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
             setMessage(null);
             setErrorMessage(e.getMessage());
             importResult = null;
-            changeViewer.setInput(new Object[0]);
-            nodeViewer.setInput(null);
+            taxonomyTabFolder.clearImportResult();
 
             var okButton = getButton(IDialogConstants.OK_ID);
             if (okButton != null)
@@ -414,7 +228,6 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         }
 
         var preserveNameDescription = preserveNameDescriptionCheckbox.getSelection();
-        preferences.setValue(PREF_PRESERVE_NAME_DESCRIPTION, preserveNameDescription);
 
         // Perform the actual import
         try (FileInputStream fis = new FileInputStream(selectedFilePath))

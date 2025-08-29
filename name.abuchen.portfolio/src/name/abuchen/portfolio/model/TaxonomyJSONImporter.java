@@ -27,7 +27,7 @@ public class TaxonomyJSONImporter
 {
     public enum Operation
     {
-        CREATE, UPDATE, DELETE, SKIPPED, ERROR
+        CREATE, UPDATE, DELETE, SKIPPED, WARNING, ERROR
     }
 
     public static class ChangeEntry
@@ -150,20 +150,35 @@ public class TaxonomyJSONImporter
         this.key2classification = Collections.unmodifiableMap(keys);
     }
 
-    @SuppressWarnings("unchecked")
     public ImportResult importTaxonomy(Reader reader) throws IOException
     {
         try
         {
-            var result = new ImportResult();
-
             Gson gson = new Gson();
             Map<String, Object> jsonData = gson.fromJson(reader, new TypeToken<Map<String, Object>>()
             {
             }.getType());
 
-            if (jsonData == null)
-                throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "null")); //$NON-NLS-1$
+            return importTaxonomy(jsonData);
+        }
+        catch (JsonParseException e)
+        {
+            if (e.getCause() instanceof MalformedJsonException mfe)
+                throw mfe;
+            else
+                throw new IOException(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public ImportResult importTaxonomy(Map<String, Object> jsonData) throws IOException
+    {
+        if (jsonData == null)
+            throw new IOException(MessageFormat.format(Messages.MsgJSONFormatInvalid, "null")); //$NON-NLS-1$
+
+        try
+        {
+            var result = new ImportResult();
 
             var name = (String) jsonData.get("name"); //$NON-NLS-1$
             updateNameIfNeeded(taxonomy.getRoot(), name, result);
@@ -308,6 +323,8 @@ public class TaxonomyJSONImporter
     @SuppressWarnings("unchecked")
     private void importInstruments(List<Map<String, Object>> instruments, ImportResult result) throws IOException
     {
+        var processedVehicles = new HashSet<InvestmentVehicle>();
+
         for (var instrument : instruments)
         {
             var identifiers = (Map<String, Object>) instrument.get("identifiers"); //$NON-NLS-1$
@@ -315,8 +332,8 @@ public class TaxonomyJSONImporter
                 continue;
 
             // find the investment vehicle by identifiers
-            var investmentVehicle = findInvestmentVehicle(identifiers);
-            if (investmentVehicle == null)
+            var investmentVehicles = findInvestmentVehicle(identifiers);
+            if (investmentVehicles.isEmpty())
             {
                 var name = (String) identifiers.get("name"); //$NON-NLS-1$
                 result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.SKIPPED,
@@ -324,15 +341,37 @@ public class TaxonomyJSONImporter
                 continue;
             }
 
+            if (investmentVehicles.size() > 1)
+            {
+                var name = (String) identifiers.get("name"); //$NON-NLS-1$
+                result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.WARNING,
+                                MessageFormat.format("{0} instruments found with identifiers from JSON: {1}",
+                                                investmentVehicles.size(), name != null ? name : "unknown")));
+            }
+
             try
             {
-                importInstrument(instrument, investmentVehicle, result);
+                for (var vehicle : investmentVehicles)
+                {
+                    var hasNotBeenMatchedBefore = processedVehicles.add(vehicle);
+                    if (hasNotBeenMatchedBefore)
+                    {
+                        importInstrument(instrument, vehicle, result);
+                    }
+                    else
+                    {
+                        result.addChange(new ChangeEntry(InvestmentVehicle.class, Operation.WARNING, MessageFormat
+                                        .format("Ignoring assignment {0} because instrument was matched by another entry from the JSON already.",
+                                                        vehicle.getName())));
+                    }
+                }
             }
             catch (ClassCastException e)
             {
                 // happens if attributes cannot be cast to the expected type
+                var name = (String) identifiers.get("name"); //$NON-NLS-1$
                 throw new IOException(MessageFormat.format("Invalid data format for instrument {0}: {1}",
-                                investmentVehicle.getName(), e.getMessage()), e);
+                                name != null ? name : "unknown", e.getMessage()), e);
             }
         }
     }
@@ -508,7 +547,7 @@ public class TaxonomyJSONImporter
         return current;
     }
 
-    private InvestmentVehicle findInvestmentVehicle(Map<String, Object> identifiers)
+    private List<InvestmentVehicle> findInvestmentVehicle(Map<String, Object> identifiers)
     {
         var name = (String) identifiers.get("name"); //$NON-NLS-1$
         var isin = (String) identifiers.get("isin"); //$NON-NLS-1$
@@ -517,38 +556,43 @@ public class TaxonomyJSONImporter
 
         if (isin != null && !isin.trim().isEmpty())
         {
-            var security = client.getSecurities().stream().filter(s -> isin.equals(s.getIsin())).findFirst();
-            if (security.isPresent())
-                return security.get();
+            var securities = client.getSecurities().stream().filter(s -> isin.equals(s.getIsin()))
+                            .map(s -> (InvestmentVehicle) s).toList();
+            if (!securities.isEmpty())
+                return securities;
         }
 
         if (ticker != null && !ticker.trim().isEmpty())
         {
-            var security = client.getSecurities().stream().filter(s -> ticker.equals(s.getTickerSymbol())).findFirst();
-            if (security.isPresent())
-                return security.get();
+            var securities = client.getSecurities().stream().filter(s -> ticker.equals(s.getTickerSymbol()))
+                            .map(s -> (InvestmentVehicle) s).toList();
+            if (!securities.isEmpty())
+                return securities;
         }
 
         if (wkn != null && !wkn.trim().isEmpty())
         {
-            var security = client.getSecurities().stream().filter(s -> wkn.equals(s.getWkn())).findFirst();
-            if (security.isPresent())
-                return security.get();
+            var securities = client.getSecurities().stream().filter(s -> wkn.equals(s.getWkn()))
+                            .map(s -> (InvestmentVehicle) s).toList();
+            if (!securities.isEmpty())
+                return securities;
         }
 
         if (name != null && !name.trim().isEmpty())
         {
-            var security = client.getSecurities().stream().filter(s -> name.equals(s.getName())).findFirst();
-            if (security.isPresent())
-                return security.get();
+            var securities = client.getSecurities().stream().filter(s -> name.equals(s.getName()))
+                            .map(s -> (InvestmentVehicle) s).toList();
+            if (!securities.isEmpty())
+                return securities;
 
             // also check accounts
-            var account = client.getAccounts().stream().filter(a -> name.equals(a.getName())).findFirst();
-            if (account.isPresent())
-                return account.get();
+            var accounts = client.getAccounts().stream().filter(a -> name.equals(a.getName()))
+                            .map(s -> (InvestmentVehicle) s).toList();
+            if (!accounts.isEmpty())
+                return accounts;
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     private void updateNameIfNeeded(Classification classification, String newName, ImportResult result)

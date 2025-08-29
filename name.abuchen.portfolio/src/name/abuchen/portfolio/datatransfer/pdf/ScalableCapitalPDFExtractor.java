@@ -42,7 +42,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^f.r (Kundenauftrag|Sparplanausf.hrung|savings plan order).*$");
+        var firstRelevantLine = new Block("^f.r (Kundenauftrag|Sparplanausf.hrung|savings plan order|client order).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -332,6 +332,66 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 01.07.2025 30.06.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -0,77 EUR
+        // 01.07.2025 30.06.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -14,07 EUR
+        // @formatter:on
+        var taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (.*oder erstattete.*) [\\-|\\+][\\.,\\d]+ [A-Z]{3}.*$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "type", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + ".*" //
+                                        + "(?<note>(Solidarit.tszuschlag|Kapitalertrag(s)?steuer)).*" //
+                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                         // Is type --> "-" change from TAXES to TAX_REFUND
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 01.07.2025 30.06.2025 Erhaltene Zinsen +56,27 EUR
+        // @formatter:on
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Erhaltene Zinsen) [\\-|\\+][\\.,\\d]+ [A-Z]{3}.*$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "type", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
+                                        + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                         // Is type --> "-" change from INTEREST to INTEREST_CHARGE
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -391,6 +451,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Ordergeb.hren [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Order fees +0.99 EUR
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Order fees [\\-|\\+](?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

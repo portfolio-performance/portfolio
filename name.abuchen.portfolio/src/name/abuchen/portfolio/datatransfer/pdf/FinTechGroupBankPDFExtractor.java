@@ -443,7 +443,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Kundenservice(:)?$");
+        var firstRelevantLine = new Block("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 

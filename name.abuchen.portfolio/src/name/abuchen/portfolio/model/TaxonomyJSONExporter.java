@@ -20,6 +20,41 @@ import name.abuchen.portfolio.money.Values;
  */
 public class TaxonomyJSONExporter implements Exporter
 {
+    public static class AllTaxonomies implements Exporter
+    {
+        private final Client client;
+
+        public AllTaxonomies(Client client)
+        {
+            this.client = client;
+        }
+
+        @Override
+        public String getName()
+        {
+            return "AllTaxonomies";
+        }
+
+        @Override
+        public void export(OutputStream out) throws IOException
+        {
+            List<Map<String, Object>> taxonomiesArray = new ArrayList<>();
+
+            for (Taxonomy taxonomy : client.getTaxonomies())
+            {
+                var individualExporter = new TaxonomyJSONExporter(taxonomy);
+                var taxonomyJson = individualExporter.createJSONStructure();
+                taxonomiesArray.add(taxonomyJson);
+            }
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            try (OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
+            {
+                gson.toJson(taxonomiesArray, writer);
+            }
+        }
+    }
+
     private static class CategoryAssignment
     {
         final Classification classification;
@@ -73,6 +108,7 @@ public class TaxonomyJSONExporter implements Exporter
         addInstrumentsFromTaxonomy(instruments);
 
         result.put("name", taxonomy.getName()); //$NON-NLS-1$
+        result.put("color", taxonomy.getRoot().getColor()); //$NON-NLS-1$
         result.put("categories", categories); //$NON-NLS-1$
         result.put("instruments", instruments); //$NON-NLS-1$
 

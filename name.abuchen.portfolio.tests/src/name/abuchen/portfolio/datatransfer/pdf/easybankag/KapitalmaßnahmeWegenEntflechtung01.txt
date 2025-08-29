@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.78.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+FJOdb
+dITwYh rAFJmLjX
+qCTaBKATfBUH 71
+4012 Sizhtkqi
+Wien, den 02.02.2022
+Wir haben für Sie am 02.02.2022 unten angeführtes Geschäft abgerechnet:
+Depot: 88827-031-011
+Geschäftsart: Ausbuchung wegen Titelumtausch
+Abgang: Stk 50
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 50
+Titel: GB00B03MLX29 Shell PLC
+Reg. Shares Class A EO -,07
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Geschäftsart: Einbuchung wegen Titelumtausch
+Zugang: Stk 50
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 50
+Titel: GB00BP6MXD84 Shell PLC
+Reg. Shares Class EO -,07
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Bezugsverhältnis: 1: 1
+0,00 EUR
+KESt-pflichtiges Wertpapier
+Extag: 31.01.2022
+Record-Tag: 28.01.2022
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2022020200886P02_a/1724
+Steuerrelevanter Anschaffungswert für den Gesamtbestand: 1.002,00 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2022020200886P02_a/1725

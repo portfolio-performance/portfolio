@@ -13,7 +13,8 @@ public class BundleMessages
             String updateQuotesActiveSecurities = "command.updateQuotesActiveSecurities.name"; // NOSONAR
             String updateQuotesHoldings = "command.updateQuotesHoldings.name"; // NOSONAR
             String updateQuotesWatchlist = "command.updateQuotesWatchlist.name"; // NOSONAR
-
+            String importTaxonomy = "command.import.taxonomy"; // NOSONAR
+            String exportTaxonomy = "command.export.taxonomy"; // NOSONAR
         }
     }
 
