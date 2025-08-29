@@ -85,11 +85,12 @@ public class Messages extends NLS
     public static String ClientEditorLabelReports;
     public static String ClientEditorLabelReturnsVolatility;
     public static String ClientEditorPerformanceCalculation;
+    public static String CmdCreateNewTaxonomy;
+    public static String CmdDoNotImport;
     public static String CmdLogin;
     public static String CmdLogout;
     public static String CmdMigratePortfolioReport;
     public static String CmdNotNow;
-    public static String CmdSkip;
     public static String CmdUpdate;
     public static String CmdUpdateSubscriptionStatus;
     public static String ColumnAbsolutePerformance;

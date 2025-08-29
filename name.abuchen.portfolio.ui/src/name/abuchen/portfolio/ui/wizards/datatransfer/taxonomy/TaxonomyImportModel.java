@@ -16,7 +16,7 @@ import name.abuchen.portfolio.ui.Messages;
 {
     public enum ImportAction
     {
-        NEW(Messages.LabelNewTaxonomy), UPDATE(Messages.CmdUpdate), SKIP(Messages.CmdSkip);
+        NEW(Messages.CmdCreateNewTaxonomy), UPDATE(Messages.CmdUpdate), SKIP(Messages.CmdDoNotImport);
 
         private final String label;
 
