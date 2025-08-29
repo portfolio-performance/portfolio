@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class AccountTransferEntry implements CrossEntry, Annotated
 {
@@ -121,6 +122,27 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     @Override
     public void insert()
     {
+        // perform both currency checks *before* adding the transactions to
+        // avoid partially added transfer
+
+        if (!Objects.equals(accountFrom.getCurrencyCode(), transactionFrom.getCurrencyCode()))
+        {
+            throw new IllegalArgumentException(
+                            "Unable to add transaction '" + transactionFrom.toString() + "' to account '" //$NON-NLS-1$ //$NON-NLS-2$
+                                            + accountFrom.getName() + "' (uuid " + transactionFrom.getUUID() + "): " //$NON-NLS-1$ //$NON-NLS-2$
+                                            + accountFrom.getCurrencyCode() + " <> " //$NON-NLS-1$
+                                            + transactionFrom.getCurrencyCode());
+        }
+
+        if (!Objects.equals(accountTo.getCurrencyCode(), transactionTo.getCurrencyCode()))
+        {
+            throw new IllegalArgumentException(
+                            "Unable to add transaction '" + transactionTo.toString() + "' to account '" //$NON-NLS-1$ //$NON-NLS-2$
+                                            + accountTo.getName() + "' (uuid " + transactionTo.getUUID() + "): " //$NON-NLS-1$ //$NON-NLS-2$
+                                            + accountTo.getCurrencyCode() + " <> " //$NON-NLS-1$
+                                            + transactionTo.getCurrencyCode());
+        }
+
         accountFrom.addTransaction(transactionFrom);
         accountTo.addTransaction(transactionTo);
     }
