@@ -406,7 +406,7 @@ public class InvestmentPlanModel extends AbstractModel
         return switch (planType)
         {
             case PURCHASE_OR_DELIVERY -> grossAmount + fees + taxes;
-            case INTEREST -> grossAmount - taxes;
+            case INTEREST -> Math.abs(grossAmount - taxes);
             case DEPOSIT, REMOVAL -> grossAmount;
             default -> throw new IllegalArgumentException();
         };
