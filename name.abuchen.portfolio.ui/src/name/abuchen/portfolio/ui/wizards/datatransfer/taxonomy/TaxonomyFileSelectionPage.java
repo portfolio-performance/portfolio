@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -53,10 +54,6 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportMod
  */
 public class TaxonomyFileSelectionPage extends AbstractWizardPage
 {
-    record UserAction(ImportAction action, Taxonomy target)
-    {
-    }
-
     private final TaxonomyImportModel importModel;
 
     private Text filePathText;
@@ -104,14 +101,29 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
         browseButton.setText(Messages.LabelPickFile);
         browseButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectFile()));
 
-        var preserveNameDescriptionCheckbox = new Button(fileSection, SWT.CHECK);
+        var optionsComposite = new Composite(fileSection, SWT.NONE);
+        optionsComposite.setLayout(new RowLayout());
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(optionsComposite);
+
+        var preserveNameDescriptionCheckbox = new Button(optionsComposite, SWT.CHECK);
         preserveNameDescriptionCheckbox.setText(Messages.LabelOptionPreserveNamesAndDescriptions);
-        GridDataFactory.fillDefaults().span(3, 1).applyTo(preserveNameDescriptionCheckbox);
 
         preserveNameDescriptionCheckbox.setSelection(importModel.isPreserveNameAndDescription());
 
-        preserveNameDescriptionCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> importModel
-                        .setPreserveNameAndDescription(preserveNameDescriptionCheckbox.getSelection())));
+        preserveNameDescriptionCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            importModel.setPreserveNameAndDescription(preserveNameDescriptionCheckbox.getSelection());
+            rerunDryRun();
+        }));
+
+        var pruneAbsentClassificationsCheckbox = new Button(optionsComposite, SWT.CHECK);
+        pruneAbsentClassificationsCheckbox.setText(Messages.LabelOptionPruneAbsentClassifications);
+
+        pruneAbsentClassificationsCheckbox.setSelection(importModel.doPruneAbsentClassifications());
+
+        pruneAbsentClassificationsCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            importModel.setPruneAbsentClassifications(pruneAbsentClassificationsCheckbox.getSelection());
+            rerunDryRun();
+        }));
     }
 
     private void createTaxonomySection(Composite parent)
@@ -335,7 +347,7 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
             var dryrunTaxonomy = createDryrunTaxonomy(item);
 
             var importer = new TaxonomyJSONImporter(importModel.getClient(), dryrunTaxonomy,
-                            importModel.isPreserveNameAndDescription());
+                            importModel.isPreserveNameAndDescription(), importModel.doPruneAbsentClassifications());
 
             var dryrunResult = importer.importTaxonomy(item.getJsonData());
             item.setImportResult(dryrunResult, dryrunTaxonomy);
@@ -413,8 +425,8 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
     @Override
     public boolean isPageComplete()
     {
-        return !importModel.getImportItems().isEmpty() && importModel.getImportItems().stream()
-                        .filter(item -> item.getImportAction() != ImportAction.SKIP)
-                        .allMatch(item -> item.getDryrunResult() != null);
+        return importModel.getImportItems().stream() //
+                        .filter(item -> item.getImportAction() != ImportAction.SKIP) //
+                        .count() > 0;
     }
 }

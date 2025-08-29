@@ -798,6 +798,7 @@ public class Messages extends NLS
     public static String LabelOnlyLinkToPortfolioReport;
     public static String LabelOpenTrade;
     public static String LabelOptionPreserveNamesAndDescriptions;
+    public static String LabelOptionPruneAbsentClassifications;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
