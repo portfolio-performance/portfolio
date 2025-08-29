@@ -34,7 +34,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
-import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.JSONExporterDialog;
@@ -658,13 +657,9 @@ public final class Navigation
         section.add(new Item(Messages.LabelCurrencies, CurrencyView.class, true));
         section.add(new Item(Messages.LabelSettings, SettingsView.class));
 
-        var isExperimentEnabled = new Experiments().isEnabled(Experiments.Feature.JULY26_REFACTORED_PRICE_UPDATE);
-        if (isExperimentEnabled)
-        {
-            var progressView = new Item(Messages.LabelPriceUpdateProgress, SecurityPriceUpdateView.class, true);
-            progressView.addTag(Tag.HIDE);
-            section.add(progressView);
-        }
+        var progressView = new Item(Messages.LabelPriceUpdateProgress, SecurityPriceUpdateView.class, true);
+        progressView.addTag(Tag.HIDE);
+        section.add(progressView);
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
             section.add(new Item("Browser Test", BrowserTestView.class)); //$NON-NLS-1$

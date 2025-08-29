@@ -56,8 +56,8 @@ import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -578,8 +578,8 @@ public class ClientInput
         {
             Predicate<Security> onlyActive = s -> !s.isRetired();
 
-            Job initialQuoteUpdate = new UpdateQuotesJob(client, onlyActive,
-                            EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
+            Job initialQuoteUpdate = new UpdatePricesJob(client, onlyActive,
+                            EnumSet.of(UpdatePricesJob.Target.LATEST, UpdatePricesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
             var checkInvestmentPlans = new CreateInvestmentPlanTxJob(client, exchangeRateProviderFacory);
@@ -588,11 +588,11 @@ public class ClientInput
 
             // always schedule the period jobs. The job will check the
             // preferences and skip the run if not enabled.
-            var job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.LATEST, Duration.ofMinutes(30));
+            var job = new PeriodicUpdatePricesJob(this, UpdatePricesJob.Target.LATEST, Duration.ofMinutes(30));
             job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
-            job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.HISTORIC, Duration.ofHours(6));
+            job = new PeriodicUpdatePricesJob(this, UpdatePricesJob.Target.HISTORIC, Duration.ofHours(6));
             job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 

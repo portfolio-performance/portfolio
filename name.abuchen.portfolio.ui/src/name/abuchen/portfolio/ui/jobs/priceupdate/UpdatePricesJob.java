@@ -36,7 +36,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob.Target;
 import name.abuchen.portfolio.ui.jobs.priceupdate.Task.HistoricalTask;
 import name.abuchen.portfolio.ui.jobs.priceupdate.Task.LatestTask;
 
@@ -46,6 +45,11 @@ import name.abuchen.portfolio.ui.jobs.priceupdate.Task.LatestTask;
  */
 public class UpdatePricesJob extends AbstractClientJob
 {
+    public enum Target
+    {
+        LATEST, HISTORIC
+    }
+    
     private static final int UI_PROGRESS_UPDATE_INTERVAL = 300;
 
     private final Set<Target> target;
