@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -23,10 +24,12 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         addBankIdentifier("BANCO BILBAO VIZCAYA ARGENTARIA");
         addBankIdentifier("CARTA DE AVISO POR OPERACIONES");
         addBankIdentifier("CARTA DE ABONO POR OPERACIONES");
+        addBankIdentifier("CARTA DE CARGO POR OPERACIONES VALORES");
 
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
         addDividendeTransaction();
+        addFeesTransaction();
     }
 
     @Override
@@ -42,7 +45,8 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Te facilitamos el detalle de la operaci.n (VENTA|COMPRA) DE VALORES  que hemos liquidado en tu cuenta.$");
+        var firstRelevantLine = new Block(
+                        "^Te facilitamos el detalle de la operaci.n (VENTA|COMPRA) DE VALORES  que hemos liquidado en tu cuenta.$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -143,7 +147,8 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
+        var firstRelevantLine = new Block(
+                        "^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -167,7 +172,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .match("^CODIGO CUENTA VALOR: NOMBRE DEL FONDO (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) NUMERO PARTICIPACIONES CAMBIO DIVISA$") //
-                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9\\s.]+) [\\.,\\d]+ (?<currency>[A-Z]{3})\\/[A-Z]{3}$") //
+                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9 \\.,-]+) [\\.,\\d]+ (?<currency>[A-Z]{3})\\/[A-Z]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -231,7 +236,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .match("^CODIGO CUENTA VALOR VALOR \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9\\s.]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\.,\\d]+ [A-Z]{3}/[A-Z]{3}$") //
+                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9 \\.,-]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\.,\\d]+ [A-Z]{3}/[A-Z]{3}$") //
                         .match("^IMPORTE EFECTIVO (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -282,6 +287,65 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addFeesTransaction()
+    {
+        var type = new DocumentType("CARTA DE CARGO POR OPERACIONES VALORES");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        final java.util.concurrent.atomic.AtomicReference<String> dateRef = new java.util.concurrent.atomic.AtomicReference<>(
+                        null);
+
+        var dateBlock = new Block(
+                        "^COD\\. CUENTA VALOR: .* PERÍODO LIQUIDACIÓN: \\d{2}/\\d{2}/\\d{2} - (?<date>\\d{2}/\\d{2}/\\d{2}) .*$");
+        type.addBlock(dateBlock);
+
+        var dateTx = new Transaction<Object>();
+        dateBlock.set(dateTx);
+
+        dateTx.subject(() -> new Object()).section("date").match("(?i).*\\b(?<date>\\d{2}[-/]\\d{2}[-/]\\d{2,4})\\b.*")
+                        .assign((o, v) -> {
+                            dateRef.set(v.get("date"));
+                        }).wrap(o -> null);
+
+                        // @formatter:off
+                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        // ACC.APPLE INC T 1.230,47 USD 1,1678 1.053,67 Mínimo 30,00
+                        // ACC.ALPHABET INC CLASE-A T 1.036,82 USD 1,1678 887,84 Mínimo 30,00
+                        // ACC.SIRIUS XM HOLDINGS INC T 742,73 USD 1,1678 636,01 Mínimo 30,00
+                        // @formatter:on
+        var firstRelevantLine = new Block(
+                        "^[\\p{L}0-9 \\.,-]+ (T|N) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ M.nimo [\\.,\\d]+.*");
+
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction.subject(() -> {
+            var accountTransaction = new AccountTransaction();
+            accountTransaction.setType(AccountTransaction.Type.FEES);
+            return accountTransaction;
+        })
+                        // @formatter:off
+                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        // @formatter:on
+                        .section("name", "currency", "fee")
+                        .match("^(?<name>[\\p{L}0-9 \\.,-]+) (T|N) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ M.nimo (?<fee>[\\.,\\d]+).*")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
+                            t.setAmount(asAmount(v.get("fee")));
+                            Money fee = Money.of(asCurrencyCode("EUR"), asAmount(v.get("fee")));
+                            Money iva = fee.multiply(21L).divide(100L);
+                            t.addUnit(new Unit(Unit.Type.TAX, iva));
+                            t.setDateTime(asDate(dateRef.get()));
+
+                        })
+
+                        .wrap(TransactionItem::new);
+
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.bancobilbaovizcayaargentaria;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -263,6 +264,88 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
                         hasSource("Dividendos01.txt"), //
                         hasAmount("EUR", 3.57), hasGrossValue("EUR", 7.83), //
                         hasTaxes("EUR", 2.44), hasFees("EUR", 1.82))));
+    }
+
+    @Test
+    public void testDividendos2()
+    {
+        var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.ALPHABET INC CLASE-A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-16T00:00"), hasShares(6), //
+                        hasSource("Dividendos02.txt"), //
+                        hasAmount("EUR", 0), hasGrossValue("EUR", 1.08), //
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75))));
+    }
+
+    @Test
+    public void testComisiones01()
+    {
+        var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Comisiones01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.AMAZON -USD-"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.APPLE INC"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.ALPHABET INC CLASE-A"), //
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.SIRIUS XM HOLDINGS INC"), //
+                        hasCurrencyCode("USD"))));
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasSource("Comisiones01.txt"), //
+                        hasDate("2025-06-30T00:00"), //
+                        hasAmount("EUR", 20.88), //
+                        hasTaxes("EUR", 4.38))));
+        assertThat(results, hasItem(fee( //
+                        hasSource("Comisiones01.txt"), //
+                        hasDate("2025-06-30T00:00"), //
+                        hasAmount("EUR", 30.00), //
+                        hasTaxes("EUR", 6.30))));
+        assertThat(results, hasItem(fee( //
+                        hasSource("Comisiones01.txt"), //
+                        hasDate("2025-06-30T00:00"), //
+                        hasAmount("EUR", 30.00), //
+                        hasTaxes("EUR", 6.30))));
+        assertThat(results, hasItem(fee( //
+                        hasSource("Comisiones01.txt"), //
+                        hasDate("2025-06-30T00:00"), //
+                        hasAmount("EUR", 30.00), //
+                        hasTaxes("EUR", 6.30))));
+
     }
 
 }
