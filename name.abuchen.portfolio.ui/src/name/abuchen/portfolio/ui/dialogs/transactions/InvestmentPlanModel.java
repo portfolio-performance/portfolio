@@ -162,6 +162,7 @@ public class InvestmentPlanModel extends AbstractModel
         setAmount(0);
         setFees(0);
         setTaxes(0);
+        setGrossAmount(0);
     }
 
     public void setSource(InvestmentPlan plan)
