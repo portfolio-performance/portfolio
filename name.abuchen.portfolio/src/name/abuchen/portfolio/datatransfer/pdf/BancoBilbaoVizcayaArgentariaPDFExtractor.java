@@ -10,8 +10,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtractor
@@ -24,7 +24,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         addBankIdentifier("BANCO BILBAO VIZCAYA ARGENTARIA");
         addBankIdentifier("CARTA DE AVISO POR OPERACIONES");
         addBankIdentifier("CARTA DE ABONO POR OPERACIONES");
-        addBankIdentifier("CARTA DE CARGO POR OPERACIONES VALORES");
+        addBankIdentifier("CARTA DE CARGO POR OPERACIONES");
 
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
@@ -40,13 +40,12 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addBuySellTransaction_Format01()
     {
-        var type = new DocumentType("(VENTA|COMPRA) DE VALORES");
+        final var type = new DocumentType("(VENTA|COMPRA) DE VALORES");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block(
-                        "^Te facilitamos el detalle de la operaci.n (VENTA|COMPRA) DE VALORES  que hemos liquidado en tu cuenta.$");
+        var firstRelevantLine = new Block("^Te facilitamos el detalle de la operaci.n (VENTA|COMPRA) DE VALORES  que hemos liquidado en tu cuenta.$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -142,7 +141,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addBuySellTransaction_Format02()
     {
-        var type = new DocumentType("OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO");
+        final var type = new DocumentType("OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -214,7 +213,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("ABONO DE DIVIDENDOS");
+        final var type = new DocumentType("ABONO DE DIVIDENDOS");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -291,61 +290,73 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addFeesTransaction()
     {
-        var type = new DocumentType("CARTA DE CARGO POR OPERACIONES VALORES");
+        final var type = new DocumentType("CARTA DE CARGO POR OPERACIONES", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // COD. CUENTA VALOR: 0242 4432 50 5946110096 PERÍODO LIQUIDACIÓN: 01/01/25 - 30/06/25 N° FACTURA: 886h42648329
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^(?i)COD\\. CUENTA VALOR.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}).*$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date")))
+
+                                        // @formatter:off
+                                        // I. V. A. 21,00 % S/comisión bancaria 23,28
+                                        // @formatter:on
+                                        .section("percentageTaxes") //
+                                        .match("^(?i)I\\. V\\. A\\. (?<percentageTaxes>[\\.,\\d]+) % S\\/comisi.n bancaria.*$") //
+                                        .assign((ctx, v) -> ctx.put("percentageTaxes", v.get("percentageTaxes"))));
+
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        final java.util.concurrent.atomic.AtomicReference<String> dateRef = new java.util.concurrent.atomic.AtomicReference<>(
-                        null);
-
-        var dateBlock = new Block(
-                        "^COD\\. CUENTA VALOR: .* PERÍODO LIQUIDACIÓN: \\d{2}/\\d{2}/\\d{2} - (?<date>\\d{2}/\\d{2}/\\d{2}) .*$");
-        type.addBlock(dateBlock);
-
-        var dateTx = new Transaction<Object>();
-        dateBlock.set(dateTx);
-
-        dateTx.subject(() -> new Object()).section("date").match("(?i).*\\b(?<date>\\d{2}[-/]\\d{2}[-/]\\d{2,4})\\b.*")
-                        .assign((o, v) -> {
-                            dateRef.set(v.get("date"));
-                        }).wrap(o -> null);
-
-                        // @formatter:off
-                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
-                        // ACC.APPLE INC T 1.230,47 USD 1,1678 1.053,67 Mínimo 30,00
-                        // ACC.ALPHABET INC CLASE-A T 1.036,82 USD 1,1678 887,84 Mínimo 30,00
-                        // ACC.SIRIUS XM HOLDINGS INC T 742,73 USD 1,1678 636,01 Mínimo 30,00
-                        // @formatter:on
-        var firstRelevantLine = new Block(
-                        "^[\\p{L}0-9 \\.,-]+ (T|N) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ M.nimo [\\.,\\d]+.*");
-
+        var firstRelevantLine = new Block("^.*[T|N] [\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction.subject(() -> {
-            var accountTransaction = new AccountTransaction();
-            accountTransaction.setType(AccountTransaction.Type.FEES);
-            return accountTransaction;
-        })
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
                         // @formatter:off
                         // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
                         // @formatter:on
-                        .section("name", "currency", "fee")
-                        .match("^(?<name>[\\p{L}0-9 \\.,-]+) (T|N) [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ M.nimo (?<fee>[\\.,\\d]+).*")
+                        .section("name", "currency") //
+                        .documentContext("date") //
+                        .match("^(?<name>.*) [T|N] [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setCurrencyCode(asCurrencyCode("EUR"));
-                            t.setAmount(asAmount(v.get("fee")));
-                            Money fee = Money.of(asCurrencyCode("EUR"), asAmount(v.get("fee")));
-                            Money iva = fee.multiply(21L).divide(100L);
-                            t.addUnit(new Unit(Unit.Type.TAX, iva));
-                            t.setDateTime(asDate(dateRef.get()));
+                            t.setShares(0L);
+                            t.setDateTime(asDate(v.get("date")));
 
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        // @formatter:on
+                        .section("currency", "gross") //
+                        .documentContext("percentageTaxes") //
+                        .match("^.*[T|N] [\\.,\\d]+ (?<currency>[A-Z]{3}).* (?<gross>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                            var percentageTaxes = asBigDecimal(v.get("percentageTaxes"));
+                            var gross = asBigDecimal(v.get("gross"));
+
+                             // @formatter:off
+                             // taxAmount = gross * (percentageTaxes / 100)
+                             // @formatter:on
+                            var fxTax = gross.multiply(percentageTaxes, Values.MC);
+                            var taxes = Money.of(asCurrencyCode(v.get("currency")), fxTax.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                             // amount = grossBeforeTaxes - taxes
+                             t.setMonetaryAmount(grossBeforeTaxes.subtract(taxes));
                         })
 
                         .wrap(TransactionItem::new);
-
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
