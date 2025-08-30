@@ -1391,6 +1391,11 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String StatusLoading;
+    public static String StatusNoChange;
+    public static String StatusSkipped;
+    public static String StatusUpdated;
+    public static String StatusWaiting;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuNewAndNoteworthy;

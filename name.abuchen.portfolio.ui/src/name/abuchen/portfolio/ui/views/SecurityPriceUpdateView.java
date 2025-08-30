@@ -414,7 +414,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
             @Override
             public String getText(Object element)
             {
-                return statuses.getHistoricStatus((Security) element).map(s -> s.getStatus().name()).orElse(""); //$NON-NLS-1$
+                return statuses.getHistoricStatus((Security) element).map(s -> s.getStatus().toString()).orElse(""); //$NON-NLS-1$
             }
 
             @Override
@@ -491,7 +491,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
             @Override
             public String getText(Object element)
             {
-                return statuses.getLatestStatus((Security) element).map(s -> s.getStatus().name()).orElse(""); //$NON-NLS-1$
+                return statuses.getLatestStatus((Security) element).map(s -> s.getStatus().toString()).orElse(""); //$NON-NLS-1$
             }
 
             @Override
