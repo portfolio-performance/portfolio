@@ -98,18 +98,17 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     /**
-     * Returns true if any of the securities require authentication for this
-     * feed.
+     * Returns the list of instrument that require authentication for this feed.
      */
-    public boolean requiresAuthentication(List<Security> securities)
+    public List<Security> requireAuthentication(List<Security> securities)
     {
-        return securities.stream().anyMatch(s -> {
+        return securities.stream().filter(s -> {
             if (!ID.equals(s.getFeed()))
                 return false;
             if (s.getTickerSymbol() == null)
                 return false;
             return !SAMPLE_SYMBOLS.contains(s.getTickerSymbol());
-        });
+        }).toList();
     }
 
     @Override
