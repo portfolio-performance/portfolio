@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.bancobilbaovizcayaargentaria;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -36,6 +37,8 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.BancoBilbaoVizcayaArgentariaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -259,10 +262,141 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-05-28T00:00"), hasShares(33), //
+                        hasDate("2025-05-28T00:00"), hasShares(33.00), //
                         hasSource("Dividendos01.txt"), //
                         hasAmount("EUR", 3.57), hasGrossValue("EUR", 7.83), //
                         hasTaxes("EUR", 2.44), hasFees("EUR", 1.82))));
+    }
+
+    @Test
+    public void testDividendos02()
+    {
+        var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.ALPHABET INC CLASE-A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-16T00:00"), hasShares(6.00), //
+                        hasSource("Dividendos02.txt"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
+                        hasForexGrossValue("USD", 1.26), //
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInEUR()
+    {
+        var security = new Security("ACC.ALPHABET INC CLASE-A", "EUR");
+        security.setIsin("US02079K3059");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-16T00:00"), hasShares(6.00), //
+                        hasSource("Dividendos02.txt"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 1.08), //
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.75), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testComisiones01()
+    {
+        var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Comisiones01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(4L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, "USD");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.AMAZON -USD-"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.APPLE INC"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.ALPHABET INC CLASE-A"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ACC.SIRIUS XM HOLDINGS INC"), //
+                        hasCurrencyCode("USD"))));
+
+        // check fees transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasSource("Comisiones01.txt"), //
+                        hasAmount("USD", 16.50), hasGrossValue("USD", 16.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasSource("Comisiones01.txt"), //
+                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasSource("Comisiones01.txt"), //
+                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-06-30T00:00"), hasShares(0.00), //
+                        hasSource("Comisiones01.txt"), //
+                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
 }
