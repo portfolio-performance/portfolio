@@ -1148,7 +1148,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Bareinzahlung am GA" //
                                         + "|sonstige Buchung" //
                                         + "|Eingang Inst\\.Paym\\." //
-                                        + "|Eingang Echtzeit.berw" //
+                                        + "|Eingang Echtzeit.berw"
+                                        + "|Eingang Echtzeit.bw\\." //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
                                         + "|Basislastschrift" //
@@ -1190,7 +1191,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("Kartenzahlung FW".equals(v.get("note")))
                                 v.put("note", "Kartenzahlung (Fremdwährung)");
 
-                            if ("Eingang Echtzeitüberw".equals(v.get("note")))
+                            if ("Eingang Echtzeitübw.".equals(v.get("note")))
+                                v.put("note", "Eingang Echtzeitüberweisung");
+
+                            if ("Eingang Echtzeitüberw.".equals(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
                             if ("Bareinzahlung am GA".equals(v.get("note")))

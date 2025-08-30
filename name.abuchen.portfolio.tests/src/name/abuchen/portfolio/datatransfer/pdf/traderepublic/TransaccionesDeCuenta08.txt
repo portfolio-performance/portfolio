@@ -1,0 +1,78 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+BOtmCYe aQdYxNd bqyYmETu PÁGINA 1 de 3
+Calle szOjzzbsaOxKS 16, 85100 FECHA 01 ago 2025 - 15 ago 2025
+hOoF Yl Ogo Cfioek, ES IBAN ES123456789123614443811
+BIC CwjDyTP2QPg
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta corriente 34.059,90 € 78,02 € 417,90 € 33.720,02 €
+TRANSACCIONES DE CUENTA
+ENTRADA SALIDA DE 
+FECHA TIPO DESCRIPCIÓN BALANCE
+DE DINERO DINERO
+01 ago 
+Pago de intereses Interest payment 47,64 € 34.107,54 €
+2025
+01 ago Transacción con 
+hiVhai 119,75 € 33.987,79 €
+2025 tarjeta
+02 ago Transacción con 
+COOP. IcaSem lLoww 7,94 € 33.979,85 €
+2025 tarjeta
+02 ago Transferencia 
+Outgoing transfer for JtwYTd FKqXQ bEudwBb 20,00 € 33.959,85 €
+2025 SEPA inmediata
+03 ago Transferencia 
+Incoming transfer from vyZLCu nmjitnt LwTujL 20,00 € 33.979,85 €
+2025 SEPA inmediata
+04 ago 
+Recompensa Your Saveback payment 10,38 € 33.990,23 €
+2025
+06 ago Savings plan execution IE0031786696 Vanguard Investment Series PLC - Vanguard 
+Comercio 150,00 € 33.840,23 €
+2025 Emerging Markets Stock Index Fund EUR Acc, quantity: 0.674458
+06 ago Savings plan execution IE0031786696 Vanguard Investment Series PLC - Vanguard 
+Comercio 12,35 € 33.827,88 €
+2025 Emerging Markets Stock Index Fund EUR Acc, quantity: 0.046672
+09 ago Transacción con 
+MwjqMZ 51,04 € 33.776,84 €
+2025 tarjeta
+15 ago Transacción con 
+APPLUS YBRMgv uEYJ MaMGLK 56,82 € 33.720,02 €
+2025 tarjeta
+RESUMEN DEL BALANCE
+a 15 ago 2025
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 16 ago 2025 Página 1 de 3
+CUENTAS COLECTIVAS SALDO
+Citibank 33.720,02 €
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 16 ago 2025 Página 2 de 3
+NOTAS SOBRE EL EXTRACTO DE CUENTA
+Comprueba el extracto de tu cuenta, ya que las objeciones deben presentarse/plantearse de inmediato. Ten presente que el saldo de la cuenta indicado 
+no tiene en cuenta la fecha valor de las reservas o transacciones individuales, es decir, el importe indicado no corresponde necesariamente al saldo de la 
+cuenta en cuestión para el cálculo de intereses. Se considera que un extracto de saldo periódico se ha aprobado si no presentas ninguna objeción en el 
+plazo de 6 semanas. Para cumplir el plazo, solo tienes que presentar una objeción a través de nuestro servicio de atención al cliente (chat). Todos los 
+chats están sujetos a una revisión independiente por parte del departamento de Auditoría Interna. En relación con los contratos subyacentes, este 
+extracto de cuenta se considera una factura en el sentido de la Ley alemana del IVA (UStG) según el número de cuenta indicado. Los saldos mantenidos 
+en bancos depositarios están protegidos hasta 100 000 € cada uno por el sistema de protección de depósitos del banco depositario. Las participaciones 
+en fondos del mercado monetario cualificados (FMMC) están protegidas en el improbable caso de insolvencia de Trade Republic. Encontrarás más 
+información sobre la protección de tus fondos en https://support.traderepublic.com.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 16 ago 2025 Página 3 de 3

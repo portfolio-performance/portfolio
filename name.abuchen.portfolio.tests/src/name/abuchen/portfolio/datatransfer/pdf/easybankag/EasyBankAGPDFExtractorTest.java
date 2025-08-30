@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -1456,6 +1457,68 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf33()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf33.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02209S1033"), hasWkn(null), hasTicker(null), //
+                        hasName("Altria Group Inc. Registered Shares DL -,333"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-08-24T09:04:25"), hasShares(1.00), //
+                        hasSource("Kauf33.txt"), //
+                        hasNote("Auftrags-Nr.: 28715469 | Limit: 41,500000"), //
+                        hasAmount("EUR", 53.14), hasGrossValue("EUR", 41.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.69 + 2.00 + 8.95))));
+    }
+
+    @Test
+    public void testWertpapierKauf34()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf34.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02209S1033"), hasWkn(null), hasTicker(null), //
+                        hasName("Altria Group Inc. Registered Shares DL -,333"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2021-08-24T09:04:25"), hasShares(29.00), //
+                        hasSource("Kauf34.txt"), //
+                        hasNote("Auftrags-Nr.: 28715469 | Limit: 41,500000"), //
+                        hasAmount("EUR", 1203.50), hasGrossValue("EUR", 1203.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
@@ -1701,6 +1764,45 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Verkauf06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 109.69), hasGrossValue("EUR", 109.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf07()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9344231041"), hasWkn(null), hasTicker(null), //
+                        hasName("Warner Bros. Discovery Inc. Reg. Shares Series A DL-,01"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2022-05-23T00:00"), hasShares(0.383), //
+                        hasSource("Verkauf07.txt"), //
+                        hasNote("Auftrags-Nr.: 66867637"), //
+                        hasAmount("EUR", 6.27), hasGrossValue("EUR", 6.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2022-05-23T00:00"), hasShares(0.383), //
+                        hasSource("Verkauf07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.61), hasGrossValue("EUR", 0.61), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -2807,6 +2909,375 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testDividende21()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3765461070"), hasWkn(null), hasTicker(null), //
+                        hasName("Gladstone Investment Corp. Registered Shares DL -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-02-02T00:00"), hasShares(120.00), //
+                        hasSource("Dividende21.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.11), hasGrossValue("EUR", 7.07), //
+                        hasForexGrossValue("USD", 8.16), //
+                        hasTaxes("EUR", 1.94), hasFees("EUR", 0.02))));
+    }
+
+    @Test
+    public void testDividende21WithSecurityInEUR()
+    {
+        var security = new Security("Gladstone Investment Corp. Registered Shares DL -,001", "EUR");
+        security.setIsin("US3765461070");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-02-02T00:00"), hasShares(120.00), //
+                        hasSource("Dividende21.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.11), hasGrossValue("EUR", 7.07), //
+                        hasTaxes("EUR", 1.94), hasFees("EUR", 0.02), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende22()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3765461070"), hasWkn(null), hasTicker(null), //
+                        hasName("Gladstone Investment Corp. Registered Shares DL -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-02-03T00:00"), hasShares(120.00), //
+                        hasSource("Dividende22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.47), hasGrossValue("EUR", 7.58), //
+                        hasForexGrossValue("USD", 8.40), //
+                        hasTaxes("EUR", 2.09), hasFees("EUR", 0.02))));
+    }
+
+    @Test
+    public void testDividende22WithSecurityInEUR()
+    {
+        var security = new Security("Gladstone Investment Corp. Registered Shares DL -,001", "EUR");
+        security.setIsin("US3765461070");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-02-03T00:00"), hasShares(120.00), //
+                        hasSource("Dividende22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.47), hasGrossValue("EUR", 7.58), //
+                        hasTaxes("EUR", 2.09), hasFees("EUR", 0.02), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende23()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002875804"), hasWkn(null), hasTicker(null), //
+                        hasName("BRITISH AMERICAN TOBACCO PLC Registered Shares LS -,25"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-05-06T00:00"), hasShares(100.00), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 46.60), hasGrossValue("EUR", 64.51), //
+                        hasForexGrossValue("GBP", 54.45), //
+                        hasTaxes("EUR", 17.75), hasFees("EUR", 0.16))));
+    }
+
+    @Test
+    public void testDividende23WithSecurityInEUR()
+    {
+        var security = new Security("BRITISH AMERICAN TOBACCO PLC Registered Shares LS -,25", "EUR");
+        security.setIsin("GB0002875804");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-05-06T00:00"), hasShares(100.00), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 46.60), hasGrossValue("EUR", 64.51), //
+                        hasTaxes("EUR", 17.75), hasFees("EUR", 0.16), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende24()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002875804"), hasWkn(null), hasTicker(null), //
+                        hasName("BRITISH AMERICAN TOBACCO PLC Registered Shares LS -,25"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 48.59), hasGrossValue("EUR", 67.27), //
+                        hasForexGrossValue("GBP", 57.72), //
+                        hasTaxes("EUR", 18.51), hasFees("EUR", 0.17))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18.50), hasGrossValue("EUR", 18.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende24WithSecurityInEUR()
+    {
+        var security = new Security("BRITISH AMERICAN TOBACCO PLC Registered Shares LS -,25", "EUR");
+        security.setIsin("GB0002875804");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 48.59), hasGrossValue("EUR", 67.27), //
+                        hasTaxes("EUR", 18.51), hasFees("EUR", 0.17), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-02-03T00:00"), hasShares(100.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 18.50), hasGrossValue("EUR", 18.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividendeStorno01()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3765461070"), hasWkn(null), hasTicker(null), //
+                        hasName("Gladstone Investment Corp. Registered Shares DL -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2021-01-04T00:00"), hasShares(180.00), //
+                                        hasSource("DividendeStorno01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 7.38), hasGrossValue("EUR", 10.22), //
+                                        hasForexGrossValue("USD", 12.60), //
+                                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.03)))));
+    }
+
+    @Test
+    public void testDividendeStorno01WithSecurityInEUR()
+    {
+        var security = new Security("Gladstone Investment Corp. Registered Shares DL -,001", "EUR");
+        security.setIsin("US3765461070");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2021-01-04T00:00"), hasShares(180.00), //
+                                        hasSource("DividendeStorno01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 7.38), hasGrossValue("EUR", 10.22), //
+                                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.03), //
+                                        check(tx -> {
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
+                                            account.setCurrencyCode("EUR");
+                                            var s = c.process((AccountTransaction) tx, account);
+                                            assertThat(s, is(Status.OK_STATUS));
+                                        })))));
+    }
+
+    @Test
     public void testSteuerkorrektur01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
@@ -3073,6 +3544,72 @@ public class EasyBankAGPDFExtractorTest
                                         hasSource("Umtausch01.txt"), //
                                         hasNote("Auftrags-Nr.: 17374528 - 28.01.2025"), //
                                         hasAmount("EUR", 14.85), hasGrossValue("EUR", 14.85), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testAusbuchungWegenTitelumtausch01()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AusbuchungWegenTitelumtausch01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4592001014"), hasWkn(null), hasTicker(null), //
+                        hasName("INTL BUSINESS MACHINES CORP. Registered Shares DL -,20"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2021-10-25T00:00"), hasShares(4.00), //
+                                        hasSource("AusbuchungWegenTitelumtausch01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testKapitalmaßnahmeWegenEntflechtung01()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KapitalmaßnahmeWegenEntflechtung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00B03MLX29"), hasWkn(null), hasTicker(null), //
+                        hasName("Shell PLC Reg. Shares Class A EO -,07"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2022-01-28T00:00"), hasShares(50.00), //
+                                        hasSource("KapitalmaßnahmeWegenEntflechtung01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
