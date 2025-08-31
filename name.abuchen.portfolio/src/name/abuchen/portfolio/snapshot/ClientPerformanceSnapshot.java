@@ -443,6 +443,8 @@ public class ClientPerformanceSnapshot
 
                 switch (t.getType())
                 {
+                    case SELL_OPTION:
+                    case BUY_OPTION:
                     case DIVIDENDS:
                     case INTEREST:
                         addEarningTransaction(account, t, mEarnings, earningsBySecurity, mFees, mTaxes, feesBySecurity,
@@ -620,6 +622,8 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DIVIDENDS:
+                    case SELL_OPTION:
+                    case BUY_OPTION:
                     case INTEREST:
                     case DEPOSIT:
                     case TAX_REFUND:

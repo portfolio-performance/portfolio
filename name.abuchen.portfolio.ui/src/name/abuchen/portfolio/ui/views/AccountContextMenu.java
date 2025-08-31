@@ -95,6 +95,20 @@ public class AccountContextMenu
                             .with(account) //
                             .with(security) //
                             .addTo(manager);
+
+            new OpenDialogAction(owner, Messages.SecurityMenuOptionSell + "...") //$NON-NLS-1$
+                            .type(AccountTransactionDialog.class) //
+                            .parameters(AccountTransaction.Type.SELL_OPTION) //
+                            .with(account) //
+                            .with(security) //
+                            .addTo(manager);
+
+            new OpenDialogAction(owner, Messages.SecurityMenuOptionBuy + "...") //$NON-NLS-1$
+                            .type(AccountTransactionDialog.class) //
+                            .parameters(AccountTransaction.Type.BUY_OPTION) //
+                            .with(account) //
+                            .with(security) //
+                            .addTo(manager);
         }
     }
 }

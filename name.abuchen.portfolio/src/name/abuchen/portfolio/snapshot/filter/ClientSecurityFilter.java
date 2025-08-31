@@ -19,7 +19,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 
 /**
  * Creates a Client that does only contain the specified securities and their
- * related transactions (buy, sell, deliveries, dividends, taxes, fees).
+ * related transactions (buy, sell, deliveries, dividends, option premiums, taxes, fees).
  */
 public class ClientSecurityFilter implements ClientFilter
 {
@@ -111,6 +111,7 @@ public class ClientSecurityFilter implements ClientFilter
         switch (type)
         {
             case DIVIDENDS:
+            case SELL_OPTION:
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
@@ -123,6 +124,20 @@ public class ClientSecurityFilter implements ClientFilter
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                                 amount + taxes, null, AccountTransaction.Type.REMOVAL));
+                break;
+            case BUY_OPTION:
+                taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
+                amount = t.getAmount();
+
+                copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                                t.getSecurity(), t.getType());
+
+                t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
+
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(copy);
+                getAccount.apply((Account) pair.getOwner())
+                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                                amount + taxes, null, AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);

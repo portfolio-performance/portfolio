@@ -203,7 +203,7 @@ public class PortfolioClientFilter implements ClientFilter
     }
 
     private void collectSecurityRelevantTx(Portfolio portfolio, ReadOnlyAccount pseudoAccount,
-                    Set<Security> usedSecurities, Set<AccountTransaction> processedDividendTx)
+                    Set<Security> usedSecurities, Set<AccountTransaction> processedSecurityTx)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -222,23 +222,33 @@ public class PortfolioClientFilter implements ClientFilter
                 case FEES_REFUND:
                     // security must be non-null -> tax refund is relevant for
                     // performance of security
+                case SELL_OPTION:
                 case DIVIDENDS:
-                    if (!processedDividendTx.contains(t))
+                    if (!processedSecurityTx.contains(t))
                     {
                         pseudoAccount.internalAddTransaction(t);
                         pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
                                         t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.REMOVAL));
-                        processedDividendTx.add(t);
+                        processedSecurityTx.add(t);
                     }
                     break;
-                case TAXES:
-                case FEES:
-                    if (!processedDividendTx.contains(t))
+                case BUY_OPTION:
+                    if (!processedSecurityTx.contains(t))
                     {
                         pseudoAccount.internalAddTransaction(t);
                         pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
                                         t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
-                        processedDividendTx.add(t);
+                        processedSecurityTx.add(t);
+                    }
+                    break;
+                case TAXES:
+                case FEES:
+                    if (!processedSecurityTx.contains(t))
+                    {
+                        pseudoAccount.internalAddTransaction(t);
+                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
+                        processedSecurityTx.add(t);
                     }
                     break;
                 case BUY:
@@ -289,6 +299,7 @@ public class PortfolioClientFilter implements ClientFilter
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
+                case SELL_OPTION:
                 case TAX_REFUND:
                 case FEES_REFUND:
                     if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
@@ -297,6 +308,7 @@ public class PortfolioClientFilter implements ClientFilter
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     break;
                 case TAXES:
+                case BUY_OPTION:
                 case FEES:
                     if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
                         pseudoAccount.internalAddTransaction(t);

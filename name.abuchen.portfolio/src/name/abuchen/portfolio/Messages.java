@@ -241,6 +241,7 @@ public class Messages extends NLS
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
+    public static String MsgCheckOptionPremiumMustHaveASecurity;
     public static String MsgCheckGrossValueUnitForexMismatch;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;

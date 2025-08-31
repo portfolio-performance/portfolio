@@ -476,6 +476,22 @@ import name.abuchen.portfolio.money.Money;
 
                     break;
 
+                case SELL_OPTION:
+                    AccountTransaction sellOption = new AccountTransaction(newTransaction.getUuid());
+                    sellOption.setType(AccountTransaction.Type.SELL_OPTION);
+                    loadCommonTransaction(newTransaction, sellOption, lookup, false);
+                    lookup.getAccount(newTransaction.getAccount()).addTransaction(sellOption);
+
+                    break;
+                
+                case BUY_OPTION:
+                    AccountTransaction buyOption = new AccountTransaction(newTransaction.getUuid());
+                    buyOption.setType(AccountTransaction.Type.BUY_OPTION);
+                    loadCommonTransaction(newTransaction, buyOption, lookup, false);
+                    lookup.getAccount(newTransaction.getAccount()).addTransaction(buyOption);
+
+                    break;
+
                 case INTEREST:
                     AccountTransaction interest = new AccountTransaction(newTransaction.getUuid());
                     interest.setType(AccountTransaction.Type.INTEREST);
@@ -1094,6 +1110,12 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DIVIDENDS:
                 newTransaction.setTypeValue(PTransaction.Type.DIVIDEND_VALUE);
+                break;
+            case SELL_OPTION:
+                newTransaction.setTypeValue(PTransaction.Type.SELL_OPTION_VALUE);
+                break;
+            case BUY_OPTION:
+                newTransaction.setTypeValue(PTransaction.Type.BUY_OPTION_VALUE);
                 break;
             case FEES:
                 newTransaction.setTypeValue(PTransaction.Type.FEE_VALUE);

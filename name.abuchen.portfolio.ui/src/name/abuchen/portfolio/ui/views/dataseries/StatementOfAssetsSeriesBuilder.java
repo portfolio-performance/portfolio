@@ -76,6 +76,12 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case DIVIDENDS_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getDividends(), Values.Amount.divider());
                 break;
+            case OPTION_PREMIUMS:
+                values = toDouble(clientIndex.getOptionPremiums(), Values.Amount.divider());
+                break;
+            case OPTION_PREMIUMS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getOptionPremiums(), Values.Amount.divider());
+                break;
             case INTEREST:
                 values = toDouble(clientIndex.getInterest(), Values.Amount.divider());
                 break;
@@ -89,10 +95,10 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 values = accumulateAndToDouble(clientIndex.getInterestCharge(), Values.Amount.divider());
                 break;
             case EARNINGS:
-                values = toDouble(add(clientIndex.getDividends(), clientIndex.getInterest()), Values.Amount.divider());
+                values = toDouble(add(add(clientIndex.getDividends(), clientIndex.getInterest()), clientIndex.getOptionPremiums()), Values.Amount.divider());
                 break;
             case EARNINGS_ACCUMULATED:
-                values = accumulateAndToDouble(add(clientIndex.getDividends(), clientIndex.getInterest()),
+                values = accumulateAndToDouble(add(add(clientIndex.getDividends(), clientIndex.getInterest()), clientIndex.getOptionPremiums()),
                                 Values.Amount.divider());
                 break;
             case FEES:

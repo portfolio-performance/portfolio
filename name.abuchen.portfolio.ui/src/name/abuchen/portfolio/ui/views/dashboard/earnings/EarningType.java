@@ -11,8 +11,13 @@ enum EarningType
     EARNINGS(Messages.LabelDividends + " + " + Messages.LabelInterest, //$NON-NLS-1$
                     t -> t.getType() == AccountTransaction.Type.DIVIDENDS
                                     || t.getType() == AccountTransaction.Type.INTEREST
+                                    || t.getType() == AccountTransaction.Type.SELL_OPTION
+                                    || t.getType() == AccountTransaction.Type.BUY_OPTION
                                     || t.getType() == AccountTransaction.Type.INTEREST_CHARGE), //
     DIVIDENDS(Messages.LabelDividends, t -> t.getType() == AccountTransaction.Type.DIVIDENDS), //
+    OPTION_PREMIUMS(Messages.LabelOptionPremiums, 
+                    t -> t.getType() == AccountTransaction.Type.SELL_OPTION
+                                    || t.getType() == AccountTransaction.Type.BUY_OPTION), //
     INTEREST(Messages.LabelInterest, t -> t.getType() == AccountTransaction.Type.INTEREST
                     || t.getType() == AccountTransaction.Type.INTEREST_CHARGE);
 
@@ -44,6 +49,8 @@ enum EarningType
                 return PaymentsViewModel.Mode.EARNINGS;
             case DIVIDENDS:
                 return PaymentsViewModel.Mode.DIVIDENDS;
+            case OPTION_PREMIUMS:
+                return PaymentsViewModel.Mode.OPTION_PREMIUMS;
             case INTEREST:
                 return PaymentsViewModel.Mode.INTEREST;
             default:

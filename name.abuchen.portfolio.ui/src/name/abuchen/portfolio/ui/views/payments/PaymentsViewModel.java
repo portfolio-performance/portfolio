@@ -38,18 +38,19 @@ public class PaymentsViewModel
     public enum Mode
     {
         DIVIDENDS(Messages.LabelDividends, AccountTransaction.Type.DIVIDENDS), //
+        OPTION_PREMIUMS(Messages.LabelOptionPremiums, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION), //
         INTEREST(Messages.LabelInterest, AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE), //
-        EARNINGS(Messages.LabelEarnings, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
-                        AccountTransaction.Type.INTEREST_CHARGE), //
-        TAXES(Messages.ColumnTaxes, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
-                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
+        EARNINGS(Messages.LabelEarnings, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION, 
+                        AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE), //
+        TAXES(Messages.ColumnTaxes, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION, 
+                        AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
                         AccountTransaction.Type.TAX_REFUND), //
-        FEES(Messages.ColumnFees, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
-                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
+        FEES(Messages.ColumnFees, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION, 
+                        AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
                         AccountTransaction.Type.FEES_REFUND), //
         TRADES(Messages.LabelPaymentsTradeProfitLoss, null), //
-        ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, //$NON-NLS-1$
-                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
+        ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.SELL_OPTION, AccountTransaction.Type.BUY_OPTION, 
+                        AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
                         AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
                         AccountTransaction.Type.FEES_REFUND), //
         SAVING(Messages.LabelSaving, AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.REMOVAL);

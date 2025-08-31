@@ -911,6 +911,8 @@ public class ClientFactory
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
+            case 66:
+                // added SELL_OPTION, BUY_OPTION transaction type
             case Client.CURRENT_VERSION:
 
                 // no need to create a new version. For now, always remove.
@@ -1168,6 +1170,8 @@ public class ClientFactory
                     switch (accountTransaction.getType())
                     {
                         case DIVIDENDS:
+                        case SELL_OPTION:
+                        case BUY_OPTION:
                         case INTEREST:
                             Long shares = account2shares.get(t.getOwner());
                             accountTransaction.setShares(shares != null ? shares : 0);

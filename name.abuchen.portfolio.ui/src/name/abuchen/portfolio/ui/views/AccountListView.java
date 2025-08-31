@@ -364,6 +364,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
                 case DEPOSIT:
                 case INTEREST:
                 case DIVIDENDS:
+                case SELL_OPTION:
                 case TAX_REFUND:
                 case SELL:
                 case TRANSFER_IN:
@@ -372,6 +373,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
                     break;
                 case REMOVAL:
                 case FEES:
+                case BUY_OPTION:
                 case INTEREST_CHARGE:
                 case TAXES:
                 case BUY:

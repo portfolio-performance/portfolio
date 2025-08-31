@@ -23,15 +23,17 @@ public class GroupEarningsByAccount
     {
         private final Account account;
         private final Money dividends;
+        private final Money optionPremiums;
         private final Money fees;
         private final Money interest;
         private final Money sum;
         private final Money taxes;
 
-        public Item(Account account, Money dividends, Money fees, Money interest, Money sum, Money taxes)
+        public Item(Account account, Money dividends, Money optionPremiums, Money fees, Money interest, Money sum, Money taxes)
         {
             this.account = account;
             this.dividends = dividends;
+            this.optionPremiums = optionPremiums;
             this.fees = fees;
             this.interest = interest;
             this.sum = sum;
@@ -46,6 +48,11 @@ public class GroupEarningsByAccount
         public Money getDividends()
         {
             return dividends;
+        }
+
+        public Money getOptionPremiums()
+        {
+            return optionPremiums;
         }
 
         public Money getFees()
@@ -86,6 +93,7 @@ public class GroupEarningsByAccount
         for (Account account : client.getAccounts())
         {
             MutableMoney dividends = MutableMoney.of(account.getCurrencyCode());
+            MutableMoney optionPremiums = MutableMoney.of(account.getCurrencyCode());
             MutableMoney fees = MutableMoney.of(account.getCurrencyCode());
             MutableMoney interest = MutableMoney.of(account.getCurrencyCode());
             MutableMoney sum = MutableMoney.of(account.getCurrencyCode());
@@ -99,6 +107,18 @@ public class GroupEarningsByAccount
                     {
                         case DIVIDENDS:
                             dividends.add(at.getGrossValue());
+                            sum.add(at.getGrossValue());
+                            taxes.add(at.getUnitSum(Unit.Type.TAX));
+                            fees.add(at.getUnitSum(Unit.Type.FEE));
+                            break;
+                        case BUY_OPTION:
+                            optionPremiums.subtract(at.getGrossValue());
+                            sum.subtract(at.getGrossValue());
+                            taxes.add(at.getUnitSum(Unit.Type.TAX));
+                            fees.add(at.getUnitSum(Unit.Type.FEE));
+                            break;
+                        case SELL_OPTION:
+                            optionPremiums.add(at.getGrossValue());
                             sum.add(at.getGrossValue());
                             taxes.add(at.getUnitSum(Unit.Type.TAX));
                             fees.add(at.getUnitSum(Unit.Type.FEE));
@@ -154,9 +174,9 @@ public class GroupEarningsByAccount
 
             }
 
-            if (!dividends.isZero() || !fees.isZero() || !interest.isZero() || !sum.isZero() || !taxes.isZero())
+            if (!dividends.isZero() || !optionPremiums.isZero() || !fees.isZero() || !interest.isZero() || !sum.isZero() || !taxes.isZero())
             {
-                Item item = new Item(account, dividends.toMoney(), fees.toMoney(), interest.toMoney(), sum.toMoney(),
+                Item item = new Item(account, dividends.toMoney(), optionPremiums.toMoney(), fees.toMoney(), interest.toMoney(), sum.toMoney(),
                                 taxes.toMoney());
                 items.add(item);
             }
