@@ -1,0 +1,61 @@
+package name.abuchen.portfolio.online.impl.TLVMarket;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.util.WebAccess;
+
+public class TLVIndices
+{
+    private final String URL = "api.tase.co.il"; //$NON-NLS-1$
+    private final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
+
+    public List<SecurityListing> getAllSecurities(Language lang)
+    {
+        try
+        {
+            return ResponsetoSecurityList(rpcAllIndices(lang));
+        }
+        catch (IOException e)
+        {
+            List<SecurityListing> listing = new ArrayList<>();
+            return listing;
+        }
+    }
+
+    @VisibleForTesting
+    public String rpcAllIndices(Language lang) throws IOException
+    {
+        // https://api.tase.co.il/api/content/searchentities?lang=1
+        String response = new WebAccess(URL, PATH)
+                        .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$
+                        .addParameter("lang", lang.toString()) //$NON-NLS-1$
+                        .addHeader("Accept", "*/*") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addHeader("Content-Type", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
+                        .get();
+
+        return response;
+    }
+
+    private List<SecurityListing> ResponsetoSecurityList(String response)
+    {
+        Gson gson = new Gson();
+        Type SecurityListingType = new TypeToken<List<SecurityListing>>()
+        {
+        }.getType();
+        List<SecurityListing> list = gson.fromJson(response, SecurityListingType);
+
+        return list;
+    }
+
+}
