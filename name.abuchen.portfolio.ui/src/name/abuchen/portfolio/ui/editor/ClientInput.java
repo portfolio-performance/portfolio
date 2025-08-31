@@ -14,7 +14,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import jakarta.inject.Inject;
 
@@ -45,7 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
-import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -57,6 +56,7 @@ import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateConfig;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
@@ -576,9 +576,12 @@ public class ClientInput
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            Predicate<Security> onlyActive = s -> !s.isRetired();
+            var config = PriceUpdateConfig
+                            .fromCode(getPreferenceStore().getString(UIConstants.Preferences.UPDATE_QUOTES_STRATEGY));
+            var converter = new CurrencyConverterImpl(getExchangeRateProviderFacory(), client.getBaseCurrency());
+            var predicate = config.getPredicate(converter, client);
 
-            Job initialQuoteUpdate = new UpdatePricesJob(client, onlyActive,
+            Job initialQuoteUpdate = new UpdatePricesJob(client, predicate,
                             EnumSet.of(UpdatePricesJob.Target.LATEST, UpdatePricesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
@@ -597,7 +600,7 @@ public class ClientInput
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(5000);
-            new UpdateDividendsJob(getClient(), onlyActive).schedule(7000);
+            new UpdateDividendsJob(getClient(), predicate).schedule(7000);
         }
     }
 
