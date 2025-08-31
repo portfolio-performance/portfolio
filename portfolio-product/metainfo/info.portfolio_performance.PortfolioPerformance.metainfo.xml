@@ -37,7 +37,15 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
-     <release version="0.79.0" date="2025-08-30">
+    <release version="0.79.1" date="2025-08-31">
+      <description>
+        <ul>
+          <li>Fix: The new configuration for which instrument prices are updated at startup was not applied.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die neue Konfiguration, welche Kurse beim Start aktualisiert werden sollen, nicht angewendet wurde.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.79.0" date="2025-08-30">
       <description>
         <ul>
           <li>New: View for the price update status.</li>
@@ -69,8 +77,7 @@
         </ul>
       </description>
     </release>
-
-     <release version="0.78.1" date="2025-08-06">
+    <release version="0.78.1" date="2025-08-06">
       <description>
         <ul>
           <li>Fix: Reverted changes to the sorting heuristic if multiple transactions are on the same day – some with, some without time.</li>
@@ -80,8 +87,7 @@
         </ul>
       </description>
     </release>
-
-     <release version="0.78.0" date="2025-08-03">
+    <release version="0.78.0" date="2025-08-03">
       <description>
         <ul>
           <li>New: The structures of an taxonomy can now be exported and imported via JSON.</li>
