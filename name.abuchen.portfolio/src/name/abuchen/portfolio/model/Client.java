@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 
 import javax.crypto.SecretKey;
 
+import com.google.protobuf.Any;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -65,6 +67,12 @@ public class Client
     private Map<String, String> properties;
     private ClientSettings settings;
 
+    /**
+     * Extension data for third-party extensions using protobuf Any type. This
+     * preserves unknown extension data during load/save operations.
+     */
+    private transient List<Any> extensions = new ArrayList<>(); // NOSONAR
+
     @Deprecated
     private String industryTaxonomyId;
 
@@ -106,6 +114,10 @@ public class Client
             settings = new ClientSettings();
         else
             settings.doPostLoadInitialization();
+
+        // Add this missing initialization:
+        if (extensions == null)
+            extensions = new ArrayList<>();
     }
 
     /* package */int getVersion()
@@ -142,6 +154,41 @@ public class Client
     public void setBaseCurrency(String baseCurrency)
     {
         propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
+    }
+
+    /**
+     * Get the list of extension data for third-party extensions.
+     * 
+     * @return unmodifiable list of protobuf Any objects containing extension
+     *         data
+     */
+    public List<Any> getExtensions()
+    {
+        return Collections.unmodifiableList(extensions);
+    }
+
+    /**
+     * Set the list of extension data for third-party extensions.
+     * 
+     * @param extensions
+     *            list of protobuf Any objects containing extension data
+     */
+    public void setExtensions(List<Any> extensions)
+    {
+        this.extensions = new ArrayList<>(extensions != null ? extensions : Collections.emptyList());
+    }
+
+    /**
+     * Add an extension to the client.
+     * 
+     * @param extension
+     *            protobuf Any object containing extension data
+     */
+    public void addExtension(Any extension)
+    {
+        if (extension != null)
+            this.extensions = new ArrayList<>();
+        this.extensions.add(extension);
     }
 
     public List<InvestmentPlan> getPlans()
