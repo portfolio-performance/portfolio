@@ -115,7 +115,7 @@ public class TLVQuoteFeed implements QuoteFeed
         // LocalDate start = calculateStartDay();
 
         SecurityType type = getSecurityType(security.getWkn());
-        System.out.println("type " + type);
+        // System.out.println("type " + type); //$NON-NLS-1$
 
         try 
         {
@@ -143,7 +143,8 @@ public class TLVQuoteFeed implements QuoteFeed
             // Optional<String> quoteCurrency = Optional.of("ILA");
             // //$NON-NLS-1$
             Optional<String> quoteCurrency = getQuoteCurrency(security);
-            System.out.println("Currency Quote: " + quoteCurrency);
+            // System.out.println("Currency Quote: " +
+            // quoteCurrency);//$NON-NLS-1$
             
 
             // Unite Price
@@ -154,7 +155,8 @@ public class TLVQuoteFeed implements QuoteFeed
                 String p = value.get().trim();
                 long asPrice = asPrice(p);
                 long convertedPrice = convertILS(asPrice, quoteCurrency.orElse(null), security.getCurrencyCode());
-                System.out.println("Converted Price: " + quoteCurrency);
+                // System.out.println("Converted Price: " + quoteCurrency);
+                // //$NON-NLS-1$
                 price.setValue(convertedPrice);
             }
 
@@ -172,7 +174,7 @@ public class TLVQuoteFeed implements QuoteFeed
 
 
             // MarketVolume - OverallTurnOverUnits
-            Optional<String> marketvolume = extract(json, 0, "\"OverallTurnOverUnits\":", ","); //$NON-NLS-1$
+            Optional<String> marketvolume = extract(json, 0, "\"OverallTurnOverUnits\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (marketvolume.isPresent())
             {
@@ -185,7 +187,7 @@ public class TLVQuoteFeed implements QuoteFeed
             }
             
 
-            Optional<String> highrate = extract(json, 0, "\"HighRate\":", ","); //$NON-NLS-1$
+            Optional<String> highrate = extract(json, 0, "\"HighRate\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (highrate.isPresent())
             {
                 long asPrice = asPrice(highrate.get().trim());
@@ -197,7 +199,7 @@ public class TLVQuoteFeed implements QuoteFeed
             }
 
 
-            Optional<String> lowrate = extract(json, 0, "\"LowRate\":", ","); //$NON-NLS-1$
+            Optional<String> lowrate = extract(json, 0, "\"LowRate\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (lowrate.isPresent())
             {
                 String p = lowrate.get().trim();
@@ -285,21 +287,24 @@ public class TLVQuoteFeed implements QuoteFeed
         JSONObject jsonObject;
         try
         {
-            System.out.println("gettingPriceHistoryChunck from " + from + " to: " + to); //$NON-NLS-1$ //$NON-NLS-2$
+            // System.out.println("gettingPriceHistoryChunck from " + from + "
+            // to: " + to); //$NON-NLS-1$ //$NON-NLS-2$
             String pricehistory = getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
-            System.out.println("Price history " + pricehistory);
+            // System.out.println("Price history " + pricehistory);
+            // //$NON-NLS-1$
             // //$NON-NLS-1$
 
             jsonObject = (JSONObject) parser.parse(pricehistory);
-            System.out.println("Price history json " + jsonObject);
-            System.out.println(jsonObject.getClass()); // $NON-NLS-1$
+            // System.out.println("Price history json " + jsonObject);
+            // //$NON-NLS-1$
+            // System.out.println(jsonObject.getClass()); // $NON-NLS-1$
             // Access the "parent" object
             try
             {
             
                 JSONObject parentObject = (JSONObject) jsonObject.get("Table"); //$NON-NLS-1$
 
-                System.out.println("Table " + parentObject);
+                // System.out.println("Table " + parentObject); //$NON-NLS-1$
                 if (parentObject != null)
                 {
                     /*
@@ -318,12 +323,14 @@ public class TLVQuoteFeed implements QuoteFeed
                     {
                         String key = iterator.next();
                         Object value = parentObject.get(key);
-                        // String datevalue = ((String)
+                        // String datevalue = ((String) //$NON-NLS-1$
                         // value).get("AssetValue");
                         // String date = value.get("TradeDate");
-                        System.out.println("Key: " + key + ", Value: " + value);
+                        // System.out.println("Key: " + key + ", Value: " +
+                        // value); //$NON-NLS-1$ //$NON-NLS-2$
                         // $NON-NLS-1$ //$NON-NLS-2$
                         // System.out.println(datevalue + " " + date);
+                        // //$NON-NLS-1$
                     }
                 }
             }
@@ -331,19 +338,19 @@ public class TLVQuoteFeed implements QuoteFeed
             {
                 JSONArray parentObject = (JSONArray) jsonObject.get("Table"); //$NON-NLS-1$
 
-                System.out.println("Table found as an array");
+                // System.out.println("Table found as an array"); //$NON-NLS-1$
                 for (int i = 0; i < parentObject.size(); i++)
                 {
                     JSONObject item = (JSONObject) parentObject.get(i);
-                    System.out.println("Key: " + i + ", Value: " + item);
+                    // System.out.println("Key: " + i + ", Value: " + item);
 
-                    String strTradeDate = (String) item.get("TradeDate");
+                    String strTradeDate = (String) item.get("TradeDate"); //$NON-NLS-1$
                     LocalDate tradedate = null;
                     if (strTradeDate.length() > 0)
                     {
                         tradedate = TLVHelper.asDateTime(strTradeDate); // $NON-NLS-1$
                     }
-                    long curvalue = DoubletoLong(item, "SellPrice", quoteCurrency, security.getCurrencyCode());
+                    long curvalue = DoubletoLong(item, "SellPrice", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
 
                     LatestSecurityPrice curprice = new LatestSecurityPrice(tradedate, curvalue);
                     historicalprices.addPrice(curprice);
@@ -362,7 +369,8 @@ public class TLVQuoteFeed implements QuoteFeed
 
             if (ItemsObject != null)
             {
-                System.out.println("Price history Items " + ItemsObject); //$NON-NLS-1$
+                // System.out.println("Price history Items " + ItemsObject);
+                // //$NON-NLS-1$
 
                 // Iterate over the keys
                 for (int i = 0; i < ItemsObject.size(); i++)
@@ -371,7 +379,7 @@ public class TLVQuoteFeed implements QuoteFeed
                     LocalDate curdate = LocalDate.parse((String) item.get("TradeDate"), this.formatter); //$NON-NLS-1$
                     
                     // Rates from history are in ILS. Need to convert to ILA
-                    long curvalue = DoubletoLong(item, "CloseRate", quoteCurrency, security.getCurrencyCode());
+                    long curvalue = DoubletoLong(item, "CloseRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
                     // Double r = null;
                     // Long curvalue = null;
                     // Double closerate = (Double) item.get("CloseRate");
@@ -403,17 +411,19 @@ public class TLVQuoteFeed implements QuoteFeed
                     
                     // long lowvalue = convertILSToILA((Double)
                     // item.get("LowtRate")); //$NON-NLS-1$
-                    long lowvalue = DoubletoLong(item, "LowtRate", quoteCurrency, security.getCurrencyCode());
+                    long lowvalue = DoubletoLong(item, "LowtRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
 
                     // long highvalue = convertILSToILA((Double)
                     // item.get("HighRate")); //$NON-NLS-1$
-                    long highvalue = DoubletoLong(item, "HighRate", quoteCurrency, security.getCurrencyCode());
+                    long highvalue = DoubletoLong(item, "HighRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
                     
                     curprice.setHigh(highvalue);
                     curprice.setLow(lowvalue);
                     historicalprices.addPrice(curprice);
-                    System.out.println("Date " + curdate + " Value: " + curvalue); //$NON-NLS-1$ //$NON-NLS-2$
-                    System.out.println("High " + highvalue + " Low: " + highvalue); //$NON-NLS-1$ //$NON-NLS-2$
+                    // System.out.println("Date " + curdate + " Value: " +
+                    // curvalue); //$NON-NLS-1$ //$NON-NLS-2$
+                    // System.out.println("High " + highvalue + " Low: " +
+                    // highvalue); //$NON-NLS-1$ //$NON-NLS-2$
                 }
 
             }
@@ -440,13 +450,23 @@ public class TLVQuoteFeed implements QuoteFeed
         }
         catch (IndexOutOfBoundsException e)
         {
-            // Ignore
+            //
         }
+        catch (ClassCastException e)
+        {
+            longValue = (Long) item.get(str);
+            if (longValue != null && longValue > 0l)
+            {
+                long convertedprice = convertILS(Values.Quote.factorize(roundQuoteValue(longValue)),
+                                quoteCurrency.orElse(null), securityCurrency);
+                longValue = convertedprice;
+            }
+        }
+
         if (doublevalue != null && doublevalue.doubleValue() > 0)
         {
             long convertedprice = convertILS(Values.Quote.factorize(roundQuoteValue(doublevalue)),
-                            quoteCurrency.orElse(null),
-                            securityCurrency);
+                            quoteCurrency.orElse(null), securityCurrency);
             longValue = convertedprice;
         }
         else
@@ -565,7 +585,8 @@ public class TLVQuoteFeed implements QuoteFeed
                     Language lang) throws Exception
     {
         SecurityType type = getSecurityType(securityId);
-        System.out.println("Security type: " + type.getValue()); //$NON-NLS-1$
+        // System.out.println("Security type: " + type.getValue());
+        // //$NON-NLS-1$
         if (type == SecurityType.MUTUAL_FUND)
         {
             FundHistory fundHistory = TLVFunds.getPriceHistoryChunk(securityId, fromDate, toDate, page, lang);
@@ -695,8 +716,10 @@ public class TLVQuoteFeed implements QuoteFeed
     private SecurityType getSecurityType(String securityId)
     {
         Set<String> securitySet = mappedSecurities.get(securityId);
-        System.out.println("Securityset: " + securitySet + " " //$NON-NLS-1$ //$NON-NLS-2$
-                        + securitySet.contains(String.valueOf(SecurityType.SHARES.getValue())));
+        // System.out.println("Securityset: " + securitySet + " " //$NON-NLS-1$
+        // //$NON-NLS-2$
+        // +
+        // securitySet.contains(String.valueOf(SecurityType.SHARES.getValue())));
         if (securitySet.contains(String.valueOf(SecurityType.MUTUAL_FUND.getValue())))
         {
             return SecurityType.MUTUAL_FUND;
@@ -714,7 +737,7 @@ public class TLVQuoteFeed implements QuoteFeed
         // LatestSecurityPrice price = new LatestSecurityPrice();
         String json = ""; //$NON-NLS-1$
         SecurityType type = getSecurityType(security.getWkn());
-        System.out.println("Security is: " + security); //$NON-NLS-1$
+        // System.out.println("Security is: " + security); //$NON-NLS-1$
         try
         {
             if (type == SecurityType.MUTUAL_FUND)

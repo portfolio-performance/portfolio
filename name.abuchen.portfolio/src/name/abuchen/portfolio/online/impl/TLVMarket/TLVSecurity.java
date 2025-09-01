@@ -64,7 +64,7 @@ public class TLVSecurity
         JSONObject uploadData = new JSONObject();
         uploadData.put("dFrom", fromDate.toString()); //$NON-NLS-1$
         uploadData.put("dTo", toDate.toString()); //$NON-NLS-1$
-        uploadData.put("oID", securityId);
+        uploadData.put("oID", securityId); //$NON-NLS-1$
         uploadData.put("pageNum", Integer.toString(_page)); //$NON-NLS-1$
         uploadData.put("pType", Integer.toString(TYPE)); //$NON-NLS-1$
         uploadData.put("TotalRec", Integer.toString(RECORDS)); //$NON-NLS-1$
@@ -75,7 +75,7 @@ public class TLVSecurity
         String response = new WebAccess(URL, SECURITYHISTORYPATH) // $NON-NLS-1$
                                                                   // //$NON-NLS-2$
                         .addHeader("Content-Type", "application/json") //$NON-NLS-1$//$NON-NLS-2$
-                        .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$
                         .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("Content-Type", "application/json") //$NON-NLS-1$ //$NON-NLS-2$

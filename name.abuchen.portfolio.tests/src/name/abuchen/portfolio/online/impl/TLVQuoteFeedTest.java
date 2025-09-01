@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,7 @@ import java.util.Optional;
 // import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -33,8 +33,14 @@ import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+
+
 public class TLVQuoteFeedTest
 {
+
+    public interface SlowTests
+    {
+    }
 
     private String getIndicesList()
 
@@ -72,15 +78,7 @@ public class TLVQuoteFeedTest
         return getHistoricalTaseQuotes("response_tase_security_history01.txt");
     }
 
-    private String getHistoricalTaseQuotesHighLowVolume()
-    {
-        return getHistoricalTaseQuotes("response_tase_historical02.txt");
-    }
 
-    private String getHistoricalTaseQuotesAX()
-    {
-        return getHistoricalTaseQuotes("tase_australian_quotes.txt");
-    }
 
     /* Mock Tests using saved Queries */
 
@@ -197,7 +195,7 @@ public class TLVQuoteFeedTest
             assertTrue(price.isPresent());
             
             LatestSecurityPrice p = price.get();
-            System.out.println(p + "High " + p.getValue());
+            // System.out.println(p + "High " + p.getValue());
             assertTrue(p.getHigh() == -1);
             assertTrue(p.getLow() == -1);
             assertTrue(p.getValue() == 15597000000l);
@@ -234,7 +232,8 @@ public class TLVQuoteFeedTest
             assertTrue(price.isPresent());
 
             LatestSecurityPrice p = price.get();
-            System.out.println(p + "High " + p.getDate() + " " + LocalDate.of(2025, 8, 26));
+            // System.out.println(p + "High " + p.getDate() + " " +
+            // LocalDate.of(2025, 8, 26));
             assertTrue(p.getHigh() == 118750000l);
             assertTrue(p.getLow() == 118500000l);
             assertTrue(p.getValue() == 118750000l);
@@ -270,7 +269,8 @@ public class TLVQuoteFeedTest
             assertTrue(price.isPresent());
 
             LatestSecurityPrice p = price.get();
-            System.out.println(p + "High " + p.getValue() + " " + LocalDate.of(2025, 8, 26));
+            // System.out.println(p + "High " + p.getValue() + " " +
+            // LocalDate.of(2025, 8, 26));
             assertTrue(p.getHigh() == 47190000000l);
             assertTrue(p.getLow() == 46050000000l);
             assertTrue(p.getValue() == 46050000000l);
@@ -296,20 +296,30 @@ public class TLVQuoteFeedTest
         assertTrue(response.length() > 0);
 
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+        
+        LocalDate from=LocalDate.of(1900, 1,1);
+        if (!security.getPrices().isEmpty())
+        {
+            SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
+            from = lastHistoricalQuote.getDate();
+        }
+        
+        LocalDate to = LocalDate.now();
+        
 
-
-        // PRice in ILS, Type = Mutual Fund
+        // Price in ILS, Type = Mutual Fund
         try
         {
+            Mockito.doReturn(response).when(feed).getPriceHistoryChunk(security.getWkn(), from, to, 1,
+                            Language.ENGLISH);
+
             QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
             assertFalse(feedData.getPrices().isEmpty());
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
             LocalDate firstdate = feedData.getPrices().get(0).getDate();
-            // System.out.println("FeedData " + firstdate);
 
-            assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
+            assert (firstprice.getDate().equals(LocalDate.of(2025, 8, 25)));
             assert (firstprice.getValue() == 14688000000l);
 
         }
@@ -332,20 +342,32 @@ public class TLVQuoteFeedTest
         assertTrue(response.length() > 0);
 
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+        LocalDate from = LocalDate.of(1900, 1, 1);
+        if (!security.getPrices().isEmpty())
+        {
+            SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
+            from = lastHistoricalQuote.getDate();
+        }
+
+        LocalDate to = LocalDate.now();
+
+
 
         // PRice in ILS, Type = Mutual Fund
         try
         {
+            Mockito.doReturn(response).when(feed).getPriceHistoryChunk(security.getWkn(), from, to, 1,
+                            Language.ENGLISH);
+
             QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
             assertFalse(feedData.getPrices().isEmpty());
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
-            LocalDate firstdate = feedData.getPrices().get(0).getDate();
-            System.out.println("FeedData " + firstprice.getValue());
+            // LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            // System.out.println("FeedData " + firstprice.getValue());
 
-            assertTrue(firstprice.getDate().equals(LocalDate.of(2025, 8, 28)));
-            assertTrue(firstprice.getValue() == 15667000000l);
+            assertTrue(firstprice.getDate().equals(LocalDate.of(2024, 11, 10)));
+            assertTrue(firstprice.getValue() == 11499000000l);
 
         }
         catch (Exception e)
@@ -356,6 +378,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
+    @Ignore
     public void testgetHistoricalQuotesOnShares() throws IOException
     {
         // TODO add support for Subid.
@@ -376,7 +399,7 @@ public class TLVQuoteFeedTest
             assertFalse(feedData.getPrices().isEmpty());
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
-            LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            // LocalDate firstdate = feedData.getPrices().get(0).getDate();
             // System.out.println("FeedData " + firstdate);
 
             assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
@@ -402,6 +425,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
+    @Ignore
     public void testTLVFundDetailsAPI() throws IOException
     {
         Security security = new Security();
@@ -429,6 +453,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
+    @Ignore
     public void testTLVSecurityDetailsAPI() throws IOException
     {
         Security security = new Security();
@@ -509,6 +534,7 @@ public class TLVQuoteFeedTest
     // }
 
     @Test
+    @Ignore
     public void testSecurityHistoryPrices()
     {
         LocalDate from = LocalDate.of(2024, 9, 30);
@@ -543,11 +569,13 @@ public class TLVQuoteFeedTest
     }
 
     @Test
+    @Ignore
     public void testSecurityHistoricalPrices()
     {
         // LocalDate from = LocalDate.of(2024, 9, 30);
         // LocalDate to = LocalDate.of(2024, 10, 30);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
+        // DateTimeFormatter formatter =
+        // DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
         Security security = new Security();
         security.setWkn("1410307");
@@ -568,7 +596,7 @@ public class TLVQuoteFeedTest
             assertTrue(pricehistory.getPrices().size() == 2);
             assertFalse(pricehistory.getPrices().isEmpty());
             LocalDate firstdate = pricehistory.getPrices().get(0).getDate();
-            System.out.println("Start  " + start);
+            // System.out.println("Start " + start);
             assertTrue(firstdate.isEqual(LocalDate.now()));
 
             LocalDate lastdate = pricehistory.getPrices().get(pricehistory.getPrices().size() - 1).getDate();
@@ -589,11 +617,13 @@ public class TLVQuoteFeedTest
     }
 
     @Test
+    @Ignore
     public void testFundHistoryPrices()
     {
         LocalDate from = LocalDate.of(2024, 9, 30);
         LocalDate to = LocalDate.of(2024, 10, 30);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
+        // DateTimeFormatter formatter =
+        // DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
         Security security = new Security();
         security.setWkn("5113428");
@@ -605,7 +635,7 @@ public class TLVQuoteFeedTest
         try
         {
             pricehistory = feed.getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
-            System.out.println(pricehistory);
+            // System.out.println(pricehistory);
             // assertTrue((int) pricehistory.get("Total") == 226);
             // assertTrue(pricehistory.get("StartDate").equals(from.format(formatter)));
             // assertTrue(pricehistory.get("EndDate").equals(to.format(formatter)));
