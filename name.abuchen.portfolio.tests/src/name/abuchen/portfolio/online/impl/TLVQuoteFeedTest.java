@@ -62,6 +62,16 @@ public class TLVQuoteFeedTest
         return getHistoricalTaseQuotes("response_tase_fund_history01.txt");
     }
 
+    private String getShareHistory()
+    {
+        return "";
+    }
+
+    private String getSecurityHistory()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_history01.txt");
+    }
+
     private String getHistoricalTaseQuotesHighLowVolume()
     {
         return getHistoricalTaseQuotes("response_tase_historical02.txt");
@@ -106,7 +116,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
-    public void testParseTLVSecurityDetailsResponse() throws IOException
+    public void testGetLatestQuoteOnSecurity() throws IOException
     {
 
         Security security = new Security();
@@ -137,7 +147,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
-    public void testParseTLVFundDetailsResponse() throws IOException
+    public void testGetLatestQuoteOnFund() throws IOException
     {
 
         Security security = new Security();
@@ -166,7 +176,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
-    public void testParseTLVFundDetails() throws IOException
+    public void testGetLatestQuoteForFund() throws IOException
     {
 
         Security security = new Security();
@@ -203,7 +213,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
-    public void testParseTLVSecurityDetails() throws IOException
+    public void testGetLatestQuoteForSecurity() throws IOException
     {
 
         Security security = new Security();
@@ -239,7 +249,7 @@ public class TLVQuoteFeedTest
     }
 
     @Test
-    public void testParseTLVSharesDetails() throws IOException
+    public void testGetLatestQuoteForShare() throws IOException
     {
         // TODO add support for Subid.
         Security security = new Security();
@@ -268,6 +278,112 @@ public class TLVQuoteFeedTest
 
         }
         catch (QuoteFeedException e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testgetHistoricalQuotesOnFund() throws IOException
+    {
+        // TODO add support for Subid.
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("5127121");
+        String response = getFundHistory();
+        assertTrue(response.length() > 0);
+
+        TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+
+
+        // PRice in ILS, Type = Mutual Fund
+        try
+        {
+            QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
+            assertFalse(feedData.getPrices().isEmpty());
+
+            SecurityPrice firstprice = feedData.getPrices().get(0);
+            LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            // System.out.println("FeedData " + firstdate);
+
+            assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
+            assert (firstprice.getValue() == 14688000000l);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testgetHistoricalQuotesOnSecurity() throws IOException
+    {
+        // TODO add support for Subid.
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("5127121");
+        String response = getSecurityHistory();
+        assertTrue(response.length() > 0);
+
+        TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+
+        // PRice in ILS, Type = Mutual Fund
+        try
+        {
+            QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
+            assertFalse(feedData.getPrices().isEmpty());
+
+            SecurityPrice firstprice = feedData.getPrices().get(0);
+            LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            System.out.println("FeedData " + firstprice.getValue());
+
+            assertTrue(firstprice.getDate().equals(LocalDate.of(2025, 8, 28)));
+            assertTrue(firstprice.getValue() == 15667000000l);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testgetHistoricalQuotesOnShares() throws IOException
+    {
+        // TODO add support for Subid.
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("273");
+        String response = getShareHistory();
+        assertTrue(response.length() > 0);
+
+        TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+
+        // PRice in ILS, Type = Mutual Fund
+        try
+        {
+            QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
+            assertFalse(feedData.getPrices().isEmpty());
+
+            SecurityPrice firstprice = feedData.getPrices().get(0);
+            LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            // System.out.println("FeedData " + firstdate);
+
+            assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
+            assert (firstprice.getValue() == 14688000000l);
+
+        }
+        catch (Exception e)
         {
             System.out.println(e.getMessage());
             assertTrue(false);

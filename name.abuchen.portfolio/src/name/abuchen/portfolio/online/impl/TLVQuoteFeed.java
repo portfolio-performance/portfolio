@@ -287,16 +287,19 @@ public class TLVQuoteFeed implements QuoteFeed
         {
             System.out.println("gettingPriceHistoryChunck from " + from + " to: " + to); //$NON-NLS-1$ //$NON-NLS-2$
             String pricehistory = getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
-            // System.out.println("Price history " + pricehistory);
+            System.out.println("Price history " + pricehistory);
             // //$NON-NLS-1$
 
             jsonObject = (JSONObject) parser.parse(pricehistory);
-            System.out.println("Price history json " + jsonObject); //$NON-NLS-1$
+            System.out.println("Price history json " + jsonObject);
+            System.out.println(jsonObject.getClass()); // $NON-NLS-1$
             // Access the "parent" object
-            try {
+            try
+            {
             
                 JSONObject parentObject = (JSONObject) jsonObject.get("Table"); //$NON-NLS-1$
 
+                System.out.println("Table " + parentObject);
                 if (parentObject != null)
                 {
                     /*
@@ -308,7 +311,7 @@ public class TLVQuoteFeed implements QuoteFeed
                      * null, "AssetValue": 130.3
                      */
                     Set<String> keys = parentObject.keySet();
-
+                    //
                     // Iterate over the keys
                     Iterator<String> iterator = keys.iterator();
                     while (iterator.hasNext())
@@ -318,14 +321,39 @@ public class TLVQuoteFeed implements QuoteFeed
                         // String datevalue = ((String)
                         // value).get("AssetValue");
                         // String date = value.get("TradeDate");
-                        System.out.println("Key: " + key + ", Value: " + value); //$NON-NLS-1$ //$NON-NLS-2$
+                        System.out.println("Key: " + key + ", Value: " + value);
+                        // $NON-NLS-1$ //$NON-NLS-2$
                         // System.out.println(datevalue + " " + date);
                     }
                 }
             }
+            catch (ClassCastException e)
+            {
+                JSONArray parentObject = (JSONArray) jsonObject.get("Table"); //$NON-NLS-1$
+
+                System.out.println("Table found as an array");
+                for (int i = 0; i < parentObject.size(); i++)
+                {
+                    JSONObject item = (JSONObject) parentObject.get(i);
+                    System.out.println("Key: " + i + ", Value: " + item);
+
+                    String strTradeDate = (String) item.get("TradeDate");
+                    LocalDate tradedate = null;
+                    if (strTradeDate.length() > 0)
+                    {
+                        tradedate = TLVHelper.asDateTime(strTradeDate); // $NON-NLS-1$
+                    }
+                    long curvalue = DoubletoLong(item, "SellPrice", quoteCurrency, security.getCurrencyCode());
+
+                    LatestSecurityPrice curprice = new LatestSecurityPrice(tradedate, curvalue);
+                    historicalprices.addPrice(curprice);
+
+                }
+                return historicalprices;
+            }
             catch (Exception e)
             {
-                //
+                System.out.println(e.getMessage());
             }
             // Handle Bonds
             JSONArray ItemsObject = (JSONArray) jsonObject.get("Items"); //$NON-NLS-1$
@@ -551,7 +579,8 @@ public class TLVQuoteFeed implements QuoteFeed
         }
         else
         {
-            throw new Exception();
+            JSONObject json = new JSONObject();
+            return json.toString();
         }
 
     }
