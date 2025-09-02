@@ -42,7 +42,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT .*$", "^.*Heure Execution:.*$");
+        var firstRelevantLine = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT.*$", "^.*Heure Execution:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -56,10 +56,11 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         //  10/12/2024  ACHAT COMPTANT  FR0011550185  BNPP S&P500EUR ETF  4 978,30
+                        //  05/08/2025  ACHAT ETRANGER  IE00B4BNMY34  ACCENTURE CL.A  216,93
                         // @formatter:on
                         .section("isin", "name") //
                         .documentContext("currency") //
-                        .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT COMPTANT[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{2,}[\\d\\s]+,[\\d]{2}$") //
+                        .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT .*[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{2,}[\\d\\s]+,[\\d]{2}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -74,7 +75,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         // Heure Execution: 09:04:28       Lieu: EURONEXT - EURONEXT PARIS
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}ACHAT COMPTANT.*$") //
+                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}ACHAT.*$") //
                         .match("^.*Heure Execution: (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
@@ -83,7 +84,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT COMPTANT.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
+                        .match("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}ACHAT.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
