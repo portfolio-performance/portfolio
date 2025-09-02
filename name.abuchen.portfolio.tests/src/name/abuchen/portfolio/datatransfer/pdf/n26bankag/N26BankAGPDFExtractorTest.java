@@ -208,4 +208,49 @@ public class N26BankAGPDFExtractorTest
                         hasAmount("EUR", 8.55), hasGrossValue("EUR", 8.55), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new N26BankAGkPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-04"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-12"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-26"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-27"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-27"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-05-01T00:00"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6.60), hasGrossValue("EUR", 6.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }
