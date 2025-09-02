@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.boursedirect;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -180,5 +181,36 @@ public class BourseDirectPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 174.18), hasGrossValue("EUR", 173.31), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.87))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new BourseDirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010273215"), hasWkn(null), hasTicker(null), //
+                        hasName("ASML HOLDING"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-08-06T00:00"), hasShares(3.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.08), hasGrossValue("EUR", 4.80), //
+                        hasTaxes("EUR", 0.72), hasFees("EUR", 0.00))));
     }
 }
