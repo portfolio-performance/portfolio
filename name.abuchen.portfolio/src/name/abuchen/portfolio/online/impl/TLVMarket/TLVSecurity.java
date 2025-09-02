@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.online.impl.TLVMarket;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.json.simple.JSONObject;
@@ -9,9 +12,11 @@ import org.json.simple.JSONValue;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
@@ -21,13 +26,17 @@ public class TLVSecurity
     
     private static final int TYPE = 8;
     private static final int RECORDS = 1;
+
     private final String URL = "api.tase.co.il"; //$NON-NLS-1$
     private final String SECURITYDATAPATH = "/api/company/securitydata"; //$NON-NLS-1$
     private final String SECURITYHISTORYPATH = "/api/security/historyeod"; //$NON-NLS-1$
+    private Type SecurityListingType = new TypeToken<SecurityListing>()
+    {
+    }.getType();
 
     @SuppressWarnings("nls")
     @VisibleForTesting
-    public String rpcLatestQuoteSecurity(Security security) throws IOException
+    public String rpcLatestQuoteSecuritywithLanguage(Security security, Language lang) throws IOException
     {
 
         String response = new WebAccess(URL, SECURITYDATAPATH) // $NON-NLS-1$
@@ -37,9 +46,14 @@ public class TLVSecurity
                         .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("Content-Type", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
                         .addParameter("securityId", security.getWkn())
-                        .addParameter("lang", Language.ENGLISH.toString())
+                        .addParameter("lang", lang.toString())
                         .get();
         return response;
+    }
+
+    public String rpcLatestQuoteSecurity(Security security) throws IOException
+    {
+        return this.rpcLatestQuoteSecuritywithLanguage(security, Language.ENGLISH);
     }
 
     public String getLatestQuote(Security security)
@@ -55,8 +69,48 @@ public class TLVSecurity
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
+    public Map<String, String> getNames(SecurityListing englishDetails, SecurityListing hebrewDetails)
+    {
+
+        Map<String, String> names = new HashMap<>();
+        names.getOrDefault(names, null);
+        names.put("english_short_name", (String) englishDetails.Name); //$NON-NLS-1$
+        names.put("english_long_name", //$NON-NLS-1$
+                        (String) englishDetails.getOrDefault("LongName", englishDetails.SecurityLongName)); //$NON-NLS-1$
+
+        names.put("hebrew_short_name", (String) hebrewDetails.Name); //$NON-NLS-1$
+        names.put("hebrew_long_name", (String) hebrewDetails.getOrDefault("LongName", hebrewDetails.SecurityLongName)); //$NON-NLS-1$ //$NON-NLS-2$
+        return names;
+    }
+
+    public SecurityListing getDetails(Security security, Language lang) throws Exception
+    {
+        String responseString = this.rpcLatestQuoteSecuritywithLanguage(security, lang);
+        Gson gson = new Gson();
+        SecurityListing securityListing = gson.fromJson(responseString, this.SecurityListingType);
+
+
+        return securityListing;
+    }
+
+
+
+
+    public SecurityHistory getPriceHistoryChunkSec(Security security, LocalDate fromDate, LocalDate toDate, int page,
+                    Language lang) throws Exception
+    {
+        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, this.TYPE, this.RECORDS, lang);
+    }
+
     public SecurityHistory getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
+                    Language lang) throws Exception
+    {
+        return getPriceHistoryChunkInternal(securityId, fromDate, toDate, page, this.TYPE, this.RECORDS, lang);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private SecurityHistory getPriceHistoryChunkInternal(String securityId, LocalDate fromDate, LocalDate toDate,
+                    int page, int p_type, int total_rec, 
                     Language lang) throws Exception
     {
         int _page = (page == 0) ? 1 : page;
@@ -87,7 +141,8 @@ public class TLVSecurity
 
     }
 
-    public SecurityHistory getPriceHistory(String securityId, LocalDate fromDate, LocalDate toDate, int page,
+
+    public SecurityHistory getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
     {
         if (toDate == null)
@@ -98,9 +153,10 @@ public class TLVSecurity
         {
             fromDate = toDate.minusDays(1);
         }
-        return getPriceHistoryChunk(securityId, fromDate, toDate, page, lang);
+        return getPriceHistoryChunkSec(security, fromDate, toDate, page, lang);
     }
 
+    // Yahoo Function
     public Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
         int begin = body.indexOf(startToken, startIndex);
@@ -115,4 +171,13 @@ public class TLVSecurity
         return Optional.of(body.substring(begin + startToken.length(), end));
     }
 
+    public static Map<String, Object> ObjectToMap(Object listing)
+    {
+        Gson gson = GSONUtil.createGson();
+        String json = gson.toJson(listing);
+        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
+        {
+        }.getType());
+        return map;
+    }
 }

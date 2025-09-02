@@ -8,7 +8,11 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -117,6 +121,16 @@ public class TLVHelper
             return null;
         String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
         return LocalDate.parse(dt, datetimeFormatter); // $NON-NLS-1$
+    }
+
+    public static Map<String, Object> ObjectToMap(Object listing)
+    {
+        Gson gson = GSONUtil.createGson();
+        String json = gson.toJson(listing);
+        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
+        {
+        }.getType());
+        return map;
     }
 
 }

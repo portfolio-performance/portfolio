@@ -13,16 +13,16 @@ import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
-public class TLVIndices
+public class TLVEntities
 {
     private final String URL = "api.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
 
-    public List<SecurityListing> getAllSecurities(Language lang)
+    public List<SecurityListing> getAllEntities(Language lang)
     {
         try
         {
-            return ResponsetoSecurityList(rpcAllIndices(lang));
+            return responsetoEntitiesList(rpcAllIndices(lang));
         }
         catch (IOException e)
         {
@@ -47,7 +47,7 @@ public class TLVIndices
         return response;
     }
 
-    private List<SecurityListing> ResponsetoSecurityList(String response)
+    private List<SecurityListing> responsetoEntitiesList(String response)
     {
         Gson gson = new Gson();
         Type SecurityListingType = new TypeToken<List<SecurityListing>>()

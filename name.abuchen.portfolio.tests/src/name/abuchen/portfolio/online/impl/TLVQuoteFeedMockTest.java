@@ -11,10 +11,8 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-// import java.time.LocalDate;
-// import java.util.NoSuchElementException;
-// import java.util.Optional;
 import java.util.Scanner;
 
 import org.junit.Ignore;
@@ -27,20 +25,17 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVIndices;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
 
-public class TLVQuoteFeedTest
+public class TLVQuoteFeedMockTest
 {
 
-    public interface SlowTests
-    {
-    }
 
     private String getIndicesList()
 
@@ -56,6 +51,16 @@ public class TLVQuoteFeedTest
     private String getSecurityDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details01.txt");
+    }
+
+    private String getSecurityDetailsEnglish()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_details01.txt");
+    }
+
+    private String getSecurityDetailsHebrew()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_details03.txt");
     }
 
     private String getSharesDetails()
@@ -78,16 +83,24 @@ public class TLVQuoteFeedTest
         return getHistoricalTaseQuotes("response_tase_security_history01.txt");
     }
 
+    private String getHistoricalTaseQuotes(String filename)
+    {
+        String responseBody = null;
+        Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
+        responseBody = scanner.useDelimiter("\\A").next();
+        scanner.close();
 
+        return responseBody;
+    }
 
-    /* Mock Tests using saved Queries */
+    /* Mock Tests using saved Query Files - no testing against the API */
 
     @Test
     public void testTLVGetAllSecuritiesResponse()
     {
         String response = getIndicesList();
 
-        TLVIndices indices = Mockito.spy(new TLVIndices());
+        TLVEntities indices = Mockito.spy(new TLVEntities());
         
         try
         {
@@ -98,7 +111,7 @@ public class TLVQuoteFeedTest
             assertTrue(allIncides.contains("ABRA"));
             
 
-            List<SecurityListing> incidesList = indices.getAllSecurities(Language.ENGLISH);
+            List<SecurityListing> incidesList = indices.getAllEntities(Language.ENGLISH);
             SecurityListing listing = incidesList.getFirst();
             assertTrue(listing.getId().equals("2442"));
             assertTrue(listing.getType().equals("5"));
@@ -413,68 +426,32 @@ public class TLVQuoteFeedTest
         }
     }
 
-    /* Real Tests against API */
-    private String getHistoricalTaseQuotes(String filename)
-    {
-        String responseBody = null;
-        Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
-        responseBody = scanner.useDelimiter("\\A").next();
-        scanner.close();
-
-        return responseBody;
-    }
-
     @Test
-    @Ignore
-    public void testTLVFundDetailsAPI() throws IOException
+    public void testSecurityGetNames()
     {
         Security security = new Security();
-        security.setWkn("5113428");
+        security.setTickerSymbol("AAPL");
         security.setCurrencyCode("ILS");
+        security.setWkn("5127121");
+        String responseEng = getSecurityDetailsEnglish();
+        String responseHeb = getSecurityDetailsHebrew();
+        assertTrue(responseEng.length() > 0);
+        assertTrue(responseHeb.length() > 0);
 
-        // TLVQuoteFeed feed = new TLVQuoteFeed();
-        TLVFund fund = new TLVFund();
+        TLVSecurity feed = Mockito.spy(new TLVSecurity());
         try
         {
-            // Test TASE API
-            String response = fund.rpcLatestQuoteFund(security);
-            // System.out.println(response);
-            Optional<String> mngrId = fund.extract(response, 0, "\"ManagerId\":", ",");
-            assertTrue(mngrId.get().trim().contentEquals("10047"));
+            Mockito.doReturn(responseEng).when(feed).rpcLatestQuoteSecuritywithLanguage(security, Language.ENGLISH);
+            Mockito.doReturn(responseHeb).when(feed).rpcLatestQuoteSecuritywithLanguage(security, Language.HEBREW);
 
-            Optional<String> type = fund.extract(response, 0, "\"Type\":", ","); // $NON-NLS-1$
-            assertTrue(type.equals(Optional.empty()));
-        }
-        catch (Exception e)
-        {
-            assertTrue(false);
-        }
+            SecurityListing englishListing = feed.getDetails(security, Language.ENGLISH);
+            SecurityListing hebrewListing = feed.getDetails(security, Language.HEBREW);
 
-    }
+            Map<String, String> names = (feed.getNames(englishListing, hebrewListing));
+            assertTrue(names.getOrDefault("Id", null) == null);
+            assertTrue(names.getOrDefault("english_short_name", null).equals("ILCPI % 1025"));
+            assertTrue(names.getOrDefault("hebrew_short_name", null).equals("ממשל צמודה 1025"));
 
-    @Test
-    @Ignore
-    public void testTLVSecurityDetailsAPI() throws IOException
-    {
-        Security security = new Security();
-        security.setWkn("1410307");
-        security.setCurrencyCode("ILS");
-
-        // TLVQuoteFeed feed = new TLVQuoteFeed();
-        TLVSecurity securityfeed = new TLVSecurity();
-        try
-        {
-            // String response = feed.rpcLatestQuoteSecurity(security);
-            String response = securityfeed.rpcLatestQuoteSecurity(security);
-            // String response = feed.rpcLatestQuote(security);
-            // System.out.println(response);
-            Optional<String> mngrId = securityfeed.extract(response, 0, "\"IsTASEUP\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            boolean isTase = Boolean.parseBoolean(mngrId.get().trim());
-            assertFalse(isTase);
-
-            Optional<String> type = securityfeed.extract(response, 0, "\"Type\":", ","); // $NON-NLS-1$
-            // assertTrue(type.get().trim().replace("\"", "").equals("Bonds"));
-            assertTrue(type.get().trim().replace("\"", "").equals("איגרות חוב"));
         }
         catch (Exception e)
         {
@@ -482,59 +459,15 @@ public class TLVQuoteFeedTest
             assertTrue(false);
         }
 
+
+
     }
 
-    @Test
-    public void testCalculateDate()
-    {
 
-        TLVQuoteFeed feed = new TLVQuoteFeed();
 
-        Security security = new Security();
-        security.setName("Daimler AG");
-        security.setIsin("DE0007100000");
-        security.setTickerSymbol("DAI.DE");
 
-        LocalDate nineteenHundred = LocalDate.of(1900, 1, 1);
-
-        LocalDate date = feed.caculateStart(security);
-        assertThat(date, equalTo(nineteenHundred));
-
-        security.addPrice(new SecurityPrice(LocalDate.now(), 100));
-        date = feed.caculateStart(security);
-        assertThat(date, equalTo(LocalDate.now()));
-    }
-
-    // @Test
-    // public void testParsingHistoricalQuotes()
-    // {
-    // String rawQuotes = getHistoricalFundDetails();
-    //
-    // TLVQuoteFeed feed = new TLVQuoteFeed();
-    // QuoteFeedData data = feed.extractQuotes(rawQuotes);
-    // List<LatestSecurityPrice> prices = data.getLatestPrices();
-    // Collections.sort(prices, new SecurityPrice.ByDate());
-    //
-    // assertThat(prices.size(), is(123));
-    //
-    // LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017,
-    // Month.NOVEMBER, 27), //
-    // Values.Quote.factorize(188.55), //
-    // LatestSecurityPrice.NOT_AVAILABLE, //
-    // LatestSecurityPrice.NOT_AVAILABLE, //
-    // LatestSecurityPrice.NOT_AVAILABLE);
-    // assertThat(prices.get(0), equalTo(price));
-    //
-    // price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
-    // Values.Quote.factorize(188.3), //
-    // LatestSecurityPrice.NOT_AVAILABLE, //
-    // LatestSecurityPrice.NOT_AVAILABLE, //
-    // LatestSecurityPrice.NOT_AVAILABLE);
-    // assertThat(prices.get(prices.size() - 1), equalTo(price));
-    // }
 
     @Test
-    @Ignore
     public void testSecurityHistoryPrices()
     {
         LocalDate from = LocalDate.of(2024, 9, 30);
@@ -568,87 +501,9 @@ public class TLVQuoteFeedTest
 
     }
 
-    @Test
-    @Ignore
-    public void testSecurityHistoricalPrices()
-    {
-        // LocalDate from = LocalDate.of(2024, 9, 30);
-        // LocalDate to = LocalDate.of(2024, 10, 30);
-        // DateTimeFormatter formatter =
-        // DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-
-        Security security = new Security();
-        security.setWkn("1410307");
-        security.setCurrencyCode("ILS");
-        LocalDate start = LocalDate.now().minusDays(3);
-        SecurityPrice price = new SecurityPrice(start, 10l);
-        security.addPrice(price);
 
 
-        TLVQuoteFeed feed = new TLVQuoteFeed();
-        // Map<String, Object> pricehistory;
-        QuoteFeedData pricehistory;
-        try
-        {
-            pricehistory = feed.getHistoricalQuotes(security, false);
-            // System.out.println(pricehistory.getPrices());
 
-            assertTrue(pricehistory.getPrices().size() == 2);
-            assertFalse(pricehistory.getPrices().isEmpty());
-            LocalDate firstdate = pricehistory.getPrices().get(0).getDate();
-            // System.out.println("Start " + start);
-            assertTrue(firstdate.isEqual(LocalDate.now()));
-
-            LocalDate lastdate = pricehistory.getPrices().get(pricehistory.getPrices().size() - 1).getDate();
-            assertTrue(lastdate.isEqual(start));
-            // System.out.println(pricehistory.getPrices().get(0).getValue());
-
-            // assertTrue(pricehistory.get("DateFrom").equals(from.format(formatter)));
-            // assertTrue(pricehistory.get("DateTo").equals(to.format(formatter)));
-            // assertTrue((int) pricehistory.get("TotalRec") == 17);
-
-        }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
-    }
-
-    @Test
-    @Ignore
-    public void testFundHistoryPrices()
-    {
-        LocalDate from = LocalDate.of(2024, 9, 30);
-        LocalDate to = LocalDate.of(2024, 10, 30);
-        // DateTimeFormatter formatter =
-        // DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-
-        Security security = new Security();
-        security.setWkn("5113428");
-        security.setCurrencyCode("ILS");
-
-        TLVQuoteFeed feed = new TLVQuoteFeed();
-        //Map<String, Object> pricehistory;
-        String pricehistory;
-        try
-        {
-            pricehistory = feed.getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
-            // System.out.println(pricehistory);
-            // assertTrue((int) pricehistory.get("Total") == 226);
-            // assertTrue(pricehistory.get("StartDate").equals(from.format(formatter)));
-            // assertTrue(pricehistory.get("EndDate").equals(to.format(formatter)));
-
-        }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
-
-    }
 
     public void testParsingHistoricalQuotes()
     {

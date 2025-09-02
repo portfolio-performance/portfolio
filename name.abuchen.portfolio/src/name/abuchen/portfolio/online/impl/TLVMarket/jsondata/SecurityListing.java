@@ -132,7 +132,7 @@ public class SecurityListing
 
     public String getOrDefault(String var1, String var2)
     {
-        return (var1 == null) ? var2 : ""; //$NON-NLS-1$
+        return ((var1 == null) || (var1.length() == 0)) ? var2 : ""; //$NON-NLS-1$
     }
 
     public Map<String, String> toMap()
@@ -172,6 +172,9 @@ public class SecurityListing
         listing += "SubTypeDesc " + SubTypeDesc + newLine; //$NON-NLS-1$
         listing += "SubId " + SubId + newLine; //$NON-NLS-1$
         listing += "ETFType " + ETFType + newLine; //$NON-NLS-1$
+        listing += "Long Name " + LongName + newLine; //$NON-NLS-1$
+        listing += "Security Long Name " + SecurityLongName + newLine; //$NON-NLS-1$
+
         return listing;
     }
 }

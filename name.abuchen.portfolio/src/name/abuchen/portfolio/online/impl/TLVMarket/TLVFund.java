@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.online.impl.TLVMarket;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.hc.core5.http.NameValuePair;
@@ -12,9 +15,11 @@ import org.json.simple.JSONObject;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
@@ -25,6 +30,9 @@ public class TLVFund
     private int period = 0;
     private final String URL = "mayaapi.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/fund/details"; //$NON-NLS-1$
+    private Type FundListingType = new TypeToken<FundListing>()
+    {
+    }.getType();
 
     public String getLatestQuote(Security security)
     {
@@ -39,9 +47,26 @@ public class TLVFund
         }
     }
 
+    public Map<String, String> getNames(FundListing englishDetails, FundListing hebrewDetails)
+    {
+
+        Map<String, String> names = new HashMap<>();
+        names.getOrDefault(names, null);
+        names.put("english_short_name", (String) englishDetails.FundLongName); //$NON-NLS-1$
+        names.put("english_long_name", (String) englishDetails.FundLongName); //$NON-NLS-1$
+
+        names.put("hebrew_short_name", (String) hebrewDetails.FundShortName); //$NON-NLS-1$
+        names.put("hebrew_long_name", (String) hebrewDetails.FundShortName); //$NON-NLS-1$
+        return names;
+    }
+
+    public String rpcLatestQuoteFund(Security security) throws IOException
+    {
+        return rpcLatestQuoteFundWithLanguage(security, Language.ENGLISH);
+    }
     @SuppressWarnings("nls")
     @VisibleForTesting
-    public String rpcLatestQuoteFund(Security security) throws IOException
+    private String rpcLatestQuoteFundWithLanguage(Security security, Language lang) throws IOException
     {
         String response = new WebAccess(URL, PATH)
                         .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001")
@@ -51,6 +76,20 @@ public class TLVFund
         return response;
     }
 
+    public FundListing getDetails(Security security, Language lang) throws Exception
+    {
+        String responseString = rpcLatestQuoteFundWithLanguage(security, lang);
+        Gson gson = new Gson();
+        FundListing listing = gson.fromJson(responseString, this.FundListingType);
+
+        return listing;
+    }
+
+    public FundHistory getPriceHistoryChunkSec(Security security, LocalDate fromDate, LocalDate toDate, int page,
+                    Language lang) throws Exception
+    {
+        return getPriceHistoryChunk(security.getWkn(), fromDate, toDate, page, lang);
+    }
     @SuppressWarnings("unchecked")
     public FundHistory getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
@@ -90,6 +129,20 @@ public class TLVFund
 
     }
 
+    public FundHistory getPriceHistory(String securityId, LocalDate fromDate, LocalDate toDate, int page, Language lang)
+                    throws Exception
+    {
+        if (toDate == null)
+        {
+            toDate = LocalDate.now();
+        }
+        if (fromDate == null)
+        {
+            fromDate = toDate.minusDays(1);
+        }
+        return getPriceHistoryChunk(securityId, fromDate, toDate, page, lang);
+    }
+
     public Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
         int begin = body.indexOf(startToken, startIndex);
@@ -102,5 +155,15 @@ public class TLVFund
             return Optional.empty();
 
         return Optional.of(body.substring(begin + startToken.length(), end));
+    }
+
+    public static Map<String, Object> ObjectToMap(FundListing listing)
+    {
+        Gson gson = GSONUtil.createGson();
+        String json = gson.toJson(listing);
+        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
+        {
+        }.getType());
+        return map;
     }
 }

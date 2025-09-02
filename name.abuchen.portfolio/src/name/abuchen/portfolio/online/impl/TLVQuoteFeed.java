@@ -25,6 +25,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -34,10 +35,11 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVIndices;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
@@ -105,6 +107,38 @@ public class TLVQuoteFeed implements QuoteFeed
     return "mayaapi.tase.co.il"; //$NON-NLS-1$
     }
 
+    public Map<String, Object> getDetails(Security security, Language lang) throws Exception
+    {
+        Object TLVClass = getTLVClass(security);
+        if (TLVClass instanceof TLVFund)
+        {
+            FundListing fundDetails = ((TLVFund) TLVClass).getDetails(security, lang);
+            return this.TLVFunds.ObjectToMap(fundDetails);
+        }
+        else
+        {
+            SecurityListing securityDetails = ((TLVSecurity) TLVClass).getDetails(security, lang);
+            return this.TLVSecurities.ObjectToMap(securityDetails);
+        }
+
+    }
+
+    public Map<String, String> getNames(Security security) throws Exception
+    {
+        Object TLVClass = getTLVClass(security);
+        if (TLVClass instanceof TLVFund)
+        {
+            FundListing englishDetails = ((TLVFund) TLVClass).getDetails(security, Language.ENGLISH);
+            FundListing hebrewDetails = ((TLVFund) TLVClass).getDetails(security, Language.HEBREW);
+            return ((TLVFund) TLVClass).getNames(englishDetails, hebrewDetails);
+        }
+        else
+        {
+            SecurityListing englishDetails = ((TLVSecurity) TLVClass).getDetails(security, Language.ENGLISH);
+            SecurityListing hebrewDetails = ((TLVSecurity) TLVClass).getDetails(security, Language.HEBREW);
+            return ((TLVSecurity) TLVClass).getNames(englishDetails, hebrewDetails);
+        }
+    }
 
 
     @Override
@@ -581,6 +615,25 @@ public class TLVQuoteFeed implements QuoteFeed
     //
     // }
 
+    public Map<String, Object> getPriceHistoryChunk2(Security security, LocalDate fromDate, LocalDate toDate, int page,
+                    Language lang) throws Exception
+    {
+        Object mayaClass = getTLVClass(security);
+        if (mayaClass instanceof TLVFund)
+        {
+            FundHistory fundHistory = ((TLVFund) mayaClass).getPriceHistoryChunkSec(security, fromDate, toDate, page,
+                            lang);
+            return TLVHelper.ObjectToMap(fundHistory);
+        }
+        else
+        {
+            SecurityHistory securityHistory = ((TLVSecurity) mayaClass).getPriceHistoryChunkSec(security, fromDate,
+                            toDate, page, lang);
+            return TLVHelper.ObjectToMap(securityHistory);
+        }
+    }
+
+    // Yahoo function
     public String getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
     {
@@ -605,6 +658,32 @@ public class TLVQuoteFeed implements QuoteFeed
         }
 
     }
+    
+    public Map<String, Object> getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
+                    Language lang) throws Exception
+    {
+        if (toDate == null)
+        {
+            toDate = LocalDate.now();
+        }
+        if (fromDate == null)
+        {
+            fromDate = toDate.minusDays(1);
+        }
+        Object mayaClass = getTLVClass(security);
+        if (mayaClass instanceof TLVFund)
+        {
+            FundHistory fundHistory = ((TLVFund) mayaClass).getPriceHistory(security.getWkn(), fromDate, toDate, page,
+                            lang);
+            return TLVHelper.ObjectToMap(fundHistory);
+        }
+        else
+        {
+            SecurityHistory securityHistory = ((TLVSecurity) mayaClass).getPriceHistory(security, fromDate, toDate,
+                            page, lang);
+            return TLVHelper.ObjectToMap(securityHistory);
+        }
+            }
 
     /* package */
     
@@ -659,8 +738,8 @@ public class TLVQuoteFeed implements QuoteFeed
 
     private void mapSecurities() throws Exception
     {
-        TLVIndices indices = new TLVIndices();
-        List<SecurityListing> allSecurityList = indices.getAllSecurities(Language.ENGLISH);
+        TLVEntities entities = new TLVEntities();
+        List<SecurityListing> allSecurityList = entities.getAllEntities(Language.ENGLISH);
         Iterator<SecurityListing> securityListingIterator = allSecurityList.iterator();
 
         while (securityListingIterator.hasNext())
@@ -676,8 +755,8 @@ public class TLVQuoteFeed implements QuoteFeed
     @VisibleForTesting
     public List<SecurityListing> getAllSecurities(Language lang) throws Exception
     {
-        TLVIndices indices = new TLVIndices();
-        return indices.getAllSecurities(Language.ENGLISH);
+        TLVEntities indices = new TLVEntities();
+        return indices.getAllEntities(Language.ENGLISH);
 
     }
     // List<SecurityListing> getAllSecurities(Language lang) throws Exception
@@ -760,6 +839,18 @@ public class TLVQuoteFeed implements QuoteFeed
 
     }
 
+    private Object getTLVClass(Security security)
+    {
+        if (mappedSecurities.get(security.getWkn()).contains(Integer.toString(TLVFunds.TYPE)))
+        {
+            return this.TLVFunds;
+        }
+        else
+        {
+            return this.TLVSecurities;
+        }
+    }
+
     // private Optional<String> quoteCurrency = Optional.of("ILA");
     // //$NON-NLS-1$
     private Optional<String> getQuoteCurrency(Security security)
@@ -782,5 +873,15 @@ public class TLVQuoteFeed implements QuoteFeed
         return Math.round(value * 10000) / 10000d;
     }
 
+    public Map<String, Object> ObjectToMap(Object listing)
+    {
+        Gson gson = GSONUtil.createGson();
+        String json = gson.toJson(listing);
+        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
+        {
+        }.getType());
+        return map;
+
+    }
 }
 
