@@ -94,4 +94,91 @@ public class BourseDirectPDFExtractorTest
                         hasAmount("EUR", 886.98), hasGrossValue("EUR", 885.08), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.90))));
     }
+
+    @Test
+    public void testReleveDeCompte02()
+    {
+        var extractor = new BourseDirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(5L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120271"), hasWkn(null), hasTicker(null), //
+                        hasName("TOTALENERGIES SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4BNMY34"), hasWkn(null), hasTicker(null), //
+                        hasName("ACCENTURE CL.A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681047236"), hasWkn(null), hasTicker(null), //
+                        hasName("A.E.ST.50 U.EUR C"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0000395903"), hasWkn(null), hasTicker(null), //
+                        hasName("WOLTERS KLUWER"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL00150001Q9"), hasWkn(null), hasTicker(null), //
+                        hasName("STELLANTIS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-05T16:35:33"), hasShares(7.00), //
+                        hasSource("ReleveDeCompte02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 363.59), hasGrossValue("EUR", 362.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-05T16:29:06"), hasShares(1.00), //
+                        hasSource("ReleveDeCompte02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 216.93), hasGrossValue("EUR", 215.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.08))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-05T16:31:21"), hasShares(2.00), //
+                        hasSource("ReleveDeCompte02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 275.59), hasGrossValue("EUR", 274.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-05T16:32:51"), hasShares(2.00), //
+                        hasSource("ReleveDeCompte02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 265.79), hasGrossValue("EUR", 264.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-05T16:37:38"), hasShares(23.00), //
+                        hasSource("ReleveDeCompte02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 174.18), hasGrossValue("EUR", 173.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.87))));
+    }
 }
