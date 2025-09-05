@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
@@ -341,7 +342,14 @@ import name.abuchen.portfolio.money.Money;
                     portfolioTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     accountTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    buysell.insert();
+                    try
+                    {
+                        buysell.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 
@@ -425,7 +433,22 @@ import name.abuchen.portfolio.money.Money;
                     sourceATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     targetATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    cashTransfer.insert();
+                    try
+                    {
+                        cashTransfer.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        // background: due to a bug in previous versions, there
+                        // might be cash transfer transactions which have been
+                        // partially added, e.g. only to the source account.
+                        // Because in protobuf we reconstruct the transactions
+                        // from the source account, we might attempt to add the
+                        // dangling transaction to the target account. This
+                        // should not fail the loading of the entire file.
+
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 

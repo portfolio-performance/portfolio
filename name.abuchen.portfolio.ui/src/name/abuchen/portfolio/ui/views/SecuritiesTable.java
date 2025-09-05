@@ -75,7 +75,7 @@ import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
@@ -814,7 +814,7 @@ public final class SecuritiesTable implements ModificationListener
 
     public void updateQuotes(Security security)
     {
-        new UpdateQuotesJob(getClient(), security).schedule();
+        new UpdatePricesJob(getClient(), security).schedule();
     }
 
     public TableViewer getTableViewer()
@@ -927,7 +927,7 @@ public final class SecuritiesTable implements ModificationListener
         {
             manager.add(new SimpleAction(
                             MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
-                            a -> new UpdateQuotesJob(getClient(),
+                            a -> new UpdatePricesJob(getClient(),
                                             selection.toList().stream().map(Security.class::cast).toList())
                                                             .schedule()));
 

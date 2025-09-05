@@ -14,7 +14,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import jakarta.inject.Inject;
 
@@ -45,7 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
-import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -56,8 +55,9 @@ import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateConfig;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -576,10 +576,13 @@ public class ClientInput
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            Predicate<Security> onlyActive = s -> !s.isRetired();
+            var config = PriceUpdateConfig
+                            .fromCode(getPreferenceStore().getString(UIConstants.Preferences.UPDATE_QUOTES_STRATEGY));
+            var converter = new CurrencyConverterImpl(getExchangeRateProviderFacory(), client.getBaseCurrency());
+            var predicate = config.getPredicate(converter, client);
 
-            Job initialQuoteUpdate = new UpdateQuotesJob(client, onlyActive,
-                            EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
+            Job initialQuoteUpdate = new UpdatePricesJob(client, predicate,
+                            EnumSet.of(UpdatePricesJob.Target.LATEST, UpdatePricesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
             var checkInvestmentPlans = new CreateInvestmentPlanTxJob(client, exchangeRateProviderFacory);
@@ -588,16 +591,16 @@ public class ClientInput
 
             // always schedule the period jobs. The job will check the
             // preferences and skip the run if not enabled.
-            var job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.LATEST, Duration.ofMinutes(30));
+            var job = new PeriodicUpdatePricesJob(this, UpdatePricesJob.Target.LATEST, Duration.ofMinutes(30));
             job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
-            job = new PeriodicUpdatePricesJob(this, UpdateQuotesJob.Target.HISTORIC, Duration.ofHours(6));
+            job = new PeriodicUpdatePricesJob(this, UpdatePricesJob.Target.HISTORIC, Duration.ofHours(6));
             job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(5000);
-            new UpdateDividendsJob(getClient(), onlyActive).schedule(7000);
+            new UpdateDividendsJob(getClient(), predicate).schedule(7000);
         }
     }
 

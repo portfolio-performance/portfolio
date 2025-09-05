@@ -171,4 +171,86 @@ public class N26BankAGPDFExtractorTest
                         hasAmount("EUR", 11.06), hasGrossValue("EUR", 15.01), //
                         hasTaxes("EUR", 3.75 + 0.20), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKontoauszug06()
+    {
+        var extractor = new N26BankAGkPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-11"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-13"), hasAmount("EUR", 4500.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-20"), hasAmount("EUR", 3500.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-01-01T00:00"), //
+                        hasSource("Kontoauszug06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.55), hasGrossValue("EUR", 8.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new N26BankAGkPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-04"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-12"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-26"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-27"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-27"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-05-01T00:00"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6.60), hasGrossValue("EUR", 6.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }

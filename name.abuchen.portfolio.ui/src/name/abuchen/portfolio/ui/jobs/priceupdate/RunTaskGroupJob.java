@@ -63,7 +63,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
             {
                 task.status.setStatus(UpdateStatus.ERROR, Messages.MsgAuthenticationExpired);
                 for (var c : candidates)
-                    c.status.setStatus(UpdateStatus.SKIPPED, Messages.MsgAuthenticationExpired);
+                    c.status.setStatus(UpdateStatus.ERROR, Messages.MsgAuthenticationExpired);
 
                 // stop processing further tasks
                 return Status.OK_STATUS;
@@ -102,7 +102,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                     task.status.setStatus(UpdateStatus.ERROR,
                                     MessageFormat.format(Messages.MsgRateLimitExceeded, task.security.getName()));
                     for (var c : candidates)
-                        c.status.setStatus(UpdateStatus.SKIPPED,
+                        c.status.setStatus(UpdateStatus.ERROR,
                                         MessageFormat.format(Messages.MsgRateLimitExceeded, c.security.getName()));
 
                     // stop processing further tasks

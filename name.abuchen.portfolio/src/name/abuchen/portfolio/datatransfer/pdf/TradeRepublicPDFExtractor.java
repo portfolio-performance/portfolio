@@ -3402,6 +3402,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
+                                        // VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG
+                                        // DE27100999999999999301 01.09.2025 25,00 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .find("VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG") //
+                                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
                                         // COMPTE-ESPÈCES DATE DE VALEUR MONTANT
                                         // DE13502109007011547146 24/05/2023 1000,00 EUR
                                         // @formatter:on
@@ -3448,6 +3457,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount", "currency") //
                                                         .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
                                                         .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG
+                                        // DE27100999999999999301 01.09.2025 25,00 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG") //
+                                                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));

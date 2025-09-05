@@ -58,7 +58,7 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.DomainElement;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.views.SecurityListView;
@@ -129,7 +129,7 @@ public class NewDomainElementHandler
         {
             view.getClient().addSecurity(newSecurity);
             view.getClient().markDirty();
-            new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
+            new UpdatePricesJob(view.getClient(), newSecurity).schedule();
 
             postSecurityCreatedEvent(view.getClient(), newSecurity);
         }
@@ -243,7 +243,7 @@ public class NewDomainElementHandler
 
                 view.getClient().addSecurity(newSecurity);
                 view.getClient().markDirty();
-                new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
+                new UpdatePricesJob(view.getClient(), newSecurity).schedule();
                 postSecurityCreatedEvent(view.getClient(), newSecurity);
             }
         }
