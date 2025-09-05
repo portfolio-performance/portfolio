@@ -57,11 +57,7 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
                 long monthlyTransfers = transferals.length > 1 ? LongStream.of(transferals).skip(1).sum() : 0L;
 
                 // Set the value in the model
-                Long oldValue = model.getRow(row).getData(col);
-                if (oldValue != null)
-                {
-                    model.getRow(row).setData(col, monthlyTransfers);
-                }
+                model.getRow(row).setData(col, monthlyTransfers);
             }
         }
     }
