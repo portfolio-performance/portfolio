@@ -11,7 +11,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>4.0.13</tycho-version>
+		<tycho-version>5.0.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -506,7 +506,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>11.0.0</version>
+							<version>11.0.1</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -530,7 +530,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.1.0.4751</version>
+					<version>5.2.0.4988</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
