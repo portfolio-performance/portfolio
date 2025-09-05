@@ -70,10 +70,8 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     movingAverageNetCost = 0;
                     movingAverageNetCostForex = 0;
                     heldShares = 0;
-                    // FIXME Oops. More sold than bought.
-                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                                    Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+
+                    realizedCapitalGains.addCapitalGains(Money.of(termCurrency, netAmount));
                 }
                 else
                 {
@@ -155,8 +153,9 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 
         LocalDateTime valuationAtEndDate = valuationsAtEnd.get(0).getDateTime();
 
-        Money endValue = valuationsAtEnd.stream().map(
-                        item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
+        Money endValue = valuationsAtEnd.stream()
+                        .filter(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).getShares() > 0)
+                        .map(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
         Money convertedEndValue = endValue.with(converter.at(valuationAtEndDate));
 
