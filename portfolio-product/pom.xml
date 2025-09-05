@@ -71,6 +71,7 @@
 							</rootFolders>
 						</product>
 					</products>
+					<parallel>true</parallel>
 				</configuration>
 			</plugin>
 			<plugin>
