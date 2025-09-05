@@ -314,6 +314,10 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
+        // The document only show the origin currency, but all fees and taxes
+        // are in EUR
+        var currency = "EUR";
+
         pdfTransaction //
 
                         .subject(() -> {
@@ -336,26 +340,38 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         })
 
                         // @formatter:off
+                        // DESCRIPCIÓN DEL VALOR T/N /NOMINAL NOMINAL/EFECTIVO DIVISA DIVISA(*) NOMINAL/EFECTIVO APLICADO EN EUROS
                         // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        // [USD] -> Origin currency
+                        // [1,1678] -> Exchange Rate
+                        // [20,88] -> Gross Fee
                         // @formatter:on
-                        .section("currency", "gross") //
+                        .section("exchangeRate", "termCurrency", "grossFee") //
                         .documentContext("percentageTaxes") //
-                        .match("^.*[T|N] [\\.,\\d]+ (?<currency>[A-Z]{3}).* (?<gross>[\\.,\\d]+).*$") //
+                        .match("^.*[T|N] [\\.,\\d]+.*(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).* M.nimo (?<grossFee>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+                            // Gross fee amounts are in EUR
+                            var grossFeeBeforeTaxes = Money.of(asCurrencyCode(currency), asAmount(v.get("grossFee")));
                             var percentageTaxes = asBigDecimal(v.get("percentageTaxes"));
-                            var gross = asBigDecimal(v.get("gross"));
-
-                             // @formatter:off
+                            var grossFee = asBigDecimal(v.get("grossFee"));
+                        // @formatter:off
                              // taxAmount = gross * (percentageTaxes / 100)
                              // @formatter:on
-                            var fxTax = gross.multiply(percentageTaxes, Values.MC);
-                            var taxes = Money.of(asCurrencyCode(v.get("currency")), fxTax.setScale(0, Values.MC.getRoundingMode()).longValue());
+                            var tax = grossFee.multiply(percentageTaxes, Values.MC);
+                            var taxes = Money.of(asCurrencyCode(currency),
+                                            tax.setScale(0, Values.MC.getRoundingMode()).longValue());
 
-                             // amount = grossBeforeTaxes - taxes
-                             t.setMonetaryAmount(grossBeforeTaxes.subtract(taxes));
+                            // Bank fees and the taxes on them make up the total
+                            // amount charged.
+                            // amount = grossFeeBeforeTaxes + taxes
+                            var amount = grossFeeBeforeTaxes.add(taxes);
+                            var fxAmount = rate.convert(rate.getTermCurrency(), amount);
+
+                            t.setMonetaryAmount(amount);
+                            checkAndSetGrossUnit(amount, fxAmount, t, type.getCurrentContext());
                         })
-
                         .wrap(TransactionItem::new);
     }
 
