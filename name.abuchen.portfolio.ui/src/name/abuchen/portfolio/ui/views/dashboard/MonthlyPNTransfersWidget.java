@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.stream.LongStream;
 
 import name.abuchen.portfolio.model.Client;
@@ -8,7 +9,6 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.AbstractMonhtlyHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.HeatmapModel;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
 public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
@@ -16,21 +16,18 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
     public MonthlyPNTransfersWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
-        addConfig(new DataSeriesConfig(this, false));
     }
 
     @Override
     protected void linkActivated()
     {
-        // Nothing to do when clicking the title for now
+        // No link action
     }
 
     @Override
     protected void processTransactions(int startYear, Interval interval, HeatmapModel<Long> model,
                     Client filteredClient)
     {
-        Client client = getDashboardData().getClient();
-        DataSeries series = get(DataSeriesConfig.class).getDataSeries();
 
         for (int year = interval.getStart().getYear(); year <= interval.getEnd().getYear(); year++)
         {
@@ -49,7 +46,8 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
                 // Calculate performance index of the month (including the day
                 // before for proper calculation)
                 Interval monthInterval = Interval.of(startOfMonth.minusDays(1), endOfMonth);
-                PerformanceIndex monthlyIndex = getDashboardData().calculate(series, monthInterval);
+                PerformanceIndex monthlyIndex = PerformanceIndex.forClient(filteredClient,
+                                getDashboardData().getCurrencyConverter(), monthInterval, new ArrayList<>());
 
                 // Get transferals and sum them, skipping the first element (day
                 // before start)
