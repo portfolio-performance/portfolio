@@ -4,15 +4,22 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.LongStream;
 
+import jakarta.inject.Inject;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.AbstractMonhtlyHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.HeatmapModel;
+import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.util.Interval;
 
 public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
 {
+    @Inject
+    private PortfolioPart part;
+
     public MonthlyPNTransfersWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
@@ -21,7 +28,7 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
     @Override
     protected void linkActivated()
     {
-        // No link action
+        part.activateView(AllTransactionsView.class, null);
     }
 
     @Override
