@@ -1,18 +1,14 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.stream.LongStream;
-
 import jakarta.inject.Inject;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.AbstractMonhtlyHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.HeatmapModel;
-import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.util.Interval;
 
 public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
@@ -35,35 +31,62 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
     protected void processTransactions(int startYear, Interval interval, HeatmapModel<Long> model,
                     Client filteredClient)
     {
+        CurrencyConverter converter = getDashboardData().getCurrencyConverter();
 
-        for (int year = interval.getStart().getYear(); year <= interval.getEnd().getYear(); year++)
-        {
-            int row = year - startYear;
+        // Cash account transactions
+        filteredClient.getAccounts().stream().flatMap(account -> account.getTransactions().stream())
+                        .filter(t -> interval.contains(t.getDateTime())).forEach(t -> {
+                            int row = t.getDateTime().getYear() - startYear;
+                            int col = t.getDateTime().getMonth().getValue() - 1;
+                            long value = 0;
+                            switch (t.getType())
+                            {
+                                case DEPOSIT:
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case REMOVAL:
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case TRANSFER_IN:
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case TRANSFER_OUT:
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                default:
+                                    return;
+                            }
 
-            for (int month = 1; month <= 12; month++)
-            {
-                int col = month - 1;
+                            Long oldValue = model.getRow(row).getData(col);
+                            model.getRow(row).setData(col, oldValue + value);
+                        });
 
-                // Skip if this month is outside our interval
-                LocalDate startOfMonth = LocalDate.of(year, month, 1);
-                LocalDate endOfMonth = startOfMonth.plusMonths(1).minusDays(1);
-                if (endOfMonth.isBefore(interval.getStart()) || startOfMonth.isAfter(interval.getEnd()))
-                    continue;
+        // Securities account transactions
+        filteredClient.getPortfolios().stream().flatMap(portfolio -> portfolio.getTransactions().stream())
+                        .filter(t -> interval.contains(t.getDateTime())).forEach(t -> {
+                            int row = t.getDateTime().getYear() - startYear;
+                            int col = t.getDateTime().getMonth().getValue() - 1;
+                            long value = 0;
+                            switch (t.getType())
+                            {
+                                case DELIVERY_INBOUND:
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case DELIVERY_OUTBOUND:
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case TRANSFER_IN:
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                case TRANSFER_OUT:
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    break;
+                                default:
+                                    return;
+                            }
 
-                // Calculate performance index of the month (including the day
-                // before for proper calculation)
-                Interval monthInterval = Interval.of(startOfMonth.minusDays(1), endOfMonth);
-                PerformanceIndex monthlyIndex = PerformanceIndex.forClient(filteredClient,
-                                getDashboardData().getCurrencyConverter(), monthInterval, new ArrayList<>());
-
-                // Get transferals and sum them, skipping the first element (day
-                // before start)
-                long[] transferals = monthlyIndex.getTransferals();
-                long monthlyTransfers = transferals.length > 1 ? LongStream.of(transferals).skip(1).sum() : 0L;
-
-                // Set the value in the model
-                model.getRow(row).setData(col, monthlyTransfers);
-            }
-        }
+                            Long oldValue = model.getRow(row).getData(col);
+                            model.getRow(row).setData(col, oldValue + value);
+                        });
     }
 }
