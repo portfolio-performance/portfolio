@@ -14,7 +14,10 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.bootstrap.FilePickerDialog.FileInfo;
@@ -24,12 +27,54 @@ public class CustomSaveHandler extends PartServiceSaveHandler
 {
     private static final class PromptForSaveDialog extends MessageDialog
     {
+        private Listener keyListener;
+
         private PromptForSaveDialog(Shell parentShell, String dialogMessage)
         {
             super(parentShell, Messages.SaveHandlerTitle, null, dialogMessage, MessageDialog.INFORMATION, //
                             new String[] { Messages.LabelYes, Messages.LabelNo, Messages.LabelCancel }, 0);
 
             setShellStyle(getShellStyle() | SWT.SHEET);
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent)
+        {
+            super.createButtonsForButtonBar(parent);
+
+            // "Y" and "N" hotkeys
+            keyListener = e -> {
+                if (e.widget instanceof Control)
+                {
+                    Control control = (Control) e.widget;
+                    if (control.getShell() == getShell())
+                    {
+                        if (e.character == 'y' || e.character == 'Y')
+                        {
+                            setReturnCode(0);
+                            close();
+                        }
+                        else if (e.character == 'n' || e.character == 'N')
+                        {
+                            setReturnCode(1);
+                            close();
+                        }
+                    }
+                }
+            };
+            getShell().getDisplay().addFilter(SWT.KeyDown, keyListener);
+        }
+
+        @Override
+        public boolean close()
+        {
+            // Remove the hotkey listener when dialog closes
+            if (keyListener != null)
+            {
+                getShell().getDisplay().removeFilter(SWT.KeyDown, keyListener);
+                keyListener = null;
+            }
+            return super.close();
         }
     }
 
