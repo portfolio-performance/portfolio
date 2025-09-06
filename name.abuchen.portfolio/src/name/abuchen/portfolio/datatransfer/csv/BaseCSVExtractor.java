@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -206,5 +208,22 @@ import name.abuchen.portfolio.money.Money;
         Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
 
         return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));
+    }
+
+    protected void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
+                    PortfolioTransaction transaction) throws ParseException
+    {
+        if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
+            return;
+
+        var exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+        if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
+        {
+            var grossValue = transaction.getGrossValue();
+            var forex = Money.of(transaction.getSecurity().getCurrencyCode(), Math
+                            .round(exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount())).doubleValue()));
+            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+            transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
+        }
     }
 }

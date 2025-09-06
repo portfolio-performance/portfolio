@@ -87,8 +87,10 @@ public class ImportCSVHandler
         if (account != null)
             wizard.setTarget(account);
         if (portfolio != null)
+        {
             wizard.setTarget(portfolio);
-
+            wizard.setExtractor("portfolio-transaction"); //$NON-NLS-1$
+        }
         if (index != null)
         {
             // see comment CSVConfigurationsMenuContribution#aboutToShow
