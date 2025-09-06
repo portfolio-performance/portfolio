@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget.ExpansionSetting;
+
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
@@ -128,6 +129,9 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+
+    MONTHLY_PN_TRANSFERS(Messages.LabelMonthlyPNTransfers, Messages.LabelStatementOfAssets,
+                    MonthlyPNTransfersWidget::new),
 
     INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
