@@ -1,15 +1,22 @@
 package name.abuchen.portfolio.datatransfer.ibflex;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -3298,5 +3305,38 @@ public class IBFlexStatementExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(1.10468665))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile24() throws IOException
+    {
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile24.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(9L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(10L));
+        new AssertImportActions().check(results, "USD");
+
+        // check 1st dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-08-05"), hasShares(300), //
+                        hasSecurity(hasIsin("US0250726876")), //
+                        hasAmount("USD", 54.24), hasGrossValue("USD", 54.24), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2025-08-01"), hasShares(0), //
+                        hasNote("Transaction-ID: 34211209522 | FinAdvisor Fee: Percent of Equity, Posted Monthly"),
+                        hasAmount("USD", 245.92), hasGrossValue("USD", 245.92), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 }
