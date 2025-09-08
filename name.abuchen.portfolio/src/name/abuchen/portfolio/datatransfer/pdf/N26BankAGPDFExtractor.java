@@ -10,9 +10,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
+public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 {
-    public N26BankAGkPDFExtractor(Client client)
+    public N26BankAGPDFExtractor(Client client)
     {
         super(client);
 
