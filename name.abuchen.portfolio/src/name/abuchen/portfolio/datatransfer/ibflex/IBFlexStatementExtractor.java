@@ -279,6 +279,8 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Broker Interest Paid":
                     accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
                     break;
+                case "Management Fees":
+                case "Advisor Fees":
                 case "Other Fees":
                     // Positive amount are a fee refund
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
