@@ -4,6 +4,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
@@ -60,5 +61,29 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 24.08.2024 Übertrag des verlängerten 403,39 10.000,00
+        // 24.08.2024 Übertrag des verlängerten 10.000,00 0,00
+        // @formatter:on
+        var transferBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .bertrag des verl.ngerten [\\.,\\d]+ [\\.,\\d]+$");
+        type.addBlock(transferBlock);
+        transferBlock.set(new Transaction<AccountTransferEntry>()
+
+                        .subject(() -> {
+                            var accountTransferEntry = new AccountTransferEntry();
+                            return accountTransferEntry;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .bertrag des verl.ngerten (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> new AccountTransferItem(t, true)));
     }
 }
