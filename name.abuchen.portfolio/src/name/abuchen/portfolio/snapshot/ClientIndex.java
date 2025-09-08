@@ -17,6 +17,12 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.snapshot.security.DailyCapitalGainsCalculation;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
@@ -59,6 +65,9 @@ import name.abuchen.portfolio.util.Interval;
         buys = new long[size];
         sells = new long[size];
         fees = new long[size];
+        capitalGains = new long[size];
+        realizedCapitalGains = new long[size];
+        unrealizedCapitalGains = new long[size];
 
         collectTransferalsAndTaxes(interval);
 
@@ -103,6 +112,9 @@ import name.abuchen.portfolio.util.Interval;
             valuation = thisValuation;
             index++;
         }
+
+        // Calculate capital gains
+        calculateCapitalGains(interval);
     }
 
     protected void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)
@@ -210,4 +222,75 @@ import name.abuchen.portfolio.util.Interval;
 
         }
     }
+
+    private void calculateCapitalGains(Interval interval)
+    {
+        // Use the new DailyCapitalGainsCalculation for accurate FIFO-based gains
+        DailyCapitalGainsCalculation dailyCalc = new DailyCapitalGainsCalculation(
+            getClient(), getCurrencyConverter(), interval);
+        dailyCalc.calculate();
+        
+        // Distribute realized gains from the daily calculation
+        distributeRealizedGainsFromDailyCalculation(interval, dailyCalc);
+        
+        // Distribute unrealized gains from the daily calculation
+        distributeUnrealizedGainsFromDailyCalculation(interval, dailyCalc);
+        
+        // Calculate total capital gains (realized + unrealized)
+        calculateTotalCapitalGains(interval, dailyCalc);
+    }
+    
+    private void distributeRealizedGainsFromDailyCalculation(Interval interval, DailyCapitalGainsCalculation dailyCalc)
+    {
+        // Get all dates that have realized gains
+        List<LocalDate> datesWithGains = dailyCalc.getDatesWithRealizedGains();
+        
+        // Add the gains to the arrays on their specific dates
+        for (LocalDate date : datesWithGains)
+        {
+            Money gainsForDate = dailyCalc.getRealizedGains(date);
+            if (gainsForDate.getAmount() != 0)
+            {
+                addValue(realizedCapitalGains, gainsForDate.getCurrencyCode(), 
+                        gainsForDate.getAmount(), interval, date);
+            }
+        }
+    }
+    
+    private void distributeUnrealizedGainsFromDailyCalculation(Interval interval, DailyCapitalGainsCalculation dailyCalc)
+    {
+        // Get all dates that have unrealized gains
+        List<LocalDate> datesWithUnrealizedGains = dailyCalc.getDatesWithUnrealizedGains();
+        
+        // Add the unrealized gains to the arrays on their specific dates
+        for (LocalDate date : datesWithUnrealizedGains)
+        {
+            Money unrealizedGainsForDate = dailyCalc.getUnrealizedGains(date);
+            if (unrealizedGainsForDate.getAmount() != 0)
+            {
+                addValue(unrealizedCapitalGains, unrealizedGainsForDate.getCurrencyCode(), 
+                        unrealizedGainsForDate.getAmount(), interval, date);
+            }
+        }
+    }
+
+    private void calculateTotalCapitalGains(Interval interval, DailyCapitalGainsCalculation dailyCalc)
+    {
+        // Calculate total capital gains (realized + unrealized) for each day
+        int daysInInterval = (int) interval.getDays() + 1;
+        if (daysInInterval > 0)
+        {
+            for (int i = 0; i < daysInInterval; i++)
+            {
+                LocalDate date = interval.getStart().plusDays(i);
+                Money realizedGains = dailyCalc.getRealizedGains(date);
+                Money unrealizedGains = dailyCalc.getUnrealizedGains(date);
+                Money totalGains = realizedGains.add(unrealizedGains);
+                
+                this.capitalGains[i] = totalGains.getAmount();
+            }
+        }
+    }
+    
+
 }
