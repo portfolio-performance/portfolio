@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug Nordax Bank AB (publ)
+Gävlegatan 22
+Account Statement 10435 Stockholm, Schweden
+ 
+Anna-JWdMXYSFO AhIQytN Anlagekonto: FDA_111_806_014_122
+Franz-Wolter-Str.  7 g Produkttyp: 12 MONAT
+11286 SBNIRZM Währung: EUR
+Zeitraum: 24.08.2023 bis 23.08.2025
+Kontoübersicht 
+Kontostand am 24.08.2023 10.000,00
+Summe Einzahlungen 10.000,00
+Summe Auszahlungen 10.403,39
+Summe gebuchter Zinsertrag 403,39
+Summe ausländische 0,00
+Quellensteuer 
+Kontostand am 23.08.2025 0,00
+Transaktionen
+Transactions
+Valuta Datum Zahlungsvorgang Belastung Gutschrift Saldo
+24.08.2023 Alter Kontostand 10.000,00
+24.08.2024 Zinsbuchung 403,39 10.403,39
+24.08.2024 Übertrag des verlängerten 403,39 10.000,00
+Zinsertrags
+24.08.2024 Übertrag des verlängerten 10.000,00 0,00
+Einlagebetrages
+23.08.2025 Neuer Kontostand 0,00
+ Einlagensicherung
+ Ihr Raisin-Konto sowie Ihre über Raisin gehaltenen Tages-, Kündigungs- und Festgeldkonten sind durch die jeweilige nationale 
+gesetzliche Einlagensicherung der jeweiligen Banken abgesichert. Das bedeutet, dass Ihre Bankeinlagen bis zu 100.000 EUR pro 
+Kontoinhaber und Bank oder einem entsprechenden Betrag in der Landeswährung abgesichert sind. Weitere Informationen zur 
+Einlagensicherung und den spezifischen Merkmalen finden Sie unter www.raisin.com/de-de/einlagensicherung/ sowie im 
+Produktinformationsblatt und den Allgemeinen Geschäftsbedingungen jeder Partnerbank.
+Hinweis: Dieses Dokument wurde am 23.08.2025 elektronisch erstellt und ist ohne Unterschrift gültig.
+Note:  This document has been created electronically at 23.08.2025 and is valid without signature
+Seite 1 von 2
+Seite 2 von 2
