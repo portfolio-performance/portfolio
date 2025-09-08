@@ -1,0 +1,213 @@
+package name.abuchen.portfolio.online.impl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.Scanner;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
+
+public class TLVSecurityTest
+{
+
+    private String getSecurityDetails()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_details01.txt");
+    }
+
+    private String getSharesDetails()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_details02.txt");
+    }
+
+    private String getSecurityHistory()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_history01.txt");
+    }
+
+    private String getHistoricalTaseQuotes(String filename)
+    {
+        String responseBody = null;
+        Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
+        responseBody = scanner.useDelimiter("\\A").next();
+        scanner.close();
+
+        return responseBody;
+    }
+
+    public void shouldReturnCorrectLatestQuoteForSecurityLive()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+        security.setWkn("1135912");
+
+
+        try
+        {
+            TLVSecurity securityfeed = new TLVSecurity();
+
+            Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
+
+            // Assert
+            assertTrue("Expected price to be present", optionalPrice.isPresent());
+
+            LatestSecurityPrice price = optionalPrice.get();
+            assertFalse("Date should not be null", price.getDate() == null);
+            assertEquals("High price mismatch", 118720000L, price.getHigh());
+            assertEquals("Low price mismatch", 11850000L, price.getLow());
+            assertEquals("Value mismatch", 11875000L, price.getValue());
+            assertEquals("Date mismatch", LocalDate.of(2025, 8, 25), price.getDate());
+
+            // Verify interaction
+            verify(securityfeed).rpcLatestQuoteSecurity(security);
+
+        }
+        catch (Exception e)
+        {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    public void shouldReturnCorrectLatestQuoteForSecurityMock()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+        security.setWkn("01135912");
+
+        String mockedresponse = getSecurityDetails();
+
+
+        try
+        {
+            TLVSecurity securityfeed = spy(new TLVSecurity());
+            doReturn(mockedresponse).when(securityfeed).rpcLatestQuoteSecurity(security);
+
+            Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
+
+            // Assert
+            assertTrue("Expected price to be present", optionalPrice.isPresent());
+
+            LatestSecurityPrice price = optionalPrice.get();
+            assertFalse("Date should not be null", price.getDate() == null);
+            assertEquals("High price mismatch", 118750000L, price.getHigh());
+            assertEquals("Low price mismatch", 118500000L, price.getLow());
+            assertEquals("Value mismatch", 118750000L, price.getValue());
+            assertEquals("Date mismatch", LocalDate.of(2025, 8, 26), price.getDate());
+
+            // Verify interaction
+            verify(securityfeed).rpcLatestQuoteSecurity(security);
+
+        }
+        catch (Exception e)
+        {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    public void shouldReturnCorrectLatestQuoteForSharesMock()
+    {
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("273");
+
+        String mockedresponse = getSharesDetails();
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVSecurity feed = Mockito.spy(new TLVSecurity());
+            doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
+
+            Optional<LatestSecurityPrice> optionaPrice = feed.getLatestQuote(security);
+
+            // Assert
+            assertTrue("Expected price to be present", optionaPrice.isPresent());
+
+            LatestSecurityPrice price = optionaPrice.get();
+            assertFalse("Date should not be null", price.getDate() == null);
+            assertEquals("High price mismatch", 47190000000l, price.getHigh());
+            assertEquals("Low price mismatch", 46050000000l, price.getLow());
+            assertEquals("Value mismatch", 46050000000l, price.getValue());
+            assertEquals("Date mismatch", LocalDate.of(2025, 8, 31), price.getDate());
+
+            // Verify interaction
+            verify(feed).rpcLatestQuoteSecurity(security);
+
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+
+        }
+    }
+
+    @Test
+    public void shouldReturnHistoricalQuotesOnShares()
+    {
+        // TODO add support for Subid.
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("5127121");
+
+        String mockedResponse = getSecurityHistory();
+        assertTrue(mockedResponse.length() > 0);
+
+        // new SecurityHistory();
+        SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
+        Optional<SecurityHistory> historyopt = Optional.of(history);
+
+        TLVSecurity feed = Mockito.spy(new TLVSecurity());
+
+        Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
+
+
+        // PRice in ILS, Type = Mutual Fund
+        try
+        {
+
+            doReturn(mockedFeed).when(feed).getHistoricalQuotes(security, false);
+
+            Optional<QuoteFeedData> feedDataOpt = feed.getHistoricalQuotes(security, false);
+
+            assertFalse("GetHistoricalQoutes feedData should not be empty", feedDataOpt.isEmpty());
+
+            QuoteFeedData feedData = feedDataOpt.get();
+
+            assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
+
+            SecurityPrice firstprice = feedData.getPrices().get(0);
+
+            assertTrue("First price should be 27/7/2025", firstprice.getDate().equals(LocalDate.of(2024, 11, 10)));
+            assertTrue("First price value should be 146.88", firstprice.getValue() == 114990000l);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+    }
+
+}

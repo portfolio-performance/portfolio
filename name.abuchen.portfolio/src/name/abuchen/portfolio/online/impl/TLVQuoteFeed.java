@@ -10,8 +10,7 @@ import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -34,18 +33,20 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
 
 /*
  * Developer portal: https://datahubapi.tase.co.il/ List of indices -
@@ -62,8 +63,10 @@ public class TLVQuoteFeed implements QuoteFeed
     public static final String ID = "TASE"; //$NON-NLS-1$
     private TLVSecurity TLVSecurities;
     private TLVFund TLVFunds;
+    private Boolean mapped;
     // private TLVHelper helper;
-    private Map<String, Set<String>> mappedSecurities;
+    // private Map<String, Set<String>> mappedSecurities;
+    private List<IndiceListing> mappedEntities;
     DateTimeFormatter formatter;
 
 
@@ -72,21 +75,97 @@ public class TLVQuoteFeed implements QuoteFeed
         // this.helper = new TLVHelper();
         this.TLVSecurities = new TLVSecurity();
         this.TLVFunds = new TLVFund();
-        this.mappedSecurities = new HashMap<>();
+        this.mapped = false;
+        // this.mappedSecurities = new HashMap<>();
+        // this.mappedEntities = new List<IndiceListing>();
         this.formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
 
         try
         {
-            this.mapSecurities();
+            this.mapEntities();
+            this.mapped = true;
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             System.out.print("Could not resolved TLV securities from TLV API"); //$NON-NLS-1$
             PortfolioLog.abbreviated(e);
+            this.mapped = false;
         }
     }
 
+    private void mapEntities() throws IOException
+    {
+        TLVEntities entities = new TLVEntities();
+        this.mappedEntities = entities.getAllListings(Language.ENGLISH);
+
+        Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
+
+        while (entitiesIterator.hasNext())
+        {
+            IndiceListing listing = entitiesIterator.next();
+            String id = listing.getId();
+
+            int type = listing.getType();
+            String subtype = listing.getSubType();
+            TLVType tlvType = TLVType.NONE;
+
+            if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals(""))
+            {
+                listing.setTLVType(TLVType.FUND);
+            }
+            if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
+            {
+                listing.setTLVType(TLVType.SECURITY);
+            }
+        }
+
+    }
+
+    private TLVType getSecurityType(String securityId)
+    {
+        IndiceListing foundIndice = this.mappedEntities.stream().filter(p -> p.getId().equals(securityId)).findFirst()
+                        .orElse(null);
+        if (foundIndice != null)
+            return foundIndice.getTLVType();
+
+        return TLVType.NONE;
+    }
+
+    // public static Map<String, Set<String>> mapSecurities() throws IOException
+    // {
+    // TLVEntities entities = new TLVEntities();
+    // Map<String, Set<String>> mappedSecurities = new HashMap<>();
+    //
+    // List<SecurityListing> allSecurityList =
+    // entities.getAllEntities(Language.ENGLISH);
+    // Iterator<SecurityListing> securityListingIterator =
+    // allSecurityList.iterator();
+    //
+    // while (securityListingIterator.hasNext())
+    // {
+    // SecurityListing listing = securityListingIterator.next();
+    // String id = listing.getId();
+    //
+    // String type = listing.getType();
+    // String subtype = listing.getSubType();
+    // TLVType tlvType = TLVType.NONE;
+    //
+    // if (type == SecurityType.MUTUAL_FUND.toString() && subtype.equals(""))
+    // {
+    // tlvType = TLVType.FUND;
+    // }
+    // if (type == SecurityType.SECURITY.toString() && subtype !=
+    // SecuritySubType.WARRENTS.toString())
+    // {
+    // tlvType = TLVType.SECURITY;
+    // }
+    //
+    // mappedSecurities.computeIfAbsent(id, k -> new
+    // HashSet<>()).add(tlvType.toString());
+    // }
+    // return mappedSecurities;
+    // }
 
     @Override
     public String getId()
@@ -103,52 +182,128 @@ public class TLVQuoteFeed implements QuoteFeed
 
     @Override
     public String getGroupingCriterion(Security security)
-    {
-    return "mayaapi.tase.co.il"; //$NON-NLS-1$
+    { //
+        return "mayaapi.tase.co.il"; //$NON-NLS-1$
     }
+
+    /****************************************/
 
     public Map<String, Object> getDetails(Security security, Language lang) throws Exception
     {
-        Object TLVClass = getTLVClass(security);
-        if (TLVClass instanceof TLVFund)
+        try
         {
-            FundListing fundDetails = ((TLVFund) TLVClass).getDetails(security, lang);
-            return this.TLVFunds.ObjectToMap(fundDetails);
-        }
-        else
-        {
-            SecurityListing securityDetails = ((TLVSecurity) TLVClass).getDetails(security, lang);
-            return this.TLVSecurities.ObjectToMap(securityDetails);
-        }
+            // Object TLVClass = getTLVClass(security);
+            TLVType securityType = this.getSecurityType(security.getWkn());
+            if (securityType != TLVType.NONE)
+            {
+                if (securityType == TLVType.SECURITY)
+                {
+                    SecurityListing securityDetails = this.TLVSecurities.getDetails(security, lang);
+                    return TLVSecurity.ObjectToMap(securityDetails);
+                }
+                if (securityType == TLVType.FUND)
+                {
+                    FundListing fundDetails = this.TLVFunds.getDetails(security, lang);
+                    return TLVFunds.ObjectToMap(fundDetails);
+                }
+                return Collections.emptyMap();
+            }
+            else
+            {
+                return Collections.emptyMap();
+            }
 
+        }
+        catch (IOException e)
+        {
+            return Collections.emptyMap();
+        }
     }
 
-    public Map<String, String> getNames(Security security) throws Exception
+    public Map<String, String> getNames(Security security)
     {
-        Object TLVClass = getTLVClass(security);
-        if (TLVClass instanceof TLVFund)
+        try
         {
-            FundListing englishDetails = ((TLVFund) TLVClass).getDetails(security, Language.ENGLISH);
-            FundListing hebrewDetails = ((TLVFund) TLVClass).getDetails(security, Language.HEBREW);
-            return ((TLVFund) TLVClass).getNames(englishDetails, hebrewDetails);
+            // Object TLVClass = getTLVClass(security);
+            TLVType securityType = this.getSecurityType(security.getWkn());
+            if (securityType != TLVType.NONE)
+            {
+                if (securityType == TLVType.SECURITY)
+                {
+                    // SecurityListing securityDetails =
+                    // this.TLVSecurities.getDetails(security, lang);
+                    // return this.TLVSecurities.ObjectToMap(securityDetails);
+                    SecurityListing englishDetails = this.TLVSecurities.getDetails(security, Language.ENGLISH);
+                    SecurityListing hebrewDetails = this.TLVSecurities.getDetails(security, Language.HEBREW);
+                    return this.TLVSecurities.getNames(englishDetails, hebrewDetails);
+                }
+                if (securityType == TLVType.FUND)
+                {
+                    // FundListing fundDetails =
+                    // this.TLVFunds.getDetails(security, lang);
+                    // return this.TLVFunds.ObjectToMap(fundDetails);
+                    FundListing englishDetails = this.TLVFunds.getDetails(security, Language.ENGLISH);
+                    FundListing hebrewDetails = this.TLVFunds.getDetails(security, Language.HEBREW);
+                    return this.TLVFunds.getNames(englishDetails, hebrewDetails);
+                }
+                return Collections.emptyMap();
+            }
+            else
+            {
+                return Collections.emptyMap();
+            }
         }
-        else
+        catch (Exception e)
         {
-            SecurityListing englishDetails = ((TLVSecurity) TLVClass).getDetails(security, Language.ENGLISH);
-            SecurityListing hebrewDetails = ((TLVSecurity) TLVClass).getDetails(security, Language.HEBREW);
-            return ((TLVSecurity) TLVClass).getNames(englishDetails, hebrewDetails);
+            return Collections.emptyMap();
         }
+
     }
 
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+
+    {
+        try
+        {
+            // Object TLVClass = getTLVClass(security);
+            TLVType securityType = this.getSecurityType(security.getWkn());
+            if (securityType != TLVType.NONE)
+            {
+                if (securityType == TLVType.SECURITY)
+                {
+                    // SecurityListing securityDetails =
+                    // this.TLVSecurities.getDetails(security, lang);
+                    // return this.TLVSecurities.ObjectToMap(securityDetails);
+                    Optional<LatestSecurityPrice> price = this.TLVSecurities.getLatestQuote(security);
+                    return price;
+                }
+                if (securityType == TLVType.FUND)
+                {
+                    Optional<LatestSecurityPrice> price = this.TLVFunds.getLatestQuote(security);
+                    return price;
+                }
+                return Optional.empty();
+            }
+            else
+            {
+                return Optional.empty();
+            }
+        }
+        catch (Exception e)
+        {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<LatestSecurityPrice> NotInUse(Security security)
     {
         String json;
         LatestSecurityPrice price = new LatestSecurityPrice();
         // LocalDate start = calculateStartDay();
 
-        SecurityType type = getSecurityType(security.getWkn());
+        TLVType type = getSecurityType(security.getWkn());
         // System.out.println("type " + type); //$NON-NLS-1$
 
         try 
@@ -321,24 +476,14 @@ public class TLVQuoteFeed implements QuoteFeed
         JSONObject jsonObject;
         try
         {
-            // System.out.println("gettingPriceHistoryChunck from " + from + "
-            // to: " + to); //$NON-NLS-1$ //$NON-NLS-2$
             String pricehistory = getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
-            // System.out.println("Price history " + pricehistory);
-            // //$NON-NLS-1$
-            // //$NON-NLS-1$
 
             jsonObject = (JSONObject) parser.parse(pricehistory);
-            // System.out.println("Price history json " + jsonObject);
-            // //$NON-NLS-1$
-            // System.out.println(jsonObject.getClass()); // $NON-NLS-1$
-            // Access the "parent" object
             try
             {
             
                 JSONObject parentObject = (JSONObject) jsonObject.get("Table"); //$NON-NLS-1$
 
-                // System.out.println("Table " + parentObject); //$NON-NLS-1$
                 if (parentObject != null)
                 {
                     /*
@@ -357,14 +502,6 @@ public class TLVQuoteFeed implements QuoteFeed
                     {
                         String key = iterator.next();
                         Object value = parentObject.get(key);
-                        // String datevalue = ((String) //$NON-NLS-1$
-                        // value).get("AssetValue");
-                        // String date = value.get("TradeDate");
-                        // System.out.println("Key: " + key + ", Value: " +
-                        // value); //$NON-NLS-1$ //$NON-NLS-2$
-                        // $NON-NLS-1$ //$NON-NLS-2$
-                        // System.out.println(datevalue + " " + date);
-                        // //$NON-NLS-1$
                     }
                 }
             }
@@ -372,11 +509,9 @@ public class TLVQuoteFeed implements QuoteFeed
             {
                 JSONArray parentObject = (JSONArray) jsonObject.get("Table"); //$NON-NLS-1$
 
-                // System.out.println("Table found as an array"); //$NON-NLS-1$
                 for (int i = 0; i < parentObject.size(); i++)
                 {
                     JSONObject item = (JSONObject) parentObject.get(i);
-                    // System.out.println("Key: " + i + ", Value: " + item);
 
                     String strTradeDate = (String) item.get("TradeDate"); //$NON-NLS-1$
                     LocalDate tradedate = null;
@@ -615,48 +750,74 @@ public class TLVQuoteFeed implements QuoteFeed
     //
     // }
 
+    // TODO - refactor to return the FundHistory or SecurityHistory (and not a
+    // Map)
+    // That way can extract it directly without going through maps. However to
+    // do that, they must return the same type
     public Map<String, Object> getPriceHistoryChunk2(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
     {
-        Object mayaClass = getTLVClass(security);
-        if (mayaClass instanceof TLVFund)
+        TLVType securityType = this.getSecurityType(security.getWkn());
+        if (securityType != TLVType.NONE)
         {
-            FundHistory fundHistory = ((TLVFund) mayaClass).getPriceHistoryChunkSec(security, fromDate, toDate, page,
-                            lang);
-            return TLVHelper.ObjectToMap(fundHistory);
+            if (securityType == TLVType.SECURITY)
+            {
+                Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunkSec(security, fromDate,
+                                toDate, page, lang);
+                if (securityHistory.isPresent())
+                    return TLVHelper.ObjectToMap(securityHistory);
+            }
+            if (securityType == TLVType.FUND)
+            {
+                FundHistory fundHistory = this.TLVFunds.getPriceHistoryChunkSec(security, fromDate, toDate, page, lang);
+                return TLVHelper.ObjectToMap(fundHistory);
+            }
+            return Collections.emptyMap();
         }
         else
         {
-            SecurityHistory securityHistory = ((TLVSecurity) mayaClass).getPriceHistoryChunkSec(security, fromDate,
-                            toDate, page, lang);
-            return TLVHelper.ObjectToMap(securityHistory);
+            return Collections.emptyMap();
         }
+        
+
     }
 
     // Yahoo function
     public String getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
-                    Language lang) throws Exception
+                    Language lang) 
     {
-        SecurityType type = getSecurityType(securityId);
-        // System.out.println("Security type: " + type.getValue());
-        // //$NON-NLS-1$
-        if (type == SecurityType.MUTUAL_FUND)
+        try
         {
-            FundHistory fundHistory = TLVFunds.getPriceHistoryChunk(securityId, fromDate, toDate, page, lang);
-            return this.HistoryToJson(fundHistory);
+            TLVType securityType = this.getSecurityType(securityId);
+            if (securityType != TLVType.NONE)
+            {
+                if (securityType == TLVType.SECURITY)
+                {
+                    Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunk(securityId,
+                                    fromDate,
+                                    toDate, page, lang);
+                    if (securityHistory.isPresent())
+                        return this.HistoryToJson(securityHistory);
+                }
+                if (securityType == TLVType.FUND)
+                {
+                    FundHistory fundHistory = this.TLVFunds.getPriceHistoryChunk(securityId, fromDate, toDate, page,
+                                    lang);
+                    return this.HistoryToJson(fundHistory);
+                }
+                JSONObject json = new JSONObject();
+                return json.toString();
+            }
+            else
+            {
+                JSONObject json = new JSONObject();
+                return json.toString();
+            }
         }
-        if (type == SecurityType.SHARES)
+        catch (Exception e)
         {
-            SecurityHistory securityHistory = TLVSecurities.getPriceHistoryChunk(securityId, fromDate,
-                            toDate, page, lang);
-            return this.HistoryToJson(securityHistory);
+            return "";
         }
-        else
-        {
-            JSONObject json = new JSONObject();
-            return json.toString();
-        }
-
     }
     
     public Map<String, Object> getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
@@ -670,20 +831,32 @@ public class TLVQuoteFeed implements QuoteFeed
         {
             fromDate = toDate.minusDays(1);
         }
-        Object mayaClass = getTLVClass(security);
-        if (mayaClass instanceof TLVFund)
+
+        TLVType securityType = this.getSecurityType(security.getWkn());
+        if (securityType != TLVType.NONE)
         {
-            FundHistory fundHistory = ((TLVFund) mayaClass).getPriceHistory(security.getWkn(), fromDate, toDate, page,
-                            lang);
-            return TLVHelper.ObjectToMap(fundHistory);
+            if (securityType == TLVType.SECURITY)
+            {
+                Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistory(security, fromDate,
+                                toDate, page,
+                                lang);
+                if (securityHistory.isPresent())
+                    return TLVHelper.ObjectToMap(securityHistory);
+            }
+            if (securityType == TLVType.FUND)
+            {
+                FundHistory fundHistory = this.TLVFunds.getPriceHistory(security.getWkn(), fromDate, toDate,
+                                page, lang);
+                return TLVHelper.ObjectToMap(fundHistory);
+            }
+            return Collections.emptyMap();
         }
         else
         {
-            SecurityHistory securityHistory = ((TLVSecurity) mayaClass).getPriceHistory(security, fromDate, toDate,
-                            page, lang);
-            return TLVHelper.ObjectToMap(securityHistory);
+            return Collections.emptyMap();
         }
-            }
+
+    }
 
     /* package */
     
@@ -736,27 +909,13 @@ public class TLVQuoteFeed implements QuoteFeed
         return price;
     }
 
-    private void mapSecurities() throws Exception
-    {
-        TLVEntities entities = new TLVEntities();
-        List<SecurityListing> allSecurityList = entities.getAllEntities(Language.ENGLISH);
-        Iterator<SecurityListing> securityListingIterator = allSecurityList.iterator();
 
-        while (securityListingIterator.hasNext())
-        {
-            SecurityListing listing = securityListingIterator.next();
-            String id = listing.getId();
-            String type = listing.getType();
-            mappedSecurities.computeIfAbsent(id, k -> new HashSet<>()).add(type);
-        }
-
-    }
 
     @VisibleForTesting
-    public List<SecurityListing> getAllSecurities(Language lang) throws Exception
+    public List<IndiceListing> getAllSecurities(Language lang) throws Exception
     {
         TLVEntities indices = new TLVEntities();
-        return indices.getAllEntities(Language.ENGLISH);
+        return indices.getAllListings(Language.ENGLISH);
 
     }
     // List<SecurityListing> getAllSecurities(Language lang) throws Exception
@@ -792,76 +951,62 @@ public class TLVQuoteFeed implements QuoteFeed
     // return list;
     // }
 
-    private SecurityType getSecurityType(String securityId)
-    {
-        Set<String> securitySet = mappedSecurities.get(securityId);
-        // System.out.println("Securityset: " + securitySet + " " //$NON-NLS-1$
-        // //$NON-NLS-2$
-        // +
-        // securitySet.contains(String.valueOf(SecurityType.SHARES.getValue())));
-        if (securitySet.contains(String.valueOf(SecurityType.MUTUAL_FUND.getValue())))
-        {
-            return SecurityType.MUTUAL_FUND;
-        }
-        if (securitySet.contains(String.valueOf(SecurityType.SHARES.getValue())))
-        {
-            return SecurityType.SHARES;
-        }
-        return SecurityType.OTHER;
-    }
+
+    // private Optional<Object> getTLVClass(Security security)
+    // {
+    // if (this.mapped)
+    // {
+    // SecurityType type = getSecurityType(security.getWkn());
+    // if ((type == SecurityType.MUTUAL_FUND) || (type == SecurityType.INDEX))
+    // return Optional.of(this.TLVFunds);
+    // if (type == SecurityType.SHARES)
+    // return Optional.of(this.TLVSecurities);
+    // }
+    // return Optional.empty();
 
     @VisibleForTesting
     public String rpcLatestQuoteFund(Security security)
     {
         // LatestSecurityPrice price = new LatestSecurityPrice();
         String json = ""; //$NON-NLS-1$
-        SecurityType type = getSecurityType(security.getWkn());
+        TLVType type = getSecurityType(security.getWkn());
         // System.out.println("Security is: " + security); //$NON-NLS-1$
         try
         {
-            if (type == SecurityType.MUTUAL_FUND)
+            if (type == TLVType.FUND)
             {
-                json = TLVFunds.rpcLatestQuoteFund(security);
+                json = this.TLVFunds.rpcLatestQuoteFund(security);
             }
-            if (type == SecurityType.SHARES)
+            if (type == TLVType.SECURITY)
             {
-                json = TLVSecurities.getLatestQuote(security);
+                // json = this.TLVSecurities.getLatestQuote(security);
             }
+            json = "{}";
 
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return ""; //$NON-NLS-1$
+            return "{}"; //$NON-NLS-1$
         }
         return json;
 
     }
 
-    private Object getTLVClass(Security security)
-    {
-        if (mappedSecurities.get(security.getWkn()).contains(Integer.toString(TLVFunds.TYPE)))
-        {
-            return this.TLVFunds;
-        }
-        else
-        {
-            return this.TLVSecurities;
-        }
-    }
+
 
     // private Optional<String> quoteCurrency = Optional.of("ILA");
     // //$NON-NLS-1$
-    private Optional<String> getQuoteCurrency(Security security)
+    public Optional<String> getQuoteCurrency(Security security)
     {
 
-        SecurityType type = getSecurityType(security.getWkn());
-        if (type == SecurityType.MUTUAL_FUND)
+        TLVType type = getSecurityType(security.getWkn());
+        if (type == TLVType.FUND)
         { //
             return Optional.of("ILS"); //$NON-NLS-1$
         }
-        if (type == SecurityType.SHARES)
+        if (type == TLVType.SECURITY)
         { // 
             return Optional.of("ILA"); //$NON-NLS-1$
         }

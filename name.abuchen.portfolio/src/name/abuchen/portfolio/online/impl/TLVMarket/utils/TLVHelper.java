@@ -33,15 +33,70 @@ public class TLVHelper
         }
     };
 
+//@formatter:off
+    /*
+     * Indeces list 
+     * 1 12 Participating unit          Security 
+     * 1 12 Participating unit TASE UP  Security
+     * 1 2 Warrants 
+     * 1 3 Convertible Bonds            Security
+     * 1 4 Government Bonds             Security
+     * 1 41 HiTech Fund                 Security
+     * 1 42 ETF Fund -Equity            Security
+     * 1 43 ETF - Bonds                 Security
+     * 1 44 Foreign ETF - Equity        Security
+     * 1 45 Foreign ETF -Bonds          Security
+     * 1 5 Corporate Bonds              Security
+     * 1 5 Corporate Bonds TASE UP      Security 
+     * 1 8 Treasury Bill                Security
+     * 2 Null Index                     None
+     * 4 Null Mutual Fund               Fund
+     * 5 Candidate Company 
+     * 5 Company 
+     * 5 Deleted Company 
+     * 5 None Tradable Company 
+     * 5 TASE UP 
+     * 5 0 Company 
+     * 5 1 Company 
+     * 7 1 Derivatives 
+     * 7 2 Derivatives 
+     * 7 4 Derivatives 
+     * 10 1 Fund Manager 
+     * 13 46 Hedge Fund                 None
+     * 14 Deleted Fund 
+     * 15 Disclosures 
+     * 15 0 Disclosures 
+     * 15 1 Disclosures 
+     * 16 Form
+     */
+// @formatting:on
     public enum SecurityType
     {
-        SHARES(1), INDEX(2), MUTUAL_FUND(4), OTHER(0);
+        SECURITY(1), INDEX(2), MUTUAL_FUND(4), DELETED(5), UNKOWN(-1);
 
         private final int value;
 
         SecurityType(int value)
         {
             this.value = value;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
+    }
+
+    public enum SecuritySubType
+    {
+        COMPANY(0), SHARES(1), WARRENTS(2), CONVERTIBLE_BONDS(3), GOVERNMENT_BONDS(4), CORPORATE_BONDS(5), UNKNOWN(-1);
+
+        private final int value;
+        
+        SecuritySubType(int value)
+        {
+            this.value = value;
+        
         }
 
         public int getValue()
@@ -66,8 +121,26 @@ public class TLVHelper
             return value;
         }
     }
+    
+    public enum TLVType
+    {
+        FUND(1), SECURITY(2), NONE(0);
+        
+        private final int value;
+        
+        TLVType(int value)
+        {
+            this.value = value;
+        }
+        public int getValue()
+        {
+            return value;
+        }
+    }
+    
 
 
+    
     public static Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
         int begin = body.indexOf(startToken, startIndex);
@@ -82,9 +155,16 @@ public class TLVHelper
         return Optional.of(body.substring(begin + startToken.length(), end));
     }
 
-    static long asPrice(String s) throws ParseException
+    public static long asPrice(String s)
     {
-        return asPrice(s, BigDecimal.ONE);
+        try 
+        {
+            return asPrice(s, BigDecimal.ONE);
+        }
+        catch (ParseException e) 
+        {
+            return -1l;
+        }
     }
 
     static long asPrice(String s, BigDecimal factor) throws ParseException
@@ -131,6 +211,18 @@ public class TLVHelper
         {
         }.getType());
         return map;
+    }
+
+    public static long convertILS(long price, String quoteCurrency, String securityCurrency)
+    {
+        if (quoteCurrency != null)
+        {
+            if ("ILA".equals(quoteCurrency) && "ILS".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+                return price / 100;
+            if ("ILS".equals(quoteCurrency) && "ILA".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+                return price * 100;
+        }
+        return price;
     }
 
 }

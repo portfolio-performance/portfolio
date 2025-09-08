@@ -2281,6 +2281,7 @@
     "DistributeProfitPolicy": "No Obligation to Distribute Income Payment",
     "ManagementFee": 0.69,
     "VariableFee": null,
+    
     "TrusteeFee": 0.04,
     "SuccessFee": null,
     "SharesExposureVal": null,

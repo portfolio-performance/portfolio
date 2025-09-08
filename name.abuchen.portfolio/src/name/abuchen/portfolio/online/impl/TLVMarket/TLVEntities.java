@@ -2,14 +2,13 @@ package name.abuchen.portfolio.online.impl.TLVMarket;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -18,17 +17,10 @@ public class TLVEntities
     private final String URL = "api.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
 
-    public List<SecurityListing> getAllEntities(Language lang)
+
+    public List<IndiceListing> getAllListings(Language lang) throws IOException
     {
-        try
-        {
-            return responsetoEntitiesList(rpcAllIndices(lang));
-        }
-        catch (IOException e)
-        {
-            List<SecurityListing> listing = new ArrayList<>();
-            return listing;
-        }
+        return responsetoEntitiesList(rpcAllIndices(lang));
     }
 
     @VisibleForTesting
@@ -47,15 +39,16 @@ public class TLVEntities
         return response;
     }
 
-    private List<SecurityListing> responsetoEntitiesList(String response)
+
+
+    private List<IndiceListing> responsetoEntitiesList(String response)
     {
         Gson gson = new Gson();
-        Type SecurityListingType = new TypeToken<List<SecurityListing>>()
+        Type IndiceListing = new TypeToken<List<IndiceListing>>()
         {
         }.getType();
-        List<SecurityListing> list = gson.fromJson(response, SecurityListingType);
+        List<IndiceListing> list = gson.fromJson(response, IndiceListing);
 
         return list;
     }
-
 }

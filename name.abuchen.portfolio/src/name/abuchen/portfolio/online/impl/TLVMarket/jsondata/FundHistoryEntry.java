@@ -59,7 +59,6 @@ public class FundHistoryEntry
         Rate = rate;
     }
 
-    // Getters and Setters
     public float getRate()
     {
         return this.Rate;
@@ -78,6 +77,16 @@ public class FundHistoryEntry
     public void setTradeDate(LocalDateTime date)
     {
         this.TradeDate = date;
+    }
+
+    public float getAssetValue()
+    {
+        return AssetValue;
+    }
+
+    public void setAssetValue(float assetValue)
+    {
+        AssetValue = assetValue;
     }
 
     public static FundHistoryEntry fromMap(Map<String, Object> map)
@@ -102,6 +111,10 @@ public class FundHistoryEntry
         if (map.containsKey("PurchasePrice"))
         {
             historyentry.setPurchasePrice(((Double) map.get("PurchasePrice")).floatValue());
+        }
+        if (map.containsKey("AssetValue"))
+        {
+            historyentry.setAssetValue(((Double) map.get("AssetValue")).floatValue());
         }
         return historyentry;
     }

@@ -11,9 +11,9 @@ public class SecurityListing
     public String Name;
     private String Smb;
     public String ISIN;
-    public String Type;
-    public int SubType;
-    String SubTypeDesc;
+    private String Type;
+    private String SubType;
+    private String SubTypeDesc;
     public String SubId;
     private String ETFType;
     private String BaseRate;
@@ -100,8 +100,8 @@ public class SecurityListing
     private String TradingStage;
     private String TradingStageDesc;
     private String TradingStageMob;
-    private String[] GreenIndicators;
-    private String[] RedIndicators;
+    private Indicator[] GreenIndicators;
+    private Indicator[] RedIndicators;
     private String SecurityTypeInSite;
     private String ETFTypeInSite;
     public String SecurityLongName;
@@ -111,7 +111,14 @@ public class SecurityListing
     // private String BlockMonetaryTurnOver;
     // private String BlockDealTime;
 
-    public SecurityListing(String Name, String Smb, String ISIN, String Type, int SubType)
+    private class Indicator
+    {
+        private String Key;
+        private boolean Value;
+        private String Desc;
+
+    }
+    public SecurityListing(String Name, String Smb, String ISIN, String Type, String SubType)
     {
         this.Name = Name;
         this.Smb = Smb;
@@ -128,6 +135,16 @@ public class SecurityListing
     public String getType()
     {
         return this.Type;
+    }
+
+    public String getSubType()
+    {
+        return this.SubType;
+    }
+
+    public String getSubTypeDesc()
+    {
+        return this.SubTypeDesc;
     }
 
     public String getOrDefault(String var1, String var2)
@@ -176,5 +193,55 @@ public class SecurityListing
         listing += "Security Long Name " + SecurityLongName + newLine; //$NON-NLS-1$
 
         return listing;
+    }
+
+    public String getHighRate()
+    {
+        return HighRate;
+    }
+
+    public void setHighRate(String highRate)
+    {
+        HighRate = highRate;
+    }
+
+    public String getLowRate()
+    {
+        return LowRate;
+    }
+
+    public void setLowRate(String lowRate)
+    {
+        LowRate = lowRate;
+    }
+
+    public String getOverallTurnOverUnits()
+    {
+        return OverallTurnOverUnits;
+    }
+
+    public void setOverallTurnOverUnits(String overallTurnOverUnits)
+    {
+        OverallTurnOverUnits = overallTurnOverUnits;
+    }
+
+    public String getLastRate()
+    {
+        return LastRate;
+    }
+
+    public void setLastRate(String lastRate)
+    {
+        LastRate = lastRate;
+    }
+
+    public String getTradeDate()
+    {
+        return TradeDate;
+    }
+
+    public void setTradeDate(String tradeDate)
+    {
+        TradeDate = tradeDate;
     }
 }

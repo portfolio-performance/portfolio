@@ -158,6 +158,7 @@ public class TLVQuoteFeedLiveTest
         {
             pricehistory = feed.getPriceHistoryChunk2(security, from, to, 1, Language.ENGLISH);
             
+
             LocalDate start = null;
             LocalDate end = null;
 

@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class SecurityHistoryEntry
 {
+
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
     public LocalDate TradeDate;
     public float Change;
@@ -109,9 +112,25 @@ public class SecurityHistoryEntry
         }
         if (map.containsKey("TradeDate"))
         {
-            historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate")));
+            historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"), formatter));
         }
 
         return historyentry;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SecurityHistoryEntry [TradeDate=" + TradeDate + ", Change=" + Change + ", BaseRate=" + BaseRate
+                        + ", OpenRate=" + OpenRate + ", CloseRate=" + CloseRate + ", HighRate=" + HighRate
+                        + ", LowtRate=" + LowtRate + ", MarketValue=" + MarketValue + ", RegisteredCapital="
+                        + RegisteredCapital + ", TurnOverValueShekel=" + TurnOverValueShekel + ", OverallTurnOverUnits="
+                        + OverallTurnOverUnits + ", DealsNo=" + DealsNo + ", Exe=" + Exe + ", AdjustmentCoefficient="
+                        + AdjustmentCoefficient + ", ExeDesc=" + ExeDesc + ", IANS=" + IANS
+                        + ", IndexAdjustedFreeFloat=" + IndexAdjustedFreeFloat + ", LastIANSUpdate=" + LastIANSUpdate
+                        + ", TradeDateEOD=" + TradeDateEOD + ", AdjustmentRate=" + AdjustmentRate + ", BrutoYield="
+                        + BrutoYield + ", IfTraded=" + IfTraded + ", ShareTradingStatus=" + ShareTradingStatus
+                        + ", IsOfferingPrice=" + IsOfferingPrice + ", AdjustmentRateDesc=" + AdjustmentRateDesc + "]"
+        ;
     }
 }
