@@ -24,7 +24,7 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.N26BankAGkPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.N26BankAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
@@ -34,7 +34,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -96,7 +96,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -121,7 +121,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -146,7 +146,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -175,7 +175,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug06()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -212,7 +212,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug07()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
