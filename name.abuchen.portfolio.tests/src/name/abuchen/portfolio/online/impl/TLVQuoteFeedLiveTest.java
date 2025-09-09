@@ -25,6 +25,15 @@ public class TLVQuoteFeedLiveTest
 {
 
     /* Real Tests against API */
+    //@formatter:off
+    /*
+     * Tests should include: 
+     * Test that we get a valid list of Entities
+     * Test that we get a valid quote for security, fund and share
+     * Test that we get valid historical quotes for security, fund and share
+     * Test getNames on security, fund and share
+     */
+    //@formatter:on
 
 
     @Test

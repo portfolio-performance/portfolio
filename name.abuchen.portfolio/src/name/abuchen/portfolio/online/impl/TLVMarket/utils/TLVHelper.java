@@ -139,7 +139,15 @@ public class TLVHelper
     }
     
 
+    public static LocalDate asDate(String s)
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
+        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
+            return null;
+        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return LocalDate.parse(dt, formatter); // $NON-NLS-1$
+    }
     
     public static Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
@@ -183,16 +191,7 @@ public class TLVHelper
         return FMT_PRICE.get().parse(s).intValue();
     }
 
-    public static LocalDate asDate(String s)
-    {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-
-        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
-            return null;
-        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        return LocalDate.parse(dt, formatter); // $NON-NLS-1$
-    }
-
+    
     public static LocalDate asDateTime(String s)
     {
         DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$

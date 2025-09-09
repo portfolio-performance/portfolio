@@ -72,6 +72,8 @@ public class TLVSecurity extends TLVListing
 
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
+        if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
+            return Optional.empty();
         try
         {
             String response = this.rpcLatestQuoteSecurity(security);
@@ -94,18 +96,8 @@ public class TLVSecurity extends TLVListing
         LocalDate from = caculateStart(security);
         LocalDate to = LocalDate.now();
 
-        // QuoteFeedData historicalprices = new QuoteFeedData();
-        // Optional<String> quoteCurrency = getQuoteCurrency(security);
-
-        // JSONParser parser = new JSONParser();
-        // JSONObject jsonObject;
         try
         {
-            // SecurityHistory pricehistory =
-            // getPriceHistoryChunk2(security.getWkn(), from, to, 1,
-            // Language.ENGLISH);
-            // SecurityHistory securityHistory =
-            // getPriceHistoryChunkSec(security, from, to, 1, Language.ENGLISH);
             Optional<SecurityHistory> securityHistory = getPriceHistoryChunkInternal(security.getWkn(), from, to, 1,
                             TLVSecurity.RECORDS, Language.ENGLISH);
 
@@ -350,6 +342,16 @@ public class TLVSecurity extends TLVListing
         //
         // }
 
+        private LocalDate asDate(String s)
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
+
+            if ("\"N/A\"".equals(s)) //$NON-NLS-1$
+                return null;
+            String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+            return LocalDate.parse(dt, formatter); // $NON-NLS-1$
+        }
+
     private Optional<LatestSecurityPrice> convertSecurityListingToSecurityPrice(Optional<SecurityListing> listingopt,
                     Security security)
     {
@@ -366,7 +368,7 @@ public class TLVSecurity extends TLVListing
         Optional<String> tradeDate = Optional.of(listing.getTradeDate());
         if (tradeDate.isPresent())
         {
-            LocalDate dt = TLVHelper.asDate(tradeDate.get());
+            LocalDate dt = asDate(tradeDate.get());
             price.setDate(dt);
         }
 
@@ -490,11 +492,14 @@ public class TLVSecurity extends TLVListing
         return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TLVSecurity.RECORDS, lang);
     }
 
-    public Optional<SecurityHistory> getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate,
+    public Optional<SecurityHistory> getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate,
                     int page,
                     Language lang) throws Exception
     {
-        return getPriceHistoryChunkInternal(securityId, fromDate, toDate, page, TLVSecurity.RECORDS, lang);
+        if ((security.getWkn() == null) || (security.getWkn().length() == 0))
+            return Optional.empty();
+        
+        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TLVSecurity.RECORDS, lang);
     }
 
     @SuppressWarnings({ "unchecked" })

@@ -2,7 +2,6 @@ package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +20,8 @@ public class FundListing
     private String SharesExposureDesc;
     private String ForeignCurrencyExposureCd;
     private String ForeignCurrencyExposureDesc;
-    private float AssetValue;
-    public LocalDateTime AssetAsOfDate;
+    private String AssetValue;
+    private String AssetAsOfDate;
     private int InsertRates;
     private String TaxRouteDesc;
     private int TaxRouteCd;
@@ -38,9 +37,9 @@ public class FundListing
     private String ForeignCoinName;
     private String ForeignCoinCd;
     private int ProspectusReportCd;
-    private LocalDateTime ProspectusPubDate;
+    private String ProspectusPubDate;
     private int AnnualProspectusReportCd;
-    private LocalDateTime AnnualProspectusPubDate;
+    private String AnnualProspectusPubDate;
     private int MonthlyReportCode;
     private int MonthlyReportMonth;
     private String MonthlyReportMonthDesc;
@@ -54,7 +53,7 @@ public class FundListing
     // private FundDisclosure[] DisclosureChart;
     // private FundRisk[] AssetRisk;
     // private FundAssetComposition AssetCompostion;
-    private LocalDateTime DateValid;
+    private String DateValid;
     private int UnitValueIssued;
     private int UnitValueRedeemed;
     private String[] SecurityRedemptionData;
@@ -86,16 +85,16 @@ public class FundListing
     private String SellPrice;
     private String CreationPrice;
     private String UnitValuePrice;
-    private LocalDateTime UnitValueValidDate;
+    private String UnitValueValidDate;
     private String DayYield;
     private boolean ShowDayYield;
     private String DailyRemark;
     private String PosNegYield;
-    private LocalDateTime CorrectTradeDate;
+    private String CorrectTradeDate;
     private boolean IsKosherFund;
     private String MachamTotal;
-    private LocalDateTime DisclosureDateOfReport;
-    private LocalDateTime RelevantDate;
+    private String DisclosureDateOfReport;
+    private String RelevantDate;
     private int StockType;
     private int FundType;
     private String RegisteredCapitalPaid;
@@ -105,6 +104,7 @@ public class FundListing
     private boolean MonthShowYield;
     private String MonthYield;
     private String MonthPosNeg;
+
     private String MonthAverage;
     private String MonthDesc;
     private String MonthRemark;
@@ -141,7 +141,58 @@ public class FundListing
     private String Icon;
     // private FundMeta MetaTag;
 
-    public FundListing(String longName, String shortName, LocalDateTime asset)
+    public String getAssetValue()
+    {
+        return AssetValue;
+    }
+
+    public void setAssetValue(String assetValue)
+    {
+        AssetValue = assetValue;
+    }
+
+    public String getPurchasePrice()
+    {
+        return PurchasePrice;
+    }
+
+    public void setPurchasePrice(String purchasePrice)
+    {
+        PurchasePrice = purchasePrice;
+    }
+
+    public String getSellPrice()
+    {
+        return SellPrice;
+    }
+
+    public void setSellPrice(String sellPrice)
+    {
+        SellPrice = sellPrice;
+    }
+
+    public String getUnitValuePrice()
+    {
+        return UnitValuePrice;
+    }
+
+    public void setUnitValuePrice(String unitValuePrice)
+    {
+        UnitValuePrice = unitValuePrice;
+    }
+
+    public String getUnitValueValidDate()
+    {
+        return UnitValueValidDate;
+    }
+
+    public void setUnitValueValidDate(String unitValueValidDate)
+    {
+        UnitValueValidDate = unitValueValidDate;
+    }
+
+
+    public FundListing(String longName, String shortName, String asset)
     {
         this.FundLongName = longName;
         this.FundShortName = shortName;

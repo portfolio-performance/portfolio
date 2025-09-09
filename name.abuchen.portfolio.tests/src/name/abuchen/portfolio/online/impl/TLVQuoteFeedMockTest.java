@@ -94,10 +94,17 @@ public class TLVQuoteFeedMockTest
         return responseBody;
     }
 
-    /* Mock Tests using saved Query Files - no testing against the API */
-
+    //@formatter:off
+    /*
+     * Tests should include: 
+     * Test that we get a valid list of Entities
+     * Test that we get a valid quote for security, fund and share
+     * Test that we get valid historical quotes for security, fund and share
+     * Test getNames on security, fund and share
+     */
+    //@formatter:on
     @Test
-    public void testTLVGetAllSecuritiesResponse()
+    public void testTLVGetAllEntitiesResponse()
     {
         String response = getIndicesList();
         assertTrue(response.length() > 0);
@@ -194,13 +201,13 @@ public class TLVQuoteFeedMockTest
         {
 
             Mockito.doReturn(response)
-                            .when((feed).getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH));
+                            .when((feed).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH));
 
             QuoteFeedData feedData = feed.getHistoricalQuotes(security, false);
             assertFalse(feedData.getPrices().isEmpty());
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
-            LocalDate firstdate = feedData.getPrices().get(0).getDate();
+            // LocalDate firstdate = feedData.getPrices().get(0).getDate();
 
             assert (firstprice.getDate().equals(LocalDate.of(2025, 8, 25)));
             assert (firstprice.getValue() == 14688000000l);
@@ -359,9 +366,10 @@ public class TLVQuoteFeedMockTest
 
         try
         {
-            Mockito.doReturn(historyListing).when(tlvFund).getPriceHistoryChunkSec(security, from, to, 1,
+            Mockito.doReturn(historyListing).when(tlvFund).getPriceHistoryChunk(security, from, to, 1,
                             Language.ENGLISH);
 
+            // TODO - replace Chunk2
             Map<String, Object> pricehistorymap = feed.getPriceHistoryChunk2(security, from, to, 1, Language.ENGLISH);
             FundHistory historyResponse = FundHistory.fromMap(pricehistorymap);
 

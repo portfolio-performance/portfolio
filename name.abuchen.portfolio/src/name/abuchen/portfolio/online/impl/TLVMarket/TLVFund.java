@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.impl.TLVMarket;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.Optional;
 
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.json.simple.JSONObject;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
@@ -34,6 +34,7 @@ import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -51,38 +52,118 @@ public class TLVFund extends TLVListing
 
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
+        if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
+            return Optional.empty();
         try
         {
             String response = this.rpcLatestQuoteFund(security);
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter()).create();
-            Optional<LatestSecurityPrice> price = Optional.of(gson.fromJson(response, LatestSecurityPrice.class));
+            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+                            .create();
+            Optional<FundListing> jsonprice = Optional.of(gson.fromJson(response, FundListing.class));
+
+            Optional<LatestSecurityPrice> price = convertFundListingToSecurityPrice(jsonprice, security);
             return price;
         }
         catch (IOException e)
         {
+            
             return Optional.empty();
         }
 
     }
 
-    public class LocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate>
+    private class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
     {
 
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
 
         @Override
-        public JsonElement serialize(final LocalDate date, final Type typeOfSrc, final JsonSerializationContext context)
+        public JsonElement serialize(final LocalDateTime date, final Type typeOfSrc,
+                        final JsonSerializationContext context)
         {
-            return new JsonPrimitive(date.format(formatter));
+            // System.out.println("d " +
+            // date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            return new JsonPrimitive(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
 
         @Override
-        public LocalDate deserialize(final JsonElement json, final Type typeOfT,
+        public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
                         final JsonDeserializationContext context) throws JsonParseException
         {
-            return LocalDate.parse(json.getAsString(), formatter);
+            // System.out.println(json.getAsString() + " " +
+            // LocalDateTime.parse(json.getAsString()));
+            return LocalDateTime.parse(json.getAsString());
         }
     }
+
+    private LocalDate asDateTime(String s)
+    {
+        DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
+
+        if ("\"N/A\"".equals(s) || s.length() == 0) //$NON-NLS-1$
+            return null;
+        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        return LocalDate.parse(dt, datetimeFormatter); // $NON-NLS-1$
+    }
+
+    private Optional<LatestSecurityPrice> convertFundListingToSecurityPrice(Optional<FundListing> listingopt,
+                    Security security)
+    {
+        LatestSecurityPrice price = new LatestSecurityPrice();
+        Optional<String> quoteCurrency = getQuoteCurrency(security);
+
+        if (listingopt.isEmpty())
+            return Optional.empty();
+
+        FundListing listing = listingopt.get();
+
+        // TradeDate
+        Optional<String> tradeDate = Optional.of(listing.getUnitValueValidDate());
+        if (tradeDate.isPresent())
+        {
+            LocalDate dt = this.asDateTime(tradeDate.get());
+            price.setDate(dt);
+        }
+
+        // Last Rate
+        Optional<String> lastRate = Optional.of(listing.getUnitValuePrice());
+
+        if (lastRate.isPresent())
+        {
+            String p = lastRate.get().trim();
+            long asPrice = TLVHelper.asPrice(p);
+            price.setValue(TLVHelper.convertILS(asPrice, quoteCurrency.orElse(null), security.getCurrencyCode()));
+        }
+
+        // MarketVolume - OverallTurnOverUnits
+        // Optional<String> marketvolume = Optional.of(listing.getAssetValue());
+        //
+        // if (marketvolume.isPresent())
+        // {
+        // price.setVolume(Long.parseLong(Double.parseDouble(listing.getAssetValue()));
+        // }
+        // else
+        // {
+        // price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+        //
+        // }
+        price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
+        price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+
+        price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+
+        if (price.getDate() == null || price.getValue() <= 0)
+        {
+            return Optional.empty();
+        }
+        else
+        {
+            return Optional.of(price);
+        }
+    }
+
+
 
     public Optional<QuoteFeedData> getHistoricalQuotes(Security security, boolean collectRawData)
     {
@@ -208,27 +289,29 @@ public class TLVFund extends TLVListing
                     int page,
                     Language lang) throws Exception
     {
-        return getPriceHistoryChunk(security.getWkn(), fromDate, toDate, page, lang);
+        return getPriceHistoryChunk(security, fromDate, toDate, page, lang);
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<FundHistory> getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
+    public Optional<FundHistory> getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
     {
+        if (security.getWkn() == null)
+            return Optional.empty();
         int _page = (page == 0) ? 1 : page;
 
-        JSONObject uploadData = new JSONObject();
-        uploadData.put("DateFrom", fromDate.toString()); //$NON-NLS-1$
-        uploadData.put("DateTo", toDate.toString()); //$NON-NLS-1$
-        uploadData.put("FundId", securityId); //$NON-NLS-1$
-        uploadData.put("Page", Integer.toString(_page)); //$NON-NLS-1$
-        uploadData.put("Period", Integer.toString(period)); //$NON-NLS-1$
+        // JSONObject uploadData = new JSONObject();
+        // uploadData.put("DateFrom", fromDate.toString()); //$NON-NLS-1$
+        // uploadData.put("DateTo", toDate.toString()); //$NON-NLS-1$
+        // uploadData.put("FundId", security.getWkn()); //$NON-NLS-1$
+        // uploadData.put("Page", Integer.toString(_page)); //$NON-NLS-1$
+        // uploadData.put("Period", Integer.toString(period)); //$NON-NLS-1$
 
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair("DateFrom", fromDate.toString())); //$NON-NLS-1$
         formParams.add(new BasicNameValuePair("DateTo", toDate.toString())); //$NON-NLS-1$
-        formParams.add(new BasicNameValuePair("FundId", securityId)); //$NON-NLS-1$
-        formParams.add(new BasicNameValuePair("Page", Integer.toString(page))); //$NON-NLS-1$
+        formParams.add(new BasicNameValuePair("FundId", security.getWkn())); //$NON-NLS-1$
+        formParams.add(new BasicNameValuePair("Page", Integer.toString(_page))); //$NON-NLS-1$
         formParams.add(new BasicNameValuePair("Period", Integer.toString(0))); //$NON-NLS-1$
         // httpPost.setEntity(new UrlEncodedFormEntity(formParams,
         // ContentType.APPLICATION_FORM_URLENCODED));
@@ -256,10 +339,13 @@ public class TLVFund extends TLVListing
     }
 
     // TODO: Change to Optional
-    public Optional<FundHistory> getPriceHistory(String securityId, LocalDate fromDate, LocalDate toDate, int page,
+    public Optional<FundHistory> getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang)
                     throws Exception
     {
+        if ((security.getWkn() == null) || (security.getWkn().length() == 0))
+            return Optional.empty();
+
         if (toDate == null)
         {
             toDate = LocalDate.now();
@@ -268,7 +354,7 @@ public class TLVFund extends TLVListing
         {
             fromDate = toDate.minusDays(1);
         }
-        return getPriceHistoryChunk(securityId, fromDate, toDate, page, lang);
+        return getPriceHistoryChunk(security, fromDate, toDate, page, lang);
     }
 
     // Yahoo Function - not in use

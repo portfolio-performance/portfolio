@@ -3,17 +3,11 @@ package name.abuchen.portfolio.online.impl;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -72,7 +66,6 @@ public class TLVQuoteFeed implements QuoteFeed
 
     public TLVQuoteFeed()
     {
-        // this.helper = new TLVHelper();
         this.TLVSecurities = new TLVSecurity();
         this.TLVFunds = new TLVFund();
         this.mapped = false;
@@ -420,26 +413,26 @@ public class TLVQuoteFeed implements QuoteFeed
         }
     }
 
-    private LocalDate calculateStartDay()
-    {
-        DayOfWeek day = LocalDate.now().getDayOfWeek();
-        LocalDate start;
-        
-     // TODO replace with Calendar
-        if (day == DayOfWeek.SUNDAY) 
-        {
-            start = LocalDate.now().minusDays(3);
-        }
-        else if (day == DayOfWeek.SATURDAY) 
-        {
-            start = LocalDate.now().minusDays(2);
-        }
-        else 
-        {
-            start = LocalDate.now().minusDays(1);
-        }
-        return start;
-    }
+    // private LocalDate calculateStartDay()
+    // {
+    // DayOfWeek day = LocalDate.now().getDayOfWeek();
+    // LocalDate start;
+    //
+    // // TODO replace with Calendar
+    // if (day == DayOfWeek.SUNDAY)
+    // {
+    // start = LocalDate.now().minusDays(3);
+    // }
+    // else if (day == DayOfWeek.SATURDAY)
+    // {
+    // start = LocalDate.now().minusDays(2);
+    // }
+    // else
+    // {
+    // start = LocalDate.now().minusDays(1);
+    // }
+    // return start;
+    // }
 
 //@formatter:off
     /*
@@ -463,6 +456,7 @@ public class TLVQuoteFeed implements QuoteFeed
      */
 //@formatter:on
 
+    // TODO - refactor
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
@@ -476,7 +470,7 @@ public class TLVQuoteFeed implements QuoteFeed
         JSONObject jsonObject;
         try
         {
-            String pricehistory = getPriceHistoryChunk(security.getWkn(), from, to, 1, Language.ENGLISH);
+            String pricehistory = getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
 
             jsonObject = (JSONObject) parser.parse(pricehistory);
             try
@@ -647,34 +641,38 @@ public class TLVQuoteFeed implements QuoteFeed
     }
 
 
-    private long convertILSToILA(Double value)
-    {
-        final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormat fmt = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
-                fmt.setParseBigDecimal(true);
-                return fmt;
-            }
-        };
+    // private long convertILSToILA(Double value)
+    // {
+    // final ThreadLocal<DecimalFormat> FMT_PRICE = new
+    // ThreadLocal<DecimalFormat>()
+    // {
+    // @Override
+    // protected DecimalFormat initialValue()
+    // {
+    // DecimalFormat fmt = new DecimalFormat("0.###", new
+    // DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+    // fmt.setParseBigDecimal(true);
+    // return fmt;
+    // }
+    // };
+    //
+    // String strvalue = Double.toString(value);
+    // BigDecimal v;
+    // try
+    // {
+    // v = (BigDecimal) FMT_PRICE.get().parse(strvalue);
+    // return
+    // v.multiply(BigDecimal.ONE).multiply(BigDecimal.valueOf(100)).longValue();
+    // }
+    // catch (ParseException e)
+    // {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // return BigDecimal.ZERO.longValue();
+    // }
+    //
+    // }
 
-        String strvalue = Double.toString(value);
-        BigDecimal v;
-        try
-        {
-            v = (BigDecimal) FMT_PRICE.get().parse(strvalue);
-            return v.multiply(BigDecimal.ONE).multiply(BigDecimal.valueOf(100)).longValue();
-        }
-        catch (ParseException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return BigDecimal.ZERO.longValue();
-        }
-
-    }
     /**
      * Calculate the first date to request historical quotes for.
      */
@@ -769,8 +767,10 @@ public class TLVQuoteFeed implements QuoteFeed
             }
             if (securityType == TLVType.FUND)
             {
-                FundHistory fundHistory = this.TLVFunds.getPriceHistoryChunkSec(security, fromDate, toDate, page, lang);
-                return TLVHelper.ObjectToMap(fundHistory);
+                Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate,
+                                page, lang);
+                if (fundHistory.isPresent())
+                    return TLVHelper.ObjectToMap(fundHistory);
             }
             return Collections.emptyMap();
         }
@@ -782,18 +782,18 @@ public class TLVQuoteFeed implements QuoteFeed
 
     }
 
-    // Yahoo function
-    public String getPriceHistoryChunk(String securityId, LocalDate fromDate, LocalDate toDate, int page,
+    // Yahoo function- not used
+    public String getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) 
     {
         try
         {
-            TLVType securityType = this.getSecurityType(securityId);
+            TLVType securityType = this.getSecurityType(security.getWkn());
             if (securityType != TLVType.NONE)
             {
                 if (securityType == TLVType.SECURITY)
                 {
-                    Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunk(securityId,
+                    Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunk(security,
                                     fromDate,
                                     toDate, page, lang);
                     if (securityHistory.isPresent())
@@ -801,7 +801,8 @@ public class TLVQuoteFeed implements QuoteFeed
                 }
                 if (securityType == TLVType.FUND)
                 {
-                    FundHistory fundHistory = this.TLVFunds.getPriceHistoryChunk(securityId, fromDate, toDate, page,
+                    Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate,
+                                    page,
                                     lang);
                     return this.HistoryToJson(fundHistory);
                 }
@@ -820,6 +821,7 @@ public class TLVQuoteFeed implements QuoteFeed
         }
     }
     
+    // TODO do we need to make this Optional?
     public Map<String, Object> getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang) throws Exception
     {
@@ -831,6 +833,9 @@ public class TLVQuoteFeed implements QuoteFeed
         {
             fromDate = toDate.minusDays(1);
         }
+
+        if ((security.getWkn() == null) || (security.getWkn().length() == 0))
+            return Collections.emptyMap();
 
         TLVType securityType = this.getSecurityType(security.getWkn());
         if (securityType != TLVType.NONE)
@@ -845,9 +850,10 @@ public class TLVQuoteFeed implements QuoteFeed
             }
             if (securityType == TLVType.FUND)
             {
-                FundHistory fundHistory = this.TLVFunds.getPriceHistory(security.getWkn(), fromDate, toDate,
+                Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistory(security, fromDate, toDate,
                                 page, lang);
-                return TLVHelper.ObjectToMap(fundHistory);
+                if (fundHistory.isPresent())
+                    return TLVHelper.ObjectToMap(fundHistory);
             }
             return Collections.emptyMap();
         }

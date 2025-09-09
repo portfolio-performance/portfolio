@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Scanner;
@@ -91,7 +92,7 @@ public class TLVSecurityTest
         security.setWkn("01135912");
 
         String mockedresponse = getSecurityDetails();
-
+        assertTrue(mockedresponse.length() > 0);
 
         try
         {
@@ -208,6 +209,62 @@ public class TLVSecurityTest
             System.out.println(e.getMessage());
             assertTrue(false);
         }
+    }
+
+
+    @Test
+    public void latestQuoteonBlankWKSSecurityReturnsCorrectValues()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+        security.setWkn("");
+        String mockedresponse = getSecurityDetails();
+
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVSecurity feed = Mockito.spy(new TLVSecurity());
+            Mockito.doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
+
+            // System.out.println(feed.getLatestQuote(security));
+            Optional<LatestSecurityPrice> oprice = feed.getLatestQuote(security);
+
+            assert (oprice.isEmpty());
+
+        }
+        catch (IOException e)
+        {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    public void latestQuoteonNoWKSSecurityReturnsCorrectValues()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+        String mockedresponse = getSecurityDetails();
+
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVSecurity feed = Mockito.spy(new TLVSecurity());
+            Mockito.doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
+
+            // System.out.println(feed.getLatestQuote(security));
+            Optional<LatestSecurityPrice> oprice = feed.getLatestQuote(security);
+
+            assert (oprice.isEmpty());
+
+        }
+        catch (IOException e)
+        {
+            assert (false);
+        }
+
     }
 
 }
