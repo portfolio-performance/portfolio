@@ -1,0 +1,41 @@
+```
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug Orange Bank
+67, rue Robespierre
+Account Statement 93107 Montreuil, Frankreich
+ 
+Anna-guYBNNClW BvAoHve Anlagekonto: FDA_111_853_863_875
+Franz-Wolter-Str.  3 h Produkttyp: 12 MONAT
+04248 YeJSlmR Währung: EUR
+Zeitraum: 10.03.2023 bis 23.08.2025
+Kontoübersicht 
+Kontostand am 10.03.2023 5.000,00
+Summe Einzahlungen 5.000,00
+Summe Auszahlungen 5.150,83
+Summe gebuchter Zinsertrag 150,83
+Summe ausländische 0,00
+Quellensteuer 
+Kontostand am 23.08.2025 0,00
+Transaktionen
+Transactions
+Valuta Datum Zahlungsvorgang Belastung Gutschrift Saldo
+10.03.2023 Alter Kontostand 5.000,00
+10.03.2024 Zinsbuchung 150,83 5.150,83
+12.03.2024 Zinsauszahlung 150,83 5.000,00
+12.03.2024 Rückzahlung des 5.000,00 0,00
+Einlagebetrages
+23.08.2025 Neuer Kontostand 0,00
+ Einlagensicherung
+ Ihr Raisin-Konto sowie Ihre über Raisin gehaltenen Tages-, Kündigungs- und Festgeldkonten sind durch die jeweilige nationale 
+gesetzliche Einlagensicherung der jeweiligen Banken abgesichert. Das bedeutet, dass Ihre Bankeinlagen bis zu 100.000 EUR pro 
+Kontoinhaber und Bank oder einem entsprechenden Betrag in der Landeswährung abgesichert sind. Weitere Informationen zur 
+Einlagensicherung und den spezifischen Merkmalen finden Sie unter www.raisin.com/de-de/einlagensicherung/ sowie im 
+Produktinformationsblatt und den Allgemeinen Geschäftsbedingungen jeder Partnerbank.
+Hinweis: Dieses Dokument wurde am 23.08.2025 elektronisch erstellt und ist ohne Unterschrift gültig.
+Note:  This document has been created electronically at 23.08.2025 and is valid without signature
+Seite 1 von 1
+
+```

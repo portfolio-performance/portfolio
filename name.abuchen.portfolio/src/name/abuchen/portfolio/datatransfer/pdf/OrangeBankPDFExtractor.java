@@ -8,13 +8,13 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
+public class OrangeBankPDFExtractor extends AbstractPDFExtractor
 {
-    public NordaxBankABPDFExtractor(Client client)
+    public OrangeBankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Nordax Bank AB");
+        addBankIdentifier("Orange Bank");
 
         addAccountStatementTransaction();
     }
@@ -22,15 +22,15 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Nordax Bank AB";
+        return "Orange Bank";
     }
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Account Statement", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         // @formatter:off
-                                        // 11286 SBNIRZM Währung: EUR
+                                        // 04248 YeJSlmR Währung: EUR
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^.* W.hrung: (?<currency>[\\w]{3})$") //
@@ -39,7 +39,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // @formatter:off
-        // 24.08.2024 Zinsbuchung 403,39 10.403,39
+        // 10.03.2024 Zinsbuchung 150,83 5.150,83
         // @formatter:on
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Zinsbuchung [\\.,\\d]+ [\\.,\\d]+$");
         type.addBlock(interestBlock);
@@ -63,10 +63,10 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 24.08.2024 Übertrag des verlängerten 403,39 10.000,00
-        // 24.08.2024 Übertrag des verlängerten 10.000,00 0,00
+        // 12.03.2024 Zinsauszahlung 150,83 5.000,00
+        // 12.03.2024 Rückzahlung des 5.000,00 0,00
         // @formatter:on
-        var transferBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .bertrag des verl.ngerten [\\.,\\d]+ [\\.,\\d]+$");
+        var transferBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zinsauszahlung|R.ckzahlung des) [\\.,\\d]+ [\\.,\\d]+$");
         type.addBlock(transferBlock);
         transferBlock.set(new Transaction<AccountTransferEntry>()
 
@@ -77,7 +77,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .bertrag des verl.ngerten (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsauszahlung|R.ckzahlung des) (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));

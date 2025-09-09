@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.nordaxbankab;
+package name.abuchen.portfolio.datatransfer.pdf.orangebank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -22,21 +22,21 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.NordaxBankABPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.OrangeBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class NordaxBankABPDFExtractorTest
+public class OrangeBankPDFExtractorTest
 {
     @Test
-    public void testAccountStatement01()
+    public void testKontoauszug01()
     {
-        var extractor = new NordaxBankABPDFExtractor(new Client());
+        var extractor = new OrangeBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -47,19 +47,19 @@ public class NordaxBankABPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-24"), hasAmount("EUR", 403.39), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest(hasDate("2024-03-10"), hasAmount("EUR", 150.83), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // check 1st cash transfer transaction
-        assertThat(results, hasItem(outboundCash(hasDate("2024-08-24"), hasAmount("EUR", 403.39), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
-        assertThat(results, hasItem(inboundCash(hasDate("2024-08-24"), hasAmount("EUR", 403.39), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
+        assertThat(results, hasItem(outboundCash(hasDate("2024-03-12"), hasAmount("EUR", 150.83), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+        assertThat(results, hasItem(inboundCash(hasDate("2024-03-12"), hasAmount("EUR", 150.83), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // check 2nd cash transfer transaction
-        assertThat(results, hasItem(outboundCash(hasDate("2024-08-24"), hasAmount("EUR", 10000.00), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
-        assertThat(results, hasItem(inboundCash(hasDate("2024-08-24"), hasAmount("EUR", 10000.00), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
+        assertThat(results, hasItem(outboundCash(hasDate("2024-03-12"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
+        assertThat(results, hasItem(inboundCash(hasDate("2024-03-12"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
 }
