@@ -72,6 +72,7 @@ jobs:
         --batch-mode \
         -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
         -Dsonar.projectKey=arnonm_portfolio \
+	-Dsonar.organization=arnonm \
         --file portfolio-app/pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
