@@ -1,0 +1,76 @@
+package name.abuchen.portfolio.online.impl;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+
+public class TLVEntitiesTest
+{
+
+    private String getEntitiesList()
+
+    {
+        return getHistoricalTaseQuotes("response_tase_list_indices.txt");
+    }
+
+    private String getHistoricalTaseQuotes(String filename)
+    {
+        String responseBody = null;
+        Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
+        responseBody = scanner.useDelimiter("\\A").next();
+        scanner.close();
+
+        return responseBody;
+    }
+
+    @Test
+    public void testTLVGetAllEntitiesResponse()
+    {
+        String mockedresponse = getEntitiesList();
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVEntities indices = Mockito.spy(new TLVEntities());
+
+            Mockito.doReturn((mockedresponse)).when(indices).rpcAllIndices(Language.ENGLISH);
+
+            String allIncides = indices.rpcAllIndices(Language.ENGLISH);
+
+            assertTrue(allIncides.contains("ABRA"));
+
+
+            Optional<List<IndiceListing>> iListOptional = indices.getAllListings(Language.ENGLISH);
+
+            assertFalse(iListOptional.isEmpty());
+            List<IndiceListing> iList = iListOptional.get();
+
+            assertTrue(iList.size() == 10261);
+
+            IndiceListing listing = iList.get(0);
+
+            assertTrue(listing.getId().equals("2442"));
+            assertTrue(iList.get(0).getType() == 5);
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
+        }
+
+    }
+
+}

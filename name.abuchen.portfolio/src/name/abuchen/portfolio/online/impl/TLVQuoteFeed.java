@@ -90,29 +90,33 @@ public class TLVQuoteFeed implements QuoteFeed
     private void mapEntities() throws IOException
     {
         TLVEntities entities = new TLVEntities();
-        this.mappedEntities = entities.getAllListings(Language.ENGLISH);
+        // this.mappedEntities = entities.getAllListings(Language.ENGLISH);
+        Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
 
-        Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
-
-        while (entitiesIterator.hasNext())
+        if (!mappedEntitiesOptional.isEmpty())
         {
-            IndiceListing listing = entitiesIterator.next();
-            String id = listing.getId();
-
-            int type = listing.getType();
-            String subtype = listing.getSubType();
-            TLVType tlvType = TLVType.NONE;
-
-            if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals(""))
+            this.mappedEntities = mappedEntitiesOptional.get();
+            Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
+    
+            while (entitiesIterator.hasNext())
             {
-                listing.setTLVType(TLVType.FUND);
-            }
-            if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
-            {
-                listing.setTLVType(TLVType.SECURITY);
+                IndiceListing listing = entitiesIterator.next();
+                // String id = listing.getId();
+    
+                int type = listing.getType();
+                String subtype = listing.getSubType();
+                listing.setTLVType(TLVType.NONE);
+    
+                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype == null) // $NON-NLS-1$
+                {
+                    listing.setTLVType(TLVType.FUND);
+                }
+                if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
+                {
+                    listing.setTLVType(TLVType.SECURITY);
+                }
             }
         }
-
     }
 
     private TLVType getSecurityType(String securityId)
@@ -921,7 +925,7 @@ public class TLVQuoteFeed implements QuoteFeed
     public List<IndiceListing> getAllSecurities(Language lang) throws Exception
     {
         TLVEntities indices = new TLVEntities();
-        return indices.getAllListings(Language.ENGLISH);
+        return indices.getAllListings(Language.ENGLISH).get();
 
     }
     // List<SecurityListing> getAllSecurities(Language lang) throws Exception

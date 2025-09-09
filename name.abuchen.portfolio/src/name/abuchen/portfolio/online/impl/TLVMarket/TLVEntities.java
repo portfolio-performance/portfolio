@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.impl.TLVMarket;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
@@ -18,7 +19,7 @@ public class TLVEntities
     private final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
 
 
-    public List<IndiceListing> getAllListings(Language lang) throws IOException
+    public Optional<List<IndiceListing>> getAllListings(Language lang) throws IOException
     {
         return responsetoEntitiesList(rpcAllIndices(lang));
     }
@@ -41,14 +42,25 @@ public class TLVEntities
 
 
 
-    private List<IndiceListing> responsetoEntitiesList(String response)
+    private Optional<List<IndiceListing>> responsetoEntitiesList(String response)
     {
         Gson gson = new Gson();
-        Type IndiceListing = new TypeToken<List<IndiceListing>>()
+        
+        Type IndiceListingType = new TypeToken<List<IndiceListing>>()
         {
         }.getType();
-        List<IndiceListing> list = gson.fromJson(response, IndiceListing);
 
-        return list;
+
+        try
+        {
+            List<IndiceListing> list = gson.fromJson(response, IndiceListingType);
+
+
+            return Optional.of(list);
+        }
+        catch (Exception e)
+        {
+            return Optional.empty();
+        }
     }
 }

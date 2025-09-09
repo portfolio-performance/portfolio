@@ -5,35 +5,35 @@ import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
 public class IndiceListing
 {
 
-    private String id; // "Id": "1209790",
-    private String name; // "Name": "ABOU FAMILY B1",
-    private String smb; // "Smb": "ABUF.B1",
+    private String Id; // "Id": "1209790",
+    private String Name; // "Name": "ABOU FAMILY B1",
+    private String Smb; // "Smb": "ABUF.B1",
     private String ISIN; // "ISIN": "IL0012097908",
-    private int type; // "Type": 1,
-    private String subType; // "SubType": "5",
-    private String subTypeDesc; // "SubTypeDesc": "Corporate Bonds",
-    private String subId; // "SubId": "002442",
+    private int Type; // "Type": 1,
+    private String SubType; // "SubType": "5",
+    private String SubTypeDesc; // "SubTypeDesc": "Corporate Bonds",
+    private String SubId; // "SubId": "002442",
     private String ETFType; // "ETFType": null
     private TLVType TLVType;
 
     public String getId()
     {
-        return id;
+        return Id;
     }
 
     public void setId(String id)
     {
-        this.id = id;
+        this.Id = id;
     }
 
     public String getName()
     {
-        return name;
+        return Name;
     }
 
     public void setName(String name)
     {
-        this.name = name;
+        this.Name = name;
     }
 
     public String getISIN()
@@ -48,32 +48,32 @@ public class IndiceListing
 
     public int getType()
     {
-        return type;
+        return Type;
     }
 
     public void setType(int type)
     {
-        this.type = type;
+        this.Type = type;
     }
 
     public String getSubType()
     {
-        return subType;
+        return SubType;
     }
 
     public void setSubType(String subType)
     {
-        this.subType = subType;
+        this.SubType = subType;
     }
 
     public String getSubTypeDesc()
     {
-        return subTypeDesc;
+        return SubTypeDesc;
     }
 
     public void setSubTypeDesc(String subTypeDesc)
     {
-        this.subTypeDesc = subTypeDesc;
+        this.SubTypeDesc = subTypeDesc;
     }
 
     public TLVType getTLVType()
@@ -84,5 +84,13 @@ public class IndiceListing
     public void setTLVType(TLVType tLVType)
     {
         TLVType = tLVType;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "IndiceListing [id=" + Id + ", name=" + Name + ", smb=" + Smb + ", ISIN=" + ISIN + ", type=" + Type
+                        + ", subType=" + SubType + ", subTypeDesc=" + SubTypeDesc + ", subId=" + SubId + ", ETFType="
+                        + ETFType + ", TLVType=" + TLVType + "]";
     }
 }

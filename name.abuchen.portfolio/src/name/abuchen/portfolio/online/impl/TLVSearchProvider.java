@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -41,26 +42,31 @@ public class TLVSearchProvider implements SecuritySearchProvider
     private void mapEntities() throws IOException
     {
         TLVEntities entities = new TLVEntities();
-        this.mappedEntities = entities.getAllListings(Language.ENGLISH);
+        Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
 
-        Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
-
-        while (entitiesIterator.hasNext())
+        if (!mappedEntitiesOptional.isEmpty())
         {
-            IndiceListing listing = entitiesIterator.next();
-            String id = listing.getId();
+            this.mappedEntities = mappedEntitiesOptional.get();
 
-            int type = listing.getType();
-            String subtype = listing.getSubType();
-            TLVType tlvType = TLVType.NONE;
+            Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
 
-            if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals(""))
+            while (entitiesIterator.hasNext())
             {
-                listing.setTLVType(TLVType.FUND);
-            }
-            if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
-            {
-                listing.setTLVType(TLVType.SECURITY);
+                IndiceListing listing = entitiesIterator.next();
+                String id = listing.getId();
+
+                int type = listing.getType();
+                String subtype = listing.getSubType();
+                TLVType tlvType = TLVType.NONE;
+
+                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals(""))
+                {
+                    listing.setTLVType(TLVType.FUND);
+                }
+                if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
+                {
+                    listing.setTLVType(TLVType.SECURITY);
+                }
             }
         }
 
