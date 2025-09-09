@@ -11,7 +11,7 @@ public class TLVListing
     /**
      * Calculate the first date to request historical quotes for.
      */
-    /* package */final LocalDate caculateStart(Security security)
+    public LocalDate caculateStart(Security security)
     {
         if (!security.getPrices().isEmpty())
         {

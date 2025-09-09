@@ -7,8 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -24,7 +23,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
@@ -34,7 +32,6 @@ public class TLVFundTest
     /*
      * Tests should include: 
      * Test that we get a valid quote
-     * Test that we get valid historical quotes
      * Test getNames
      * Test all work when it is a non-existing wkn
      * Test all work when without a wkn
@@ -150,17 +147,15 @@ public class TLVFundTest
     }
 
     
-    @Ignore("Test is not ready")
     @Test
-    public void testFundHistoryPrices()
+    public void returnHistoricalQuoteswhenFundhasWKN()
     {
         Security security = new Security();
         security.setWkn("5127121");
         security.setCurrencyCode("ILS");
 
-        LocalDate from = LocalDate.of(2024, 11, 3);
-        LocalDate to = LocalDate.of(2024, 11, 4);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
+        LocalDate from = LocalDate.of(2025, 7, 14);
+        LocalDate to = LocalDate.of(2025, 8, 25);
 
         String response = getFundHistory();
         assertTrue(response.length() > 0);
@@ -169,29 +164,41 @@ public class TLVFundTest
 
         Gson gson = GSONUtil.createGson();
         FundHistory historyListing = gson.fromJson(response, FundHistory.class);
-        System.out.println(historyListing.toString());
-        TLVFund tlvFund = Mockito.spy(new TLVFund());
-        TLVQuoteFeed feed = new TLVQuoteFeed();
 
         try
         {
-            Mockito.doReturn(historyListing).when(tlvFund).getPriceHistoryChunk(security, from, to, 1,
+            TLVFund tlvFund = Mockito.spy(new TLVFund());
+
+            Mockito.doReturn(Optional.of(historyListing)).when(tlvFund).getPriceHistoryChunk(security, from, to, 1,
                             Language.ENGLISH);
 
-            // TODO - replace Chunk2
-            Map<String, Object> pricehistorymap = feed.getPriceHistoryChunk2(security, from, to, 1, Language.ENGLISH);
-            FundHistory historyResponse = FundHistory.fromMap(pricehistorymap);
+            // Cannot use getHistoricalQuotes as this resets from and to dates
+            // automatically.
+            // Instead use the two internal functions
+            // Optional<QuoteFeedData> fundFeedDataOptional =
+            // tlvFund.getHistoricalQuotes(security, false);
+            Optional<FundHistory> fundHistory = tlvFund.getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
+            Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.convertFundHistoryToQuoteFeedData(fundHistory,
+                            security);
 
 
-            assertTrue(historyResponse.getDateFrom().equals(from));
-            assertTrue(historyResponse.getDateTo().equals(to));
-            assertTrue(historyResponse.getTotalRecs() == 30);
+            assertThat(fundFeedDataOptional.isPresent(), is(true));
+            QuoteFeedData fundFeedData = fundFeedDataOptional.get();
 
-            FundHistoryEntry firstEntry = historyResponse.getItems()[0];
-            System.out.println(firstEntry.getSellPrice());
-            assertTrue(firstEntry.getSellPrice() == (float) 146.88);
-            assertTrue(firstEntry.getRate() == (float) 0);
-            assertTrue(firstEntry.getTradeDate().equals(to));
+            assertTrue(fundFeedData.getPrices() != null);
+            assertThat(fundFeedData.getPrices().size(), is(30));
+
+            List<SecurityPrice> listPrices = fundFeedData.getPrices();
+
+            SecurityPrice firstprice = fundFeedData.getPrices().get(0);
+            SecurityPrice lastprice = fundFeedData.getPrices().get(listPrices.size() - 1);
+            assertTrue(firstprice != null);
+
+            assertThat(firstprice.getDate(), is(to));
+            assertThat(firstprice.getValue(), is(13030000000L));
+
+            assertThat(lastprice.getDate(), is(from));
+            assertThat(firstprice.getValue(), is(13030000000L));
 
         }
         catch (Exception e)
@@ -204,6 +211,65 @@ public class TLVFundTest
 
     }
     
+    @Test
+    public void returnHistoricalQuoteswhenFundhdoesnotHaveWKN()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+
+        LocalDate from = LocalDate.of(2025, 7, 14);
+        LocalDate to = LocalDate.of(2025, 8, 25);
+
+        String response = getFundHistory();
+        assertTrue(response.length() > 0);
+        assertTrue(response.contains("Table"));
+        assertTrue(response.contains("StartDate"));
+
+        Gson gson = GSONUtil.createGson();
+        FundHistory historyListing = gson.fromJson(response, FundHistory.class);
+
+        try
+        {
+            TLVFund tlvFund = Mockito.spy(new TLVFund());
+
+            Mockito.doReturn(Optional.of(historyListing)).when(tlvFund).getPriceHistoryChunk(security, from, to, 1,
+                            Language.ENGLISH);
+
+            Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.getHistoricalQuotes(security, false);
+
+            assertThat(fundFeedDataOptional.isEmpty(), is(true));
+
+
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
+        }
+
+        security.setWkn("");
+        try
+        {
+            TLVFund tlvFund = Mockito.spy(new TLVFund());
+
+            Mockito.doReturn(Optional.of(historyListing)).when(tlvFund).getPriceHistoryChunk(security, from, to, 1,
+                            Language.ENGLISH);
+
+            Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.getHistoricalQuotes(security, false);
+
+            assertThat(fundFeedDataOptional.isEmpty(), is(true));
+
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
+        }
+
+    }
+
     @Ignore("Test is not ready")
     @Test
     public void quoteHistoryonValidFundReturnsCorrectValues()
@@ -260,12 +326,7 @@ public class TLVFundTest
         }
     }
 
-    @Ignore("This class is under development and not ready for testing")
-    @Test
-    public void quoteHistoryonBlankInvalidWKSFundReturnsCorrectValues()
-    {
-        //
-    }
+
 
     @Ignore("This class is under development and not ready for testing")
     @Test

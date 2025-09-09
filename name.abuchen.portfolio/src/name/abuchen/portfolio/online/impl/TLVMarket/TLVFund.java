@@ -167,6 +167,9 @@ public class TLVFund extends TLVListing
 
     public Optional<QuoteFeedData> getHistoricalQuotes(Security security, boolean collectRawData)
     {
+        if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
+            return Optional.empty();
+
         LocalDate from = caculateStart(security);
         LocalDate to = LocalDate.now();
         try
@@ -292,9 +295,8 @@ public class TLVFund extends TLVListing
         return getPriceHistoryChunk(security, fromDate, toDate, page, lang);
     }
 
-    @SuppressWarnings("unchecked")
     public Optional<FundHistory> getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate, int page,
-                    Language lang) throws Exception
+                    Language lang)
     {
         if (security.getWkn() == null)
             return Optional.empty();
