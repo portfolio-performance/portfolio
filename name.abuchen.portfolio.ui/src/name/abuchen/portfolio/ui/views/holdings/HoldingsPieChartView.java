@@ -84,13 +84,15 @@ public class HoldingsPieChartView extends AbstractFinanceView
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
         Optional<LocalDate> snapshotDate = timeMachineDropDown.getTimeMachineDate();
+        var snapshotDateLabel = snapshotDate.map(date -> " | " + Values.Date.format(date)) //$NON-NLS-1$
+                        .orElse(""); //$NON-NLS-1$
         snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate.orElse(LocalDate.now()),
                         clientFilter.getClientFilterMenu().getSelectedItem().getLabel());
 
         chart.refresh(snapshot);
 
         updateWarningInToolBar();
-        updateTitle(getDefaultTitle());
+        updateTitle(getDefaultTitle() + snapshotDateLabel);
 
         setInformationPaneInput(null);
     }
