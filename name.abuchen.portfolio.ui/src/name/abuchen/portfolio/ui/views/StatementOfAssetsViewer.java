@@ -54,6 +54,7 @@ import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
@@ -566,7 +567,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.FIFO.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setDescription(Messages.ColumnUnrealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnProfitLoss_Description);
 
@@ -579,10 +580,10 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("pl-moving-avg", //$NON-NLS-1$
-                        Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getAbbreviation() + ")", //$NON-NLS-1$ //$NON-NLS-2$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnProfitLoss);
-        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + CostMethod.MOVING_AVERAGE.getLabel() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setDescription(Messages.ColumnUnrealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.ColumnProfitLoss_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
