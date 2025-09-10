@@ -445,6 +445,22 @@ public class TLVHolidayType
     }
 
 
+    public LocalDate getPurim(int georg_year)
+    {
+
+        CalendarImpl i = new CalendarImpl();
+        int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new CalendarDate(1, 1, georg_year));
+
+        CalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
+
+        CalendarDate hebDate = calcPurimDateHeb(i, jewishDateStart.getYear(), georg_year);
+        CalendarDate geogDate = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate));
+
+        return LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
+    }
+
+
+
     public LocalDate YomHashoah(int georg_year)
     {
         CalendarImpl i = new CalendarImpl();
@@ -475,7 +491,79 @@ public class TLVHolidayType
         return MemorialDay(georg_year).plusDays(1);
     }
 
+    public LocalDate getErevRoshHashanah(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 6, 29, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getRoshHashanahI(int georgYear)
+    {
+        return getErevRoshHashanah(georgYear).plusDays(1);
+    }
+
+    public LocalDate getRoshHashanahII(int georgYear)
+    {
+        return getErevRoshHashanah(georgYear).plusDays(2);
+    }
+
+
+    public LocalDate getErevYomKippur(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 7, 9, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getYomKippur(int georgYear)
+    {
+        return getErevYomKippur(georgYear).plusDays(1);
+    }
+
+    public LocalDate getTishBAv(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 5, 9, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getErevSukkot(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 7, 14, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getSukkot(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 7, 15, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getErevSimhatTorah(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 7, 21, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+    public LocalDate getSimhatTorah(int georgYear)
+    {
+        CalendarDate date = JewishHoliday(georgYear, 7, 22, 0);
+        return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+    }
+
+
     /***********************************************************/
+
+    private CalendarDate calcPurimDateHeb(CalendarImpl i, int hebYear, int georgYear)
+    {
+
+        int monthEsther;
+        if (i.hebrewLeapYear(hebYear))
+            monthEsther = 13;
+        else
+            monthEsther = 12;
+
+        return new CalendarDate(14, monthEsther, hebYear);
+
+    }
 
     private CalendarDate calcYomHazikaron(CalendarImpl i, int hebYear, int georg_year)
     {
@@ -518,25 +606,26 @@ public class TLVHolidayType
     {
         CalendarImpl i = new CalendarImpl();
         
-        int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new CalendarDate(1, 1, georg_year));
-        int absDateEndOfGeogYear = i.absoluteFromGregorianDate(new CalendarDate(31, 12, georg_year));
+        int absDateGeogYear = i.absoluteFromGregorianDate(new CalendarDate(1, 1, georg_year));
+        int absDateNextGeogYear = i.absoluteFromGregorianDate(new CalendarDate(31, 12, georg_year));
 
-        CalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
-        CalendarDate jewishDateEnd = i.jewishDateFromAbsolute(absDateEndOfGeogYear);
+        CalendarDate jewishDateSameYear = i.jewishDateFromAbsolute(absDateGeogYear);
+        CalendarDate jewishDateNextYear = i.jewishDateFromAbsolute(absDateNextGeogYear);
         
         int hebDay = jewish_day + add;
         int hebMonth = jewish_month;
 
-        CalendarDate JewishRoshStart = new CalendarDate(hebDay, hebMonth, jewishDateStart.getYear());
-        CalendarDate JewishRoshEnd = new CalendarDate(hebDay, hebMonth, jewishDateEnd.getYear());
+        CalendarDate JewishDateSameYear = new CalendarDate(hebDay, hebMonth, jewishDateSameYear.getYear());
+        CalendarDate JewishDateNextYear = new CalendarDate(hebDay, hebMonth, jewishDateNextYear.getYear());
 
-        CalendarDate GeorgeanRoshStart = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishRoshStart));
-        CalendarDate GeorgeanRoshEnd = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishRoshStart));
+        CalendarDate GeorgeanDateSameYear = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishDateSameYear));
+        CalendarDate GeorgeanDateNextYear = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishDateNextYear));
 
-        if (GeorgeanRoshStart.getYear() == georg_year)
-            return GeorgeanRoshStart;
-        return GeorgeanRoshEnd;
 
+        if (GeorgeanDateSameYear.getYear() == georg_year)
+            return GeorgeanDateSameYear;
+
+        return GeorgeanDateNextYear;
     }
 
     /*****************************
