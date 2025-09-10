@@ -93,6 +93,7 @@ public class TradeCalendarManager
     public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
 
     private static final Set<DayOfWeek> STANDARD_WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+    private static final Set<DayOfWeek> TLV_WEEKEND = EnumSet.of(DayOfWeek.FRIDAY, DayOfWeek.SATURDAY);
 
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 
@@ -343,6 +344,17 @@ public class TradeCalendarManager
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        CACHE.put(tc.getCode(), tc);
+
+        // Tel Aviv Stock Exchange
+        // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
+        tc = new TradeCalendar("tlv2025", Messages.LabelTradeCalendarTLV, TLV_WEEKEND);
+        TLVHolidayType jht = new TLVHolidayType();
+        CACHE.put(tc.getCode(), tc);
+        
+        // Tel Aviv Stock Exchange starting 2026
+        // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
+        tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND);
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE, Messages.LabelTradeCalendarFirstOfTheMonth, EnumSet.noneOf(DayOfWeek.class))
