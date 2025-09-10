@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -43,7 +41,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Du har den .* \\(UTC: .*\\) solgt:");
+        var type = new DocumentType("Du har den .* \\(UTC: .*\\) (k.bt|solgt):");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -62,7 +60,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "solgt" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^Du har den .* \\(UTC: .*\\) (?<type>solgt):.*$") //
+                        .match("^Du har den .* \\(UTC: .*\\) (?<type>(k.bt|solgt)):.*$") //
                         .assign((t, v) -> {
                             if ("solgt".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -72,13 +70,18 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // ISIN-kode DK0010068006
                                         // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
-                                        // DKK 26.036,89
                                         // I alt
+                                        // DKK 26.036,89
+                                        //
+                                        // ISIN-kode DK0062498333
+                                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
+                                        // I alt
+                                        // DKK 3.515,50
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^ISIN\\-kode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^Du har den .* \\(UTC: .*\\) solgt: (?<name>.*)$") //
+                                                        .match("^Du har den .* \\(UTC: .*\\) (k.bt|solgt): (?<name>[^,]+?)(?:\\s*,.*)?$") //
                                                         .find("I alt") //
                                                         .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
@@ -95,10 +98,11 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Du har den 02.02.24 kl. 10:53:55 (UTC: 09:53:55.688) solgt: Sparinvest Danske Aktier KL A
+                                        // Du har den 21.08.25 kl. 11:24:20 (UTC: 09:24:20.709) købt: Novo Nordisk A/S B , der noteres på navn
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^Du har den (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) kl. (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) \\(UTC: .*\\) solgt:.*$") //
+                                                        .match("^Du har den (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) kl. (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) \\(UTC: .*\\) (k.bt|solgt):.*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
@@ -113,15 +117,9 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // FONVPA/Refnr. 1195520/E
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^.*\\/Refnr\\. (?<note>[\\d]+\\/.*)$") //
-                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
-
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -180,16 +178,25 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // DEPUBV/Refnr. 1195520/E
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^.*\\/Refnr\\. (?<note>[\\d]+\\/.*)$") //
-                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
-
                         .wrap(TransactionItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // - Skat 27,00000 % 2.316,60
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .match("^\\- Skat [\\.,\\d]+ % (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", asCurrencyCode(DKK));
+                            processTaxEntries(t, v, type);
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -203,7 +210,22 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .find("Kurtage") //
-                        .match("^[\\.,\\d]+ % af [\\.,\\d]+ (?<fee>[\\.,\\d]+)\\-$") //
+                        .match("^[\\.,\\d]+ % af [\\.,\\d]+ (?<fee>[\\.,\\d]+)(\\-)?$") //
+                        .match("^\\(Handelsomkostninger i alt (?<currency>[A-Z]{3}) [\\.,\\d]+\\)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kurtage
+                        // Minimum 29,00-
+                        // (Handelsomkostninger i alt DKK 29,00)
+                        //
+                        // Kurtage
+                        // Minimum 29,00
+                        // (Handelsomkostninger i alt DKK 29,00)
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .find("Kurtage") //
+                        .match("^Minimum (?<fee>[\\.,\\d]+)(\\-)?$") //
                         .match("^\\(Handelsomkostninger i alt (?<currency>[A-Z]{3}) [\\.,\\d]+\\)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
