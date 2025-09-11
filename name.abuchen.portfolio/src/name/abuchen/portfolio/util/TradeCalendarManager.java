@@ -33,9 +33,9 @@ import static name.abuchen.portfolio.util.HolidayName.INDIGENOUS_PEOPLE;
 import static name.abuchen.portfolio.util.HolidayName.INMACULATE_CONCEPTION;
 import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.JEWISH_FAST_DAY;
-import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEAR_DAY_I;
 import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEAR_DAY_II;
+import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEAR_EVE;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.KINGS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
@@ -50,6 +50,7 @@ import static name.abuchen.portfolio.util.HolidayName.PASSOVER_EVE;
 import static name.abuchen.portfolio.util.HolidayName.PASSOVER_I;
 import static name.abuchen.portfolio.util.HolidayName.PASSOVER_II;
 import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
+import static name.abuchen.portfolio.util.HolidayName.PURIM;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.REPUBLIC_PROCLAMATION_DAY;
@@ -82,6 +83,9 @@ import static name.abuchen.portfolio.util.HolidayName.YOM_KIPUR_EVE;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
 import static name.abuchen.portfolio.util.HolidayType.fixedJewishCalendar;
+import static name.abuchen.portfolio.util.HolidayType.israeliIndepenenceCalendar;
+import static name.abuchen.portfolio.util.HolidayType.israeliMemorialCalendar;
+import static name.abuchen.portfolio.util.HolidayType.jewishPurimCalendar;
 import static name.abuchen.portfolio.util.HolidayType.weekday;
 
 import java.text.MessageFormat;
@@ -375,7 +379,7 @@ public class TradeCalendarManager
         tc.add(fixedJewishCalendar(PASSOVER_EVE, 1, 14, 0));
         tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
         tc.add(fixedJewishCalendar(PASSOVER_II, 1, 16, 0));
-        tc.add(fixedJewishCalendar(JEWISH_NEW_YEARS_EVE, 6, 29, 0));
+        tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_EVE, 6, 29, 0));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_I, 6, 29, 1));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_II, 6, 29, 2));
         
@@ -393,11 +397,9 @@ public class TradeCalendarManager
         tc.add(fixedJewishCalendar(SAVHUOT_EVE, 3, 5, 0));
         tc.add(fixedJewishCalendar(SHAVUOT_DAY, 3, 5, 1));
 
-        // Special
-        // MEMORIAL_DAY
-        // INDEPENDENCE_DAY
-        // YomHashoah
-        // PURIM
+        tc.add(israeliMemorialCalendar(MEMORIAL));
+        tc.add(israeliIndepenenceCalendar(INDEPENDENCE));
+        tc.add(jewishPurimCalendar(PURIM, 0));
 
         CACHE.put(tc.getCode(), tc);
 

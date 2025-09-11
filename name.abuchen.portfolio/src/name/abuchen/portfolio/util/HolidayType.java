@@ -395,6 +395,7 @@ import java.util.Set;
         }
     }
 
+
     private static class FixedWeekdayHolidayType extends HolidayType
     {
         private final int which;
@@ -540,6 +541,148 @@ import java.util.Set;
         }
     }
 
+    private static class IsraeliHolocaustCalendarHolidayType extends HolidayType
+    {
+        private final int dayToAdd;
+        private final CalendarImpl i = new CalendarImpl();
+
+        public IsraeliHolocaustCalendarHolidayType(HolidayName name, int daysToAdd)
+        {
+            super(name);
+            this.dayToAdd = daysToAdd;
+        }
+
+        private static int getWeekdayOfHebrewDate(int hebDay, int hebMonth, int hebYear, CalendarImpl i)
+        {
+            int absDate = i.absoluteFromJewishDate(new JewishCalendarDate(hebDay, hebMonth, hebYear));
+            return absDate % 7;
+        }
+
+        private JewishCalendarDate calcHolocaustDateHeb(CalendarImpl i, int hebYear, int georgYear)
+        {
+
+            if (getWeekdayOfHebrewDate(27, 1, hebYear, i) == 5)
+            {
+                return new JewishCalendarDate(26, 1, hebYear);
+            }
+            else if (hebYear >= 5757 && getWeekdayOfHebrewDate(27, 1, hebYear, i) == 0)
+            {
+                return new JewishCalendarDate(28, 1, hebYear);
+            }
+            else
+            {
+                return new JewishCalendarDate(27, 1, hebYear);
+            }
+
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int georg_year)
+        {
+            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
+
+            JewishCalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
+
+            JewishCalendarDate hebDate = calcHolocaustDateHeb(i, jewishDateStart.getYear(), georg_year);
+            JewishCalendarDate geogDate = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate));
+            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
+            return new Holiday(getName(), date);
+
+        }
+    }
+
+    private static class JewishPurimCalendarHolidayType extends HolidayType
+    {
+        private final int dayToAdd;
+        private final CalendarImpl i = new CalendarImpl();
+
+        public JewishPurimCalendarHolidayType(HolidayName name, int daysToAdd)
+        {
+            super(name);
+            this.dayToAdd = daysToAdd;
+        }
+
+        private JewishCalendarDate calcPurimDateHeb(CalendarImpl i, int hebYear, int georgYear)
+        {
+
+            int monthEsther;
+            if (i.hebrewLeapYear(hebYear))
+                monthEsther = 13;
+            else
+                monthEsther = 12;
+
+            return new JewishCalendarDate(14, monthEsther, hebYear);
+
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int georg_year)
+        {
+            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
+
+            JewishCalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
+
+            JewishCalendarDate hebDate = calcPurimDateHeb(i, jewishDateStart.getYear(), georg_year);
+            JewishCalendarDate geogDate = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate));
+            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
+            return new Holiday(getName(), date);
+
+        }
+    }
+
+    private static class IsraeliMemorialCalendarHolidayType extends HolidayType
+    {
+
+        private final int dayToAdd;
+        private final CalendarImpl i = new CalendarImpl();
+
+        public IsraeliMemorialCalendarHolidayType(HolidayName name, int daysToAdd)
+        {
+            super(name);
+            this.dayToAdd = daysToAdd;
+        }
+
+        private static int getWeekdayOfHebrewDate(int hebDay, int hebMonth, int hebYear, CalendarImpl i)
+        {
+            int absDate = i.absoluteFromJewishDate(new JewishCalendarDate(hebDay, hebMonth, hebYear));
+            return absDate % 7;
+        }
+
+        private JewishCalendarDate calcMemorialDateHeb(CalendarImpl i, int hebYear, int georg_year)
+        {
+            if (getWeekdayOfHebrewDate(4, 2, hebYear, i) == 5)
+            {
+                return new JewishCalendarDate(2, 2, hebYear);
+            }
+            else if (getWeekdayOfHebrewDate(4, 2, hebYear, i) == 4)
+            {
+                return new JewishCalendarDate(3, 2, hebYear);
+            }
+            else if (hebYear >= 5764 && getWeekdayOfHebrewDate(4, 2, hebYear, i) == 0)
+            {
+                return new JewishCalendarDate(5, 3, hebYear);
+            }
+            else
+            {
+                return new JewishCalendarDate(4, 3, hebYear);
+            }
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int georg_year)
+        {
+            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
+
+            JewishCalendarDate jewishDateStartofGeogYear = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
+
+            JewishCalendarDate hebDate = calcMemorialDateHeb(i, jewishDateStartofGeogYear.getYear(), georg_year);
+            JewishCalendarDate geogDate = i
+                            .gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate) + this.dayToAdd);
+
+            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
+            return new Holiday(getName(), date);
+        }
+    }
     private final HolidayName name;
 
     private int validFrom = -1;
@@ -560,6 +703,25 @@ import java.util.Set;
         return new FixedJewishCalendarHolidayType(name, jewishMonth, jewishDayOfMonth, daysToAdd);
     }
 
+    public static HolidayType jewishPurimCalendar(HolidayName name, int daysToAdd)
+    {
+        return new JewishPurimCalendarHolidayType(name, daysToAdd);
+    }
+
+    public static HolidayType israeliHolocaustCalendar(HolidayName name, int daysToAdd)
+    {
+        return new IsraeliHolocaustCalendarHolidayType(name, daysToAdd);
+    }
+
+    public static HolidayType israeliMemorialCalendar(HolidayName name)
+    {
+        return new IsraeliMemorialCalendarHolidayType(name, 0);
+    }
+
+    public static HolidayType israeliIndepenenceCalendar(HolidayName name)
+    {
+        return new IsraeliMemorialCalendarHolidayType(name, 1);
+    }
     public static HolidayType fixed(HolidayName name, Month month, int dayOfMonth)
     {
         return new FixedHolidayType(name, month, dayOfMonth);
