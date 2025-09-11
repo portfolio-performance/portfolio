@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.holdings;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TimeMachineDropDown;
 import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -46,6 +48,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     private IPieChart chart;
     private ClientFilterDropDown clientFilter;
     private ClientSnapshot snapshot;
+    private TimeMachineDropDown timeMachineDropDown;
 
     @Inject
     @Preference(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS)
@@ -58,6 +61,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
 
         clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         HoldingsPieChartView.class.getSimpleName(), filter -> notifyModelUpdated());
+
+        timeMachineDropDown = new TimeMachineDropDown(date -> notifyModelUpdated());
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
@@ -78,13 +83,16 @@ public class HoldingsPieChartView extends AbstractFinanceView
     {
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(),
+        Optional<LocalDate> snapshotDate = timeMachineDropDown.getTimeMachineDate();
+        var snapshotDateLabel = snapshotDate.map(date -> " | " + Values.Date.format(date)) //$NON-NLS-1$
+                        .orElse(""); //$NON-NLS-1$
+        snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate.orElse(LocalDate.now()),
                         clientFilter.getClientFilterMenu().getSelectedItem().getLabel());
 
         chart.refresh(snapshot);
-        
+
         updateWarningInToolBar();
-        updateTitle(getDefaultTitle());
+        updateTitle(getDefaultTitle() + snapshotDateLabel);
 
         setInformationPaneInput(null);
     }
@@ -92,6 +100,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(timeMachineDropDown);
         toolBar.add(clientFilter);
     }
 
