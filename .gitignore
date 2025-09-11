@@ -11,3 +11,4 @@ workspace
 *.ipr
 
 .claude/settings.local.json
+.project
