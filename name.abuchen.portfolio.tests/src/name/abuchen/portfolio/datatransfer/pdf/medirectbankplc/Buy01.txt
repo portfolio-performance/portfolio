@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.78.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+lzaD uqN ohwDM 211479469 Rekeningnummer:
+33 8470613806460
+wFmKGvlly
+3105 GeOqMNw (O.-VL.)
+Transactiebevestiging
+In overeenstemming met uw instructies hebben wij de verhandeling als volgt uitgevoerd:
+TRANSACTIEDATUM UITVOERINGSPLAATS ORDERTYPE
+17-03-2025 - 16:31:14.000000 (UTC) XOFF N/A
+Status REF. ISIN Naam Hoeveelheid Koers Bedrag
+Koop UT0003175054 LU0432616737 INVESCO FUNDS - 38.879 € 17,49 € 679,99
+INVESCO
+BALANCED-RISK
+ALLOCATION FUND
+A ACCUMULATION
+EUR
+Bedrag € 679,99
+MeDirect Commissie € 0,00
+Totaal € 679,99
+Het totaalbedrag van zal van uw EUR rekening bij MeDirect ingehouden worden. Provisies of kosten worden enkel
+i
+vermeld indien ze van toepassing zijn.
+VRAGEN? We staan voor u klaar!
+?
+Klantendienst: +32 2 887 20 05
+Maandag  Vrijdag 9 u. tot 20 u./Zaterdag 9 u. tot 14 u.
+Email: info@medirect.be
+Website support: https://www.medirect.be/nl-be/contacteer-ons-2/
+MeDirect Bank NV  Keizerinlaan 66, B1000 Brussel – RPR Brussel 0553.851.093

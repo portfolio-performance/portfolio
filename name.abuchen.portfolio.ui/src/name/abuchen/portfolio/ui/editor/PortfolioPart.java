@@ -56,7 +56,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
-import name.abuchen.portfolio.ui.preferences.Experiments;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
@@ -168,26 +167,15 @@ public class PortfolioPart implements ClientInputListener
         divider.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
-        var useNewPriceUpdate = new Experiments().isEnabled(Experiments.Feature.JULY26_REFACTORED_PRICE_UPDATE);
+        var composite = new Composite(navigationBar, SWT.NONE);
+        composite.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
+        
+        var layout = new FillLayout();
+        layout.marginWidth = 10;
+        composite.setLayout(layout);
 
-        if (useNewPriceUpdate)
-        {
-            var composite = new Composite(navigationBar, SWT.NONE);
-            composite.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
-            
-            var layout = new FillLayout();
-            layout.marginWidth = 10;
-            composite.setLayout(layout);
-
-            make(PriceUpdateProgressControl.class, clientInput, composite, this);
-        }
-        else
-        {
-            ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(),
-                            navigationBar);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
-        }
+        make(PriceUpdateProgressControl.class, clientInput, composite, this);
 
         book = new PageBook(sash, SWT.NONE);
 

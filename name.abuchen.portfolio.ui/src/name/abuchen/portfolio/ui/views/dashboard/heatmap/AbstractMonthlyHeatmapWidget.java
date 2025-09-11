@@ -20,10 +20,10 @@ import name.abuchen.portfolio.ui.views.dashboard.HoverButton;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.util.Interval;
 
-public abstract class AbstractMonhtlyHeatmapWidget extends AbstractHeatmapWidget<Long>
+public abstract class AbstractMonthlyHeatmapWidget extends AbstractHeatmapWidget<Long>
 {
 
-    protected AbstractMonhtlyHeatmapWidget(Widget widget, DashboardData data)
+    protected AbstractMonthlyHeatmapWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
@@ -41,7 +41,7 @@ public abstract class AbstractMonhtlyHeatmapWidget extends AbstractHeatmapWidget
             @Override
             public void linkActivated(HyperlinkEvent e)
             {
-                AbstractMonhtlyHeatmapWidget.this.linkActivated();
+                AbstractMonthlyHeatmapWidget.this.linkActivated();
             }
         });
 

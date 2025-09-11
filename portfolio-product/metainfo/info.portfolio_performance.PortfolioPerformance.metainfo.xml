@@ -37,7 +37,47 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
-     <release version="0.78.1" date="2025-08-06">
+    <release version="0.79.1" date="2025-08-31">
+      <description>
+        <ul>
+          <li>Fix: The new configuration for which instrument prices are updated at startup was not applied.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die neue Konfiguration, welche Kurse beim Start aktualisiert werden sollen, nicht angewendet wurde.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.79.0" date="2025-08-30">
+      <description>
+        <ul>
+          <li>New: View for the price update status.</li>
+          <li>New: Configure which instruments should be updated after opening the file and periodically.</li>
+          <li>New: Menu to update only the prices of currently held securities.</li>
+          <li>New: Daily performance bars in the chart now use different colors for gains and losses.</li>
+          <li>New: Savings plans now also support taxes for regular security purchases.</li>
+          <li>New: Bulk import and export of classifications is supported.</li>
+          <li>Improvement: When importing classifications, categories not present in the import can be removed.</li>
+          <li>Improvement: When exporting classifications, the color of the root category is now also exported.</li>
+          <li>Improvement: HTML import now ignores spaces in numbers that previously prevented parsing.</li>
+          <li>Improvement: JSON price provider no longer fails if a price for a day is unreadable.</li>
+          <li>Improvement: PDF imports have been updated for N26, Scalable Capital, Quirin Privatbank, KFintech, Trade Republic, and Flatex.</li>
+          <li>Fix: Wrong exchange rate suggestions for bookings in foreign currencies are corrected.</li>
+          <li>Fix: Corrupted bookings no longer prevent files from opening.</li>
+          <li xml:lang="de">Neu: Neue Ansicht zum Status der Preisaktualisierung.</li>
+          <li xml:lang="de">Neu: Konfiguriere, welche Wertpapiere nach dem Öffnen der Datei und periodisch aktualisiert werden sollen.</li>
+          <li xml:lang="de">Neu: Menü um nur die Kurse der aktuell gehaltenen Wertpapiere zu aktualisieren.</li>
+          <li xml:lang="de">Neu: Das Balkendiagramm der täglichen Performance kann nun positive und negative Werte farblich unterscheiden.</li>
+          <li xml:lang="de">Neu: Sparplan unterstützt jetzt auch Steuern für regelmäßige Wertpapierkäufe.</li>
+          <li xml:lang="de">Neu: Import und Export von mehreren Klassifikationen unterstützt.</li>
+          <li xml:lang="de">Verbesserung: Beim Import von Klassifikationen können nicht vorhandene Kategorien entfernt werden.</li>
+          <li xml:lang="de">Verbesserung: Beim Export von Klassifikationen wird nun auch die Farbe der Wurzelkategorie exportiert.</li>
+          <li xml:lang="de">Verbesserung: HTML-Import ignoriert Leerzeichen in Zahlen, die das Einlesen verhinderten.</li>
+          <li xml:lang="de">Verbesserung: JSON-Kurslieferant bricht nicht mehr ab, wenn ein Kurs für einen Tag nicht lesbar ist.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe werden für N26, Scalable Capital, Quirin Privatbank, KFintech, Trade Republic und Flatex aktualisiert.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem bei der Eingabe von Buchungen mit Fremdwährungen ein falscher Wechselkurs vorgeschlagen wurde.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem eine korrupte Buchung das Öffnen der Datei verhinderte.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.78.1" date="2025-08-06">
       <description>
         <ul>
           <li>Fix: Reverted changes to the sorting heuristic if multiple transactions are on the same day – some with, some without time.</li>
@@ -47,8 +87,7 @@
         </ul>
       </description>
     </release>
-
-     <release version="0.78.0" date="2025-08-03">
+    <release version="0.78.0" date="2025-08-03">
       <description>
         <ul>
           <li>New: The structures of an taxonomy can now be exported and imported via JSON.</li>
