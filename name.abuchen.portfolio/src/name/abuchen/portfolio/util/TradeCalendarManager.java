@@ -32,6 +32,10 @@ import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
 import static name.abuchen.portfolio.util.HolidayName.INDIGENOUS_PEOPLE;
 import static name.abuchen.portfolio.util.HolidayName.INMACULATE_CONCEPTION;
 import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
+import static name.abuchen.portfolio.util.HolidayName.JEWISH_FAST_DAY;
+import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEARS_EVE;
+import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEAR_DAY_I;
+import static name.abuchen.portfolio.util.HolidayName.JEWISH_NEW_YEAR_DAY_II;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.KINGS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
@@ -53,9 +57,15 @@ import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_PETER_PAUL;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
+import static name.abuchen.portfolio.util.HolidayName.SAVHUOT_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
+import static name.abuchen.portfolio.util.HolidayName.SHAVUOT_DAY;
+import static name.abuchen.portfolio.util.HolidayName.SIMCHAT_TORA;
+import static name.abuchen.portfolio.util.HolidayName.SIMCHAT_TORA_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.STATE_FUNERAL;
+import static name.abuchen.portfolio.util.HolidayName.SUKKOTH_DAY;
+import static name.abuchen.portfolio.util.HolidayName.SUKKOTH_EVE;
 import static name.abuchen.portfolio.util.HolidayName.SUMMER_BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.TERRORIST_ATTACKS;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
@@ -67,6 +77,8 @@ import static name.abuchen.portfolio.util.HolidayName.VICTORY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VIRGIN_OF_CARMEN;
 import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
+import static name.abuchen.portfolio.util.HolidayName.YOM_KIPUR;
+import static name.abuchen.portfolio.util.HolidayName.YOM_KIPUR_EVE;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
 import static name.abuchen.portfolio.util.HolidayType.fixedJewishCalendar;
@@ -363,6 +375,30 @@ public class TradeCalendarManager
         tc.add(fixedJewishCalendar(PASSOVER_EVE, 1, 14, 0));
         tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
         tc.add(fixedJewishCalendar(PASSOVER_II, 1, 16, 0));
+        tc.add(fixedJewishCalendar(JEWISH_NEW_YEARS_EVE, 6, 29, 0));
+        tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_I, 6, 29, 1));
+        tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_II, 6, 29, 2));
+        
+        tc.add(fixedJewishCalendar(YOM_KIPUR_EVE, 7, 9, 0));
+        tc.add(fixedJewishCalendar(YOM_KIPUR, 7, 9, 1));
+
+        tc.add(fixedJewishCalendar(JEWISH_FAST_DAY, 5, 9, 0));
+
+        tc.add(fixedJewishCalendar(SUKKOTH_EVE, 7, 14, 0));
+        tc.add(fixedJewishCalendar(SUKKOTH_DAY, 7, 15, 0));
+
+        tc.add(fixedJewishCalendar(SIMCHAT_TORA_EVE, 7, 21, 0));
+        tc.add(fixedJewishCalendar(SIMCHAT_TORA, 7, 22, 0));
+
+        tc.add(fixedJewishCalendar(SAVHUOT_EVE, 3, 5, 0));
+        tc.add(fixedJewishCalendar(SHAVUOT_DAY, 3, 5, 1));
+
+        // Special
+        // MEMORIAL_DAY
+        // INDEPENDENCE_DAY
+        // YomHashoah
+        // PURIM
+
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE, Messages.LabelTradeCalendarFirstOfTheMonth, EnumSet.noneOf(DayOfWeek.class))

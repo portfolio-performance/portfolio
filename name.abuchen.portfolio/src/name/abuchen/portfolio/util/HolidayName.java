@@ -75,17 +75,17 @@ import java.util.ResourceBundle;
     MEMORIAL_DAY,
     INDEPENDENCE_DAY,
     SAVHUOT_EVE,
-    SHAVUOT,
-    FAST_DAY,
-    NEW_YEAR_EVE,
-    NEWYEARI,
-    NEWYEARII,
+    SHAVUOT_DAY,
+    JEWISH_FAST_DAY,
+    JEWISH_NEW_YEARS_EVE, 
+    JEWISH_NEW_YEAR_DAY_I, 
+    JEWISH_NEW_YEAR_DAY_II,
     YOM_KIPUR_EVE,
     YOM_KIPUR,
     SUKKOTH_EVE,
-    SUKKOTH,
+    SUKKOTH_DAY,
     SIMCHAT_TORA_EVE,
-    SIMCHAT_TORA;;
+    SIMCHAT_TORA;
 
     private static final ResourceBundle RESOURCES = ResourceBundle
                     .getBundle("name.abuchen.portfolio.util.holiday-names"); //$NON-NLS-1$

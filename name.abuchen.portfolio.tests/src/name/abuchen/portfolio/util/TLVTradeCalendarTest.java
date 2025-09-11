@@ -29,8 +29,92 @@ public class TLVTradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-03")), is(true));
 
+        // JEWISH NEW YEARS EVE
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-22")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-11")), is(true));
+
+        // JEWISH NEW YEARS DAY I
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-23")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-12")), is(true));
+
+        // JEWISH NEW YEARS DAY II
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-04")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-13")), is(true));
+
+        
+        //YOM_KIPUR_EVE, if (hebDay == 9 && hebMonth == 7)
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-11")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-20")), is(true));
+        
+        // YOM_KIPUR_DAY 
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-12")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-02")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-21")), is(true));
+
+
+        // FAST_DAY Tisha B'Av
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-08-13")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-08-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-07-23")), is(true));
+
+        // SIMCHAT_TORA_EVE, if (hebDay == 22 && hebMonth == 7)
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-23")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-13")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-10-02")), is(true));
+
+        // SIMCHAT_TORA; if (hebDay == 23 & hebMonth == 7)
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-14")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-10-03")), is(true));
+
+        // SAVHUOT_EVE, // SHAVUOT,
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-06-11")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-06-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-05-21")), is(true));
+
+        // SUKKOTH_EVE, if (hebDay == 14 && hebMonth == 7)
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-16")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-06")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-25")), is(true));
+
+        // SUKKOTH, if (hebDay == 15 && hebMonth == 7)
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-10-17")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-10-07")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-09-26")), is(true));
+
+        // MEMORIAL_DAY,
+        // assertThat(calendar.isHoliday(LocalDate.parse("2024-05-13")),
+        // is(true));
+        // assertThat(calendar.isHoliday(LocalDate.parse("2025-04-30")),
+        // is(true));
+        // assertThat(calendar.isHoliday(LocalDate.parse("2026-04-21")),
+        // is(true));
+        // assertThat(calendar.isHoliday(LocalDate.parse("2024-05-14")),
+        // is(true));
+        // assertThat(calendar.isHoliday(LocalDate.parse("2025-04-31")),
+        // is(true));
+        // assertThat(calendar.isHoliday(LocalDate.parse("2026-04-22")),
+        // is(true));
+
+        //INDEPENDENCE_DAY, //
+        //        * assertThat(type.YomHaAtzmaut(2024),is(LocalDate.of(2024, 5, 14)));
+        //        * assertThat(type.YomHaAtzmaut(2025),is(LocalDate.of(2025, 5, 1))); //
+        //        * assertThat(type.YomHaAtzmaut(2026),is(LocalDate.of(2026, 4, 22))); //
+        
+        
+        //PURIM
+        //assertThat(type.getPurim(2024), is(LocalDate.of(2024, 3, 24)));
+        //assertThat(type.getPurim(2025), is(LocalDate.of(2025, 3, 14)));
+        //assertThat(type.getPurim(2026), is(LocalDate.of(2026, 3, 3))); //
+        
+      
     }
 
+    // @Formatter:off
     /*
      * @Ignore
      * @Test public void testJewishCalendar() { HolidayType type = new
@@ -44,23 +128,23 @@ public class TLVTradeCalendarTest
      * assertThat(type.getErevPassover(2026), is(LocalDate.of(2026, 4, 1)));
      * assertThat(type.getPassoverI(2026), is(LocalDate.of(2026, 4, 2)));
      * assertThat(type.getPassoverII(2026), is(LocalDate.of(2026, 4, 3))); //
-     * Not Needed assertThat(type.YomHashoah(2024), is(LocalDate.of(2024, 5,
-     * 6))); assertThat(type.YomHashoah(2025), is(LocalDate.of(2025, 4, 24)));
+     * Not Needed assertThat(type.YomHashoah(2024), is(LocalDate.of(2024,
+     * 5,6))); assertThat(type.YomHashoah(2025), is(LocalDate.of(2025, 4, 24)));
      * assertThat(type.YomHashoah(2026), is(LocalDate.of(2026, 4, 14)));
-     * //MEMORIAL_DAY, // assertThat(type.MemorialDay(2024),
-     * is(LocalDate.of(2024, 5, 13))); assertThat(type.MemorialDay(2025),
-     * is(LocalDate.of(2025, 4, 30))); // assertThat(type.MemorialDay(2026),
-     * is(LocalDate.of(2026, 4, 21))); //INDEPENDENCE_DAY, //
-     * assertThat(type.YomHaAtzmaut(2024), is(LocalDate.of(2024, 5, 14)));
-     * assertThat(type.YomHaAtzmaut(2025), is(LocalDate.of(2025, 5, 1))); //
-     * assertThat(type.YomHaAtzmaut(2026), is(LocalDate.of(2026, 4, 22))); //
-     * Not Needed // assertThat(type.getLagBaOmer(2024), is(LocalDate.of(2024,
-     * 5, 25))); // assertThat(type.getLagBaOmer(2025), is(LocalDate.of(2025, 4,
+     * //MEMORIAL_DAY, assertThat(type.MemorialDay(2024),is(LocalDate.of(2024,5,
+     * 13))); assertThat(type.MemorialDay(2025),is(LocalDate.of(2025, 4,30)));
+     * assertThat(type.MemorialDay(2026),is(LocalDate.of(2026, 4, 21)));
+     * //INDEPENDENCE_DAY, //
+     * assertThat(type.YomHaAtzmaut(2024),is(LocalDate.of(2024, 5, 14)));
+     * assertThat(type.YomHaAtzmaut(2025),is(LocalDate.of(2025, 5, 1))); //
+     * assertThat(type.YomHaAtzmaut(2026),is(LocalDate.of(2026, 4, 22))); // Not
+     * Needed // assertThat(type.getLagBaOmer(2024), is(LocalDate.of(2024, 5,
+     * 25))); // assertThat(type.getLagBaOmer(2025), is(LocalDate.of(2025, 4,
      * 15))); // assertThat(type.getLagBaOmer(2026), is(LocalDate.of(2026, 4,
-     * 4))); // Not Needed assertThat(type.getYomYerushalayim(2024),
-     * is(LocalDate.of(2024, 6, 5))); assertThat(type.getYomYerushalayim(2025),
-     * is(LocalDate.of(2025, 5, 26))); assertThat(type.getYomYerushalayim(2026),
-     * is(LocalDate.of(2026, 5, 15))); // SAVHUOT_EVE, // SHAVUOT,
+     * 4))); // NotNeeded assertThat(type.getYomYerushalayim(2024),
+     * is(LocalDate.of(2024, 6,5))); assertThat(type.getYomYerushalayim(2025),
+     * is(LocalDate.of(2025, 5,26))); assertThat(type.getYomYerushalayim(2026),
+     * is(LocalDate.of(2026, 5,15))); // SAVHUOT_EVE, // SHAVUOT,
      * assertThat(type.getErevShavuot(2024), is(LocalDate.of(2024, 6, 11)));
      * assertThat(type.getErevShavuot(2025), is(LocalDate.of(2025, 6, 1)));
      * assertThat(type.getErevShavuot(2026), is(LocalDate.of(2026, 5, 21)));
@@ -71,10 +155,10 @@ public class TLVTradeCalendarTest
      * is(LocalDate.of(2024, 8, 13))); assertThat(type.getTishBAv(2025),
      * is(LocalDate.of(2025, 8, 3))); assertThat(type.getTishBAv(2026),
      * is(LocalDate.of(2026, 7, 23))); // NEW_YEAR_EVE,
-     * assertThat(type.getErevRoshHashanah(2024), is(LocalDate.of(2024, 10,
-     * 2))); assertThat(type.getErevRoshHashanah(2025), is(LocalDate.of(2025, 9,
-     * 22))); assertThat(type.getErevRoshHashanah(2026), is(LocalDate.of(2026,
-     * 9, 11))); // NEWYEARI, assertThat(type.getRoshHashanahI(2024),
+     * assertThat(type.getErevRoshHashanah(2024),is(LocalDate.of(2024, 10, 2)));
+     * assertThat(type.getErevRoshHashanah(2025), is(LocalDate.of(2025, 9,22)));
+     * assertThat(type.getErevRoshHashanah(2026), is(LocalDate.of(2026,9, 11)));
+     * // NEWYEARI, assertThat(type.getRoshHashanahI(2024),
      * is(LocalDate.of(2024, 10, 3))); assertThat(type.getRoshHashanahI(2025),
      * is(LocalDate.of(2025, 9, 23))); assertThat(type.getRoshHashanahI(2026),
      * is(LocalDate.of(2026, 9, 12))); // NEWYEARII,
