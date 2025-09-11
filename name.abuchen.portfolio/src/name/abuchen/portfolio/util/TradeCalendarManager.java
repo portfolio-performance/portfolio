@@ -42,6 +42,9 @@ import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.PASSOVER_EVE;
+import static name.abuchen.portfolio.util.HolidayName.PASSOVER_I;
+import static name.abuchen.portfolio.util.HolidayName.PASSOVER_II;
 import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
@@ -66,6 +69,7 @@ import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
+import static name.abuchen.portfolio.util.HolidayType.fixedJewishCalendar;
 import static name.abuchen.portfolio.util.HolidayType.weekday;
 
 import java.text.MessageFormat;
@@ -348,13 +352,17 @@ public class TradeCalendarManager
 
         // Tel Aviv Stock Exchange
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
-        tc = new TradeCalendar("tlv2025", Messages.LabelTradeCalendarTLV, TLV_WEEKEND);
-        TLVHolidayType jht = new TLVHolidayType();
-        CACHE.put(tc.getCode(), tc);
+        // tc = new TradeCalendar("tlv2025", Messages.LabelTradeCalendarTLV,
+        // TLV_WEEKEND);
+        // HolidayType jht = new TLVHolidayType();
+        // CACHE.put(tc.getCode(), tc);
         
         // Tel Aviv Stock Exchange starting 2026
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
         tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND);
+        tc.add(fixedJewishCalendar(PASSOVER_EVE, 1, 14, 0));
+        tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
+        tc.add(fixedJewishCalendar(PASSOVER_II, 1, 16, 0));
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar(FIRST_OF_THE_MONTH_CODE, Messages.LabelTradeCalendarFirstOfTheMonth, EnumSet.noneOf(DayOfWeek.class))
