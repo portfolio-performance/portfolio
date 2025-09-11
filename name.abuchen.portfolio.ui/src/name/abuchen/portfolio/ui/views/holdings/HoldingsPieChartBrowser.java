@@ -33,7 +33,7 @@ public class HoldingsPieChartBrowser implements IPieChart
     }
 
     @Override
-    public Control createControl( Composite parent)
+    public Control createControl(Composite parent)
     {
         return browser.createControl(parent, LoadDataFunction::new,
             b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
@@ -60,7 +60,7 @@ public class HoldingsPieChartBrowser implements IPieChart
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        private LoadDataFunction( Browser browser) // NOSONAR
+        private LoadDataFunction(Browser browser) // NOSONAR
         {
             super(browser, "loadData"); //$NON-NLS-1$
         }
@@ -78,7 +78,6 @@ public class HoldingsPieChartBrowser implements IPieChart
                                 .sorted((l, r) -> Long.compare(r.getValuation().getAmount(),
                                                 l.getValuation().getAmount())) //
                                 .forEach(p -> {
-
                                     String name = JSONObject.escape(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, p.getInvestmentVehicle().getUUID(), name, //

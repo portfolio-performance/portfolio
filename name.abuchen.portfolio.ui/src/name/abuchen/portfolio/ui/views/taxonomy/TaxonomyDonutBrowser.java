@@ -61,7 +61,6 @@ public class TaxonomyDonutBrowser implements IPieChart
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        @SuppressWarnings("restriction")
         private LoadDataFunction(Browser browser)
         {
             super(browser, "loadData"); //$NON-NLS-1$
