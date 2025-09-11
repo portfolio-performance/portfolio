@@ -39,12 +39,12 @@ import java.util.Set;
             this.year = year;
         }
 
-        JewishCalendarDate(JewishCalendarDate date)
-        {
-            this.day = date.getDay();
-            this.month = date.getMonth();
-            this.year = date.getYear();
-        }
+        // JewishCalendarDate(JewishCalendarDate date)
+        // {
+        // this.day = date.getDay();
+        // this.month = date.getMonth();
+        // this.year = date.getYear();
+        // }
 
         public int getDay()
         {
@@ -61,21 +61,25 @@ import java.util.Set;
             return year;
         }
 
+        @SuppressWarnings("unused")
         public void setDay(int day)
         {
             this.day = day;
         }
 
+        @SuppressWarnings("unused")
         public void setMonth(int month)
         {
             this.month = month;
         }
 
+        @SuppressWarnings("unused")
         public void setYear(int year)
         {
             this.year = year;
         }
 
+        @SuppressWarnings("unused")
         public boolean areDatesEqual(JewishCalendarDate date)
         {
             if ((day == date.getDay()) && (month == date.getMonth()) && (year == date.getYear()))
@@ -84,14 +88,16 @@ import java.util.Set;
                 return false;
         }
 
+        @SuppressWarnings("unused")
         public int getHashCode()
         {
             return (year - 1583) * 366 + month * 31 + day;
         }
 
+        @Override
         public String toString()
         {
-            return day + "." + month + "." + year;
+            return day + "." + month + "." + year; //$NON-NLS-1$//$NON-NLS-2$
         }
 
         private int day;
@@ -543,13 +549,11 @@ import java.util.Set;
 
     private static class IsraeliHolocaustCalendarHolidayType extends HolidayType
     {
-        private final int dayToAdd;
         private final CalendarImpl i = new CalendarImpl();
 
         public IsraeliHolocaustCalendarHolidayType(HolidayName name, int daysToAdd)
         {
             super(name);
-            this.dayToAdd = daysToAdd;
         }
 
         private static int getWeekdayOfHebrewDate(int hebDay, int hebMonth, int hebYear, CalendarImpl i)
@@ -593,13 +597,11 @@ import java.util.Set;
 
     private static class JewishPurimCalendarHolidayType extends HolidayType
     {
-        private final int dayToAdd;
         private final CalendarImpl i = new CalendarImpl();
 
         public JewishPurimCalendarHolidayType(HolidayName name, int daysToAdd)
         {
             super(name);
-            this.dayToAdd = daysToAdd;
         }
 
         private JewishCalendarDate calcPurimDateHeb(CalendarImpl i, int hebYear, int georgYear)

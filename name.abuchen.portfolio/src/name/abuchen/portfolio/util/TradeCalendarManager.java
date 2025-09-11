@@ -366,16 +366,10 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
-        // Tel Aviv Stock Exchange
-        // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
-        // tc = new TradeCalendar("tlv2025", Messages.LabelTradeCalendarTLV,
-        // TLV_WEEKEND);
-        // HolidayType jht = new TLVHolidayType();
-        // CACHE.put(tc.getCode(), tc);
         
         // Tel Aviv Stock Exchange starting 2026
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
-        tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND);
+        tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixedJewishCalendar(PASSOVER_EVE, 1, 14, 0));
         tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
         tc.add(fixedJewishCalendar(PASSOVER_II, 1, 16, 0));
