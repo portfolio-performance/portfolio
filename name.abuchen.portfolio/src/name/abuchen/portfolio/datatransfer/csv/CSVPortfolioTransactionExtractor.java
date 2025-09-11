@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -173,27 +171,6 @@ import name.abuchen.portfolio.money.Money;
         ExtractorUtils.fixGrossValueBuySell().accept(entry);
         
         return new BuySellEntryItem(entry);
-    }
-
-    private void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
-                    PortfolioTransaction transaction) throws ParseException
-    {
-        if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
-            return;
-
-        BigDecimal exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
-        if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
-        {
-            Money grossValue = transaction.getGrossValue();
-
-            Money forex = Money.of(transaction.getSecurity().getCurrencyCode(), Math
-                            .round(exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount())).doubleValue()));
-
-            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-            transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
-
-        }
     }
 
     private Item createTransfer(Security security, Money amount, LocalDateTime date, String note, Long shares)
