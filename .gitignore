@@ -11,5 +11,3 @@ workspace
 *.ipr
 
 .claude/settings.local.json
-.project
-.vscode/java-formatter.xml
