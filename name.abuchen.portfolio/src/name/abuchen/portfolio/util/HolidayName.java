@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
     FIRST_CHRISTMAS_DAY,
     GOOD_FRIDAY,
     HURRICANE_SANDY,
+    HOLOCAUST_REMEMBERENCE_DAY, 
     INDEPENDENCE,
     INDIGENOUS_PEOPLE,
     INMACULATE_CONCEPTION,
@@ -68,7 +69,24 @@ import java.util.ResourceBundle;
     VICTORY_DAY,
     VIRGIN_OF_CARMEN,
     WASHINGTONS_BIRTHDAY,
-    WHIT_MONDAY;
+    WHIT_MONDAY,
+    PURIM,
+    PASSOVER_EVE,
+    PASSOVER_I, PASSOVER_II,
+    MEMORIAL_DAY,
+    INDEPENDENCE_DAY,
+    SAVHUOT_EVE,
+    SHAVUOT_DAY,
+    JEWISH_FAST_DAY,
+    JEWISH_NEW_YEAR_EVE, 
+    JEWISH_NEW_YEAR_DAY_I, 
+    JEWISH_NEW_YEAR_DAY_II,
+    YOM_KIPUR_EVE,
+    YOM_KIPUR,
+    SUKKOTH_EVE,
+    SUKKOTH_DAY,
+    SIMCHAT_TORA_EVE,
+    SIMCHAT_TORA;
 
     private static final ResourceBundle RESOURCES = ResourceBundle
                     .getBundle("name.abuchen.portfolio.util.holiday-names"); //$NON-NLS-1$
