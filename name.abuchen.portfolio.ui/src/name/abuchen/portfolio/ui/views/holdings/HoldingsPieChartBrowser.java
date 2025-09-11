@@ -32,9 +32,8 @@ public class HoldingsPieChartBrowser implements IPieChart
         this.view = view;
     }
 
-    @SuppressWarnings("restriction")
     @Override
-    public Control createControl(@SuppressWarnings("restriction") Composite parent)
+    public Control createControl( Composite parent)
     {
         return browser.createControl(parent, LoadDataFunction::new,
             b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
@@ -51,7 +50,6 @@ public class HoldingsPieChartBrowser implements IPieChart
         browser.refresh();
     }
 
-    @SuppressWarnings("restriction")
     private final class LoadDataFunction extends BrowserFunction
     {
         private static final String ENTRY = "{\"uuid\":\"%s\"," //$NON-NLS-1$
@@ -62,8 +60,7 @@ public class HoldingsPieChartBrowser implements IPieChart
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        @SuppressWarnings("restriction")
-        private LoadDataFunction(@SuppressWarnings("restriction") Browser browser) // NOSONAR
+        private LoadDataFunction( Browser browser) // NOSONAR
         {
             super(browser, "loadData"); //$NON-NLS-1$
         }
@@ -81,7 +78,7 @@ public class HoldingsPieChartBrowser implements IPieChart
                                 .sorted((l, r) -> Long.compare(r.getValuation().getAmount(),
                                                 l.getValuation().getAmount())) //
                                 .forEach(p -> {
-                                    @SuppressWarnings("restriction")
+
                                     String name = JSONObject.escape(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, p.getInvestmentVehicle().getUUID(), name, //
