@@ -12,14 +12,14 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
-import name.abuchen.portfolio.ui.views.dashboard.heatmap.AbstractMonhtlyHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.AbstractMonthlyHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.HeatmapModel;
 import name.abuchen.portfolio.ui.views.payments.PaymentsView;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewInput;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 import name.abuchen.portfolio.util.Interval;
 
-public class EarningsHeatmapWidget extends AbstractMonhtlyHeatmapWidget
+public class EarningsHeatmapWidget extends AbstractMonthlyHeatmapWidget
 {
     @Inject
     private PortfolioPart part;
