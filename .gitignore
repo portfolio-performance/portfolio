@@ -12,3 +12,4 @@ workspace
 
 .claude/settings.local.json
 .project
+.vscode/java-formatter.xml
