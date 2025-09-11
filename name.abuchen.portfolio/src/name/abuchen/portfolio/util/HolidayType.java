@@ -84,8 +84,7 @@ import java.util.Set;
         {
             if ((day == date.getDay()) && (month == date.getMonth()) && (year == date.getYear()))
                 return true;
-            else
-                return false;
+            return false;
         }
 
         @SuppressWarnings("unused")
@@ -189,8 +188,7 @@ import java.util.Set;
         {
             if ((((year * 7) + 1) % 19) < 7)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         public int getLastMonthOfJewishYear(int year)
@@ -280,16 +278,14 @@ import java.util.Set;
         {
             if ((daysInHebrewYear(year) % 10) == 5)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         private boolean shortKislev(int year)
         {
             if ((daysInHebrewYear(year) % 10) == 3)
                 return true;
-            else
-                return false;
+            return false;
         }
 
         public int absoluteFromJewishDate(JewishCalendarDate date)
