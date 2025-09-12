@@ -201,6 +201,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("yyyy.MM.dd."), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("M/d/yyyy"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy"), //$NON-NLS-1$
             };
         }
 
@@ -265,7 +266,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", ".*[Pp]rice",
-                            "akt. Kurs", "Dernier", "Kurs" });
+                            "akt. Kurs", "Kurs", "Dernier", ".*vl.*", ".*liquidative.*", "[Cc]l[oô]ture" });
         }
 
         public CloseColumn(String[] patterns)
@@ -285,7 +286,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public HighColumn()
         {
-            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*" });
+            super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*", ".*haut.*" });
         }
 
         public HighColumn(String[] patterns)
@@ -308,7 +309,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public LowColumn()
         {
-            super(new String[] { "Tief.*", "Tagestief.*", "Low.*" });
+            super(new String[] { "Tief.*", "Tagestief.*", "Low.*", ".*bas.*" });
         }
 
         public LowColumn(String[] patterns)
