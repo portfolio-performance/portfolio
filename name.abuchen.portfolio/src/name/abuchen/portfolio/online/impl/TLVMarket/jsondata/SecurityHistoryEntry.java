@@ -98,26 +98,27 @@ public class SecurityHistoryEntry
     public static SecurityHistoryEntry fromMap(Map<String, Object> map)
     {
         SecurityHistoryEntry historyentry = new SecurityHistoryEntry();
-        if (map.containsKey("MarketValue"))
+        if (map.containsKey("MarketValue")) //$NON-NLS-1$
         {
-            historyentry.setMarketValue(((Double) map.get("MarketValue")).floatValue());
+            historyentry.setMarketValue(((Double) map.get("MarketValue")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("LowRate"))
+        if (map.containsKey("LowRate")) //$NON-NLS-1$
         {
-            historyentry.setLowRate(((Double) map.get("LowRate")).floatValue());
+            historyentry.setLowRate(((Double) map.get("LowRate")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("HighRate"))
+        if (map.containsKey("HighRate")) //$NON-NLS-1$
         {
-            historyentry.setHighRate(((Double) map.get("HighRate")).floatValue());
+            historyentry.setHighRate(((Double) map.get("HighRate")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("TradeDate"))
+        if (map.containsKey("TradeDate")) //$NON-NLS-1$
         {
-            historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"), formatter));
+            historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"), formatter)); //$NON-NLS-1$
         }
 
         return historyentry;
     }
 
+    @SuppressWarnings("nls")
     @Override
     public String toString()
     {

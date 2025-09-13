@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,6 +20,7 @@ import org.mockito.Mockito;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
@@ -40,6 +43,11 @@ public class TLVSecurityTest
         return getHistoricalTaseQuotes("response_tase_security_history01.txt");
     }
 
+    private String getSecurityHistory2()
+    {
+        return getHistoricalTaseQuotes("response_tase_security_history02.txt");
+    }
+
     private String getHistoricalTaseQuotes(String filename)
     {
         String responseBody = null;
@@ -50,7 +58,8 @@ public class TLVSecurityTest
         return responseBody;
     }
 
-    public void shouldReturnCorrectLatestQuoteForSecurityLive()
+
+    public void returnCorrectLatestQuoteForSecurityLive()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -68,7 +77,8 @@ public class TLVSecurityTest
 
             LatestSecurityPrice price = optionalPrice.get();
             assertFalse("Date should not be null", price.getDate() == null);
-            assertEquals("High price mismatch", 118720000L, price.getHigh());
+            // assertEquals("High price mismatch", 118720000L, price.getHigh());
+            assertThat(price.getHigh(), is(Values.Quote.factorize(118.72)));
             assertEquals("Low price mismatch", 11850000L, price.getLow());
             assertEquals("Value mismatch", 11875000L, price.getValue());
             assertEquals("Date mismatch", LocalDate.of(2025, 8, 25), price.getDate());
@@ -88,8 +98,9 @@ public class TLVSecurityTest
     public void shouldReturnCorrectLatestQuoteForSecurityMock()
     {
         Security security = new Security();
-        security.setCurrencyCode("ILS");
-        security.setWkn("01135912");
+        security.setCurrencyCode("ILA");
+        security.setWkn("01135912"); // Government bond - "GALIL" - CPI1025 -
+                                     // Reporting in ILA
 
         String mockedresponse = getSecurityDetails();
         assertTrue(mockedresponse.length() > 0);
@@ -106,9 +117,9 @@ public class TLVSecurityTest
 
             LatestSecurityPrice price = optionalPrice.get();
             assertFalse("Date should not be null", price.getDate() == null);
-            assertEquals("High price mismatch", 118750000L, price.getHigh());
-            assertEquals("Low price mismatch", 118500000L, price.getLow());
-            assertEquals("Value mismatch", 118750000L, price.getValue());
+            assertThat(price.getHigh(), is(Values.Quote.factorize(118.75)));
+            assertThat(price.getLow(), is(Values.Quote.factorize(118.50)));
+            assertThat(price.getValue(), is(Values.Quote.factorize(118.75)));
             assertEquals("Date mismatch", LocalDate.of(2025, 8, 26), price.getDate());
 
             // Verify interaction
@@ -126,9 +137,9 @@ public class TLVSecurityTest
     public void shouldReturnCorrectLatestQuoteForSharesMock()
     {
         Security security = new Security();
-        security.setTickerSymbol("AAPL");
-        security.setCurrencyCode("ILS");
-        security.setWkn("273");
+        security.setTickerSymbol("NICE");
+        security.setCurrencyCode("ILA");
+        security.setWkn("273011"); // NICE Shares - Reported in ILA
 
         String mockedresponse = getSharesDetails();
         assertTrue(mockedresponse.length() > 0);
@@ -145,9 +156,10 @@ public class TLVSecurityTest
 
             LatestSecurityPrice price = optionaPrice.get();
             assertFalse("Date should not be null", price.getDate() == null);
-            assertEquals("High price mismatch", 47190000000l, price.getHigh());
-            assertEquals("Low price mismatch", 46050000000l, price.getLow());
-            assertEquals("Value mismatch", 46050000000l, price.getValue());
+            assertThat(price.getLow(), is(Values.Quote.factorize(460.50)));
+            assertThat(price.getHigh(), is(Values.Quote.factorize(471.90)));
+            assertThat(price.getValue(), is(Values.Quote.factorize(460.50)));
+
             assertEquals("Date mismatch", LocalDate.of(2025, 8, 31), price.getDate());
 
             // Verify interaction
@@ -163,16 +175,18 @@ public class TLVSecurityTest
         }
     }
 
+
     @Test
-    public void shouldReturnHistoricalQuotesOnShares()
+    public void shouldReturnHistoricalQuotesOnSecurity()
     {
         // TODO add support for Subid.
         Security security = new Security();
         security.setTickerSymbol("AAPL");
-        security.setCurrencyCode("ILS");
-        security.setWkn("5127121");
+        security.setCurrencyCode("ILA");
+        security.setWkn("01135912"); // Government bond - "GALIL" - CPI1025 -
+        // Reporting in ILA
 
-        String mockedResponse = getSecurityHistory();
+        String mockedResponse = getSecurityHistory2();
         assertTrue(mockedResponse.length() > 0);
 
         // new SecurityHistory();
@@ -183,8 +197,6 @@ public class TLVSecurityTest
 
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
-
-        // PRice in ILS, Type = Mutual Fund
         try
         {
 
@@ -199,9 +211,13 @@ public class TLVSecurityTest
             assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
+            SecurityPrice lastprice = feedData.getPrices().get(feedData.getPrices().size() - 1);
 
-            assertTrue("First price should be 27/7/2025", firstprice.getDate().equals(LocalDate.of(2024, 11, 10)));
-            assertTrue("First price value should be 146.88", firstprice.getValue() == 114990000l);
+            assertThat(firstprice.getDate(), is(LocalDate.of(2025, 9, 1)));
+            assertThat(lastprice.getDate(), is(LocalDate.of(2025, 8, 28)));
+            assertThat(firstprice.getValue(), is(Values.Quote.factorize(118.94)));
+            assertThat(lastprice.getValue(), is(Values.Quote.factorize(118.89)));
+
 
         }
         catch (Exception e)
@@ -216,8 +232,9 @@ public class TLVSecurityTest
     public void latestQuoteonBlankWKSSecurityReturnsCorrectValues()
     {
         Security security = new Security();
-        security.setCurrencyCode("ILS");
-        security.setWkn("");
+        security.setTickerSymbol("NICE");
+        security.setCurrencyCode("ILA");
+        security.setWkn("273011"); // NICE Shares - Reported in ILA
         String mockedresponse = getSecurityDetails();
 
         assertTrue(mockedresponse.length() > 0);

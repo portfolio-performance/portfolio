@@ -41,10 +41,10 @@ public class TLVQuoteFeedMockTest
         return getHistoricalTaseQuotes("response_tase_list_indices.txt");
     }
 
-    private String getFundDetails()
-    {
-        return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
-    }
+    // private String getFundDetails()
+    // {
+    // return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
+    // }
 
     private String getSecurityDetails()
     {

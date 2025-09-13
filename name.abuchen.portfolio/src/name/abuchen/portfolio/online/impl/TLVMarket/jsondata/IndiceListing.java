@@ -86,6 +86,7 @@ public class IndiceListing
         TLVType = tLVType;
     }
 
+    @SuppressWarnings("nls")
     @Override
     public String toString()
     {

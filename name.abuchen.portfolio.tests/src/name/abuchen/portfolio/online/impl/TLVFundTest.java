@@ -94,6 +94,60 @@ public class TLVFundTest
 
     }
 
+    // @Test
+    // public void shouldReturnHistoricalQuotesOnFund()
+    // {
+    // // TODO add support for Subid.
+    // Security security = new Security();
+    // security.setTickerSymbol("AAPL");
+    // security.setCurrencyCode("ILS");
+    // security.setWkn("5127121"); // Mutual Fund - T.F(2C) Tik 3 BenLeumi IL -
+    // // Reported in ILS
+    //
+    // String mockedResponse = getSecurityHistory();
+    // assertTrue(mockedResponse.length() > 0);
+    //
+    // // new SecurityHistory();
+    // SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
+    // Optional<SecurityHistory> historyopt = Optional.of(history);
+    //
+    // TLVSecurity feed = Mockito.spy(new TLVSecurity());
+    //
+    // Optional<QuoteFeedData> mockedFeed =
+    // feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
+    //
+    // // PRice in ILS, Type = Mutual Fund
+    // try
+    // {
+    //
+    // doReturn(mockedFeed).when(feed).getHistoricalQuotes(security, false);
+    //
+    // Optional<QuoteFeedData> feedDataOpt = feed.getHistoricalQuotes(security,
+    // false);
+    //
+    // assertFalse("GetHistoricalQoutes feedData should not be empty",
+    // feedDataOpt.isEmpty());
+    //
+    // QuoteFeedData feedData = feedDataOpt.get();
+    //
+    // assertFalse("FeeData shoould contain prices",
+    // feedData.getPrices().isEmpty());
+    //
+    // SecurityPrice firstprice = feedData.getPrices().get(0);
+    //
+    // assertTrue("First price should be 27/7/2025",
+    // firstprice.getDate().equals(LocalDate.of(2024, 11, 10)));
+    // assertTrue("First price value should be 146.88", firstprice.getValue() ==
+    // 114990000l);
+    //
+    // }
+    // catch (Exception e)
+    // {
+    // System.out.println(e.getMessage());
+    // assertTrue(false);
+    // }
+    // }
+
     @Test
     public void latestQuoteonBlankWKSFundReturnsCorrectValues()
     {

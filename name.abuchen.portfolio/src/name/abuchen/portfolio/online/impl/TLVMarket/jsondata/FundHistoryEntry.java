@@ -11,12 +11,12 @@ public class FundHistoryEntry
     private LocalDateTime LastUpdateDate;
     private float PurchasePrice;
     private float SellPrice;
-    private float CreationPrice;
+    // private float CreationPrice;
     private float DateYield;
     private float Rate;
-    private float ManagmentFee;
-    private float TrusteeFee;
-    private float SuccessFee;
+    // private float ManagmentFee;
+    // private float TrusteeFee;
+    // private float SuccessFee;
     private float AssetValue;
 
     public float getPurchasePrice()
@@ -92,29 +92,29 @@ public class FundHistoryEntry
     public static FundHistoryEntry fromMap(Map<String, Object> map)
     {
         FundHistoryEntry historyentry = new FundHistoryEntry();
-        if (map.containsKey("Rate"))
+        if (map.containsKey("Rate")) //$NON-NLS-1$
         {
-            historyentry.setRate(((Double) map.get("Rate")).floatValue());
+            historyentry.setRate(((Double) map.get("Rate")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("FundId"))
+        if (map.containsKey("FundId")) //$NON-NLS-1$
         {
-            historyentry.setFundId((String) map.get("FundId"));
+            historyentry.setFundId((String) map.get("FundId")); //$NON-NLS-1$
         }
-        if (map.containsKey("TradeDate"))
+        if (map.containsKey("TradeDate")) //$NON-NLS-1$
         {
-            historyentry.setTradeDate(LocalDateTime.parse((String) map.get("TradeDate")));
+            historyentry.setTradeDate(LocalDateTime.parse((String) map.get("TradeDate"))); //$NON-NLS-1$
         }
-        if (map.containsKey("SellPrice"))
+        if (map.containsKey("SellPrice")) //$NON-NLS-1$
         {
-            historyentry.setSellPrice(((Double) map.get("SellPrice")).floatValue());
+            historyentry.setSellPrice(((Double) map.get("SellPrice")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("PurchasePrice"))
+        if (map.containsKey("PurchasePrice")) //$NON-NLS-1$
         {
-            historyentry.setPurchasePrice(((Double) map.get("PurchasePrice")).floatValue());
+            historyentry.setPurchasePrice(((Double) map.get("PurchasePrice")).floatValue()); //$NON-NLS-1$
         }
-        if (map.containsKey("AssetValue"))
+        if (map.containsKey("AssetValue")) //$NON-NLS-1$
         {
-            historyentry.setAssetValue(((Double) map.get("AssetValue")).floatValue());
+            historyentry.setAssetValue(((Double) map.get("AssetValue")).floatValue()); //$NON-NLS-1$
         }
         return historyentry;
     }

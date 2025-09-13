@@ -80,9 +80,9 @@ public class SecurityHistory
             historyentry.setDateTo(LocalDate.parse((String) map.get("DateTo"), formatter)); //$NON-NLS-1$
         }
 
-        if (map.containsKey("Items"))
+        if (map.containsKey("Items")) //$NON-NLS-1$
         {
-            List<Map<String, Object>> rawItems = (List<Map<String, Object>>) map.get("Items");
+            List<Map<String, Object>> rawItems = (List<Map<String, Object>>) map.get("Items"); //$NON-NLS-1$
             SecurityHistoryEntry[] entries = new SecurityHistoryEntry[rawItems.size()];
             for (int i = 0; i < rawItems.size(); i++)
             {
@@ -102,7 +102,7 @@ public class SecurityHistory
         class LocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate>
         {
 
-            private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
             @Override
             public JsonElement serialize(final LocalDate date, final Type typeOfSrc,

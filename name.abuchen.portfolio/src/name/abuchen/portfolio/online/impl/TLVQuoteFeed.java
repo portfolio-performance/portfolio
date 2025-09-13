@@ -821,7 +821,7 @@ public class TLVQuoteFeed implements QuoteFeed
         }
         catch (Exception e)
         {
-            return "";
+            return ""; //$NON-NLS-1$
         }
     }
     
@@ -991,7 +991,7 @@ public class TLVQuoteFeed implements QuoteFeed
             {
                 // json = this.TLVSecurities.getLatestQuote(security);
             }
-            json = "{}";
+            json = "{}"; //$NON-NLS-1$
 
         }
         catch (IOException e)
