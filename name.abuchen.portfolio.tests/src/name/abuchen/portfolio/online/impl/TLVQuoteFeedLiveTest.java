@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertTrue;
 
@@ -18,6 +20,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistoryEntry;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
@@ -41,7 +44,8 @@ public class TLVQuoteFeedLiveTest
     {
         Security security = new Security();
         security.setWkn("5113428");
-        security.setCurrencyCode("ILS");
+        security.setCurrencyCode("ILS"); // KSM KTF TEL GOV - Mutual Fund,
+                                         // reported in ILS
 
         TLVQuoteFeed feed = new TLVQuoteFeed();
         try
@@ -50,12 +54,18 @@ public class TLVQuoteFeedLiveTest
 
             if (response.isEmpty())
                 assertTrue(false);
+
             LatestSecurityPrice price = response.get();
             assertTrue(price.getDate() != null);
             LocalDate date = price.getDate();
             Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
             assertTrue(daysdiff < 3l);
+
             assertTrue(price.getValue() != 0l);
+            assertThat(price.getHigh(), is(-1l));
+            assertThat(price.getLow(), is(-1l));
+            assertThat(price.getValue(), greaterThan(Values.Quote.factorize(100.00)));
+            assertThat(price.getVolume(), is(-1l));
 
         }
         catch (Exception e)
@@ -71,7 +81,7 @@ public class TLVQuoteFeedLiveTest
     {
         Security security = new Security();
         security.setWkn("1410307");
-        security.setCurrencyCode("ILS");
+        security.setCurrencyCode("ILA"); // Bond - reported in ILA - SHLD.B18
 
         TLVQuoteFeed feed = new TLVQuoteFeed();
         try
@@ -82,10 +92,55 @@ public class TLVQuoteFeedLiveTest
                 assertTrue(false);
             LatestSecurityPrice price = response.get();
             assertTrue(price.getDate() != null);
+
             LocalDate date = price.getDate();
             Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
             assertTrue(daysdiff < 3l);
             assertTrue(price.getValue() != 0l);
+
+            assertThat(price.getHigh(), greaterThan(Values.Quote.factorize(100.00)));
+            assertThat(price.getLow(), greaterThan(Values.Quote.factorize(100.00)));
+            assertThat(price.getValue(), greaterThan(Values.Quote.factorize(100.00)));
+            assertThat(price.getVolume(), greaterThan(0l));
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+
+    }
+
+    @Test
+    public void TLVBondDetails_Should_not_return_value_without_wks()
+    {
+        Security security = new Security();
+        security.setWkn("");
+        security.setCurrencyCode("ILA"); // Bond - reported in ILA - SHLD.B18
+
+        TLVQuoteFeed feed = new TLVQuoteFeed();
+        try
+        {
+            Optional<LatestSecurityPrice> response = feed.getLatestQuote(security);
+
+            if (response.isEmpty())
+                assertTrue(true);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+
+        security.setWkn("0000");
+        try
+        {
+            Optional<LatestSecurityPrice> response = feed.getLatestQuote(security);
+
+            if (response.isEmpty())
+                assertTrue(true);
 
         }
         catch (Exception e)
@@ -102,7 +157,7 @@ public class TLVQuoteFeedLiveTest
 
         Security security = new Security();
         security.setWkn("273011");
-        security.setCurrencyCode("ILS");
+        security.setCurrencyCode("ILA"); // NICE Stock - reported in ILA
 
         TLVQuoteFeed feed = new TLVQuoteFeed();
         try
@@ -118,6 +173,10 @@ public class TLVQuoteFeedLiveTest
             assertTrue(daysdiff < 3l);
             assertTrue(price.getValue() != 0l);
             assertTrue(price.getVolume() != 0l);
+            assertThat(price.getHigh(), greaterThan(Values.Quote.factorize(40000.00)));
+            assertThat(price.getLow(), greaterThan(Values.Quote.factorize(40000.00)));
+            assertThat(price.getValue(), greaterThan(Values.Quote.factorize(40000.00)));
+            assertThat(price.getVolume(), greaterThan(0l));
 
         }
         catch (Exception e)
@@ -127,6 +186,7 @@ public class TLVQuoteFeedLiveTest
         }
 
     }
+
 
 
     @Test
@@ -151,6 +211,17 @@ public class TLVQuoteFeedLiveTest
     }
 
 
+    @Ignore("Test not ready")
+    @Test
+    public void testFundHistoricalPrices()
+    {
+    }
+
+    @Ignore("Test not ready")
+    @Test
+    public void testShareHistoricalPrices()
+    {
+    }
 
     @Ignore("Test needs to be refactored")
     @Test

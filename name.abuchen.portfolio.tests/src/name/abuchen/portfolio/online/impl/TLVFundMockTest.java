@@ -26,7 +26,7 @@ import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
-public class TLVFundTest
+public class TLVFundMockTest
 {
     //@formatter:off
     /*

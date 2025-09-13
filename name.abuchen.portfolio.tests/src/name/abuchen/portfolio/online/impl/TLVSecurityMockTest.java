@@ -25,7 +25,7 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
 
-public class TLVSecurityTest
+public class TLVSecurityMockTest
 {
 
     private String getSecurityDetails()
