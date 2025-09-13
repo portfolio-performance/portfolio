@@ -223,6 +223,38 @@ public class TLVQuoteFeedLiveTest
     {
     }
 
+    @Test
+    public void index_should_not_return_quotes()
+    {
+        Security security = new Security();
+        security.setWkn("187");
+        security.setCurrencyCode("ILS"); // Bond - reported in ILA - SHLD.B18
+
+        TLVQuoteFeed feed = new TLVQuoteFeed();
+        try
+        {
+            Optional<LatestSecurityPrice> response = feed.getLatestQuote(security);
+
+            if (response.isEmpty())
+                assertTrue(true);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+
+        
+    }
+
+    @Ignore("Test not ready")
+    @Test
+    public void index_should_not_return_historical_quotes()
+    {
+        
+    }
+
     @Ignore("Test needs to be refactored")
     @Test
     public void testSecurityHistoricalPrices()

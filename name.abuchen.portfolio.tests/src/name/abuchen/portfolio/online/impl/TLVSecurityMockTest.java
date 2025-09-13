@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Scanner;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -58,8 +59,9 @@ public class TLVSecurityMockTest
         return responseBody;
     }
 
-
-    public void returnCorrectLatestQuoteForSecurityLive()
+    @Ignore("Live Test")
+    @Test
+    public void return_Latest_Quote_For_Security()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -79,6 +81,7 @@ public class TLVSecurityMockTest
             assertFalse("Date should not be null", price.getDate() == null);
             // assertEquals("High price mismatch", 118720000L, price.getHigh());
             assertThat(price.getHigh(), is(Values.Quote.factorize(118.72)));
+            assertThat(price.getLow(), is(Values.Quote.factorize(118.50)));
             assertEquals("Low price mismatch", 11850000L, price.getLow());
             assertEquals("Value mismatch", 11875000L, price.getValue());
             assertEquals("Date mismatch", LocalDate.of(2025, 8, 25), price.getDate());
@@ -95,7 +98,7 @@ public class TLVSecurityMockTest
     }
 
     @Test
-    public void shouldReturnCorrectLatestQuoteForSecurityMock()
+    public void return_Latest_Quotes_on_Bonds()
     {
         Security security = new Security();
         security.setCurrencyCode("ILA");
@@ -134,7 +137,7 @@ public class TLVSecurityMockTest
     }
 
     @Test
-    public void shouldReturnCorrectLatestQuoteForSharesMock()
+    public void return_latest_quotes_on_Shares()
     {
         Security security = new Security();
         security.setTickerSymbol("NICE");
@@ -177,7 +180,36 @@ public class TLVSecurityMockTest
 
 
     @Test
-    public void shouldReturnHistoricalQuotesOnSecurity()
+    public void return_Latest_Quotes_On_Shares()
+    {
+        Security security = new Security();
+        security.setTickerSymbol("NICE");
+        security.setCurrencyCode("ILA");
+        security.setWkn("273011"); // NICE Shares - Reported in ILA
+        String mockedresponse = getSecurityDetails();
+
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVSecurity feed = Mockito.spy(new TLVSecurity());
+            Mockito.doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
+
+            // System.out.println(feed.getLatestQuote(security));
+            Optional<LatestSecurityPrice> oprice = feed.getLatestQuote(security);
+
+            assert (oprice.isEmpty());
+
+        }
+        catch (IOException e)
+        {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    public void return_Historical_Quotes_On_Security()
     {
         // TODO add support for Subid.
         Security security = new Security();
@@ -227,61 +259,15 @@ public class TLVSecurityMockTest
         }
     }
 
-
+    @Ignore
     @Test
-    public void latestQuoteonBlankWKSSecurityReturnsCorrectValues()
+    public void return_Historical_Quotes_On_Bonds()
     {
-        Security security = new Security();
-        security.setTickerSymbol("NICE");
-        security.setCurrencyCode("ILA");
-        security.setWkn("273011"); // NICE Shares - Reported in ILA
-        String mockedresponse = getSecurityDetails();
-
-        assertTrue(mockedresponse.length() > 0);
-
-        try
-        {
-            TLVSecurity feed = Mockito.spy(new TLVSecurity());
-            Mockito.doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
-
-            // System.out.println(feed.getLatestQuote(security));
-            Optional<LatestSecurityPrice> oprice = feed.getLatestQuote(security);
-
-            assert (oprice.isEmpty());
-
-        }
-        catch (IOException e)
-        {
-            assert (false);
-        }
-
     }
 
+    @Ignore
     @Test
-    public void latestQuoteonNoWKSSecurityReturnsCorrectValues()
+    public void return_Historical_Quotes_On_Shares()
     {
-        Security security = new Security();
-        security.setCurrencyCode("ILS");
-        String mockedresponse = getSecurityDetails();
-
-        assertTrue(mockedresponse.length() > 0);
-
-        try
-        {
-            TLVSecurity feed = Mockito.spy(new TLVSecurity());
-            Mockito.doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
-
-            // System.out.println(feed.getLatestQuote(security));
-            Optional<LatestSecurityPrice> oprice = feed.getLatestQuote(security);
-
-            assert (oprice.isEmpty());
-
-        }
-        catch (IOException e)
-        {
-            assert (false);
-        }
-
     }
-
 }

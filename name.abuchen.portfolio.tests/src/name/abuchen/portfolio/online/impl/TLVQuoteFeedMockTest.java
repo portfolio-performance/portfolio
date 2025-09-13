@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -124,6 +126,17 @@ public class TLVQuoteFeedMockTest
 
     }
 
+    @Ignore()
+    @Test
+    public void get_latest_quote_for_Bonds()
+    {
+    }
+
+    @Ignore()
+    @Test
+    public void get_latest_quote_for_Security()
+    {
+    }
 
 
     // @Test
@@ -177,6 +190,20 @@ public class TLVQuoteFeedMockTest
 
     @Test
     @Ignore("Mock Test")
+    public void get_Historical_quotes_for_Bonds() throws IOException
+    {
+
+    }
+
+    @Test
+    @Ignore("Mock Test")
+    public void get_Historical_quotes_for_Security() throws IOException
+    {
+
+    }
+
+    @Test
+    @Ignore("Mock Test")
     public void testgetHistoricalQuotesOnShares() throws IOException
     {
         // TODO add support for Subid.
@@ -201,6 +228,7 @@ public class TLVQuoteFeedMockTest
             // System.out.println("FeedData " + firstdate);
 
             assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
+            assertThat(firstprice.getDate(), is(LocalDate.of(2025, 7, 28)));
             assert (firstprice.getValue() == 14688000000l);
 
         }
