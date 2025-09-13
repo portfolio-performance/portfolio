@@ -41,7 +41,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
@@ -70,7 +70,7 @@ public class QuotesContextMenu
             @Override
             public void run()
             {
-                new UpdateQuotesJob(owner.getClient(), security).schedule();
+                new UpdatePricesJob(owner.getClient(), security).schedule();
             }
         };
         // enable only if online updates are configured

@@ -14,15 +14,14 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 
 public class PeriodicUpdatePricesJob extends Job
 {
     private final ClientInput clientInput;
-    private final UpdateQuotesJob.Target target;
+    private final UpdatePricesJob.Target target;
     private final Duration invertval;
 
-    public PeriodicUpdatePricesJob(ClientInput clientInput, UpdateQuotesJob.Target target, Duration interval)
+    public PeriodicUpdatePricesJob(ClientInput clientInput, UpdatePricesJob.Target target, Duration interval)
     {
         super(Messages.JobLabelUpdateQuotes);
         this.clientInput = clientInput;
@@ -49,7 +48,7 @@ public class PeriodicUpdatePricesJob extends Job
 
             var converter = new CurrencyConverterImpl(this.clientInput.getExchangeRateProviderFacory(),
                             client.getBaseCurrency());
-            var job = new UpdateQuotesJob(client, config.getPredicate(converter, client), EnumSet.of(target));
+            var job = new UpdatePricesJob(client, config.getPredicate(converter, client), EnumSet.of(target));
             job.suppressAuthenticationDialog(true);
 
             // add job listener to reschedule job only *after* the

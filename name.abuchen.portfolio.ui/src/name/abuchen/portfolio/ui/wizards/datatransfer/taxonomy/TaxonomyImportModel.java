@@ -16,7 +16,7 @@ import name.abuchen.portfolio.ui.Messages;
 {
     public enum ImportAction
     {
-        NEW(Messages.LabelNewTaxonomy), UPDATE(Messages.CmdUpdate), SKIP(Messages.CmdSkip);
+        NEW(Messages.CmdCreateNewTaxonomy), UPDATE(Messages.CmdUpdate), SKIP(Messages.CmdDoNotImport);
 
         private final String label;
 
@@ -152,11 +152,14 @@ import name.abuchen.portfolio.ui.Messages;
 
     /* package */ static final String PREF_PRESERVE_NAME_DESCRIPTION = TaxonomyImportDialog.class.getSimpleName()
                     + "-preserve.name.description"; //$NON-NLS-1$
+    /* package */ static final String PREF_PRUNE_ABSENT_CLASSIFICATIONS = TaxonomyImportDialog.class.getSimpleName()
+                    + "-replace.mode"; //$NON-NLS-1$
 
     private final Client client;
     private final IPreferenceStore preferences;
 
     private boolean preserveNameAndDescription;
+    private boolean pruneAbsentClassifications;
     private List<ImportItem> importItems = new ArrayList<>();
 
     public TaxonomyImportModel(Client client, IPreferenceStore preferences)
@@ -164,6 +167,7 @@ import name.abuchen.portfolio.ui.Messages;
         this.client = client;
         this.preferences = preferences;
         this.preserveNameAndDescription = preferences.getBoolean(PREF_PRESERVE_NAME_DESCRIPTION);
+        this.pruneAbsentClassifications = preferences.getBoolean(PREF_PRUNE_ABSENT_CLASSIFICATIONS);
     }
 
     public Client getClient()
@@ -180,6 +184,17 @@ import name.abuchen.portfolio.ui.Messages;
     {
         this.preserveNameAndDescription = preserveNameAndDescription;
         preferences.setValue(TaxonomyImportModel.PREF_PRESERVE_NAME_DESCRIPTION, preserveNameAndDescription);
+    }
+
+    public boolean doPruneAbsentClassifications()
+    {
+        return pruneAbsentClassifications;
+    }
+
+    public void setPruneAbsentClassifications(boolean pruneAbsentClassifications)
+    {
+        this.pruneAbsentClassifications = pruneAbsentClassifications;
+        preferences.setValue(TaxonomyImportModel.PREF_PRUNE_ABSENT_CLASSIFICATIONS, pruneAbsentClassifications);
     }
 
     public List<ImportItem> getImportItems()

@@ -25,7 +25,7 @@ import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 public class ImportFromURLDropAdapter extends AbstractDropAdapter
@@ -130,7 +130,7 @@ public class ImportFromURLDropAdapter extends AbstractDropAdapter
             {
                 part.getClient().addSecurity(newSecurity);
 
-                new UpdateQuotesJob(part.getClient(), newSecurity).schedule();
+                new UpdatePricesJob(part.getClient(), newSecurity).schedule();
             }
         }
         catch (IOException e)

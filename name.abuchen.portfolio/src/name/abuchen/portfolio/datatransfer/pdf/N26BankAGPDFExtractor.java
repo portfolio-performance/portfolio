@@ -10,9 +10,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
+public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 {
-    public N26BankAGkPDFExtractor(Client client)
+    public N26BankAGPDFExtractor(Client client)
     {
         super(client);
 
@@ -69,6 +69,7 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+
                             return null;
                         });
     }
@@ -92,39 +93,67 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 01.06.2024 bis 30.06.2024
-                        // Gebühren 0,00€
-                        // Steuer
-                        // Abgeltungssteuer -63,04€
-                        // Solidaritätszuschlag -3,46€
-                        // Gesamt -66,50€
-                        // Zinsertrag +252,16€
-                        // Gesamt +252,16€
-                        //
-                        // 01.12.2023 bis 31.12.2023
-                        // Gebühren 0,00€
-                        // Abgeltungssteuer -0,14€
-                        // Gesamt -0,14€
-                        // Zinsertrag +0,56€
-                        // Zinssatz 2.26%
-                        // Gesamt +0,56€
-                        // @formatter:on
-                        .section("date", "tax", "taxCurrency", "amount", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                        .match("^Gesamt \\-(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
-                        .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
-                        .assign((t, v) -> {
-                            var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
-                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 01.06.2024 bis 30.06.2024
+                                        // Gebühren 0,00€
+                                        // Steuer
+                                        // Abgeltungssteuer -63,04€
+                                        // Solidaritätszuschlag -3,46€
+                                        // Gesamt -66,50€
+                                        // Zinsertrag +252,16€
+                                        // Gesamt +252,16€
+                                        //
+                                        // 01.12.2023 bis 31.12.2023
+                                        // Gebühren 0,00€
+                                        // Abgeltungssteuer -0,14€
+                                        // Gesamt -0,14€
+                                        // Zinsertrag +0,56€
+                                        // Zinssatz 2.26%
+                                        // Gesamt +0,56€
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "tax", "taxCurrency", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^Gesamt (\\-)?(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
+                                                        .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
+                                                        .assign((t, v) -> {
+                                                            var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setMonetaryAmount(amount.subtract(tax));
-                        })
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setMonetaryAmount(amount.subtract(tax));
+                                                        }),
+                                        // @formatter:off
+                                        // 01.01.2025 bis 31.01.2025
+                                        // Gebühren 0,00€
+                                        // Steuer 0,00€
+                                        // Zinsertrag +8,55€
+                                        // Gesamt +8,55€
+                                        //
+                                        // 01.05.2025 bis 31.05.2025
+                                        // Gebühren 0,00€
+                                        // Steuern 0,00€
+                                        // Zinsertrag +6,60€
+                                        // Gesamt +6,60€
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "tax", "taxCurrency", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^Steuer(n)? (\\-)?(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
+                                                        .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
+                                                        .assign((t, v) -> {
+                                                            var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setMonetaryAmount(amount.subtract(tax));
+                                                        }))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
+
                             return null;
                         });
 

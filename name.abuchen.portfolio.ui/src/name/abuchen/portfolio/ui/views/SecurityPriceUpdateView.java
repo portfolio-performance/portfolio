@@ -45,9 +45,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateProgress;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateSnapshot;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdateStatus;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
@@ -414,7 +414,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
             @Override
             public String getText(Object element)
             {
-                return statuses.getHistoricStatus((Security) element).map(s -> s.getStatus().name()).orElse(""); //$NON-NLS-1$
+                return statuses.getHistoricStatus((Security) element).map(s -> s.getStatus().toString()).orElse(""); //$NON-NLS-1$
             }
 
             @Override
@@ -491,7 +491,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
             @Override
             public String getText(Object element)
             {
-                return statuses.getLatestStatus((Security) element).map(s -> s.getStatus().name()).orElse(""); //$NON-NLS-1$
+                return statuses.getLatestStatus((Security) element).map(s -> s.getStatus().toString()).orElse(""); //$NON-NLS-1$
             }
 
             @Override
@@ -613,7 +613,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
         {
             manager.add(new SimpleAction(
                             MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
-                            a -> new UpdateQuotesJob(getClient(), selection.getSecurities()).schedule()));
+                            a -> new UpdatePricesJob(getClient(), selection.getSecurities()).schedule()));
 
             manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
                             a -> Display.getDefault().asyncExec(() -> {

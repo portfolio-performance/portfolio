@@ -22,6 +22,7 @@ import com.google.gson.stream.MalformedJsonException;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Pair;
 
 public class TaxonomyJSONImporter
 {
@@ -59,16 +60,14 @@ public class TaxonomyJSONImporter
         }
     }
 
+    /**
+     * Result of the import operation.
+     */
     public static class ImportResult
     {
         private final List<ChangeEntry> changes = new ArrayList<>();
         private final Set<Object> createdObjects = new HashSet<>();
         private final Set<Object> modifiedObjects = new HashSet<>();
-
-        /**
-         * Keeps track of newly created classifications by their key.
-         */
-        private final Map<String, Classification> newKeys = new HashMap<>();
 
         public List<ChangeEntry> getChanges()
         {
@@ -118,22 +117,44 @@ public class TaxonomyJSONImporter
         }
     }
 
+    /**
+     * Tracks newly created keys and processed items.
+     */
+    private static class ImportProcessingState
+    {
+        /**
+         * Keeps track of newly created classifications by their key.
+         */
+        private final Map<String, Classification> newKeys = new HashMap<>();
+
+        private final Set<Classification> processedCategories = new HashSet<>();
+        private final Set<InvestmentVehicle> processedInstruments = new HashSet<>();
+
+        /**
+         * Keeps track of processed categories in the order they were processed.
+         */
+        private final List<Classification> processedCategoriesInOrder = new ArrayList<>();
+    }
+
     private final Client client;
     private final Taxonomy taxonomy;
     private final boolean preserveNameAndDescription;
+    private final boolean pruneAbsentClassifications;
 
     private final Map<String, Classification> key2classification;
 
     public TaxonomyJSONImporter(Client client, Taxonomy taxonomy)
     {
-        this(client, taxonomy, false);
+        this(client, taxonomy, false, false);
     }
 
-    public TaxonomyJSONImporter(Client client, Taxonomy taxonomy, boolean preserveNameAndDescription)
+    public TaxonomyJSONImporter(Client client, Taxonomy taxonomy, boolean preserveNameAndDescription,
+                    boolean pruneAbsentClassifications)
     {
         this.client = client;
         this.taxonomy = taxonomy;
         this.preserveNameAndDescription = preserveNameAndDescription;
+        this.pruneAbsentClassifications = pruneAbsentClassifications;
 
         var keys = new HashMap<String, Classification>();
         this.taxonomy.foreach(new Taxonomy.Visitor()
@@ -178,6 +199,7 @@ public class TaxonomyJSONImporter
 
         try
         {
+            var state = new ImportProcessingState();
             var result = new ImportResult();
 
             var name = (String) jsonData.get("name"); //$NON-NLS-1$
@@ -191,12 +213,18 @@ public class TaxonomyJSONImporter
 
             if (categories != null)
             {
-                importCategories(categories, taxonomy.getRoot(), result);
+                importCategories(categories, taxonomy.getRoot(), state, result);
             }
 
             if (instruments != null)
             {
-                importInstruments(instruments, result);
+                importInstruments(instruments, state, result);
+            }
+
+            if (pruneAbsentClassifications)
+            {
+                removeUnprocessedCategories(taxonomy.getRoot(), state, result);
+                removeUnprocessedAssignments(state, result);
             }
 
             return result;
@@ -215,7 +243,8 @@ public class TaxonomyJSONImporter
     }
 
     @SuppressWarnings("unchecked")
-    private void importCategories(List<Map<String, Object>> categories, Classification parent, ImportResult result)
+    private void importCategories(List<Map<String, Object>> categories, Classification parent,
+                    ImportProcessingState state, ImportResult result)
     {
         for (var category : categories)
         {
@@ -228,7 +257,7 @@ public class TaxonomyJSONImporter
             var color = (String) category.get("color"); //$NON-NLS-1$
 
             // first use the key to find the category
-            var classification = findClassificationByKey(result, key);
+            var classification = findClassificationByKey(state, key);
             if (classification != null)
             {
                 if (!Objects.equals(parent, classification.getParent()))
@@ -294,7 +323,7 @@ public class TaxonomyJSONImporter
 
                     // track new classification key (cannot exist; otherwise
                     // findClassificationByKey would have found it)
-                    result.newKeys.put(newClassification.getKey(), newClassification);
+                    state.newKeys.put(newClassification.getKey(), newClassification);
                 }
 
                 if (description != null && !description.trim().isEmpty())
@@ -311,17 +340,21 @@ public class TaxonomyJSONImporter
                 classification = newClassification;
             }
 
+            state.processedCategories.add(classification);
+            state.processedCategoriesInOrder.add(classification);
+
             // process children
             var children = (List<Map<String, Object>>) category.get("children"); //$NON-NLS-1$
             if (children != null)
             {
-                importCategories(children, classification, result);
+                importCategories(children, classification, state, result);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void importInstruments(List<Map<String, Object>> instruments, ImportResult result) throws IOException
+    private void importInstruments(List<Map<String, Object>> instruments, ImportProcessingState state,
+                    ImportResult result) throws IOException
     {
         var processedVehicles = new HashSet<InvestmentVehicle>();
 
@@ -356,7 +389,9 @@ public class TaxonomyJSONImporter
                     var hasNotBeenMatchedBefore = processedVehicles.add(vehicle);
                     if (hasNotBeenMatchedBefore)
                     {
-                        importInstrument(instrument, vehicle, result);
+                        state.processedInstruments.add(vehicle);
+
+                        importInstrument(instrument, vehicle, state, result);
                     }
                     else
                     {
@@ -378,7 +413,7 @@ public class TaxonomyJSONImporter
 
     @SuppressWarnings("unchecked")
     private void importInstrument(Map<String, Object> instrument, InvestmentVehicle investmentVehicle,
-                    ImportResult result)
+                    ImportProcessingState state, ImportResult result)
     {
         // find all existing assignments to track assignments to be removed
         var existingAssignments = new HashMap<Classification, Classification.Assignment>();
@@ -411,7 +446,7 @@ public class TaxonomyJSONImporter
 
             if (key != null && !key.isEmpty())
             {
-                classification = findClassificationByKey(result, key);
+                classification = findClassificationByKey(state, key);
             }
 
             if (classification == null && path != null && !path.isEmpty())
@@ -499,6 +534,87 @@ public class TaxonomyJSONImporter
     }
 
     /**
+     * Remove categories not processed and reorder to match JSON
+     */
+    private void removeUnprocessedCategories(Classification parent, ImportProcessingState state, ImportResult result)
+    {
+        // First, recursively process all children
+        for (var child : new ArrayList<>(parent.getChildren()))
+        {
+            removeUnprocessedCategories(child, state, result);
+        }
+
+        // Remove unprocessed children
+        var childrenToRemove = new ArrayList<Classification>();
+        for (var child : parent.getChildren())
+        {
+            if (!state.processedCategories.contains(child))
+            {
+                childrenToRemove.add(child);
+            }
+        }
+
+        for (var child : childrenToRemove)
+        {
+            parent.getChildren().remove(child);
+            result.addChange(new ChangeEntry(Classification.class, Operation.DELETE,
+                            MessageFormat.format("Remove category ''{0}'' not present in JSON", child.getName())));
+        }
+
+        // retrieve the children in the order they were processed
+        var childrenOfThisParent = new ArrayList<Classification>();
+        for (var processedCategory : state.processedCategoriesInOrder)
+        {
+            if (processedCategory.getParent() == parent)
+            {
+                childrenOfThisParent.add(processedCategory);
+            }
+        }
+
+        // rebuild children list in JSON order
+        parent.getChildren().clear();
+        for (int ii = 0; ii < childrenOfThisParent.size(); ii++)
+        {
+            var child = childrenOfThisParent.get(ii);
+            child.setParent(parent);
+            child.setRank(ii);
+            parent.addChild(child);
+        }
+    }
+
+    /**
+     * Remove assignments for instruments not processed
+     */
+    private void removeUnprocessedAssignments(ImportProcessingState state, ImportResult result)
+    {
+        var allAssignmentsToRemove = new ArrayList<Pair<Classification, Classification.Assignment>>();
+        this.taxonomy.foreach(new Taxonomy.Visitor()
+        {
+            @Override
+            public void visit(Classification classification, Classification.Assignment assignment)
+            {
+                if (!state.processedInstruments.contains(assignment.getInvestmentVehicle()))
+                {
+                    allAssignmentsToRemove.add(new Pair<>(classification, assignment));
+                }
+            }
+        });
+
+        for (var pair : allAssignmentsToRemove)
+        {
+            var classification = pair.getLeft();
+            var assignment = pair.getRight();
+
+            result.addChange(new ChangeEntry(Assignment.class, Operation.DELETE,
+                            MessageFormat.format("Deleted assignment with weight {0} for {1} in {2} (not in JSON)",
+                                            Values.WeightPercent.format(assignment.getWeight()),
+                                            assignment.getInvestmentVehicle().getName(),
+                                            getPathString(classification))));
+            classification.removeAssignment(assignment);
+        }
+    }
+
+    /**
      * Finds the classification by the given name in the parent.
      */
     private Classification findClassificationByName(Classification parent, String name)
@@ -516,7 +632,7 @@ public class TaxonomyJSONImporter
      * Finds the classification by the given key - including newly created
      * classifications.
      */
-    private Classification findClassificationByKey(ImportResult result, String key)
+    private Classification findClassificationByKey(ImportProcessingState state, String key)
     {
         if (key == null || key.isEmpty())
             return null;
@@ -525,7 +641,7 @@ public class TaxonomyJSONImporter
         if (classification != null)
             return classification;
 
-        return result.newKeys.get(key);
+        return state.newKeys.get(key);
     }
 
     /**

@@ -159,7 +159,7 @@ public class MultiTaxonomyImportWizard extends Wizard
                 }
 
                 var importer = new TaxonomyJSONImporter(importModel.getClient(), targetTaxonomy,
-                                importModel.isPreserveNameAndDescription());
+                                importModel.isPreserveNameAndDescription(), importModel.doPruneAbsentClassifications());
 
                 var result = importer.importTaxonomy(item.getJsonData());
 

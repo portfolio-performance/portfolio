@@ -36,7 +36,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob.Target;
 import name.abuchen.portfolio.ui.jobs.priceupdate.Task.HistoricalTask;
 import name.abuchen.portfolio.ui.jobs.priceupdate.Task.LatestTask;
 
@@ -46,6 +45,11 @@ import name.abuchen.portfolio.ui.jobs.priceupdate.Task.LatestTask;
  */
 public class UpdatePricesJob extends AbstractClientJob
 {
+    public enum Target
+    {
+        LATEST, HISTORIC
+    }
+
     private static final int UI_PROGRESS_UPDATE_INTERVAL = 300;
 
     private final Set<Target> target;
@@ -109,12 +113,12 @@ public class UpdatePricesJob extends AbstractClientJob
             // check if any of the jobs need an authenticated user
 
             var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
-            var feedNeedsUser = feed.requiresAuthentication(securities);
+            var requireAuthentication = feed.requireAuthentication(securities);
 
-            if (feedNeedsUser && !suppressAuthenticationDialog)
+            if (!requireAuthentication.isEmpty() && !suppressAuthenticationDialog)
             {
-                Display.getDefault().asyncExec(
-                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+                Display.getDefault().asyncExec(() -> AuthenticationRequiredDialog
+                                .open(Display.getDefault().getActiveShell(), getClient(), requireAuthentication));
             }
         }
 
