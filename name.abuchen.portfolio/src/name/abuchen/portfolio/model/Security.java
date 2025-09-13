@@ -31,6 +31,8 @@ import name.abuchen.portfolio.util.TextUtil;
  */
 public final class Security implements Attributable, InvestmentVehicle
 {
+    private static final Pattern OPTION_PATTERN = Pattern.compile("^([A-Z]+\\d*)(\\d{6})([CP])(\\d{8})$"); //$NON-NLS-1$
+
     public static final class ByName implements Comparator<Security>, Serializable
     {
         private static final long serialVersionUID = 1L;
@@ -316,6 +318,20 @@ public final class Security implements Attributable, InvestmentVehicle
     public boolean isExchangeRate()
     {
         return this.targetCurrencyCode != null;
+    }
+
+    /**
+     * Is this an option symbol?
+     *
+     * @return true for options, else false
+     */
+    public boolean isOption()
+    {
+        if (this.tickerSymbol != null)
+        {
+            return OPTION_PATTERN.matcher(this.tickerSymbol).matches();
+        }
+        return false;
     }
 
     /**
