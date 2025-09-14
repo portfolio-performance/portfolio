@@ -10,7 +10,7 @@ import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 
@@ -54,7 +54,7 @@ public class ImportController
             // updated prices for newly created securities (for example
             // crypto currencies already have a working configuration)
 
-            new UpdateQuotesJob(client, newSecurities).schedule();
+            new UpdatePricesJob(client, newSecurities).schedule();
 
             // run async to allow the other dialog to close
 

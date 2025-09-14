@@ -21,7 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.protobuf.Any;
+
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
@@ -130,6 +133,7 @@ import name.abuchen.portfolio.money.Money;
         loadDashboards(newClient, client);
         loadWatchlists(newClient, client, lookup);
         loadInvestmentPlans(newClient, client, lookup);
+        loadExtensions(newClient, client);
 
         client.getSaveFlags().add(SaveFlag.BINARY);
 
@@ -341,7 +345,14 @@ import name.abuchen.portfolio.money.Money;
                     portfolioTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     accountTx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    buysell.insert();
+                    try
+                    {
+                        buysell.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 
@@ -425,7 +436,22 @@ import name.abuchen.portfolio.money.Money;
                     sourceATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getUpdatedAt()));
                     targetATx.setUpdatedAt(fromUpdatedAtTimestamp(newTransaction.getOtherUpdatedAt()));
 
-                    cashTransfer.insert();
+                    try
+                    {
+                        cashTransfer.insert();
+                    }
+                    catch (IllegalArgumentException ignore)
+                    {
+                        // background: due to a bug in previous versions, there
+                        // might be cash transfer transactions which have been
+                        // partially added, e.g. only to the source account.
+                        // Because in protobuf we reconstruct the transactions
+                        // from the source account, we might attempt to add the
+                        // dangling transaction to the target account. This
+                        // should not fail the loading of the entire file.
+
+                        PortfolioLog.error(ignore);
+                    }
 
                     break;
 
@@ -797,6 +823,26 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
+    private void loadExtensions(PClient newClient, Client client)
+    {
+        // Load extension data from the Any fields
+        // This preserves third-party extension data during load
+        List<Any> extensions = new ArrayList<>();
+        for (Any extension : newClient.getExtensionsList())
+        {
+            // Store extension data for preservation during save
+            String typeUrl = extension.getTypeUrl();
+            PortfolioLog.info("Loaded extension: " + typeUrl); //$NON-NLS-1$
+
+            // Add extension to the list for storage in Client object
+            extensions.add(extension);
+        }
+
+        // Store all extensions in the Client object for preservation during
+        // save
+        client.setExtensions(extensions);
+    }
+
     @Override
     public void save(Client client, OutputStream output) throws IOException
     {
@@ -816,6 +862,7 @@ import name.abuchen.portfolio.money.Money;
         saveDashboards(client, newClient);
         saveWatchlists(client, newClient);
         saveInvestmentPlans(client, newClient);
+        saveExtensions(client, newClient);
 
         // write signature
         output.write(SIGNATURE);
@@ -1354,5 +1401,19 @@ import name.abuchen.portfolio.money.Money;
 
             newClient.addPlans(newPlan);
         });
+    }
+
+    private void saveExtensions(Client client, PClient.Builder newClient)
+    {
+        // Save extension data to the Any fields
+        // This preserves third-party extension data during save
+        for (Any extension : client.getExtensions())
+        {
+            // Add each extension to the protobuf builder
+            newClient.addExtensions(extension);
+
+            String typeUrl = extension.getTypeUrl();
+            PortfolioLog.info("Saved extension: " + typeUrl); //$NON-NLS-1$
+        }
     }
 }

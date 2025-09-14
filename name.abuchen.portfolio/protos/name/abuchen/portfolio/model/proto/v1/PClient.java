@@ -25,6 +25,7 @@ private static final long serialVersionUID = 0L;
     taxonomies_ = java.util.Collections.emptyList();
     dashboards_ = java.util.Collections.emptyList();
     baseCurrency_ = "";
+    extensions_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -542,6 +543,67 @@ java.lang.String defaultValue) {
     }
   }
 
+  public static final int EXTENSIONS_FIELD_NUMBER = 99;
+  @SuppressWarnings("serial")
+  private java.util.List<com.google.protobuf.Any> extensions_;
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.google.protobuf.Any> getExtensionsList() {
+    return extensions_;
+  }
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+      getExtensionsOrBuilderList() {
+    return extensions_;
+  }
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  @java.lang.Override
+  public int getExtensionsCount() {
+    return extensions_.size();
+  }
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.Any getExtensions(int index) {
+    return extensions_.get(index);
+  }
+  /**
+   * <pre>
+   * Extension data using Any type for maximum flexibility
+   * </pre>
+   *
+   * <code>repeated .google.protobuf.Any extensions = 99;</code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.AnyOrBuilder getExtensionsOrBuilder(
+      int index) {
+    return extensions_.get(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -594,6 +656,9 @@ java.lang.String defaultValue) {
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, baseCurrency_);
+    }
+    for (int i = 0; i < extensions_.size(); i++) {
+      output.writeMessage(99, extensions_.get(i));
     }
     getUnknownFields().writeTo(output);
   }
@@ -657,6 +722,10 @@ java.lang.String defaultValue) {
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(baseCurrency_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, baseCurrency_);
     }
+    for (int i = 0; i < extensions_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(99, extensions_.get(i));
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -699,6 +768,8 @@ java.lang.String defaultValue) {
     }
     if (!getBaseCurrency()
         .equals(other.getBaseCurrency())) return false;
+    if (!getExtensionsList()
+        .equals(other.getExtensionsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -754,6 +825,10 @@ java.lang.String defaultValue) {
     }
     hash = (37 * hash) + BASECURRENCY_FIELD_NUMBER;
     hash = (53 * hash) + getBaseCurrency().hashCode();
+    if (getExtensionsCount() > 0) {
+      hash = (37 * hash) + EXTENSIONS_FIELD_NUMBER;
+      hash = (53 * hash) + getExtensionsList().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -969,6 +1044,13 @@ java.lang.String defaultValue) {
         settingsBuilder_ = null;
       }
       baseCurrency_ = "";
+      if (extensionsBuilder_ == null) {
+        extensions_ = java.util.Collections.emptyList();
+      } else {
+        extensions_ = null;
+        extensionsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00001000);
       return this;
     }
 
@@ -1073,6 +1155,15 @@ java.lang.String defaultValue) {
         result.dashboards_ = dashboards_;
       } else {
         result.dashboards_ = dashboardsBuilder_.build();
+      }
+      if (extensionsBuilder_ == null) {
+        if (((bitField0_ & 0x00001000) != 0)) {
+          extensions_ = java.util.Collections.unmodifiableList(extensions_);
+          bitField0_ = (bitField0_ & ~0x00001000);
+        }
+        result.extensions_ = extensions_;
+      } else {
+        result.extensions_ = extensionsBuilder_.build();
       }
     }
 
@@ -1329,6 +1420,32 @@ java.lang.String defaultValue) {
         bitField0_ |= 0x00000800;
         onChanged();
       }
+      if (extensionsBuilder_ == null) {
+        if (!other.extensions_.isEmpty()) {
+          if (extensions_.isEmpty()) {
+            extensions_ = other.extensions_;
+            bitField0_ = (bitField0_ & ~0x00001000);
+          } else {
+            ensureExtensionsIsMutable();
+            extensions_.addAll(other.extensions_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.extensions_.isEmpty()) {
+          if (extensionsBuilder_.isEmpty()) {
+            extensionsBuilder_.dispose();
+            extensionsBuilder_ = null;
+            extensions_ = other.extensions_;
+            bitField0_ = (bitField0_ & ~0x00001000);
+            extensionsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getExtensionsFieldBuilder() : null;
+          } else {
+            extensionsBuilder_.addAllMessages(other.extensions_);
+          }
+        }
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -1485,6 +1602,19 @@ java.lang.String defaultValue) {
               bitField0_ |= 0x00000800;
               break;
             } // case 98
+            case 794: {
+              com.google.protobuf.Any m =
+                  input.readMessage(
+                      com.google.protobuf.Any.parser(),
+                      extensionRegistry);
+              if (extensionsBuilder_ == null) {
+                ensureExtensionsIsMutable();
+                extensions_.add(m);
+              } else {
+                extensionsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 794
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -3770,6 +3900,318 @@ java.lang.String defaultValue) {
       bitField0_ |= 0x00000800;
       onChanged();
       return this;
+    }
+
+    private java.util.List<com.google.protobuf.Any> extensions_ =
+      java.util.Collections.emptyList();
+    private void ensureExtensionsIsMutable() {
+      if (!((bitField0_ & 0x00001000) != 0)) {
+        extensions_ = new java.util.ArrayList<com.google.protobuf.Any>(extensions_);
+        bitField0_ |= 0x00001000;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> extensionsBuilder_;
+
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public java.util.List<com.google.protobuf.Any> getExtensionsList() {
+      if (extensionsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(extensions_);
+      } else {
+        return extensionsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public int getExtensionsCount() {
+      if (extensionsBuilder_ == null) {
+        return extensions_.size();
+      } else {
+        return extensionsBuilder_.getCount();
+      }
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public com.google.protobuf.Any getExtensions(int index) {
+      if (extensionsBuilder_ == null) {
+        return extensions_.get(index);
+      } else {
+        return extensionsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder setExtensions(
+        int index, com.google.protobuf.Any value) {
+      if (extensionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureExtensionsIsMutable();
+        extensions_.set(index, value);
+        onChanged();
+      } else {
+        extensionsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder setExtensions(
+        int index, com.google.protobuf.Any.Builder builderForValue) {
+      if (extensionsBuilder_ == null) {
+        ensureExtensionsIsMutable();
+        extensions_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        extensionsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder addExtensions(com.google.protobuf.Any value) {
+      if (extensionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureExtensionsIsMutable();
+        extensions_.add(value);
+        onChanged();
+      } else {
+        extensionsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder addExtensions(
+        int index, com.google.protobuf.Any value) {
+      if (extensionsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureExtensionsIsMutable();
+        extensions_.add(index, value);
+        onChanged();
+      } else {
+        extensionsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder addExtensions(
+        com.google.protobuf.Any.Builder builderForValue) {
+      if (extensionsBuilder_ == null) {
+        ensureExtensionsIsMutable();
+        extensions_.add(builderForValue.build());
+        onChanged();
+      } else {
+        extensionsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder addExtensions(
+        int index, com.google.protobuf.Any.Builder builderForValue) {
+      if (extensionsBuilder_ == null) {
+        ensureExtensionsIsMutable();
+        extensions_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        extensionsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder addAllExtensions(
+        java.lang.Iterable<? extends com.google.protobuf.Any> values) {
+      if (extensionsBuilder_ == null) {
+        ensureExtensionsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, extensions_);
+        onChanged();
+      } else {
+        extensionsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder clearExtensions() {
+      if (extensionsBuilder_ == null) {
+        extensions_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00001000);
+        onChanged();
+      } else {
+        extensionsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public Builder removeExtensions(int index) {
+      if (extensionsBuilder_ == null) {
+        ensureExtensionsIsMutable();
+        extensions_.remove(index);
+        onChanged();
+      } else {
+        extensionsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public com.google.protobuf.Any.Builder getExtensionsBuilder(
+        int index) {
+      return getExtensionsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public com.google.protobuf.AnyOrBuilder getExtensionsOrBuilder(
+        int index) {
+      if (extensionsBuilder_ == null) {
+        return extensions_.get(index);  } else {
+        return extensionsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+         getExtensionsOrBuilderList() {
+      if (extensionsBuilder_ != null) {
+        return extensionsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(extensions_);
+      }
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public com.google.protobuf.Any.Builder addExtensionsBuilder() {
+      return getExtensionsFieldBuilder().addBuilder(
+          com.google.protobuf.Any.getDefaultInstance());
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public com.google.protobuf.Any.Builder addExtensionsBuilder(
+        int index) {
+      return getExtensionsFieldBuilder().addBuilder(
+          index, com.google.protobuf.Any.getDefaultInstance());
+    }
+    /**
+     * <pre>
+     * Extension data using Any type for maximum flexibility
+     * </pre>
+     *
+     * <code>repeated .google.protobuf.Any extensions = 99;</code>
+     */
+    public java.util.List<com.google.protobuf.Any.Builder> 
+         getExtensionsBuilderList() {
+      return getExtensionsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+        getExtensionsFieldBuilder() {
+      if (extensionsBuilder_ == null) {
+        extensionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                extensions_,
+                ((bitField0_ & 0x00001000) != 0),
+                getParentForChildren(),
+                isClean());
+        extensions_ = null;
+      }
+      return extensionsBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

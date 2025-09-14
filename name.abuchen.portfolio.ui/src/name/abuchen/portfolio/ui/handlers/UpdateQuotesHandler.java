@@ -20,7 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 
 public class UpdateQuotesHandler
@@ -64,13 +64,13 @@ public class UpdateQuotesHandler
             if (FilterType.SECURITY.name().equalsIgnoreCase(filter))
             {
                 selectionService.getSelection(client).ifPresent(s -> {
-                    new UpdateQuotesJob(client, s.getSecurities()).schedule();
+                    new UpdatePricesJob(client, s.getSecurities()).schedule();
                     new UpdateDividendsJob(client, s.getSecurities()).schedule(5000);
                 });
             }
             else if (FilterType.ACTIVE.name().equalsIgnoreCase(filter))
             {
-                new UpdateQuotesJob(client, s -> !s.isRetired(), EnumSet.allOf(UpdateQuotesJob.Target.class))
+                new UpdatePricesJob(client, s -> !s.isRetired(), EnumSet.allOf(UpdatePricesJob.Target.class))
                                 .schedule();
                 new UpdateDividendsJob(client, s -> !s.isRetired()).schedule(5000);
             }
@@ -80,7 +80,7 @@ public class UpdateQuotesHandler
                                 .filter(w -> w.getName().equals(watchlist)) //
                                 .findFirst().ifPresent(w -> {
                                     var securities = w.getSecurities();
-                                    new UpdateQuotesJob(client, securities).schedule();
+                                    new UpdatePricesJob(client, securities).schedule();
                                     new UpdateDividendsJob(client, securities).schedule(5000);
                                 });
             }
@@ -92,12 +92,12 @@ public class UpdateQuotesHandler
                 var securities = snapshot.getJointPortfolio().getPositions().stream().map(p -> p.getSecurity())
                                 .toList();
 
-                new UpdateQuotesJob(client, securities).schedule();
+                new UpdatePricesJob(client, securities).schedule();
                 new UpdateDividendsJob(client, securities).schedule(5000);
             }
             else
             {
-                new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
+                new UpdatePricesJob(client, EnumSet.allOf(UpdatePricesJob.Target.class)).schedule();
                 new SyncOnlineSecuritiesJob(client).schedule(2000);
                 new UpdateDividendsJob(client).schedule(5000);
             }

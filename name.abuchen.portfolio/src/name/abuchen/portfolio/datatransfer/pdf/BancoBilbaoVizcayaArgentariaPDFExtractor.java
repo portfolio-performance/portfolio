@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtractor
@@ -23,10 +24,12 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
         addBankIdentifier("BANCO BILBAO VIZCAYA ARGENTARIA");
         addBankIdentifier("CARTA DE AVISO POR OPERACIONES");
         addBankIdentifier("CARTA DE ABONO POR OPERACIONES");
+        addBankIdentifier("CARTA DE CARGO POR OPERACIONES");
 
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
         addDividendeTransaction();
+        addFeesTransaction();
     }
 
     @Override
@@ -37,7 +40,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addBuySellTransaction_Format01()
     {
-        var type = new DocumentType("(VENTA|COMPRA) DE VALORES");
+        final var type = new DocumentType("(VENTA|COMPRA) DE VALORES");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -138,12 +141,13 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addBuySellTransaction_Format02()
     {
-        var type = new DocumentType("OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO");
+        final var type = new DocumentType("OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
+        var firstRelevantLine = new Block(
+                        "^CARTA DE AVISO POR OPERACIONES DE FONDOS (SUSCRIPCI.N|REEMBOLSO) EN EFECTIVO$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -167,7 +171,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .match("^CODIGO CUENTA VALOR: NOMBRE DEL FONDO (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) NUMERO PARTICIPACIONES CAMBIO DIVISA$") //
-                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9\\s.]+) [\\.,\\d]+ (?<currency>[A-Z]{3})\\/[A-Z]{3}$") //
+                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9 \\.,-]+) [\\.,\\d]+ (?<currency>[A-Z]{3})\\/[A-Z]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -209,7 +213,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("ABONO DE DIVIDENDOS");
+        final var type = new DocumentType("ABONO DE DIVIDENDOS");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -231,7 +235,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
                         // @formatter:on
                         .section("isin", "name", "currency") //
                         .match("^CODIGO CUENTA VALOR VALOR \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9\\s.]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\.,\\d]+ [A-Z]{3}/[A-Z]{3}$") //
+                        .match("^[\\d]+ [\\d]+ [\\d]+ [\\d]+ (?<name>[\\p{L}0-9 \\.,-]+) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\.,\\d]+ [A-Z]{3}/[A-Z]{3}$") //
                         .match("^IMPORTE EFECTIVO (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -282,6 +286,101 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractor extends AbstractPDFExtract
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addFeesTransaction()
+    {
+        final var type = new DocumentType("CARTA DE CARGO POR OPERACIONES", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // COD. CUENTA VALOR: 0242 4432 50 5946110096 PERÍODO LIQUIDACIÓN: 01/01/25 - 30/06/25 N° FACTURA: 886h42648329
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^(?i)COD\\. CUENTA VALOR.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}).*$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date")))
+
+                                        // @formatter:off
+                                        // I. V. A. 21,00 % S/comisión bancaria 23,28
+                                        // @formatter:on
+                                        .section("percentageTaxes") //
+                                        .match("^(?i)I\\. V\\. A\\. (?<percentageTaxes>[\\.,\\d]+) % S\\/comisi.n bancaria.*$") //
+                                        .assign((ctx, v) -> ctx.put("percentageTaxes", v.get("percentageTaxes")))
+
+                                        // @formatter:off
+                                        // DESCRIPCIÓN DEL VALOR T/N /NOMINAL NOMINAL/EFECTIVO DIVISA DIVISA(*) NOMINAL/EFECTIVO APLICADO EN EUROS
+                                        // @formatter:on
+                                        .section("baseCurrency") //
+                                        .match("^.*APLICADO EN (?<baseCurrency>.*)$") //
+                                        .assign((ctx, v) -> ctx.put("baseCurrency", asCurrencyCode(v.get("baseCurrency")))));
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^.*[T|N] [\\.,\\d]+ [A-Z]{3}.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        // @formatter:on
+                        .section("name", "currency") //
+                        .documentContext("date") //
+                        .match("^(?<name>.*) [T|N] [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setShares(0L);
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // DESCRIPCIÓN DEL VALOR T/N /NOMINAL NOMINAL/EFECTIVO DIVISA DIVISA(*) NOMINAL/EFECTIVO APLICADO EN EUROS
+                        // ACC.AMAZON -USD- T 967,26 USD 1,1678 828,28 Mínimo 20,88
+                        //
+                        // [USD] -> Origin currency
+                        // [1,1678] -> Exchange Rate
+                        // [20,88] -> Gross Fee
+                        // @formatter:on
+                        .section("exchangeRate", "termCurrency", "grossFee") //
+                        .documentContext("percentageTaxes", "baseCurrency") //
+                        .match("^.*[T|N] [\\.,\\d]+.*(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).* M.nimo (?<grossFee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var grossFeeBeforeTaxes = Money.of(v.get("baseCurrency"), asAmount(v.get("grossFee")));
+
+                            var percentageTaxes = asBigDecimal(v.get("percentageTaxes"));
+                            var grossFee = asBigDecimal(v.get("grossFee"));
+
+                            // @formatter:off
+                            // taxAmount = gross * (percentageTaxes / 100)
+                            // @formatter:on
+                            var tax = grossFee.multiply(percentageTaxes, Values.MC);
+                            var taxes = Money.of(v.get("baseCurrency"), tax.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                            // @formatter:off
+                            // Bank fees and the taxes on them make up the total amount charged.
+                            // amount = grossFeeBeforeTaxes + taxes
+                            // @formatter:on
+                            var amount = grossFeeBeforeTaxes.add(taxes);
+                            var fxAmount = rate.convert(rate.getTermCurrency(), amount);
+
+                            t.setMonetaryAmount(amount);
+
+                            checkAndSetGrossUnit(amount, fxAmount, t, type.getCurrentContext());
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -49,6 +50,7 @@ public class TaxonomyImportDialog extends TitleAreaDialog
 
     private Text filePathText;
     private Button preserveNameDescriptionCheckbox;
+    private Button pruneAbsentClassificationsCheckbox;
 
     private TaxonomyTabFolder taxonomyTabFolder;
     private ImportResult importResult;
@@ -131,9 +133,12 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         browseButton.setText(Messages.LabelPickFile);
         browseButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> selectFile()));
 
-        preserveNameDescriptionCheckbox = new Button(fileSection, SWT.CHECK);
+        var optionsComposite = new Composite(fileSection, SWT.NONE);
+        optionsComposite.setLayout(new RowLayout());
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(optionsComposite);
+
+        preserveNameDescriptionCheckbox = new Button(optionsComposite, SWT.CHECK);
         preserveNameDescriptionCheckbox.setText(Messages.LabelOptionPreserveNamesAndDescriptions);
-        GridDataFactory.fillDefaults().span(3, 1).applyTo(preserveNameDescriptionCheckbox);
 
         preserveNameDescriptionCheckbox
                         .setSelection(preferences.getBoolean(TaxonomyImportModel.PREF_PRESERVE_NAME_DESCRIPTION));
@@ -141,6 +146,19 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         preserveNameDescriptionCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             preferences.setValue(TaxonomyImportModel.PREF_PRESERVE_NAME_DESCRIPTION,
                             preserveNameDescriptionCheckbox.getSelection());
+            if (selectedFilePath != null)
+                performDryRun();
+        }));
+
+        pruneAbsentClassificationsCheckbox = new Button(optionsComposite, SWT.CHECK);
+        pruneAbsentClassificationsCheckbox.setText(Messages.LabelOptionPruneAbsentClassifications);
+
+        pruneAbsentClassificationsCheckbox
+                        .setSelection(preferences.getBoolean(TaxonomyImportModel.PREF_PRUNE_ABSENT_CLASSIFICATIONS));
+
+        pruneAbsentClassificationsCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            preferences.setValue(TaxonomyImportModel.PREF_PRUNE_ABSENT_CLASSIFICATIONS,
+                            pruneAbsentClassificationsCheckbox.getSelection());
             if (selectedFilePath != null)
                 performDryRun();
         }));
@@ -171,7 +189,9 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         {
             var copy = taxonomy.copy();
             boolean preserveNameDescription = preserveNameDescriptionCheckbox.getSelection();
-            TaxonomyJSONImporter importer = new TaxonomyJSONImporter(client, copy, preserveNameDescription);
+            boolean replaceMode = pruneAbsentClassificationsCheckbox.getSelection();
+            TaxonomyJSONImporter importer = new TaxonomyJSONImporter(client, copy, preserveNameDescription,
+                            replaceMode);
             importResult = importer.importTaxonomy(new InputStreamReader(fis, StandardCharsets.UTF_8));
 
             var hasChanges = importResult.hasChanges();
@@ -228,11 +248,12 @@ public class TaxonomyImportDialog extends TitleAreaDialog
         }
 
         var preserveNameDescription = preserveNameDescriptionCheckbox.getSelection();
+        var replaceMode = pruneAbsentClassificationsCheckbox.getSelection();
 
         // Perform the actual import
         try (FileInputStream fis = new FileInputStream(selectedFilePath))
         {
-            var importer = new TaxonomyJSONImporter(client, taxonomy, preserveNameDescription);
+            var importer = new TaxonomyJSONImporter(client, taxonomy, preserveNameDescription, replaceMode);
             var result = importer.importTaxonomy(new InputStreamReader(fis, StandardCharsets.UTF_8));
 
             var hasChanges = result.hasChanges();

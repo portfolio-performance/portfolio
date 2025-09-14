@@ -85,11 +85,12 @@ public class Messages extends NLS
     public static String ClientEditorLabelReports;
     public static String ClientEditorLabelReturnsVolatility;
     public static String ClientEditorPerformanceCalculation;
+    public static String CmdCreateNewTaxonomy;
+    public static String CmdDoNotImport;
     public static String CmdLogin;
     public static String CmdLogout;
     public static String CmdMigratePortfolioReport;
     public static String CmdNotNow;
-    public static String CmdSkip;
     public static String CmdUpdate;
     public static String CmdUpdateSubscriptionStatus;
     public static String ColumnAbsolutePerformance;
@@ -798,6 +799,7 @@ public class Messages extends NLS
     public static String LabelOnlyLinkToPortfolioReport;
     public static String LabelOpenTrade;
     public static String LabelOptionPreserveNamesAndDescriptions;
+    public static String LabelOptionPruneAbsentClassifications;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
@@ -1389,6 +1391,11 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String StatusLoading;
+    public static String StatusNoChange;
+    public static String StatusSkipped;
+    public static String StatusUpdated;
+    public static String StatusWaiting;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuNewAndNoteworthy;

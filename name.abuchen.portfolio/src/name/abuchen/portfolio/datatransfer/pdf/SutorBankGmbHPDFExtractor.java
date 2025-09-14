@@ -52,19 +52,19 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)", "ABRECHNUNG KRYPTOHANDEL");
+        var type = new DocumentType("((Transaktionsart:|Wertpapier Abrechnung) (Kauf|Verkauf)|F.lligkeit\\/Verfall)", "ABRECHNUNG KRYPTOHANDEL");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(F.lligkeit\\/Verfall|Wertpapier Abrechnung|WERTPAPIERABRECHNUNG).*$", "^Ausmachender Betrag.*$");
+        var firstRelevantLine = new Block("^(F.lligkeit\\/Verfall|Wertpapier Abrechnung|WERTPAPIERABRECHNUNG).*$", "^Ausmachender Betrag.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -87,7 +87,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^Produktbezeichnung \\- (?<name>.*)$") //
                                                         .match("^Internationale Wertpapierkennnummer \\(ISIN\\): (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^W.hrung: (?<currency>[\\w]{3})$") //
+                                                        .match("^W.hrung: (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (v.get("name").endsWith(":"))
                                                                 v.put("name", v.get("name").substring(0, v.get("name").length() - 1));
@@ -103,7 +103,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Handels-/Ausf.hrungsplatz"))
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
@@ -119,7 +119,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^Produktbezeichnung \\- (?<name>.*)$") //
                                                         .match("^Internationale Wertpapierkennnummer (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^R.ckzahlungskurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^R.ckzahlungskurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             if (v.get("name").endsWith(":"))
                                                                 v.put("name", v.get("name").substring(0, v.get("name").length() - 1));
@@ -163,7 +163,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.([\\s]+)?[\\d]{2}\\.([\\s]+)?[\\d]{4}).*$") //
+                                                        .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>[\\d]{2}\\.[\\s]*[\\d]{2}\\.[\\s]*[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
                                                                 t.setDate(asDate(stripBlanks(v.get("date")), type.getCurrentContext().get("time")));
@@ -194,7 +194,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$") //
+                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -204,7 +204,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -233,19 +233,19 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        DocumentType type = new DocumentType("ABRECHNUNG KRYPTOHANDEL");
+        var type = new DocumentType("ABRECHNUNG KRYPTOHANDEL");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^ABRECHNUNG KRYPTOHANDEL$");
+        var firstRelevantLine = new Block("^ABRECHNUNG KRYPTOHANDEL$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -266,7 +266,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .section("name", "tickerSymbol", "currency") //
                         .match("^Produktbezeichnung \\- (?<name>.*)$") //
                         .match("^Kennung: (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?)$") //
-                        .match("^W.hrung: (?<currency>[\\w]{3})$") //
+                        .match("^W.hrung: (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 
                         // @formatter:off
@@ -320,19 +320,19 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividende");
+        var type = new DocumentType("Dividende");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Dividende [^pro]).*$");
+        var firstRelevantLine = new Block("^(Dividende [^pro]).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -369,7 +369,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag EUR 12,15
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -391,19 +391,19 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Abrechnung Vorabpauschale");
+        var type = new DocumentType("Abrechnung Vorabpauschale");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Abrechnung Vorabpauschale.*$");
+        var firstRelevantLine = new Block("^Abrechnung Vorabpauschale.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -416,7 +416,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .section("name", "isin", "currency") //
                         .match("^Name (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^.*Vorabpauschale in (?<currency>[\\w]{3})$$") //
+                        .match("^.*Vorabpauschale in (?<currency>[A-Z]{3})$$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -448,19 +448,19 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("(Sutor fairriester 2\\.0|Ums.tze) .*");
+        var type = new DocumentType("(Sutor fairriester 2\\.0|Ums.tze) .*");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> buySellBlock = new Transaction<>();
+        var buySellBlock = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.* (Kauf|Verkauf|Geb.hrentilgung) .*$");
+        var firstRelevantLine = new Block("^.* (Kauf|Verkauf|Geb.hrentilgung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(buySellBlock);
 
         buySellBlock //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -490,7 +490,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<time>[\\d]{2}:[\\d]{2}) " //
                                                                         + ".* " //
                                                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
-                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[\\w]{3})$") //
+                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -521,7 +521,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "\\-(?<tax1>[\\.,\\d]+)$") //
                                                         .match("^(?<time>[\\d]{2}:[\\d]{2}) " + ".* "
                                                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
-                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[\\w]{3}) "
+                                                                        + "[\\.,\\d]+ ([\\w]{2}\\p{Sc}|[A-Z]{3}) "
                                                                         + "\\-(?<tax2>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -532,9 +532,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
-                                                            Money tax1 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax1")));
-                                                            Money tax2 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax2")));
-                                                            Money tax = tax1.add(tax2);
+                                                            var tax1 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax1")));
+                                                            var tax2 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax2")));
+                                                            var tax = tax1.add(tax2);
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -555,7 +555,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + ".* " //
                                                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3})$") //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -581,11 +581,36 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + ".* " //
                                                                         + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3})$") //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
 
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // 22.04.2025 15.04.2025 Kauf Kauf Dimensional European Value Fund 3,2387 -65,00
+                                        // außerbörslich IE00B1W6CW87 20,0700 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "name", "shares", "isin") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(Kauf Kauf|Verkauf Verkauf) " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "(\\-)?(?<shares>[\\.,\\d]+) " //
+                                                                        + "(\\-)?(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.* " //
+                                                                        + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
@@ -603,7 +628,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<name>.*) " //
                                                                         + "[\\.,\\d]+ " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3}) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3}) " //
                                                                         + "(\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -625,7 +650,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(Kauf|Verkauf) " //
                                                                         + "(?<name>.*) " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3}) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3}) " //
                                                                         + "(\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -668,7 +693,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>Geb.hrentilgung) (?<name>.*) " //
                                                                         + "[\\.,\\d]+ " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3}) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3}) " //
                                                                         + "(\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -691,7 +716,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(\\-)?(?<amount>[\\.,\\d]+) " //
                                                                         + "(?<note>Geb.hrentilgung) (?<name>.*) " //
                                                                         + "[\\.,\\d]+ " //
-                                                                        + "([\\w]{2}\\p{Sc}|[\\w]{3}) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3}) " //
                                                                         + "(\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -706,7 +731,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            var item = new BuySellEntryItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -714,7 +739,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                             return item;
                         });
 
-        Transaction<AccountTransaction> dividendsBlock = new Transaction<>();
+        var dividendsBlock = new Transaction<AccountTransaction>();
 
         firstRelevantLine = new Block("^.* Aussch.ttung Betrag der Aussch.ttung.*$");
         type.addBlock(firstRelevantLine);
@@ -723,60 +748,110 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         dividendsBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 13.03.2024 07.03.2024 Ausschüttung Betrag der Ausschüttung X-trackers MSCI EMU INDEX dis - 0,64 0,79 -0,14
-                        // LU0846194776 EUR -0,01
-                        // @formatter:on
-                        .section("date", "name", "amount", "tax1", "tax2") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "Aussch.ttung Betrag der Aussch.ttung " //
-                                        + "(?<name>.*) " //
-                                        + "\\- " //
-                                        + "(?<amount>[\\.,\\d]+) " //
-                                        + "[\\.,\\d]+ " //
-                                        + "\\-(?<tax1>[\\.,\\d]+)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
-                                        + "([\\w]{2}\\p{Sc}|[\\w]{3}) "
-                                        + "\\-(?<tax2>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 13.03.2024 07.03.2024 Ausschüttung Betrag der Ausschüttung X-trackers MSCI EMU INDEX dis - 0,64 0,79 -0,14
+                                        // LU0846194776 EUR -0,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "name", "amount", "tax1", "isin", "tax2") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Aussch.ttung Betrag der Aussch.ttung " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\- " //
+                                                                        + "(?<amount>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "\\-(?<tax1>[\\.,\\d]+)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3}) "
+                                                                        + "\\-(?<tax2>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setShares(0L);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(0L);
 
-                            t.setCurrencyCode(CurrencyUnit.EUR);
-                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setAmount(asAmount(v.get("amount")));
 
-                            Money tax1 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax1")));
-                            Money tax2 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax2")));
-                            Money tax = tax1.add(tax2);
+                                                            var tax1 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax1")));
+                                                            var tax2 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax2")));
+                                                            var tax = tax1.add(tax2);
 
-                            checkAndSetTax(tax, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetTax(tax, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // 11.10.2023 27.09.2023 Ausschüttung Betrag der Ausschüttung SPDR S&P U.S. Dividend Aristoc. - 0,50
+                                        // IE00B6YX5D40 US$
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "name", "amount", "isin") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Aussch.ttung Betrag der Aussch.ttung " //
+                                                                        + "(?<name>.*) " //
+                                                                        + "\\- " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) " //
+                                                                        + "([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(0L);
+
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         .wrap(TransactionItem::new);
 
-        Transaction<AccountTransaction> depositRemovalBlock = new Transaction<>();
+        var depositRemovalBlock = new Transaction<AccountTransaction>();
 
-        firstRelevantLine = new Block("^.*([^staatlichen] Zulage|Einzahlung |Auszahlung |automatischer Lastschrifteinzug).*$");
+        firstRelevantLine = new Block("^.*([^staatlichen] Zulage" //
+                        + "|Einzahlung " //
+                        + "|Auszahlung " //
+                        + "|.berweisung" //
+                        + "|automatischer Lastschrifteinzug" //
+                        + "|Umbuchung Verrechnung Nachlasskapitale).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(depositRemovalBlock);
 
         depositRemovalBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 09.11.2023 07.11.2023 Umbuchung Verrechnung Nachlasskapitale - 0,11
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "(?<note>Umbuchung Verrechnung Nachlasskapitale) " //
+                                                                        + "\\- " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            t.setNote(v.get("note"));
+                                                        }),
                                         // @formatter:off
                                         // 01.02.2019 01.02.2019 160,42 automatischer Lastschrifteinzug
                                         // @formatter:on
@@ -798,17 +873,18 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 02.03.2020 02.03.2020 Einzahlung automatischer Lastschrifteinzug - 175,00
                                         // 25.03.2024 25.03.2024 Auszahlung Überweisung bei Kündigung - -2.858,95
+                                        // 19.12.2023 19.12.2023 Überweisung DTA von rLXKpwaxL rLXKpwaxL, rLXKpwaxL rLXKpwaxL - 500,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "type", "amount", "note") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) "
-                                                                        + "(?<type>(Einzahlung|Auszahlung)) "
+                                                                        + "(?<type>(Einzahlung|Auszahlung|.berweisung)) "
                                                                         + "(?<note>.*) \\- "
                                                                         + "(\\-)?(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
-                                                            if ("Auszahlung".equals(trim(v.get("type"))))
+                                                            if ("Auszahlung".equals(trim(v.get("type"))) || "Überweisung".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date")));
@@ -821,7 +897,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-        Transaction<AccountTransaction> taxesBlock = new Transaction<>();
+        var taxesBlock = new Transaction<AccountTransaction>();
 
         firstRelevantLine = new Block("^.* Steuerbuchung.*$");
         type.addBlock(firstRelevantLine);
@@ -830,7 +906,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         taxesBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -857,7 +933,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-        Transaction<AccountTransaction> feesBlock = new Transaction<>();
+        var feesBlock = new Transaction<AccountTransaction>();
 
         firstRelevantLine = new Block("^.* (Verwaltungsgeb.hr\\/Vertriebskosten" //
                         + "|anteil\\.Verwaltgeb.hr\\/Vertriebskosten" //
@@ -875,7 +951,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         feesBlock //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -966,7 +1042,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
 
-        Transaction<PortfolioTransaction> deliveryOutbound = new Transaction<>();
+        var deliveryOutbound = new Transaction<PortfolioTransaction>();
 
         firstRelevantLine = new Block("^.* .bertrag .*$");
         type.addBlock(firstRelevantLine);
@@ -975,7 +1051,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         deliveryOutbound //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                             return portfolioTransaction;
                         })
@@ -990,7 +1066,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<name>.*) " //
                                                                         + "\\-(?<shares>[\\.,\\d]+) " //
                                                                         + "[\\.,\\d]+$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\w]{2}\\p{Sc}|[\\w]{3})$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -1005,7 +1081,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1016,13 +1092,13 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("(Kapitalver.nderung \\- Bezugsrechtsemission" //
+        final var type = new DocumentType("(Kapitalver.nderung \\- Bezugsrechtsemission" //
                         + "|.bernahme \\- Vergleichsplan)");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^(Kapitalver.nderung \\- Bezugsrechtsemission"
+        var firstRelevantLine = new Block("^(Kapitalver.nderung \\- Bezugsrechtsemission"
                         + "|.bernahme - Vergleichsplan)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -1030,7 +1106,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                             return portfolioTransaction;
                         })
@@ -1077,7 +1153,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1101,7 +1177,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragssteuer EUR 1,75
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("Kapitalertragssteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)") //
+                        .match("Kapitalertragssteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -1115,7 +1191,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag EUR 0,09
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("Solidarit.tszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)") //
+                        .match("Solidarit.tszuschlag (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -1129,21 +1205,21 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer EUR 1,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)") //
+                        .match("Kirchensteuer (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Einbehaltende Quellensteuer EUR 2,14
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltende Quellensteuer (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
+                        .match("^Einbehaltende Quellensteuer (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer EUR 2,14
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
+                        .match("^Anrechenbare Quellensteuer (?<currency>[A-Z]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
@@ -1159,8 +1235,8 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .match("Orderprovision: (?<currency>\\p{Sc})(?<fee>[\\.,\\d]+)") //
                         .match("^Rabatt \\(inkl\\. R.ckverg.tung\\): \\- (?<discountCurrency>\\p{Sc})(?<discount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+                            var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                             if (fee.subtract(discount).isPositive())
                             {
@@ -1177,21 +1253,21 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Ex-Tag : 29. April 2010 Zahlungsprovision : EUR 0,50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match(".* Zahlungsprovision : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match(".* Zahlungsprovision : (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match(".* Tradinggebühren: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?") //
+                        .match(".* Tradinggebühren: (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match(".* WP-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?") //
+                        .match(".* WP-Kommission: (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)(\\-)?") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
