@@ -446,6 +446,19 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
+                        // CA25039N4084
+                        // +0,99
+                        // Ordergebühren
+                        // EUR
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .find("[A-Z]{2}[A-Z0-9]{9}[0-9]") //
+                        .match("^[\\-|\\+](?<fee>[\\.,\\d]+)$") //
+                        .match("^Ordergeb.hren$") //
+                        .match("^(?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
                         // Ordergebühren +0,99 EUR
                         // Ordergebühren -0,99 EUR
                         // @formatter:on
