@@ -113,7 +113,7 @@ public class TradeCalendarManager
     public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
 
     private static final Set<DayOfWeek> STANDARD_WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
-    private static final Set<DayOfWeek> TLV_WEEKEND = EnumSet.of(DayOfWeek.FRIDAY, DayOfWeek.SATURDAY);
+
 
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 

@@ -6,9 +6,10 @@ import static org.junit.Assert.assertFalse;
 
 import java.time.LocalDate;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+// Tel Aviv Stock Exchange starting 2026
+// https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
 public class TLVTradeCalendarTest
 {
 
@@ -99,7 +100,6 @@ public class TLVTradeCalendarTest
 
     }
 
-    @Ignore
     @Test
     public void Israeli_Memorial_Day_should_be_a_holiday()
     {
@@ -109,7 +109,6 @@ public class TLVTradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-21")), is(true));
     }
 
-    @Ignore
     @Test
     public void Israeli_Independence_Day_should_be_a_holiday()
     {
@@ -133,17 +132,7 @@ public class TLVTradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2026-01-11")), is(true));
     }
 
-    @Ignore("Test is not ready")
-    @Test
-    public void testWeekendsBefore2016()
-    {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
 
-        assertFalse(calendar == null);
-        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-12")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-13")), is(true));
-
-    }
 
 
 

@@ -275,16 +275,6 @@ public class WebAccess
         });
     }
 
-    public String postReturn(String body) throws IOException
-    {
-        return executeWith(uri -> {
-            HttpPost request = new HttpPost(uri);
-            StringEntity userEntity = new StringEntity(body);
-            request.setEntity(userEntity);
-            return request;
-        });
-
-    }
 
     public String postUrlEncoding(List<NameValuePair> body) throws Exception
     {
