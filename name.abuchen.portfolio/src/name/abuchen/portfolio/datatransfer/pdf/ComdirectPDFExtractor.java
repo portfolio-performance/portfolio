@@ -1377,7 +1377,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositoryFeeTransaction()
     {
-        var type = new DocumentType("Verwahrentgelt");
+        var type = new DocumentType("Verwahrentgelt", "Finanzreport");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -1598,7 +1598,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         + "|Gutschrift" //
                         + "|Bar" //
                         + "|Visa\\-Kartenabre" //
-                        + "|Korrektur Barauszahlung).* " //
+                        + "|Korrektur Barauszahlung" //
+                        + "|.*Lastschr).* " //
                         + "\\+[\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(3);
@@ -1618,7 +1619,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "|Gutschrift" //
                                         + "|Bar" //
                                         + "|Visa\\-Kartenabre" //
-                                        + "|Korrektur Barauszahlung)" //
+                                        + "|Korrektur Barauszahlung" //
+                                        + "|.*Lastschr)" //
                                         + "(?<note2>.*) " //
                                         + "\\+(?<amount>[\\.,\\d]+)$") //
                         .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
@@ -1658,6 +1660,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Gutschrift Wechselgeld-Sparen");
                             else if (v.get("note1").matches("^(?i).*Visa\\-Kartenabre.*$"))
                                 v.put("note", "Visa-Kartenabrechnung");
+                            else if (v.get("note1").matches("^(?i).*Lastschr.*$"))
+                                v.put("note", "Lastschrift");
                             else
                                 v.put("note", v.get("note1"));
 
@@ -1669,7 +1673,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Geb.hren\\/Spesen" //
                         + "|Geb.hr Barauszahlung" //
-                        + "|Entgelte" //
+                        + "|Entgelte(?! Verwahrentgelt)" //
                         + "|Kontof.hrungse" //
                         + "|Auslandsentgelt).*" //
                         + "\\-[\\.,\\d]+$");
