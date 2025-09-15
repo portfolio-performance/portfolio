@@ -2,8 +2,9 @@ package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import com.google.gson.Gson;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
@@ -61,7 +63,7 @@ public class TLVFundMockTest
 
 
     @Test
-    public void shouldReturnCorrectLatestQuotesForFundMock()
+    public void mocked_fund_resturns_latest_quote()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -82,9 +84,10 @@ public class TLVFundMockTest
             LatestSecurityPrice p = oprice.get();
             assertThat(p.getHigh(), is(-1l));
             assertThat(p.getLow(), is(-1l));
-            // System.out.println(p.getValue());
-            assertThat(p.getValue(), is(15597000000l)); // 155.97
-            assertTrue(p.getDate().equals(LocalDate.of(2025, 8, 21)));
+            assertThat(p.getValue(), is(Values.Quote.factorize(155.97))); // 155.97
+            assertThat(p.getDate(), is(LocalDate.of(2025, 8, 21)));
+
+            verify(fundfeed, times(1)).rpcLatestQuoteFund(security);
 
         }
         catch (IOException e)
@@ -149,7 +152,7 @@ public class TLVFundMockTest
     // }
 
     @Test
-    public void latestQuoteonBlankWKSFundReturnsCorrectValues()
+    public void mocked_fund_with_blank_wks_does_not_return_latest_quote()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -165,6 +168,7 @@ public class TLVFundMockTest
             Optional<LatestSecurityPrice> oprice = fundfeed.getLatestQuote(security);
 
             assert (oprice.isEmpty());
+            verify(fundfeed, times(0)).rpcLatestQuoteFund(security);
 
 
         }
@@ -176,7 +180,7 @@ public class TLVFundMockTest
     }
 
     @Test
-    public void latestQuoteonNoWKSFundReturnsCorrectValues()
+    public void mocked_fund_withoutWKS_does_not_return_latest_quote()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -192,6 +196,9 @@ public class TLVFundMockTest
 
             assert (oprice.isEmpty());
 
+            // Verify interaction
+            verify(fundfeed, times(0)).rpcLatestQuoteFund(security);
+
         }
         catch (IOException e)
         {
@@ -202,7 +209,7 @@ public class TLVFundMockTest
 
     
     @Test
-    public void returnHistoricalQuoteswhenFundhasWKN()
+    public void mocked_fund_return_Historical_Quotes()
     {
         Security security = new Security();
         security.setWkn("5127121");
@@ -228,8 +235,8 @@ public class TLVFundMockTest
 
             // Cannot use getHistoricalQuotes as this resets from and to dates
             // automatically.
-            // Instead use the two internal functions
-            // Optional<QuoteFeedData> fundFeedDataOptional =
+            // Instead use the two internal functionsOptional<QuoteFeedData>
+            // fundFeedDataOptional =
             // tlvFund.getHistoricalQuotes(security, false);
             Optional<FundHistory> fundHistory = tlvFund.getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
             Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.convertFundHistoryToQuoteFeedData(fundHistory,
@@ -249,10 +256,12 @@ public class TLVFundMockTest
             assertTrue(firstprice != null);
 
             assertThat(firstprice.getDate(), is(to));
-            assertThat(firstprice.getValue(), is(13030000000L));
+
+            assertThat(firstprice.getValue(), is(Values.Quote.factorize(130.30)));
 
             assertThat(lastprice.getDate(), is(from));
-            assertThat(firstprice.getValue(), is(13030000000L));
+            assertThat(firstprice.getValue(), is(Values.Quote.factorize(130.30)));
+            verify(tlvFund, times(1)).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
 
         }
         catch (Exception e)
@@ -266,7 +275,7 @@ public class TLVFundMockTest
     }
     
     @Test
-    public void returnHistoricalQuoteswhenFundhdoesnotHaveWKN()
+    public void mocked_fund_without_wkn_does_notreturn_Historical_Quotes()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -292,6 +301,7 @@ public class TLVFundMockTest
             Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.getHistoricalQuotes(security, false);
 
             assertThat(fundFeedDataOptional.isEmpty(), is(true));
+            verify(tlvFund, times(0)).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
 
 
         }
@@ -313,6 +323,7 @@ public class TLVFundMockTest
             Optional<QuoteFeedData> fundFeedDataOptional = tlvFund.getHistoricalQuotes(security, false);
 
             assertThat(fundFeedDataOptional.isEmpty(), is(true));
+            verify(tlvFund, times(0)).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
 
         }
         catch (Exception e)
@@ -324,74 +335,18 @@ public class TLVFundMockTest
 
     }
 
-    @Ignore("Test is not ready")
-    @Test
-    public void quoteHistoryonValidFundReturnsCorrectValues()
-    {
-        // TODO add support for Subid.
-        Security security = new Security();
-        security.setTickerSymbol("AAPL");
-        security.setCurrencyCode("ILS");
-        security.setWkn("5127121");
-
-        String mockedresponse = getFundHistory();
-        assertTrue(mockedresponse.length() > 0);
-
-        // Need to convert response to Optional<FundHistory>
-        Optional<FundHistory> fundHistoryOpt = Optional.of(new FundHistory());
-        
-        // TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        TLVFund feed = Mockito.spy(new TLVFund());
-
-        // Set a start date
-        LocalDate from = LocalDate.of(1900, 1, 1);
-        if (!security.getPrices().isEmpty())
-        {
-            SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            from = lastHistoricalQuote.getDate();
-        }
-
-        LocalDate to = LocalDate.now();
-
-        // Price in ILS, Type = Mutual Fund
-        try
-        {
-
-            Mockito.doReturn(fundHistoryOpt).when((feed).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH));
-
-            Optional<QuoteFeedData> feedDataOpt = feed.getHistoricalQuotes(security, false);
-
-            assertTrue(feedDataOpt.isPresent());
-
-            QuoteFeedData feedData = feedDataOpt.get();
-            assertFalse(feedData.getPrices().isEmpty());
-
-            SecurityPrice firstprice = feedData.getPrices().get(0);
-            // LocalDate firstdate = feedData.getPrices().get(0).getDate();
-
-            assert (firstprice.getDate().equals(LocalDate.of(2025, 8, 25)));
-            assert (firstprice.getValue() == 14688000000l);
-
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            assertTrue(false);
-        }
-    }
-
 
 
     @Ignore("This class is under development and not ready for testing")
     @Test
-    public void DetailsonValidFundReturnsCorrectValues()
+    public void mocked_Fund_returns_correct_details()
     {
         //
     }
 
     @Ignore("This class is under development and not ready for testing")
     @Test
-    public void DetailsonInValidFundReturnsCorrectValues()
+    public void mocked_funds_without_Wks_does_not_return_details()
     {
         //
     }

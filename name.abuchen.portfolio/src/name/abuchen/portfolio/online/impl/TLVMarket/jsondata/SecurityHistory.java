@@ -96,7 +96,6 @@ public class SecurityHistory
     }
 
 
-
     public static SecurityHistory fromJson(String json)
     {
         class LocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate>

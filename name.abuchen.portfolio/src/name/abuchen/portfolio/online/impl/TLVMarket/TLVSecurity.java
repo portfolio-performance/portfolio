@@ -440,7 +440,7 @@ public class TLVSecurity extends TLVListing
     private class LocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate>
     {
 
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY"); //$NON-NLS-1$
 
         @Override
         public JsonElement serialize(final LocalDate date, final Type typeOfSrc, final JsonSerializationContext context)

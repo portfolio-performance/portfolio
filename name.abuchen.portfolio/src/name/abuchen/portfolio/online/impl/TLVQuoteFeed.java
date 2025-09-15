@@ -20,7 +20,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -82,7 +81,7 @@ public class TLVQuoteFeed implements QuoteFeed
         catch (IOException e)
         {
             System.out.print("Could not resolved TLV securities from TLV API"); //$NON-NLS-1$
-            PortfolioLog.abbreviated(e);
+            // PortfolioLog.abbreviated(e);
             this.mapped = false;
         }
     }
@@ -767,14 +766,14 @@ public class TLVQuoteFeed implements QuoteFeed
                 Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunkSec(security, fromDate,
                                 toDate, page, lang);
                 if (securityHistory.isPresent())
-                    return TLVHelper.ObjectToMap(securityHistory);
+                    return TLVHelper.ObjectToMap(securityHistory.get());
             }
             if (securityType == TLVType.FUND)
             {
                 Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate,
                                 page, lang);
                 if (fundHistory.isPresent())
-                    return TLVHelper.ObjectToMap(fundHistory);
+                    return TLVHelper.ObjectToMap(fundHistory.get());
             }
             return Collections.emptyMap();
         }

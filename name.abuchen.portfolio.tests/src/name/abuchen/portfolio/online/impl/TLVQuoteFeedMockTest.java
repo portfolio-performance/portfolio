@@ -98,7 +98,7 @@ public class TLVQuoteFeedMockTest
 
     @Ignore("Mock Test Test needs to be refactored")
     @Test
-    public void testGetLatestQuoteForShare() throws IOException
+    public void mocked_Share_should_return_Latest_Quotes() throws IOException
     {
         // TODO add support for Subid.
         Security security = new Security();
@@ -128,13 +128,13 @@ public class TLVQuoteFeedMockTest
 
     @Ignore()
     @Test
-    public void get_latest_quote_for_Bonds()
+    public void mocked_Bonds_should_return_latest_quotes()
     {
     }
 
     @Ignore()
     @Test
-    public void get_latest_quote_for_Security()
+    public void mocked_Security_should_return_latest_quotes()
     {
     }
 
@@ -190,21 +190,21 @@ public class TLVQuoteFeedMockTest
 
     @Test
     @Ignore("Mock Test")
-    public void get_Historical_quotes_for_Bonds() throws IOException
+    public void mocked_Bonds_should_return_historical_Quotes() throws IOException
     {
 
     }
 
     @Test
     @Ignore("Mock Test")
-    public void get_Historical_quotes_for_Security() throws IOException
+    public void mocked_Security_should_return_historical_Quotes() throws IOException
     {
 
     }
 
     @Test
     @Ignore("Mock Test")
-    public void testgetHistoricalQuotesOnShares() throws IOException
+    public void mocked_Shares_should_return_historical_Quotes() throws IOException
     {
         // TODO add support for Subid.
         Security security = new Security();
@@ -240,7 +240,7 @@ public class TLVQuoteFeedMockTest
     }
 
     @Test
-    public void testSecurityGetNames()
+    public void mocked_security_should_return_names()
     {
         Security security = new Security();
         security.setTickerSymbol("AAPL");
@@ -273,12 +273,32 @@ public class TLVQuoteFeedMockTest
         }
 
 
+    }
 
+    @Ignore
+    @Test
+    public void mocked_index_should_not_return_names()
+    {
+        //
+    }
+
+    @Ignore
+    @Test
+    public void mocked_shares_should_return_names()
+    {
+        //
+    }
+
+    @Ignore
+    @Test
+    public void mocked_bond_should_return_names()
+    {
+        //
     }
 
     @Ignore("Test needs to be refactored")
     @Test
-    public void testFundHistoryPrices()
+    public void mocked_fund_should_return_historical_prices()
     {
         Security security = new Security();
         security.setWkn("5127121");
@@ -333,7 +353,7 @@ public class TLVQuoteFeedMockTest
 
     @Ignore("Test needs to be refactored")
     @Test
-    public void testSecurityHistoryPrices()
+    public void mocked_security_should_return_historical_prices()
     {
         Security security = new Security();
         security.setWkn("1410307");
@@ -385,7 +405,19 @@ public class TLVQuoteFeedMockTest
 
     }
 
+    @Ignore
+    @Test
+    public void mocked_share_should_return_historical_prices()
+    {
+        //
+    }
 
+    @Ignore
+    @Test
+    public void mocked_index_should_not_return_historical_prices()
+    {
+        //
+    }
 
 
 

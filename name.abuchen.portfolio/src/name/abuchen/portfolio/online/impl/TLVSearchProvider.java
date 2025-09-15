@@ -59,7 +59,7 @@ public class TLVSearchProvider implements SecuritySearchProvider
                 String subtype = listing.getSubType();
                 TLVType tlvType = TLVType.NONE;
 
-                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals(""))
+                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals("")) //$NON-NLS-1$
                 {
                     listing.setTLVType(TLVType.FUND);
                 }
