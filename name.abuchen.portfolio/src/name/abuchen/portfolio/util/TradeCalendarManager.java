@@ -83,7 +83,7 @@ import static name.abuchen.portfolio.util.HolidayName.YOM_KIPUR_EVE;
 import static name.abuchen.portfolio.util.HolidayType.easter;
 import static name.abuchen.portfolio.util.HolidayType.fixed;
 import static name.abuchen.portfolio.util.HolidayType.fixedJewishCalendar;
-import static name.abuchen.portfolio.util.HolidayType.israeliIndepenenceCalendar;
+import static name.abuchen.portfolio.util.HolidayType.israeliIndependenceCalendar;
 import static name.abuchen.portfolio.util.HolidayType.israeliMemorialCalendar;
 import static name.abuchen.portfolio.util.HolidayType.jewishPurimCalendar;
 import static name.abuchen.portfolio.util.HolidayType.weekday;
@@ -114,12 +114,11 @@ public class TradeCalendarManager
 
     private static final Set<DayOfWeek> STANDARD_WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
 
-
     private static final Map<String, TradeCalendar> CACHE = new HashMap<>();
 
     static
     {
-        TradeCalendar tc = new TradeCalendar(MINIMAL_CALENDAR_CODE, Messages.LabelTradeCalendarDefault,
+        var tc = new TradeCalendar(MINIMAL_CALENDAR_CODE, Messages.LabelTradeCalendarDefault,
                         STANDARD_WEEKEND, false);
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
@@ -172,7 +171,7 @@ public class TradeCalendarManager
         // one-time closings since 1990; see https://www.bcm-news.de/wp-content/uploads/closings-nyse.pdf
         // for a complete list from 1885 to 2011
         tc.add(fixed(STATE_FUNERAL, Month.APRIL, 27).onlyIn(1994)); // funeral of former president Nixon
-        for (int d = 11; d <= 14; d++)
+        for (var d = 11; d <= 14; d++)
             tc.add(fixed(TERRORIST_ATTACKS, Month.SEPTEMBER, d).onlyIn(2001));
         tc.add(fixed(STATE_FUNERAL, Month.JUNE, 11).onlyIn(2004)); // funeral of former president Reagan
         tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 2).onlyIn(2007)); // funeral of former president Ford
@@ -366,7 +365,7 @@ public class TradeCalendarManager
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
-        
+
         // Tel Aviv Stock Exchange starting 2026
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
         tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND); //$NON-NLS-1$
@@ -376,7 +375,7 @@ public class TradeCalendarManager
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_EVE, 6, 29, 0));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_I, 6, 29, 1));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_II, 6, 29, 2));
-        
+
         tc.add(fixedJewishCalendar(YOM_KIPUR_EVE, 7, 9, 0));
         tc.add(fixedJewishCalendar(YOM_KIPUR, 7, 9, 1));
 
@@ -392,7 +391,7 @@ public class TradeCalendarManager
         tc.add(fixedJewishCalendar(SHAVUOT_DAY, 3, 5, 1));
 
         tc.add(israeliMemorialCalendar(MEMORIAL));
-        tc.add(israeliIndepenenceCalendar(INDEPENDENCE));
+        tc.add(israeliIndependenceCalendar(INDEPENDENCE));
         tc.add(jewishPurimCalendar(PURIM, 0));
 
         CACHE.put(tc.getCode(), tc);
@@ -452,7 +451,7 @@ public class TradeCalendarManager
 
     public static TradeCalendar createInheritDefaultOption()
     {
-        String description = MessageFormat.format(Messages.LabelTradeCalendarUseDefault,
+        var description = MessageFormat.format(Messages.LabelTradeCalendarUseDefault,
                         getDefaultInstance().getDescription());
         return new TradeCalendar("", description, STANDARD_WEEKEND); //$NON-NLS-1$
     }

@@ -14,8 +14,107 @@ import java.util.Set;
 import name.abuchen.portfolio.util.JewishCalendar.CalendarImpl;
 import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
 
+/**
+ * Abstract base class for different types of holidays. Supports fixed dates,
+ * weekday-based dates, Easter-relative dates, and Jewish calendar dates.
+ */
 /* package */ abstract class HolidayType
 {
+
+    /**
+     * Holiday type for Israeli Independence Day (Yom Ha'atzmaut). Date varies
+     * based on day of week and follows Memorial Day.
+     */
+    private static class IsraeliIndependenceCalendarHolidayType extends HolidayType
+    {
+        private final CalendarImpl calendar = new CalendarImpl();
+
+        public IsraeliIndependenceCalendarHolidayType(HolidayName name)
+        {
+            super(name);
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
+        {
+            var startOfYearAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
+            var hebrewYearStart = calendar.hebrewDateFromAbsolute(startOfYearAbsolute);
+
+            var independenceDate = calculateIndependenceDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar
+                            .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(independenceDate));
+
+            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
+            return new Holiday(getName(), date);
+        }
+
+        /**
+         * Calculates the Hebrew date for Independence Day. Usually Iyyar 5, but
+         * moved to follow Memorial Day rules and avoid Sabbath conflicts.
+         */
+        private JewishCalendarDate calculateIndependenceDate(int hebrewYear)
+        {
+            // Independence Day follows Memorial Day, so we need to calculate
+            // Memorial Day first
+            var memorialDate = calculateMemorialDate(hebrewYear);
+
+            // Independence Day is the day after Memorial Day
+            var independenceDay = memorialDate.getDay() + 1;
+            var independenceMonth = memorialDate.getMonth();
+            var independenceYear = memorialDate.getYear();
+
+            // Handle month overflow (though unlikely with Iyyar)
+            var maxDayInMonth = calendar.getLastDayOfHebrewMonth(independenceMonth, independenceYear);
+            if (independenceDay > maxDayInMonth)
+            {
+                independenceDay = 1;
+                independenceMonth++;
+                if (independenceMonth > calendar.getLastMonthOfHebrewYear(independenceYear))
+                {
+                    independenceMonth = 1;
+                    independenceYear++;
+                }
+            }
+
+            return new JewishCalendarDate(independenceDay, independenceMonth, independenceYear);
+        }
+
+        /**
+         * Calculates the Hebrew date for Memorial Day (shared logic). Iyyar 4,
+         * but moved to avoid Thursday/Friday/Saturday.
+         */
+        private JewishCalendarDate calculateMemorialDate(int hebrewYear)
+        {
+            var weekday = getWeekdayOfHebrewDate(4, 2, hebrewYear); // Iyyar 4
+
+            if (weekday == 5)
+            { // Friday - move to Wednesday
+                return new JewishCalendarDate(2, 2, hebrewYear);
+            }
+            else if (weekday == 4)
+            { // Thursday - move to Wednesday
+                return new JewishCalendarDate(3, 2, hebrewYear);
+            }
+            else if (hebrewYear >= 5764 && weekday == 0)
+            { // Saturday after 2004 - move to Sunday
+                return new JewishCalendarDate(5, 2, hebrewYear);
+            }
+            else
+            {
+                return new JewishCalendarDate(4, 2, hebrewYear); // Default date
+            }
+        }
+
+        private int getWeekdayOfHebrewDate(int day, int month, int year)
+        {
+            var absoluteDate = calendar.absoluteFromHebrewDate(new JewishCalendarDate(day, month, year));
+            return absoluteDate % 7;
+        }
+    }
+
+    /**
+     * Helper class for conditional date movement based on day of week.
+     */
     private static class MoveIf
     {
         private final DayOfWeek dayOfWeek;
@@ -33,9 +132,9 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         }
     }
 
-
-
-
+    /**
+     * Holiday type for fixed calendar dates (e.g., Christmas on December 25).
+     */
     private static class FixedHolidayType extends HolidayType
     {
         private final Month month;
@@ -51,12 +150,14 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate date = LocalDate.of(year, month.getValue(), dayOfMonth);
+            var date = LocalDate.of(year, month.getValue(), dayOfMonth);
             return new Holiday(getName(), date);
         }
     }
 
-
+    /**
+     * Holiday type for weekday-based dates (e.g., first Monday in September).
+     */
     private static class FixedWeekdayHolidayType extends HolidayType
     {
         private final int which;
@@ -74,11 +175,15 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate date = LocalDate.of(year, month, 1);
+            var date = LocalDate.of(year, month, 1);
             return new Holiday(getName(), date.with(dayOfWeekInMonth(which, weekday)));
         }
     }
 
+    /**
+     * Holiday type for Easter-relative dates (e.g., Good Friday = Easter - 2
+     * days).
+     */
     private static class RelativeToEasterHolidayType extends HolidayType
     {
         private final int daysToAdd;
@@ -92,282 +197,253 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            LocalDate easterSunday = calculateEasterSunday(year);
-
+            var easterSunday = calculateEasterSunday(year);
             return new Holiday(getName(), easterSunday.plusDays(daysToAdd));
         }
 
-        private LocalDate calculateEasterSunday(int nYear)
+        /**
+         * Calculates Easter Sunday using the ecclesiastical algorithm.
+         */
+        private LocalDate calculateEasterSunday(int year)
         {
-            // @formatter:off
+            // Easter calculation algorithm from Butcher's Ecclesiastical
+            // Calendar (1876)
+            // Valid for Gregorian Calendar (years >= 1583)
 
-            // Taken from
-            // http://www.java2s.com/Code/Java/Data-Type/CalculateHolidays.htm
-            // and published under the
-            // GNU General Public License version 2
-            
-            /*  Calculate Easter Sunday
-            Written by Gregory N. Mirsky
-            Source: 2nd Edition by Peter Duffett-Smith. It was originally from
-            Butcher's Ecclesiastical Calendar, published in 1876. This
-            algorithm has also been published in the 1922 book General
-            Astronomy by Spencer Jones; in The Journal of the British
-            Astronomical Association (Vol.88, page 91, December 1977); and in
-            Astronomical Algorithms (1991) by Jean Meeus.
-            This algorithm holds for any year in the Gregorian Calendar, which
-            (of course) means years including and after 1583.
-                  a=year%19
-                  b=year/100
-                  c=year%100
-                  d=b/4
-                  e=b%4
-                  f=(b+8)/25
-                  g=(b-f+1)/3
-                  h=(19*a+b-d-g+15)%30
-                  i=c/4
-                  k=c%4
-                  l=(32+2*e+2*i-h-k)%7
-                  m=(a+11*h+22*l)/451
-                  Easter Month =(h+l-7*m+114)/31  [3=March, 4=April]
-                  p=(h+l-7*m+114)%31
-                  Easter Date=p+1     (date in Easter Month)
-            Note: Integer truncation is already factored into the
-            calculations. Using higher percision variables will cause
-            inaccurate calculations. 
-            */
-            // @formatter:on
+            var a = year % 19;
+            var b = year / 100;
+            var c = year % 100;
+            var d = b / 4;
+            var e = b % 4;
+            var f = (b + 8) / 25;
+            var g = (b - f + 1) / 3;
+            var h = (19 * a + b - d - g + 15) % 30;
+            var i = c / 4;
+            var k = c % 4;
+            var l = (32 + 2 * e + 2 * i - h - k) % 7;
+            var m = (a + 11 * h + 22 * l) / 451;
 
-            int nA = 0;
-            int nB = 0;
-            int nC = 0;
-            int nD = 0;
-            int nE = 0;
-            int nF = 0;
-            int nG = 0;
-            int nH = 0;
-            int nI = 0;
-            int nK = 0;
-            int nL = 0;
-            int nM = 0;
-            int nP = 0;
-            int nEasterMonth = 0;
-            int nEasterDay = 0;
+            var easterMonth = (h + l - 7 * m + 114) / 31; // 3=March, 4=April
+            var easterDay = ((h + l - 7 * m + 114) % 31) + 1;
 
-            nA = nYear % 19;
-            nB = nYear / 100;
-            nC = nYear % 100;
-            nD = nB / 4;
-            nE = nB % 4;
-            nF = (nB + 8) / 25;
-            nG = (nB - nF + 1) / 3;
-            nH = (19 * nA + nB - nD - nG + 15) % 30;
-            nI = nC / 4;
-            nK = nC % 4;
-            nL = (32 + 2 * nE + 2 * nI - nH - nK) % 7;
-            nM = (nA + 11 * nH + 22 * nL) / 451;
-
-            // [3=March, 4=April]
-            nEasterMonth = (nH + nL - 7 * nM + 114) / 31;
-            nP = (nH + nL - 7 * nM + 114) % 31;
-
-            // Date in Easter Month.
-            nEasterDay = nP + 1;
-
-            // Populate the date object...
-            return LocalDate.of(nYear, nEasterMonth, nEasterDay);
+            return LocalDate.of(year, easterMonth, easterDay);
         }
     }
 
+    /**
+     * Holiday type for fixed Jewish calendar dates.
+     */
     private static class FixedJewishCalendarHolidayType extends HolidayType
     {
-        private final int jewishMonth;
-        private final int jewishDayOfMonth;
-        private final int dayToAdd;
+        private final int hebrewMonth;
+        private final int hebrewDayOfMonth;
+        private final int daysToAdd;
 
-        public FixedJewishCalendarHolidayType(HolidayName name, int jewishMonth, int jewishDayOfMonth, int daysToAdd)
+        public FixedJewishCalendarHolidayType(HolidayName name, int hebrewMonth, int hebrewDayOfMonth, int daysToAdd)
         {
             super(name);
-            this.jewishMonth = jewishMonth;
-            this.jewishDayOfMonth = jewishDayOfMonth;
-            this.dayToAdd = daysToAdd;
+            this.hebrewMonth = hebrewMonth;
+            this.hebrewDayOfMonth = hebrewDayOfMonth;
+            this.daysToAdd = daysToAdd;
         }
 
         @Override
         protected Holiday doGetHoliday(int year)
         {
-            JewishCalendarDate jewishDate = jewishHoliday(year, this.jewishMonth, this.jewishDayOfMonth, this.dayToAdd);
-            LocalDate date = LocalDate.of(jewishDate.getYear(), jewishDate.getMonth(), jewishDate.getDay());
+            var gregorianDate = calculateHebrewHolidayInGregorianYear(year, hebrewMonth,
+                            hebrewDayOfMonth, daysToAdd);
+            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
             return new Holiday(getName(), date);
         }
     }
 
+    /**
+     * Holiday type for Israeli Holocaust Remembrance Day (Yom HaShoah). Date
+     * varies based on day of week to avoid Sabbath conflicts.
+     */
     private static class IsraeliHolocaustCalendarHolidayType extends HolidayType
     {
-        private final CalendarImpl i = new CalendarImpl();
+        private final CalendarImpl calendar = new CalendarImpl();
 
-        public IsraeliHolocaustCalendarHolidayType(HolidayName name, int daysToAdd)
+        public IsraeliHolocaustCalendarHolidayType(HolidayName name)
         {
             super(name);
         }
 
-        private static int getWeekdayOfHebrewDate(int hebDay, int hebMonth, int hebYear, CalendarImpl i)
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
         {
-            int absDate = i.absoluteFromJewishDate(new JewishCalendarDate(hebDay, hebMonth, hebYear));
-            return absDate % 7;
+            var startOfYearAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
+            var hebrewYearStart = calendar.hebrewDateFromAbsolute(startOfYearAbsolute);
+
+            var holocaustDate = calculateHolocaustDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar
+                            .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(holocaustDate));
+
+            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
+            return new Holiday(getName(), date);
         }
 
-        private JewishCalendarDate calcHolocaustDateHeb(CalendarImpl i, int hebYear, int georgYear)
+        /**
+         * Calculates the Hebrew date for Holocaust Remembrance Day. Nissan 27,
+         * but moved to avoid Friday/Saturday.
+         */
+        private JewishCalendarDate calculateHolocaustDate(int hebrewYear)
         {
+            var weekday = getWeekdayOfHebrewDate(27, 1, hebrewYear); // Nissan
+                                                                     // 27
 
-            if (getWeekdayOfHebrewDate(27, 1, hebYear, i) == 5)
-            {
-                return new JewishCalendarDate(26, 1, hebYear);
+            if (weekday == 5)
+            { // Friday - move to Thursday
+                return new JewishCalendarDate(26, 1, hebrewYear);
             }
-            else if (hebYear >= 5757 && getWeekdayOfHebrewDate(27, 1, hebYear, i) == 0)
-            {
-                return new JewishCalendarDate(28, 1, hebYear);
+            else if (hebrewYear >= 5757 && weekday == 0)
+            { // Saturday after 1997 - move to Sunday
+                return new JewishCalendarDate(28, 1, hebrewYear);
             }
             else
             {
-                return new JewishCalendarDate(27, 1, hebYear);
+                return new JewishCalendarDate(27, 1, hebrewYear); // Default
+                                                                  // date
             }
-
         }
 
-        @Override
-        protected Holiday doGetHoliday(int georg_year)
+        private int getWeekdayOfHebrewDate(int day, int month, int year)
         {
-            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
-
-            JewishCalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
-
-            JewishCalendarDate hebDate = calcHolocaustDateHeb(i, jewishDateStart.getYear(), georg_year);
-            JewishCalendarDate geogDate = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate));
-            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
-            return new Holiday(getName(), date);
-
+            var absoluteDate = calendar.absoluteFromHebrewDate(new JewishCalendarDate(day, month, year));
+            return absoluteDate % 7;
         }
     }
 
+    /**
+     * Holiday type for Purim, which falls on different Hebrew months in leap
+     * years.
+     */
     private static class JewishPurimCalendarHolidayType extends HolidayType
     {
-        private final CalendarImpl i = new CalendarImpl();
+        private final CalendarImpl calendar = new CalendarImpl();
 
-        public JewishPurimCalendarHolidayType(HolidayName name, int daysToAdd)
+        public JewishPurimCalendarHolidayType(HolidayName name)
         {
             super(name);
         }
 
-        private JewishCalendarDate calcPurimDateHeb(CalendarImpl i, int hebYear, int georgYear)
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
         {
+            var startOfYearAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
+            var hebrewYearStart = calendar.hebrewDateFromAbsolute(startOfYearAbsolute);
 
-            int monthEsther;
-            if (i.hebrewLeapYear(hebYear))
-                monthEsther = 13;
-            else
-                monthEsther = 12;
+            var purimDate = calculatePurimDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar
+                            .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(purimDate));
 
-            return new JewishCalendarDate(14, monthEsther, hebYear);
-
+            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
+            return new Holiday(getName(), date);
         }
 
-        @Override
-        protected Holiday doGetHoliday(int georg_year)
+        /**
+         * Calculates the Hebrew date for Purim. Adar 14 (or Adar II 14 in leap
+         * years).
+         */
+        private JewishCalendarDate calculatePurimDate(int hebrewYear)
         {
-            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
-
-            JewishCalendarDate jewishDateStart = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
-
-            JewishCalendarDate hebDate = calcPurimDateHeb(i, jewishDateStart.getYear(), georg_year);
-            JewishCalendarDate geogDate = i.gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate));
-            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
-            return new Holiday(getName(), date);
-
+            // Adar II or Adar
+            var purimMonth = calendar.isHebrewLeapYear(hebrewYear) ? 13 : 12;
+            return new JewishCalendarDate(14, purimMonth, hebrewYear);
         }
     }
 
+    /**
+     * Holiday type for Israeli Memorial/Independence Days. Dates vary based on
+     * day of week to avoid Sabbath conflicts.
+     */
     private static class IsraeliMemorialCalendarHolidayType extends HolidayType
     {
-
-        private final int dayToAdd;
-        private final CalendarImpl i = new CalendarImpl();
+        private final int daysToAdd;
+        private final CalendarImpl calendar = new CalendarImpl();
 
         public IsraeliMemorialCalendarHolidayType(HolidayName name, int daysToAdd)
         {
             super(name);
-            this.dayToAdd = daysToAdd;
-        }
-
-        private static int getWeekdayOfHebrewDate(int hebDay, int hebMonth, int hebYear, CalendarImpl i)
-        {
-            int absDate = i.absoluteFromJewishDate(new JewishCalendarDate(hebDay, hebMonth, hebYear));
-            return absDate % 7;
-        }
-
-        private JewishCalendarDate calcMemorialDateHeb(CalendarImpl i, int hebYear, int georg_year)
-        {
-            if (getWeekdayOfHebrewDate(4, 2, hebYear, i) == 5)
-            {
-                return new JewishCalendarDate(2, 2, hebYear);
-            }
-            else if (getWeekdayOfHebrewDate(4, 2, hebYear, i) == 4)
-            {
-                return new JewishCalendarDate(3, 2, hebYear);
-            }
-            else if (hebYear >= 5764 && getWeekdayOfHebrewDate(4, 2, hebYear, i) == 0)
-            {
-                return new JewishCalendarDate(5, 2, hebYear);
-            }
-            else
-            {
-                return new JewishCalendarDate(4, 2, hebYear);
-            }
+            this.daysToAdd = daysToAdd;
         }
 
         @Override
-        protected Holiday doGetHoliday(int georg_year)
+        protected Holiday doGetHoliday(int gregorianYear)
         {
-            int absDateStartOfGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
+            var startOfYearAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
+            var hebrewYearStart = calendar.hebrewDateFromAbsolute(startOfYearAbsolute);
 
-            JewishCalendarDate jewishDateStartofGeogYear = i.jewishDateFromAbsolute(absDateStartOfGeogYear);
+            var memorialDate = calculateMemorialDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar
+                            .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(memorialDate) + daysToAdd);
 
-            JewishCalendarDate hebDate = calcMemorialDateHeb(i, jewishDateStartofGeogYear.getYear(), georg_year);
-            JewishCalendarDate geogDate = i
-                            .gregorianDateFromAbsolute(i.absoluteFromJewishDate(hebDate) + this.dayToAdd);
-
-            LocalDate date = LocalDate.of(geogDate.getYear(), geogDate.getMonth(), geogDate.getDay());
+            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
             return new Holiday(getName(), date);
+        }
+
+        /**
+         * Calculates the Hebrew date for Memorial Day. Iyyar 4, but moved to
+         * avoid Thursday/Friday/Saturday.
+         */
+        private JewishCalendarDate calculateMemorialDate(int hebrewYear)
+        {
+            var weekday = getWeekdayOfHebrewDate(4, 2, hebrewYear); // Iyyar 4
+
+            if (weekday == 5)
+            { // Friday - move to Wednesday
+                return new JewishCalendarDate(2, 2, hebrewYear);
+            }
+            else if (weekday == 4)
+            { // Thursday - move to Wednesday
+                return new JewishCalendarDate(3, 2, hebrewYear);
+            }
+            else if (hebrewYear >= 5764 && weekday == 0)
+            { // Saturday after 2004 - move to Sunday
+                return new JewishCalendarDate(5, 2, hebrewYear);
+            }
+            else
+            {
+                return new JewishCalendarDate(4, 2, hebrewYear); // Default date
+            }
+        }
+
+        private int getWeekdayOfHebrewDate(int day, int month, int year)
+        {
+            var absoluteDate = calendar.absoluteFromHebrewDate(new JewishCalendarDate(day, month, year));
+            return absoluteDate % 7;
         }
     }
 
+    // Instance variables
     private final HolidayName name;
-
     private int validFrom = -1;
     private int validTo = -1;
     private final Set<Integer> exceptIn = new HashSet<>();
-
     private final List<MoveIf> moveIf = new ArrayList<>();
     private DayOfWeek moveTo = null;
 
-    public HolidayType(HolidayName name)
+    protected HolidayType(HolidayName name)
     {
         this.name = name;
     }
 
-    public static HolidayType fixedJewishCalendar(HolidayName name, int jewishMonth, int jewishDayOfMonth,
+    // Factory methods
+    public static HolidayType fixedJewishCalendar(HolidayName name, int hebrewMonth, int hebrewDayOfMonth,
                     int daysToAdd)
     {
-        return new FixedJewishCalendarHolidayType(name, jewishMonth, jewishDayOfMonth, daysToAdd);
+        return new FixedJewishCalendarHolidayType(name, hebrewMonth, hebrewDayOfMonth, daysToAdd);
     }
 
     public static HolidayType jewishPurimCalendar(HolidayName name, int daysToAdd)
     {
-        return new JewishPurimCalendarHolidayType(name, daysToAdd);
+        return new JewishPurimCalendarHolidayType(name);
     }
 
     public static HolidayType israeliHolocaustCalendar(HolidayName name, int daysToAdd)
     {
-        return new IsraeliHolocaustCalendarHolidayType(name, daysToAdd);
+        return new IsraeliHolocaustCalendarHolidayType(name);
     }
 
     public static HolidayType israeliMemorialCalendar(HolidayName name)
@@ -375,10 +451,11 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         return new IsraeliMemorialCalendarHolidayType(name, 0);
     }
 
-    public static HolidayType israeliIndepenenceCalendar(HolidayName name)
+    public static HolidayType israeliIndependenceCalendar(HolidayName name)
     {
-        return new IsraeliMemorialCalendarHolidayType(name, 1);
+        return new IsraeliIndependenceCalendarHolidayType(name);
     }
+
     public static HolidayType fixed(HolidayName name, Month month, int dayOfMonth)
     {
         return new FixedHolidayType(name, month, dayOfMonth);
@@ -394,6 +471,7 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         return new RelativeToEasterHolidayType(name, daysToAdd);
     }
 
+    // Configuration methods
     public HolidayName getName()
     {
         return name;
@@ -436,59 +514,83 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         return this;
     }
 
+    // Main holiday calculation method
     public Holiday getHoliday(int year)
     {
+        // Check validity period
         if (validFrom != -1 && year < validFrom)
             return null;
-
         if (validTo != -1 && year > validTo)
             return null;
-
         if (exceptIn.contains(year))
             return null;
 
-        Holiday answer = doGetHoliday(year);
+        var holiday = doGetHoliday(year);
 
+        // Apply date movements if configured
         if (moveIf.isEmpty() && moveTo == null)
-            return answer;
+            return holiday;
 
-        LocalDate date = answer.getDate();
+        var date = holiday.getDate();
 
-        for (MoveIf mv : moveIf)
-            date = mv.apply(date);
+        // Apply conditional movements
+        for (MoveIf movement : moveIf)
+        {
+            date = movement.apply(date);
+        }
 
+        // Apply absolute movement to specific weekday
         if (moveTo != null)
+        {
             date = date.with(nextOrSame(moveTo));
+        }
 
-        return new Holiday(answer.getName(), date);
+        return new Holiday(holiday.getName(), date);
     }
 
     protected abstract Holiday doGetHoliday(int year);
 
-    public JewishCalendarDate jewishHoliday(int georg_year, int jewish_month, int jewish_day, int add)
+    /**
+     * Utility method to calculate Hebrew holidays that fall within a Gregorian
+     * year. Handles the complexity of Hebrew calendar spanning Gregorian years.
+     */
+    public JewishCalendarDate calculateHebrewHolidayInGregorianYear(int gregorianYear, int hebrewMonth, int hebrewDay,
+                    int additionalDays)
     {
-        CalendarImpl i = new CalendarImpl();
+        var calendar = new CalendarImpl();
 
-        int absDateGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, georg_year));
-        int absDateNextGeogYear = i.absoluteFromGregorianDate(new JewishCalendarDate(31, 12, georg_year));
+        // Get absolute dates for start and end of Gregorian year
+        var yearStartAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
+        var yearEndAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(31, 12, gregorianYear));
 
-        JewishCalendarDate jewishDateSameYear = i.jewishDateFromAbsolute(absDateGeogYear);
-        JewishCalendarDate jewishDateNextYear = i.jewishDateFromAbsolute(absDateNextGeogYear);
+        // Get corresponding Hebrew dates
+        var hebrewYearStart = calendar.hebrewDateFromAbsolute(yearStartAbsolute);
+        var hebrewYearEnd = calendar.hebrewDateFromAbsolute(yearEndAbsolute);
 
-        int hebDay = jewish_day + add;
-        int hebMonth = jewish_month;
+        var holidayDay = hebrewDay + additionalDays;
 
-        JewishCalendarDate JewishDateSameYear = new JewishCalendarDate(hebDay, hebMonth, jewishDateSameYear.getYear());
-        JewishCalendarDate JewishDateNextYear = new JewishCalendarDate(hebDay, hebMonth, jewishDateNextYear.getYear());
+        // Try the Hebrew holiday in the same Hebrew year as start of Gregorian
+        // year
+        var holidayCurrentYear = new JewishCalendarDate(holidayDay, hebrewMonth,
+                        hebrewYearStart.getYear());
+        var gregorianCurrentYear = calendar
+                        .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(holidayCurrentYear));
 
-        JewishCalendarDate GeorgeanDateSameYear = i
-                        .gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishDateSameYear));
-        JewishCalendarDate GeorgeanDateNextYear = i
-                        .gregorianDateFromAbsolute(i.absoluteFromJewishDate(JewishDateNextYear));
+        if (gregorianCurrentYear.getYear() == gregorianYear)
+            return gregorianCurrentYear;
 
-        if (GeorgeanDateSameYear.getYear() == georg_year)
-            return GeorgeanDateSameYear;
+        // Try the Hebrew holiday in the next Hebrew year
+        var holidayNextYear = new JewishCalendarDate(holidayDay, hebrewMonth, hebrewYearEnd.getYear());
+        var gregorianNextYear = calendar
+                        .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(holidayNextYear));
 
-        return GeorgeanDateNextYear;
+        return gregorianNextYear;
+    }
+
+    // Legacy method for backward compatibility
+    @Deprecated
+    public JewishCalendarDate jewishHoliday(int gregorianYear, int hebrewMonth, int hebrewDay, int additionalDays)
+    {
+        return calculateHebrewHolidayInGregorianYear(gregorianYear, hebrewMonth, hebrewDay, additionalDays);
     }
 }

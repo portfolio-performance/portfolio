@@ -8,17 +8,20 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
-// Tel Aviv Stock Exchange starting 2026
-// https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
+/**
+ * Test for Tel Aviv Stock Exchange (TASE) trading calendar. Based on official
+ * TASE trading vacation schedule starting 2026.
+ * https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
+ */
 public class TLVTradeCalendarTest
 {
 
     @Test
     public void Regular_Lunar_Calendar_Holidays_should_be_a_holiday()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
+        var calendar = TradeCalendarManager.getInstance("tlv");
 
-        // Passover Night - Erev Passover, PassoverI and Passover II
+        // Passover Night - Erev Passover, Passover I and Passover II
         assertThat(calendar.isHoliday(LocalDate.parse("2024-04-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2024-04-23")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2024-04-24")), is(true));
@@ -46,17 +49,15 @@ public class TLVTradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2025-09-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-13")), is(true));
 
-        
-        //YOM_KIPUR_EVE, if (hebDay == 9 && hebMonth == 7)
+        // YOM_KIPUR_EVE, if (hebDay == 9 && hebMonth == 7)
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-11")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-10-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-20")), is(true));
-        
-        // YOM_KIPUR_DAY 
+
+        // YOM_KIPUR_DAY
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-12")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-10-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-21")), is(true));
-
 
         // FAST_DAY Tisha B'Av
         assertThat(calendar.isHoliday(LocalDate.parse("2024-08-13")), is(true));
@@ -73,10 +74,13 @@ public class TLVTradeCalendarTest
         assertThat(calendar.isHoliday(LocalDate.parse("2025-10-14")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-10-03")), is(true));
 
-        // SAVHUOT_EVE, // SHAVUOT,
+        // SHAVUOT_EVE and SHAVUOT
         assertThat(calendar.isHoliday(LocalDate.parse("2024-06-11")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-06-12")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-06-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-06-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-05-21")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-05-22")), is(true));
 
         // SUKKOTH_EVE, if (hebDay == 14 && hebMonth == 7)
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-16")), is(true));
@@ -92,18 +96,20 @@ public class TLVTradeCalendarTest
     @Test
     public void Special_Jewish_Calendar_Holidays_should_be_a_holiday()
     {
+        var calendar = TradeCalendarManager.getInstance("tlv");
+
         // PURIM
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
         assertThat(calendar.isHoliday(LocalDate.parse("2024-03-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-03-14")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-03-03")), is(true));
-
     }
 
     @Test
     public void Israeli_Memorial_Day_should_be_a_holiday()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
+        var calendar = TradeCalendarManager.getInstance("tlv");
+
+        // Memorial Day (Yom HaZikaron)
         assertThat(calendar.isHoliday(LocalDate.parse("2024-05-13")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-04-30")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-21")), is(true));
@@ -112,28 +118,80 @@ public class TLVTradeCalendarTest
     @Test
     public void Israeli_Independence_Day_should_be_a_holiday()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
+        var calendar = TradeCalendarManager.getInstance("tlv");
 
+        // Independence Day (Yom Ha'atzmaut)
         assertThat(calendar.isHoliday(LocalDate.parse("2024-05-14")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-05-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-22")), is(true));
-      
     }
-
-
 
     @Test
     public void testWeekendsAfter2016()
     {
-        TradeCalendar calendar = TradeCalendarManager.getInstance("tlv");
+        var calendar = TradeCalendarManager.getInstance("tlv");
 
         assertFalse(calendar == null);
         assertThat(calendar.isHoliday(LocalDate.parse("2026-01-10")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-01-11")), is(true));
     }
 
+    @Test
+    public void Regular_working_days_should_not_be_holidays()
+    {
+        var calendar = TradeCalendarManager.getInstance("tlv");
 
+        // Regular weekdays that are not holidays
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-01-02")), is(false)); // Tuesday
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-01-03")), is(false)); // Wednesday
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-01-04")), is(false)); // Thursday
 
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-01-06")), is(false)); // Monday
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-01-07")), is(false)); // Tuesday
 
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-06")), is(false)); // Monday
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-07")), is(false)); // Tuesday
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-08")), is(false)); // Wednesday
+    }
 
+    @Test
+    public void Edge_cases_with_Sabbath_adjustments()
+    {
+        var calendar = TradeCalendarManager.getInstance("tlv");
+
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-05-13")), is(true)); // Memorial Day adjusted
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-05-14")), is(true)); // Independence Day adjusted
+    }
+
+    @Test
+    public void Multi_year_consistency_test()
+    {
+        var calendar = TradeCalendarManager.getInstance("tlv");
+
+        // Test multiple years to ensure calendar consistency
+        int[] testYears = { 2024, 2025, 2026 };
+
+        for (int year : testYears)
+        {
+            // Each year should have Rosh Hashanah (2 days)
+            var roshHashanahStart = LocalDate.of(year, 9, 1); // approximate
+            var foundRoshHashanah = false;
+
+            // Search for Rosh Hashanah in September/October
+            for (var day = 1; day <= 60; day++)
+            {
+                var testDate = roshHashanahStart.plusDays(day);
+                if (testDate.getYear() > year)
+                    break;
+
+                if (calendar.isHoliday(testDate) && calendar.isHoliday(testDate.plusDays(1)))
+                {
+                    foundRoshHashanah = true;
+                    break;
+                }
+            }
+
+            assertThat("Rosh Hashanah not found for year " + year, foundRoshHashanah, is(true));
+        }
+    }
 }
