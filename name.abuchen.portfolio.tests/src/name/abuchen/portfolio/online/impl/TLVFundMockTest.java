@@ -41,6 +41,8 @@ public class TLVFundMockTest
      */
     //@formatter:on
 
+    // Mutual Fund Example - 5127121
+    // https://maya.tase.co.il/en/funds/mutual-funds/5127121
     private String getFundDetails()
     {
         return getHistoricalTaseQuotes("response_tase_fund_details01.txt");

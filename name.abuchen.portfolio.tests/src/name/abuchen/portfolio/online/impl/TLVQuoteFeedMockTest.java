@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,6 +24,7 @@ import com.google.gson.Gson;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
@@ -43,11 +47,15 @@ public class TLVQuoteFeedMockTest
         return getHistoricalTaseQuotes("response_tase_list_indices.txt");
     }
 
-    // private String getFundDetails()
-    // {
-    // return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
-    // }
+    // Mutual Fund Example - 5127121
+    // https://maya.tase.co.il/en/funds/mutual-funds/5127121
+    private String getFundDetails()
+    {
+        return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
+    }
 
+    // Government Bond Example - 01135912
+    // https://market.tase.co.il/en/market_data/security/1135912/major_data
     private String getSecurityDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details01.txt");
@@ -55,7 +63,7 @@ public class TLVQuoteFeedMockTest
 
     private String getSecurityDetailsEnglish()
     {
-        return getHistoricalTaseQuotes("response_tase_security_details01.txt");
+        return getSecurityDetails();
     }
 
     private String getSecurityDetailsHebrew()
@@ -63,6 +71,8 @@ public class TLVQuoteFeedMockTest
         return getHistoricalTaseQuotes("response_tase_security_details03.txt");
     }
 
+    // Stock Example - NICE
+    // https://market.tase.co.il/en/market_data/security/273011
     private String getSharesDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details02.txt");
@@ -95,35 +105,52 @@ public class TLVQuoteFeedMockTest
 
 
 
-
-    @Ignore("Mock Test Test needs to be refactored")
+    @Ignore
     @Test
-    public void mocked_Share_should_return_Latest_Quotes() throws IOException
+    public void mocked_share_should_return_latest_quotes()
     {
-        // TODO add support for Subid.
         Security security = new Security();
-        security.setTickerSymbol("AAPL");
+        security.setTickerSymbol("NICE");
         security.setCurrencyCode("ILS");
-        security.setWkn("273");
-        String response = getSharesDetails();
-        assertTrue(response.length() > 0);
+        security.setWkn("273011");
 
-        TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+        String mockedresponse = getSharesDetails();
+        assertThat(mockedresponse.length(), greaterThan(0));
 
-        // PRice in ILS, Type = Mutual Fund
-        Optional<LatestSecurityPrice> price = feed.getLatestQuote(security);
-        assertFalse(price.equals(Optional.empty()));
-        assertTrue(price.isPresent());
+        Optional<LatestSecurityPrice> mockedprice = null;
 
-        LatestSecurityPrice p = price.get();
-        // System.out.println(p + "High " + p.getValue() + " " +
-        // LocalDate.of(2025, 8, 26));
-        assertTrue(p.getHigh() == 47190000000l);
-        assertTrue(p.getLow() == 46050000000l);
-        assertTrue(p.getValue() == 46050000000l);
-        assertTrue(p.getDate().equals(LocalDate.of(2025, 8, 31))); // 05/11/2024
+        try
+        {
+            TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+            Mockito.doReturn(mockedprice).when(feed).getLatestQuote(security);
 
+            // PRice in ILS, Type = Mutual Fund
+            Optional<LatestSecurityPrice> price = feed.getLatestQuote(security);
+
+            assertThat(price, not(Optional.empty()));
+            // assertFalse(price.equals(Optional.empty()));
+            // assertTrue(price.isPresent());
+
+            LatestSecurityPrice p = price.get();
+            // System.out.println(p + "High " + p.getValue() + " " +
+            // LocalDate.of(2025, 8, 26));
+            assertThat(p.getDate(), is(LocalDate.of(2025, 8, 31)));
+            assertThat(p.getHigh(), is(Values.Quote.factorize(471.90)));
+            assertThat(p.getLow(), is(Values.Quote.factorize(460.50)));
+            assertThat(p.getValue(), is(Values.Quote.factorize(460.50)));
+            // assertTrue(p.getHigh() == 47190000000l);
+            // assertTrue(p.getLow() == 46050000000l);
+            // assertTrue(p.getValue() == 46050000000l);
+            // assertTrue(p.getDate().equals(LocalDate.of(2025, 8, 31))); //
+            // 05/11/2024
+
+            verify(feed).getLatestQuote(security);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
     }
 
     @Ignore()

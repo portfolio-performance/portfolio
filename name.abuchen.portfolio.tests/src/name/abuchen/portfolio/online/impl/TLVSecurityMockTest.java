@@ -29,11 +29,15 @@ import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
 public class TLVSecurityMockTest
 {
 
+    // Government Bond Example - 01135912
+    // https://market.tase.co.il/en/market_data/security/1135912/major_data
     private String getBondDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details01.txt");
     }
 
+    // Stock Example - NICE
+    // https://market.tase.co.il/en/market_data/security/273011
     private String getSharesDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details02.txt");

@@ -257,41 +257,7 @@ public class TLVQuoteFeed implements QuoteFeed
     }
 
 
-    @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
 
-    {
-        try
-        {
-            // Object TLVClass = getTLVClass(security);
-            TLVType securityType = this.getSecurityType(security.getWkn());
-            if (securityType != TLVType.NONE)
-            {
-                if (securityType == TLVType.SECURITY)
-                {
-                    // SecurityListing securityDetails =
-                    // this.TLVSecurities.getDetails(security, lang);
-                    // return this.TLVSecurities.ObjectToMap(securityDetails);
-                    Optional<LatestSecurityPrice> price = this.TLVSecurities.getLatestQuote(security);
-                    return price;
-                }
-                if (securityType == TLVType.FUND)
-                {
-                    Optional<LatestSecurityPrice> price = this.TLVFunds.getLatestQuote(security);
-                    return price;
-                }
-                return Optional.empty();
-            }
-            else
-            {
-                return Optional.empty();
-            }
-        }
-        catch (Exception e)
-        {
-            return Optional.empty();
-        }
-    }
 
     private Optional<LatestSecurityPrice> NotInUse(Security security)
     {
@@ -1003,7 +969,31 @@ public class TLVQuoteFeed implements QuoteFeed
 
     }
 
+    @Override
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    {
+        if ((security.getWkn() == null) || (security.getWkn().length() == 0))
+            return Optional.empty();
 
+        TLVType type = getSecurityType(security.getWkn());
+        Optional<LatestSecurityPrice> priceOpt = Optional.empty();
+        
+        try
+        {
+            if (type == TLVType.FUND)
+            {
+                priceOpt = this.TLVFunds.getLatestQuote(security);
+            }
+            if (type == TLVType.SECURITY)
+                priceOpt = this.TLVSecurities.getLatestQuote(security);
+            
+            return priceOpt;
+        }
+        catch (Exception e)
+        {
+            return priceOpt;
+        }
+    }
 
     // private Optional<String> quoteCurrency = Optional.of("ILA");
     // //$NON-NLS-1$

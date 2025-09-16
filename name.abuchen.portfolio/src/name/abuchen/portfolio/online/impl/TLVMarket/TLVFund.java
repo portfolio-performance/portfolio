@@ -57,18 +57,23 @@ public class TLVFund extends TLVListing
         try
         {
             String response = this.rpcLatestQuoteFund(security);
-            Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-                            .create();
-            Optional<FundListing> jsonprice = Optional.of(gson.fromJson(response, FundListing.class));
-
-            Optional<LatestSecurityPrice> price = convertFundListingToSecurityPrice(jsonprice, security);
-            return price;
+            return convertResponseToSecurityPrice(response, security);
         }
         catch (IOException e)
         {
             
             return Optional.empty();
         }
+
+    }
+
+    protected Optional<LatestSecurityPrice> convertResponseToSecurityPrice(String response, Security security)
+    {
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()).create();
+        Optional<FundListing> jsonprice = Optional.of(gson.fromJson(response, FundListing.class));
+
+        Optional<LatestSecurityPrice> price = convertFundListingToSecurityPrice(jsonprice, security);
+        return price;
 
     }
 
@@ -272,6 +277,7 @@ public class TLVFund extends TLVListing
                         .addHeader("X-Maya-With", "allow").addHeader("Accept-Language", "en-US").get();
         return response;
     }
+
 
     // TODO: getDetails change to Optional
     public FundListing getDetails(Security security, Language lang) throws Exception
