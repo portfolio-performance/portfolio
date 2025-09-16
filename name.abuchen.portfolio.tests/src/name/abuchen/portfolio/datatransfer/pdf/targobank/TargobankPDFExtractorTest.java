@@ -22,6 +22,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -44,7 +45,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class TargobankPDFExtractorTest
@@ -62,8 +62,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -93,8 +94,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -124,8 +126,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -155,8 +158,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -187,8 +191,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -220,8 +225,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -253,8 +259,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -284,8 +291,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -316,8 +324,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -351,8 +360,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -384,8 +394,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -415,8 +426,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -437,7 +449,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInEUR()
     {
-        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", "EUR");
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
@@ -454,8 +466,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -467,7 +480,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -487,8 +500,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -520,8 +534,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -542,7 +557,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01WithSecurityInEUR()
     {
-        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", "EUR");
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
@@ -561,8 +576,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -574,7 +590,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -595,8 +611,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -616,7 +633,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01WithSecurityInEUR_SourceFilesReversed()
     {
-        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", "EUR");
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
@@ -635,8 +652,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -648,7 +666,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -667,8 +685,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -699,8 +718,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -734,8 +754,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -777,8 +798,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -818,8 +840,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -840,7 +863,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", "EUR");
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
@@ -857,8 +880,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -870,7 +894,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -890,8 +914,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -923,8 +948,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -945,7 +971,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03WithSecurityInEUR()
     {
-        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", "EUR");
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
@@ -964,8 +990,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -977,7 +1004,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -998,8 +1025,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1019,7 +1047,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03WithSecurityInEUR_SourceFilesReversed()
     {
-        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", "EUR");
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
@@ -1038,8 +1066,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1051,7 +1080,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1070,8 +1099,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1102,8 +1132,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1137,8 +1168,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1180,8 +1212,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1221,8 +1254,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1235,15 +1269,15 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
-                        hasForexGrossValue("USD", 25.00), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasForexGrossValue("USD", 29.41), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", "EUR");
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
@@ -1260,20 +1294,21 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1293,8 +1328,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1328,8 +1364,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1342,8 +1379,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
-                        hasForexGrossValue("USD", 25.00), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
+                        hasForexGrossValue("USD", 29.41), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
@@ -1360,7 +1397,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05WithSecurityInEUR()
     {
-        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", "EUR");
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
@@ -1379,20 +1416,21 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1409,7 +1447,7 @@ public class TargobankPDFExtractorTest
                                         check(tx -> {
                                             var c = new CheckCurrenciesAction();
                                             var account = new Account();
-                                            account.setCurrencyCode(CurrencyUnit.EUR);
+                                            account.setCurrencyCode("EUR");
                                             var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
@@ -1430,8 +1468,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1444,7 +1483,7 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
@@ -1461,7 +1500,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05WithSecurityInEUR_SourceFilesReversed()
     {
-        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", "EUR");
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
@@ -1480,20 +1519,21 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-08-31T00:00"), hasShares(235.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("R.-Nr.: NUMMER"), //
-                        hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
+                        hasAmount("EUR", 20.82 + 3.67), hasGrossValue("EUR", 20.82 + 3.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1510,7 +1550,7 @@ public class TargobankPDFExtractorTest
                                         check(tx -> {
                                             var c = new CheckCurrenciesAction();
                                             var account = new Account();
-                                            account.setCurrencyCode(CurrencyUnit.EUR);
+                                            account.setCurrencyCode("EUR");
                                             var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
@@ -1529,8 +1569,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1561,8 +1602,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1594,8 +1636,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1627,8 +1670,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1658,8 +1702,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1672,15 +1717,15 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969"), //
-                        hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71), //
-                        hasForexGrossValue("USD", 7.00), //
+                        hasAmount("EUR", 6.71 + 1.18), hasGrossValue("EUR", 6.71 + 1.18), //
+                        hasForexGrossValue("USD", 8.24), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
     public void testDividende07WithSecurityInEUR()
     {
-        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", "EUR");
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
@@ -1697,20 +1742,21 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969"), //
-                        hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71), //
+                        hasAmount("EUR", 6.71 + 1.18), hasGrossValue("EUR", 6.71 + 1.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1730,8 +1776,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1763,8 +1810,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1785,7 +1833,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende03WithSecurityInEUR()
     {
-        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", "EUR");
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
@@ -1804,8 +1852,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1817,7 +1866,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1838,8 +1887,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1859,7 +1909,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende07WithSecurityInEUR_SourceFilesReversed()
     {
-        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", "EUR");
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
@@ -1878,8 +1928,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1891,7 +1942,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1910,8 +1961,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1924,15 +1976,15 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
-                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70), //
-                        hasForexGrossValue("USD", 44.26), //
+                        hasAmount("EUR", 37.70 + 6.65), hasGrossValue("EUR", 37.70 + 6.65), //
+                        hasForexGrossValue("USD", 52.07), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
     public void testDividende08WithSecurityInEUR()
     {
-        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", "EUR");
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
@@ -1949,20 +2001,21 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
-                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70), //
+                        hasAmount("EUR", 37.70 + 6.65), hasGrossValue("EUR", 37.70 + 6.65), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1982,8 +2035,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2015,8 +2069,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2037,7 +2092,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR()
     {
-        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", "EUR");
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
@@ -2056,8 +2111,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2069,7 +2125,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -2090,8 +2146,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2111,7 +2168,7 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR_SourceFilesReversed()
     {
-        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", "EUR");
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
@@ -2130,8 +2187,9 @@ public class TargobankPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2143,7 +2201,7 @@ public class TargobankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
