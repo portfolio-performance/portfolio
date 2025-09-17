@@ -22,6 +22,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Scalable Capital GmbH");
+        addBankIdentifier("Scalable Capital Bank GmbH");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -32,7 +33,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Scalable Capital GmbH";
+        return "Scalable Capital Bank GmbH";
     }
 
     private void addBuySellTransaction()
@@ -287,8 +288,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 07.04.2025 07.04.2025 Überweisung +29.715,63 EUR
+        // 14.08.2025 15.08.2025 Lastschrift +558,52 EUR
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Überweisung) \\+[\\.,\\d]+ [A-Z]{3}.*$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(.berweisung" //
+                        + "|Lastschrift) " //
+                        + "\\+[\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -299,7 +304,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(Überweisung)) \\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(.berweisung" //
+                                        + "|Lastschrift)) " //
+                                        + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
