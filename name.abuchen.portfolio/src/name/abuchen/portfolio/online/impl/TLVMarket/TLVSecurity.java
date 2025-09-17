@@ -25,7 +25,6 @@ import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistoryEntry;
@@ -85,7 +84,7 @@ public class TLVSecurity extends TLVListing
             Optional<LatestSecurityPrice> price = convertSecurityListingToSecurityPrice(jsonprice, security);
             return price;
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             return Optional.empty();
         }
@@ -93,6 +92,10 @@ public class TLVSecurity extends TLVListing
 
     public Optional<QuoteFeedData> getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
+
+        if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
+            return Optional.empty();
+
         LocalDate from = caculateStart(security);
         LocalDate to = LocalDate.now();
 
@@ -112,61 +115,49 @@ public class TLVSecurity extends TLVListing
 
     }
 
-    @VisibleForTesting
+
+
     public Optional<QuoteFeedData> convertSecurityHistoryToQuoteFeedData(Optional<SecurityHistory> historyopt,
                     Security security)
     {
         QuoteFeedData feed = new QuoteFeedData();
         Optional<String> quoteCurrency = getQuoteCurrency(security);
-        
+        LatestSecurityPrice price = null;
 
         if (historyopt.isEmpty())
             return Optional.empty();
         
         SecurityHistory history = historyopt.get();
         
-        // public SecurityHistoryEntry[] Items;
-        // public int TotalRec;
-        // public LocalDate DateFrom;
-        // public LocalDate DateTo;
-        // public LocalDate TradeDateEOD;
-
-        // private final List<LatestSecurityPrice> prices = new ArrayList<>();
-        // private final List<Exception> errors = new ArrayList<>();
-        // private final List<RawResponse> responses = new ArrayList<>();
+        if ((history.getItems()).length == 0)
+            return Optional.empty();
 
         SecurityHistoryEntry[] historyitemsarray = history.getItems();
         
-        if (historyitemsarray.length > 0)
+        for (int i = 0; i < historyitemsarray.length; i++)
         {
-            for (int i = 0; i < historyitemsarray.length; i++)
+            SecurityHistoryEntry entry = historyitemsarray[i];
+
+            price = new LatestSecurityPrice();
+
+            Optional<String> tradeDate = Optional.of(entry.getTradeDate());
+            if (tradeDate.isPresent())
+                price.setDate(TLVHelper.asDate(tradeDate.get()));
+
+            Optional<String> closePrice = Optional.of(entry.getCloseRate());
+            if (closePrice.isPresent())
             {
-                SecurityHistoryEntry entry = historyitemsarray[i];
+                long priceL = TLVHelper.asPrice(closePrice.get());
+                price.setValue(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            }
 
-                LatestSecurityPrice price = new LatestSecurityPrice();
-                price.setDate(entry.getTradeDate());
-
-                long highval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getHighRate())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setHigh(highval);
-
-                long lowval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getLowRate())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setLow(lowval);
-
-                long curval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getCloseRate())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setValue(curval);
-
-                price.setVolume((long) entry.getMarketValue());
+            if (price.getDate() != null && price.getValue() > 0)
+            {
                 feed.addPrice(price);
             }
-            return Optional.of(feed);
         }
-        else
-        {
-            return Optional.empty();
-        }
+        return Optional.of(feed);
+
     }
 
     // private void DoNoUseFoNow()
@@ -557,21 +548,21 @@ public class TLVSecurity extends TLVListing
     }
 
     // Yahoo Function - not in use
-    public Optional<String> extract(String body, int startIndex, String startToken, String endToken)
-    {
-        int begin = body.indexOf(startToken, startIndex);
-
-        if (begin < 0)
-            return Optional.empty();
-
-        int end = body.indexOf(endToken, begin + startToken.length());
-        if (end < 0)
-            return Optional.empty();
-
-        return Optional.of(body.substring(begin + startToken.length(), end));
-    }
-
-    // TODO Not in use
+    // public Optional<String> extract(String body, int startIndex, String
+    // startToken, String endToken)
+    // {
+    // int begin = body.indexOf(startToken, startIndex);
+    //
+    // if (begin < 0)
+    // return Optional.empty();
+    //
+    // int end = body.indexOf(endToken, begin + startToken.length());
+    // if (end < 0)
+    // return Optional.empty();
+    //
+    // return Optional.of(body.substring(begin + startToken.length(), end));
+    // }
+    //
     public static Map<String, Object> ObjectToMap(Object listing)
     {
         Gson gson = GSONUtil.createGson();

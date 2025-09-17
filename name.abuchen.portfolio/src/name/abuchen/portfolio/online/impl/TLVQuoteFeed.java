@@ -10,11 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
@@ -62,7 +59,21 @@ public class TLVQuoteFeed implements QuoteFeed
     private List<IndiceListing> mappedEntities;
     DateTimeFormatter formatter;
 
-
+    /******
+     * Need to implement
+     * public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+            List<LatestSecurityPrice> prices = new ArrayList<>();
+            private final List<Exception> errors = new ArrayList<>();
+            private final List<RawResponse> responses = new ArrayList<>();
+    
+    @Override
+    public QuoteFeedData previewHistoricalQuotes(Security security)
+    {
+        return internalGetQuotes(security, LocalDate.now().minusMonths(2));
+    }
+    
+     */
+    
     public TLVQuoteFeed()
     {
         this.TLVSecurities = new TLVSecurity();
@@ -80,7 +91,7 @@ public class TLVQuoteFeed implements QuoteFeed
         }
         catch (IOException e)
         {
-            System.out.print("Could not resolved TLV securities from TLV API"); //$NON-NLS-1$
+            System.out.print("Could not get TLV Stock Exchange Entities"); //$NON-NLS-1$
             // PortfolioLog.abbreviated(e);
             this.mapped = false;
         }
@@ -116,10 +127,16 @@ public class TLVQuoteFeed implements QuoteFeed
                 }
             }
         }
+        else
+        {
+            System.out.println("Could not get TLV Stock Exchange Entities"); //$NON-NLS-1$
+        }
     }
 
     private TLVType getSecurityType(String securityId)
     {
+        if (!this.mapped)
+            return TLVType.NONE;
         IndiceListing foundIndice = this.mappedEntities.stream().filter(p -> p.getId().equals(securityId)).findFirst()
                         .orElse(null);
         if (foundIndice != null)
@@ -426,150 +443,161 @@ public class TLVQuoteFeed implements QuoteFeed
 //@formatter:on
 
     // TODO - refactor
-    @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
-    {
-        LocalDate from = caculateStart(security);
-        LocalDate to = LocalDate.now();
-
-        QuoteFeedData historicalprices = new QuoteFeedData();
-        Optional<String> quoteCurrency = getQuoteCurrency(security);
-
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject;
-        try
-        {
-            String pricehistory = getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
-
-            jsonObject = (JSONObject) parser.parse(pricehistory);
-            try
-            {
-            
-                JSONObject parentObject = (JSONObject) jsonObject.get("Table"); //$NON-NLS-1$
-
-                if (parentObject != null)
-                {
-                    /*
-                     * "FundId": null, "TradeDate": "2025-08-25T00:00:00",
-                     * "LastUpdateDate": "0001-01-01T00:00:00", "PurchasePrice":
-                     * 146.88, "SellPrice": 146.88, "CreationPrice": null,
-                     * "DayYield": 0.04, "ShowDayYield": true, "Rate": 0,
-                     * "ManagmentFee": 0.25, "TrusteeFee": 0.025, "SuccessFee":
-                     * null, "AssetValue": 130.3
-                     */
-                    Set<String> keys = parentObject.keySet();
-                    //
-                    // Iterate over the keys
-                    Iterator<String> iterator = keys.iterator();
-                    while (iterator.hasNext())
-                    {
-                        String key = iterator.next();
-                        Object value = parentObject.get(key);
-                    }
-                }
-            }
-            catch (ClassCastException e)
-            {
-                JSONArray parentObject = (JSONArray) jsonObject.get("Table"); //$NON-NLS-1$
-
-                for (int i = 0; i < parentObject.size(); i++)
-                {
-                    JSONObject item = (JSONObject) parentObject.get(i);
-
-                    String strTradeDate = (String) item.get("TradeDate"); //$NON-NLS-1$
-                    LocalDate tradedate = null;
-                    if (strTradeDate.length() > 0)
-                    {
-                        tradedate = TLVHelper.asDateTime(strTradeDate); // $NON-NLS-1$
-                    }
-                    long curvalue = DoubletoLong(item, "SellPrice", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
-
-                    LatestSecurityPrice curprice = new LatestSecurityPrice(tradedate, curvalue);
-                    historicalprices.addPrice(curprice);
-
-                }
-                return historicalprices;
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
-            // Handle Bonds
-            JSONArray ItemsObject = (JSONArray) jsonObject.get("Items"); //$NON-NLS-1$
-            
-
-
-            if (ItemsObject != null)
-            {
-                // System.out.println("Price history Items " + ItemsObject);
-                // //$NON-NLS-1$
-
-                // Iterate over the keys
-                for (int i = 0; i < ItemsObject.size(); i++)
-                {
-                    JSONObject item = (JSONObject) ItemsObject.get(i);
-                    LocalDate curdate = LocalDate.parse((String) item.get("TradeDate"), this.formatter); //$NON-NLS-1$
-                    
-                    // Rates from history are in ILS. Need to convert to ILA
-                    long curvalue = DoubletoLong(item, "CloseRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
-                    // Double r = null;
-                    // Long curvalue = null;
-                    // Double closerate = (Double) item.get("CloseRate");
-
-                    //
-                    // try
-                    // {
-                    // r = (Double) item.get("CloseRate");
-                    // }
-                    // catch (IndexOutOfBoundsException e)
-                    // {
-                    // // Ignore
-                    // }
-                    // if (r != null && r.doubleValue() > 0)
-                    // {
-                    // long convertedprice =
-                    // convertILS(Values.Quote.factorize(roundQuoteValue(r)),
-                    // quoteCurrency.orElse(null),
-                    // security.getCurrencyCode());
-                    // curvalue = convertedprice;
-                    // }
-                    // else
-                    // {
-                    // curvalue = LatestSecurityPrice.NOT_AVAILABLE;
-                    // }
-                    //
-
-                    LatestSecurityPrice curprice = new LatestSecurityPrice(curdate, curvalue);
-                    
-                    // long lowvalue = convertILSToILA((Double)
-                    // item.get("LowtRate")); //$NON-NLS-1$
-                    long lowvalue = DoubletoLong(item, "LowtRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
-
-                    // long highvalue = convertILSToILA((Double)
-                    // item.get("HighRate")); //$NON-NLS-1$
-                    long highvalue = DoubletoLong(item, "HighRate", quoteCurrency, security.getCurrencyCode()); //$NON-NLS-1$
-                    
-                    curprice.setHigh(highvalue);
-                    curprice.setLow(lowvalue);
-                    historicalprices.addPrice(curprice);
-                    // System.out.println("Date " + curdate + " Value: " +
-                    // curvalue); //$NON-NLS-1$ //$NON-NLS-2$
-                    // System.out.println("High " + highvalue + " Low: " +
-                    // highvalue); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-
-            }
-            return historicalprices;
-        }
-        catch (Exception e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return historicalprices;
-        }
-
-
-    }
+    // public QuoteFeedData getHistoricalQuotesOld(Security security, boolean
+    // collectRawResponse)
+    // {
+    // LocalDate from = caculateStart(security);
+    // LocalDate to = LocalDate.now();
+    //
+    // QuoteFeedData historicalprices = new QuoteFeedData();
+    // Optional<String> quoteCurrency = getQuoteCurrency(security);
+    //
+    // JSONParser parser = new JSONParser();
+    // JSONObject jsonObject;
+    // try
+    // {
+    // String pricehistory = getPriceHistoryChunk(security, from, to, 1,
+    // Language.ENGLISH);
+    //
+    // jsonObject = (JSONObject) parser.parse(pricehistory);
+    // try
+    // {
+    //
+    // JSONObject parentObject = (JSONObject) jsonObject.get("Table");
+    // //$NON-NLS-1$
+    //
+    // if (parentObject != null)
+    // {
+    // /*
+    // * "FundId": null, "TradeDate": "2025-08-25T00:00:00",
+    // * "LastUpdateDate": "0001-01-01T00:00:00", "PurchasePrice":
+    // * 146.88, "SellPrice": 146.88, "CreationPrice": null,
+    // * "DayYield": 0.04, "ShowDayYield": true, "Rate": 0,
+    // * "ManagmentFee": 0.25, "TrusteeFee": 0.025, "SuccessFee":
+    // * null, "AssetValue": 130.3
+    // */
+    // Set<String> keys = parentObject.keySet();
+    // //
+    // // Iterate over the keys
+    // Iterator<String> iterator = keys.iterator();
+    // while (iterator.hasNext())
+    // {
+    // String key = iterator.next();
+    // Object value = parentObject.get(key);
+    // }
+    // }
+    // }
+    // catch (ClassCastException e)
+    // {
+    // JSONArray parentObject = (JSONArray) jsonObject.get("Table");
+    // //$NON-NLS-1$
+    //
+    // for (int i = 0; i < parentObject.size(); i++)
+    // {
+    // JSONObject item = (JSONObject) parentObject.get(i);
+    //
+    // String strTradeDate = (String) item.get("TradeDate"); //$NON-NLS-1$
+    // LocalDate tradedate = null;
+    // if (strTradeDate.length() > 0)
+    // {
+    // tradedate = TLVHelper.asDateTime(strTradeDate); // $NON-NLS-1$
+    // }
+    // long curvalue = DoubletoLong(item, "SellPrice", quoteCurrency,
+    // security.getCurrencyCode()); //$NON-NLS-1$
+    //
+    // LatestSecurityPrice curprice = new LatestSecurityPrice(tradedate,
+    // curvalue);
+    // historicalprices.addPrice(curprice);
+    //
+    // }
+    // return historicalprices;
+    // }
+    // catch (Exception e)
+    // {
+    // System.out.println(e.getMessage());
+    // }
+    // // Handle Bonds
+    // JSONArray ItemsObject = (JSONArray) jsonObject.get("Items");
+    // //$NON-NLS-1$
+    //
+    //
+    //
+    // if (ItemsObject != null)
+    // {
+    // // System.out.println("Price history Items " + ItemsObject);
+    // // //$NON-NLS-1$
+    //
+    // // Iterate over the keys
+    // for (int i = 0; i < ItemsObject.size(); i++)
+    // {
+    // JSONObject item = (JSONObject) ItemsObject.get(i);
+    // LocalDate curdate = LocalDate.parse((String) item.get("TradeDate"),
+    // this.formatter); //$NON-NLS-1$
+    //
+    // // Rates from history are in ILS. Need to convert to ILA
+    // long curvalue = DoubletoLong(item, "CloseRate", quoteCurrency,
+    // security.getCurrencyCode()); //$NON-NLS-1$
+    // // Double r = null;
+    // // Long curvalue = null;
+    // // Double closerate = (Double) item.get("CloseRate");
+    //
+    // //
+    // // try
+    // // {
+    // // r = (Double) item.get("CloseRate");
+    // // }
+    // // catch (IndexOutOfBoundsException e)
+    // // {
+    // // // Ignore
+    // // }
+    // // if (r != null && r.doubleValue() > 0)
+    // // {
+    // // long convertedprice =
+    // // convertILS(Values.Quote.factorize(roundQuoteValue(r)),
+    // // quoteCurrency.orElse(null),
+    // // security.getCurrencyCode());
+    // // curvalue = convertedprice;
+    // // }
+    // // else
+    // // {
+    // // curvalue = LatestSecurityPrice.NOT_AVAILABLE;
+    // // }
+    // //
+    //
+    // LatestSecurityPrice curprice = new LatestSecurityPrice(curdate,
+    // curvalue);
+    //
+    // // long lowvalue = convertILSToILA((Double)
+    // // item.get("LowtRate")); //$NON-NLS-1$
+    // long lowvalue = DoubletoLong(item, "LowtRate", quoteCurrency,
+    // security.getCurrencyCode()); //$NON-NLS-1$
+    //
+    // // long highvalue = convertILSToILA((Double)
+    // // item.get("HighRate")); //$NON-NLS-1$
+    // long highvalue = DoubletoLong(item, "HighRate", quoteCurrency,
+    // security.getCurrencyCode()); //$NON-NLS-1$
+    //
+    // curprice.setHigh(highvalue);
+    // curprice.setLow(lowvalue);
+    // historicalprices.addPrice(curprice);
+    // // System.out.println("Date " + curdate + " Value: " +
+    // // curvalue); //$NON-NLS-1$ //$NON-NLS-2$
+    // // System.out.println("High " + highvalue + " Low: " +
+    // // highvalue); //$NON-NLS-1$ //$NON-NLS-2$
+    // }
+    //
+    // }
+    // return historicalprices;
+    // }
+    // catch (Exception e)
+    // {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // return historicalprices;
+    // }
+    //
+    //
+    // }
 
     private long DoubletoLong(JSONObject item, String str, Optional<String> quoteCurrency, String securityCurrency)
     {
@@ -717,14 +745,82 @@ public class TLVQuoteFeed implements QuoteFeed
     //
     // }
 
-    // TODO - refactor to return the FundHistory or SecurityHistory (and not a
-    // Map)
-    // That way can extract it directly without going through maps. However to
-    // do that, they must return the same type
-    public Map<String, Object> getPriceHistoryChunk2(Security security, LocalDate fromDate, LocalDate toDate, int page,
+
+    @Override
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    {
+
+        Optional<QuoteFeedData> historicalprices = Optional.of(new QuoteFeedData());
+        TLVType securityType = this.getSecurityType(security.getWkn());
+
+        if (securityType == TLVType.NONE)
+            return new QuoteFeedData();
+        
+        if (securityType == TLVType.FUND)
+        {
+
+            historicalprices = this.TLVSecurities.getHistoricalQuotes(security, false);
+            if (historicalprices.isEmpty())
+                return new QuoteFeedData();
+            return historicalprices.get();
+        }
+        if (securityType == TLVType.SECURITY)
+        {
+            historicalprices = this.TLVFunds.getHistoricalQuotes(security, false);
+            if (historicalprices.isEmpty())
+                return new QuoteFeedData();
+            return historicalprices.get();
+        }
+        return historicalprices.get();
+    }
+
+
+
+
+
+    private Optional<SecurityHistory> getPriceHistoryChunkSecurity(Security security, LocalDate fromDate, LocalDate toDate,
+                    int page,
+                    Language lang)
+    {
+        try
+        {
+            Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunkSec(security, fromDate,
+                            toDate, page, lang);
+            if (securityHistory.isPresent())
+                return securityHistory;
+
+            return Optional.empty();
+        }
+        catch (Exception e)
+        {
+            return Optional.empty();
+        }
+
+    }
+
+    private Optional<FundHistory> getPriceHistoryChunkFund(Security security, LocalDate fromDate, LocalDate toDate,
+                    int page, Language lang)
+    {
+        try
+        {
+            Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate, page,
+                            lang);
+            if (fundHistory.isPresent())
+                return fundHistory;
+
+            return Optional.empty();
+        }
+        catch (Exception e)
+        {
+            return Optional.empty();
+        }
+    }
+    private String getPriceHistoryChunk2(Security security, LocalDate fromDate, LocalDate toDate,
+                    int page,
                     Language lang) throws Exception
     {
         TLVType securityType = this.getSecurityType(security.getWkn());
+        JSONObject emptyjson = new JSONObject();
         if (securityType != TLVType.NONE)
         {
             if (securityType == TLVType.SECURITY)
@@ -732,62 +828,27 @@ public class TLVQuoteFeed implements QuoteFeed
                 Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunkSec(security, fromDate,
                                 toDate, page, lang);
                 if (securityHistory.isPresent())
-                    return TLVHelper.ObjectToMap(securityHistory.get());
+                    // return TLVHelper.ObjectToMap(securityHistory.get());
+                    return this.HistoryToJson(securityHistory.get());
             }
             if (securityType == TLVType.FUND)
             {
                 Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate,
                                 page, lang);
                 if (fundHistory.isPresent())
-                    return TLVHelper.ObjectToMap(fundHistory.get());
+                    // return TLVHelper.ObjectToMap(fundHistory.get());
+                    return this.HistoryToJson(fundHistory.get());
             }
-            return Collections.emptyMap();
+            // return Collections.emptyMap();
+
+            return emptyjson.toString();
         }
         else
         {
-            return Collections.emptyMap();
+            // return Collections.emptyMap();
+            return emptyjson.toString();
         }
         
-
-    }
-
-    // Yahoo function- not used
-    public String getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate, int page,
-                    Language lang) 
-    {
-        try
-        {
-            TLVType securityType = this.getSecurityType(security.getWkn());
-            if (securityType != TLVType.NONE)
-            {
-                if (securityType == TLVType.SECURITY)
-                {
-                    Optional<SecurityHistory> securityHistory = this.TLVSecurities.getPriceHistoryChunk(security,
-                                    fromDate,
-                                    toDate, page, lang);
-                    if (securityHistory.isPresent())
-                        return this.HistoryToJson(securityHistory);
-                }
-                if (securityType == TLVType.FUND)
-                {
-                    Optional<FundHistory> fundHistory = this.TLVFunds.getPriceHistoryChunk(security, fromDate, toDate,
-                                    page,
-                                    lang);
-                    return this.HistoryToJson(fundHistory);
-                }
-                JSONObject json = new JSONObject();
-                return json.toString();
-            }
-            else
-            {
-                JSONObject json = new JSONObject();
-                return json.toString();
-            }
-        }
-        catch (Exception e)
-        {
-            return ""; //$NON-NLS-1$
-        }
     }
     
     // TODO do we need to make this Optional?

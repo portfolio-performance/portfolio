@@ -1,22 +1,20 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 public class SecurityHistoryEntry
 {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
-    public LocalDate TradeDate;
+    public String TradeDate;
     public float Change;
-    public float BaseRate;
-    public float OpenRate;
-    public float CloseRate;
-    public float HighRate;
-    public float LowtRate;
-    public float MarketValue;
+    public String BaseRate;
+    public String OpenRate;
+    public String CloseRate;
+    public String HighRate;
+    public String LowtRate;
+    public String MarketValue;
     public long RegisteredCapital;
     public float TurnOverValueShekel;
     public float OverallTurnOverUnits;
@@ -26,7 +24,7 @@ public class SecurityHistoryEntry
     public String ExeDesc;
     public float IANS;
     public float IndexAdjustedFreeFloat;
-    public LocalDate LastIANSUpdate;
+    public String LastIANSUpdate;
     public String TradeDateEOD;
     public float AdjustmentRate;
     public float BrutoYield;
@@ -35,88 +33,92 @@ public class SecurityHistoryEntry
     public boolean IsOfferingPrice;
     public String AdjustmentRateDesc;
 
-    public LocalDate getTradeDate()
+    public String getTradeDate()
     {
         return TradeDate;
     }
 
-    public void setTradeDate(LocalDate tradeDate)
+    public void setTradeDate(String tradeDate)
     {
         TradeDate = tradeDate;
     }
 
-    public float getBaseRate()
+    public String getBaseRate()
     {
         return BaseRate;
     }
 
-    public void setBaseRate(float baseRate)
+    public void setBaseRate(String baseRate)
     {
         BaseRate = baseRate;
     }
 
-    public float getCloseRate()
+    public String getCloseRate()
     {
         return CloseRate;
     }
 
-    public void setCloseRate(float closeRate)
+    public void setCloseRate(String closeRate)
     {
         CloseRate = closeRate;
     }
 
-    public float getHighRate()
+    public String getHighRate()
     {
         return HighRate;
     }
 
-    public void setHighRate(float highRate)
+    public void setHighRate(String highRate)
     {
         HighRate = highRate;
     }
 
-    public float getLowRate()
+    public String getLowRate()
     {
         return LowtRate;
     }
 
-    public void setLowRate(float lowRate)
+    public void setLowRate(String lowRate)
     {
         LowtRate = lowRate;
     }
 
-    public float getMarketValue()
+    public String getMarketValue()
     {
         return MarketValue;
     }
 
-    public void setMarketValue(float marketValue)
+    public void setMarketValue(String marketValue)
     {
         MarketValue = marketValue;
     }
 
-    public static SecurityHistoryEntry fromMap(Map<String, Object> map)
-    {
-        SecurityHistoryEntry historyentry = new SecurityHistoryEntry();
-        if (map.containsKey("MarketValue")) //$NON-NLS-1$
-        {
-            historyentry.setMarketValue(((Double) map.get("MarketValue")).floatValue()); //$NON-NLS-1$
-        }
-        if (map.containsKey("LowRate")) //$NON-NLS-1$
-        {
-            historyentry.setLowRate(((Double) map.get("LowRate")).floatValue()); //$NON-NLS-1$
-        }
-        if (map.containsKey("HighRate")) //$NON-NLS-1$
-        {
-            historyentry.setHighRate(((Double) map.get("HighRate")).floatValue()); //$NON-NLS-1$
-        }
-        if (map.containsKey("TradeDate")) //$NON-NLS-1$
-        {
-            historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"), formatter)); //$NON-NLS-1$
-        }
-
-        return historyentry;
-    }
+    // public static SecurityHistoryEntry fromMap(Map<String, Object> map)
+    // {
+    // SecurityHistoryEntry historyentry = new SecurityHistoryEntry();
+    // if (map.containsKey("MarketValue")) //$NON-NLS-1$
+    // {
+    // historyentry.setMarketValue(((Double)
+    // map.get("MarketValue")).floatValue()); //$NON-NLS-1$
+    // }
+    // if (map.containsKey("LowRate")) //$NON-NLS-1$
+    // {
+    // historyentry.setLowRate(((Double) map.get("LowRate")).floatValue());
+    // //$NON-NLS-1$
+    // }
+    // if (map.containsKey("HighRate")) //$NON-NLS-1$
+    // {
+    // historyentry.setHighRate(((Double) map.get("HighRate")).floatValue());
+    // //$NON-NLS-1$
+    // }
+    // if (map.containsKey("TradeDate")) //$NON-NLS-1$
+    // {
+    // historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"),
+    // formatter)); //$NON-NLS-1$
+    // }
+    //
+    // return historyentry;
+    // }
 
     @SuppressWarnings("nls")
     @Override

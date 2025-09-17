@@ -28,7 +28,6 @@ import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
@@ -69,6 +68,32 @@ public class TLVFund extends TLVListing
 
     protected Optional<LatestSecurityPrice> convertResponseToSecurityPrice(String response, Security security)
     {
+
+        class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
+        {
+
+            // private final DateTimeFormatter formatter =
+            // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss");
+            // //$NON-NLS-1$
+
+            @Override
+            public JsonElement serialize(final LocalDateTime date, final Type typeOfSrc,
+                            final JsonSerializationContext context)
+            {
+                // System.out.println("d " +
+                // date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                return new JsonPrimitive(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            }
+
+            @Override
+            public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
+                            final JsonDeserializationContext context) throws JsonParseException
+            {
+                // System.out.println(json.getAsString() + " " +
+                // LocalDateTime.parse(json.getAsString()));
+                return LocalDateTime.parse(json.getAsString());
+            }
+        }
         Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()).create();
         Optional<FundListing> jsonprice = Optional.of(gson.fromJson(response, FundListing.class));
 
@@ -77,29 +102,7 @@ public class TLVFund extends TLVListing
 
     }
 
-    private class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
-    {
 
-        private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
-
-        @Override
-        public JsonElement serialize(final LocalDateTime date, final Type typeOfSrc,
-                        final JsonSerializationContext context)
-        {
-            // System.out.println("d " +
-            // date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-            return new JsonPrimitive(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-        }
-
-        @Override
-        public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
-                        final JsonDeserializationContext context) throws JsonParseException
-        {
-            // System.out.println(json.getAsString() + " " +
-            // LocalDateTime.parse(json.getAsString()));
-            return LocalDateTime.parse(json.getAsString());
-        }
-    }
 
     private LocalDate asDateTime(String s)
     {
@@ -176,6 +179,7 @@ public class TLVFund extends TLVListing
             return Optional.empty();
 
         LocalDate from = caculateStart(security);
+        from = LocalDate.of(2025, 10, 1);
         LocalDate to = LocalDate.now();
         try
         {
@@ -192,60 +196,49 @@ public class TLVFund extends TLVListing
         }
     }
 
-    @VisibleForTesting
+
     public Optional<QuoteFeedData> convertFundHistoryToQuoteFeedData(Optional<FundHistory> historyopt,
                     Security security)
     {
         QuoteFeedData feed = new QuoteFeedData();
         Optional<String> quoteCurrency = getQuoteCurrency(security);
+        LatestSecurityPrice price = null;
 
         if (historyopt.isEmpty())
             return Optional.empty();
 
         FundHistory history = historyopt.get();
+        if ((history.getItems()).length == 0)
+            return Optional.empty();
 
-        // TODO
-        // public FundHistoryEntry[] Table;
-        // public int Total;
-        // private LocalDateTime StartDate;
-        // private LocalDateTime EndDate;
-
-        // private final List<LatestSecurityPrice> prices = new ArrayList<>();
-        // private final List<Exception> errors = new ArrayList<>();
-        // private final List<RawResponse> responses = new ArrayList<>();
 
         FundHistoryEntry[] historyitemsarray = history.getItems();
 
-        if (historyitemsarray.length > 0)
+        for (int i = 0; i < historyitemsarray.length; i++)
         {
-            for (int i = 0; i < historyitemsarray.length; i++)
+            FundHistoryEntry entry = historyitemsarray[i];
+
+            price = new LatestSecurityPrice();
+
+            Optional<LocalDateTime> tradeDate = Optional.of(entry.getTradeDate());
+            if (tradeDate.isPresent())
+                // System.out.println(entry.getTradeDate());
+                price.setDate(TLVHelper.asDate(tradeDate.get().toString()));
+
+         
+            Optional<String> sellPrice = Optional.of(entry.getSellPrice());
+            if (sellPrice.isPresent())
             {
-                FundHistoryEntry entry = historyitemsarray[i];
+                long priceL = TLVHelper.asPrice(sellPrice.get());
+                price.setValue(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            }
 
-                LatestSecurityPrice price = new LatestSecurityPrice();
-                price.setDate(entry.getTradeDate().toLocalDate());
-
-                long highval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getSellPrice())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setHigh(highval);
-
-                long lowval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getPurchasePrice())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setLow(lowval);
-
-                long curval = convertILS(Values.Quote.factorize(roundQuoteValue(entry.getAssetValue())),
-                                quoteCurrency.orElse(null), security.getCurrencyCode());
-                price.setValue(curval);
-
-                price.setVolume((long) entry.getAssetValue());
+            if (price.getDate() != null && price.getValue() > 0)
+            {
                 feed.addPrice(price);
             }
-            return Optional.of(feed);
         }
-        else
-        {
-            return Optional.empty();
-        }
+        return Optional.of(feed);
     }
 
     public Map<String, String> getNames(FundListing englishDetails, FundListing hebrewDetails)
@@ -308,12 +301,7 @@ public class TLVFund extends TLVListing
             return Optional.empty();
         int _page = (page == 0) ? 1 : page;
 
-        // JSONObject uploadData = new JSONObject();
-        // uploadData.put("DateFrom", fromDate.toString()); //$NON-NLS-1$
-        // uploadData.put("DateTo", toDate.toString()); //$NON-NLS-1$
-        // uploadData.put("FundId", security.getWkn()); //$NON-NLS-1$
-        // uploadData.put("Page", Integer.toString(_page)); //$NON-NLS-1$
-        // uploadData.put("Period", Integer.toString(period)); //$NON-NLS-1$
+
 
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair("DateFrom", fromDate.toString())); //$NON-NLS-1$
@@ -346,7 +334,6 @@ public class TLVFund extends TLVListing
         }
     }
 
-    // TODO: Change to Optional
     public Optional<FundHistory> getPriceHistory(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang)
                     throws Exception

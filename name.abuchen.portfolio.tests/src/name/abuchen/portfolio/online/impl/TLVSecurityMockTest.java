@@ -48,6 +48,14 @@ public class TLVSecurityMockTest
         return "";
     }
 
+    // Mutual Fund Example - 5127121
+    // https://maya.tase.co.il/en/funds/mutual-funds/5127121
+    // returns in ILS
+    private String getFundDetails()
+    {
+        return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
+    }
+
     private String getSecurityHistory()
     {
         return getHistoricalTaseQuotes("response_tase_security_history01.txt");
@@ -70,7 +78,7 @@ public class TLVSecurityMockTest
 
     @Ignore("Live Test")
     @Test
-    public void return_Latest_Quote_For_Security()
+    public void mocked_security_returns_latest_quotes()
     {
         Security security = new Security();
         security.setCurrencyCode("ILS");
@@ -114,7 +122,7 @@ public class TLVSecurityMockTest
     }
 
     @Test
-    public void return_Latest_Quotes_on_Bonds()
+    public void mocked_bond_returns_latest_quotes()
     {
         Security security = new Security();
         security.setCurrencyCode("ILA");
@@ -142,6 +150,40 @@ public class TLVSecurityMockTest
             assertThat(price.getDate(), is(LocalDate.of(2025, 8, 26)));
             // assertEquals("Date mismatch", LocalDate.of(2025, 8, 26),
             // price.getDate());
+
+            // Verify interaction
+            verify(securityfeed).rpcLatestQuoteSecurity(security);
+
+        }
+        catch (Exception e)
+        {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    public void mocked_fund_does_not_return_latest_quote()
+    {
+        Security security = new Security();
+        security.setCurrencyCode("ILS");
+        security.setWkn("5127121"); // Government bond - "GALIL" - CPI1025 -
+                                    // Reporting in ILA
+
+        String mockedresponse = getFundDetails();
+        assertTrue(mockedresponse.length() > 0);
+
+        try
+        {
+            TLVSecurity securityfeed = spy(new TLVSecurity());
+            doReturn(mockedresponse).when(securityfeed).rpcLatestQuoteSecurity(security);
+
+            Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
+
+            // Assert
+            assertTrue("Expected price to be present", optionalPrice.isEmpty());
+
+
 
             // Verify interaction
             verify(securityfeed).rpcLatestQuoteSecurity(security);
@@ -200,7 +242,7 @@ public class TLVSecurityMockTest
 
 
     @Test
-    public void mocked_bond_return_Historical_Quotes()
+    public void mocked_bond_return_Historical_Quotes_though_getHistoricalQuotes()
     {
         Security security = new Security();
         security.setTickerSymbol("AAPL");
@@ -250,7 +292,7 @@ public class TLVSecurityMockTest
 
     @Ignore
     @Test
-    public void mocked_security_return_Historical_Quotes()
+    public void mocked_security_return_Historical_Quotesthough_getHistoricalQuotes()
     {
         Security security = new Security();
         security.setTickerSymbol("AAPL");
@@ -299,7 +341,7 @@ public class TLVSecurityMockTest
 
     @Ignore
     @Test
-    public void mocked_shares_return_Historical_Quotes()
+    public void mocked_shares_return_Historical_Quotes_though_getHistoricalQuotes()
     {
         Security security = new Security();
         security.setTickerSymbol("NICE");

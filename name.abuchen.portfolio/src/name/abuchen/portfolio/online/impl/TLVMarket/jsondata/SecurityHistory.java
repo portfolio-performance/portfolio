@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +18,7 @@ import com.google.gson.JsonSerializer;
 public class SecurityHistory
 {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-
+    private static final Gson gson = new Gson();
 
     public SecurityHistoryEntry[] Items;
     public int TotalRec;
@@ -67,33 +65,37 @@ public class SecurityHistory
         DateTo = dateTo;
     }
 
-    public static SecurityHistory fromMap(Map<String, Object> map)
-    {
-        SecurityHistory historyentry = new SecurityHistory();
-
-        if (map.containsKey("DateFrom")) //$NON-NLS-1$
-        {
-            historyentry.setDateFrom(LocalDate.parse((String) map.get("DateFrom"), formatter)); //$NON-NLS-1$
-        }
-        if (map.containsKey("DateTo")) //$NON-NLS-1$
-        {
-            historyentry.setDateTo(LocalDate.parse((String) map.get("DateTo"), formatter)); //$NON-NLS-1$
-        }
-
-        if (map.containsKey("Items")) //$NON-NLS-1$
-        {
-            List<Map<String, Object>> rawItems = (List<Map<String, Object>>) map.get("Items"); //$NON-NLS-1$
-            SecurityHistoryEntry[] entries = new SecurityHistoryEntry[rawItems.size()];
-            for (int i = 0; i < rawItems.size(); i++)
-            {
-                entries[i] = SecurityHistoryEntry.fromMap(rawItems.get(i));
-            }
-            historyentry.setItems(entries);
-            historyentry.setTotalRec(entries.length);
-        }
-        return historyentry;
-
-    }
+    // public static SecurityHistory fromMap(Map<String, Object> map)
+    // {
+    // SecurityHistory historyentry = new SecurityHistory();
+    //
+    // if (map.containsKey("DateFrom")) //$NON-NLS-1$
+    // {
+    // historyentry.setDateFrom(LocalDate.parse((String) map.get("DateFrom"),
+    // formatter)); //$NON-NLS-1$
+    // }
+    // if (map.containsKey("DateTo")) //$NON-NLS-1$
+    // {
+    // historyentry.setDateTo(LocalDate.parse((String) map.get("DateTo"),
+    // formatter)); //$NON-NLS-1$
+    // }
+    //
+    // if (map.containsKey("Items")) //$NON-NLS-1$
+    // {
+    // List<Map<String, Object>> rawItems = (List<Map<String, Object>>)
+    // map.get("Items"); //$NON-NLS-1$
+    // SecurityHistoryEntry[] entries = new
+    // SecurityHistoryEntry[rawItems.size()];
+    // for (int i = 0; i < rawItems.size(); i++)
+    // {
+    // entries[i] = SecurityHistoryEntry.fromMap(rawItems.get(i));
+    // }
+    // historyentry.setItems(entries);
+    // historyentry.setTotalRec(entries.length);
+    // }
+    // return historyentry;
+    //
+    // }
 
 
     public static SecurityHistory fromJson(String json)
@@ -125,7 +127,11 @@ public class SecurityHistory
 
     }
 
+    public String toJson()
+    {
+        return gson.toJson(this);
 
+    }
 
     @Override
     public String toString()

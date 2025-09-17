@@ -1,50 +1,62 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 public class FundHistoryEntry
 {
 
     private String FundId;
     private LocalDateTime TradeDate;
-    private LocalDateTime LastUpdateDate;
-    private float PurchasePrice;
-    private float SellPrice;
+    // private LocalDateTime LastUpdateDate;
+    private String PurchasePrice;
+    private String SellPrice;
     // private float CreationPrice;
-    private float DateYield;
-    private float Rate;
+    private String DateYield;
+    private String Rate;
     // private float ManagmentFee;
     // private float TrusteeFee;
     // private float SuccessFee;
-    private float AssetValue;
+    private String AssetValue;
 
-    public float getPurchasePrice()
+    public String getPurchasePrice()
     {
         return PurchasePrice;
     }
 
-    public void setPurchasePrice(float purchasePrice)
+    public void setPurchasePrice(String purchasePrice)
     {
         PurchasePrice = purchasePrice;
     }
 
-    public float getSellPrice()
+    public String getSellPrice()
     {
         return SellPrice;
     }
 
-    public void setSellPrice(float sellPrice)
+    public void setSellPrice(String sellPrice)
     {
         SellPrice = sellPrice;
     }
 
-    public float getDateYield()
+    public String getDateYield()
     {
         return DateYield;
     }
 
-    public void setDateYield(float dateYield)
+    public void setDateYield(String dateYield)
     {
         DateYield = dateYield;
     }
@@ -54,12 +66,12 @@ public class FundHistoryEntry
         FundId = fundId;
     }
 
-    public void setRate(float rate)
+    public void setRate(String rate)
     {
         Rate = rate;
     }
 
-    public float getRate()
+    public String getRate()
     {
         return this.Rate;
     }
@@ -79,12 +91,12 @@ public class FundHistoryEntry
         this.TradeDate = date;
     }
 
-    public float getAssetValue()
+    public String getAssetValue()
     {
         return AssetValue;
     }
 
-    public void setAssetValue(float assetValue)
+    public void setAssetValue(String assetValue)
     {
         AssetValue = assetValue;
     }
@@ -94,7 +106,7 @@ public class FundHistoryEntry
         FundHistoryEntry historyentry = new FundHistoryEntry();
         if (map.containsKey("Rate")) //$NON-NLS-1$
         {
-            historyentry.setRate(((Double) map.get("Rate")).floatValue()); //$NON-NLS-1$
+            historyentry.setRate((String) map.get("Rate")); //$NON-NLS-1$
         }
         if (map.containsKey("FundId")) //$NON-NLS-1$
         {
@@ -106,17 +118,46 @@ public class FundHistoryEntry
         }
         if (map.containsKey("SellPrice")) //$NON-NLS-1$
         {
-            historyentry.setSellPrice(((Double) map.get("SellPrice")).floatValue()); //$NON-NLS-1$
+            historyentry.setSellPrice((String) map.get("SellPrice")); //$NON-NLS-1$
         }
         if (map.containsKey("PurchasePrice")) //$NON-NLS-1$
         {
-            historyentry.setPurchasePrice(((Double) map.get("PurchasePrice")).floatValue()); //$NON-NLS-1$
+            historyentry.setPurchasePrice((String) map.get("PurchasePrice")); //$NON-NLS-1$
         }
         if (map.containsKey("AssetValue")) //$NON-NLS-1$
         {
-            historyentry.setAssetValue(((Double) map.get("AssetValue")).floatValue()); //$NON-NLS-1$
+            historyentry.setAssetValue((String) map.get("AssetValue")); //$NON-NLS-1$
         }
         return historyentry;
     }
 
+    public static FundHistoryEntry fromJson(String json)
+    {
+
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss");//$NON-NLS-1$
+
+        class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
+        {
+
+            @Override
+            public JsonElement serialize(final LocalDateTime date, final Type typeOfSrc,
+                            final JsonSerializationContext context)
+            {
+                return new JsonPrimitive(date.format(formatter));
+            }
+
+            @Override
+            public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
+                            final JsonDeserializationContext context) throws JsonParseException
+            {
+                // return LocalDateTime.parse(json.getAsString(), formatter);
+                return LocalDateTime.parse(json.getAsString(), formatter);
+            }
+
+        }
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter()).create();
+
+        FundHistoryEntry historyentry = gson.fromJson(json, FundHistoryEntry.class);
+        return historyentry;
+    }
 }

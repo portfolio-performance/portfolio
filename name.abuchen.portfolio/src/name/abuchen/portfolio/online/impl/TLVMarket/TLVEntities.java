@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl.TLVMarket;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,15 +29,34 @@ public class TLVEntities
     public String rpcAllIndices(Language lang) throws IOException
     {
         // https://api.tase.co.il/api/content/searchentities?lang=1
-        String response = new WebAccess(URL, PATH)
-                        .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$
-                        .addParameter("lang", lang.toString()) //$NON-NLS-1$
-                        .addHeader("Accept", "*/*") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addHeader("Content-Type", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
-                        .get();
+        final int RETRY_TIMES = 5;
+        int times_tried = 0;
+        String response = null;
 
+        while (times_tried < RETRY_TIMES)
+        {
+            try
+            {
+                response = new WebAccess(URL, PATH)
+                                .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$
+                                .addParameter("lang", lang.toString()) //$NON-NLS-1$
+                                .addHeader("Accept", "*/*") //$NON-NLS-1$ //$NON-NLS-2$
+                                .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$ //$NON-NLS-2$
+                                .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
+                                .addHeader("Content-Type", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
+                                .get();
+                return response;
+
+            }
+            catch (ConnectException e)
+            {
+                times_tried++;
+            }
+            catch (IOException e)
+            {
+                times_tried++;
+            }
+        }
         return response;
     }
 
