@@ -211,7 +211,7 @@ public class TLVQuoteFeedLiveTest
 
         QuoteFeedData prices = feed.getHistoricalQuotes(security, false);
 
-        assertThat(prices.getPrices().size(), is(0));
+        assertThat(prices.getPrices().size(), is(30));
     }
 
     @Test

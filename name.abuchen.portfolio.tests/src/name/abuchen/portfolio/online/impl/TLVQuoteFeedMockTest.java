@@ -222,7 +222,6 @@ public class TLVQuoteFeedMockTest
     }
 
     @Test
-    @Ignore("Mock Test")
     public void mocked_Shares_should_return_historical_Quotes() throws IOException
     {
         // TODO add support for Subid.

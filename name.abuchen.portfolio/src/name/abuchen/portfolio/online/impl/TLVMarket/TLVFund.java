@@ -312,7 +312,7 @@ public class TLVFund extends TLVListing
         // httpPost.setEntity(new UrlEncodedFormEntity(formParams,
         // ContentType.APPLICATION_FORM_URLENCODED));
 
-        // System.err.println(JSONValue.toJSONString(uploadData));
+        // System.err.println(JSONValue.toJSONString(formParams));
         try
         {
             String response = new WebAccess("mayaapi.tase.co.il", "/api/fund/history") //$NON-NLS-1$ //$NON-NLS-2$

@@ -759,14 +759,14 @@ public class TLVQuoteFeed implements QuoteFeed
         if (securityType == TLVType.FUND)
         {
 
-            historicalprices = this.TLVSecurities.getHistoricalQuotes(security, false);
+            historicalprices = this.TLVFunds.getHistoricalQuotes(security, false);
             if (historicalprices.isEmpty())
                 return new QuoteFeedData();
             return historicalprices.get();
         }
         if (securityType == TLVType.SECURITY)
         {
-            historicalprices = this.TLVFunds.getHistoricalQuotes(security, false);
+            historicalprices = this.TLVSecurities.getHistoricalQuotes(security, false);
             if (historicalprices.isEmpty())
                 return new QuoteFeedData();
             return historicalprices.get();

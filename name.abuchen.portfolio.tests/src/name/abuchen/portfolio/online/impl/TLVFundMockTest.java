@@ -205,9 +205,8 @@ public class TLVFundMockTest
 
             assertThat(firstprice.getSellPrice(), is("146.88"));
 
-            assertThat(lastprice.getTradeDate(), is(from));
-            assertThat(firstprice.getSellPrice(), is(Values.Quote.factorize(145.9)));
-            verify(tlvFund, times(1)).getPriceHistoryChunk(security, from, to, 1, Language.ENGLISH);
+            assertThat(lastprice.getTradeDate().toLocalDate(), is(from));
+            verify(tlvFund, times(1)).getPriceHistory(security, from, to, 1, Language.ENGLISH);
 
         }
         catch (Exception e)
