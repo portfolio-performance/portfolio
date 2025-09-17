@@ -28,6 +28,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -620,5 +621,94 @@ public class CSVAccountTransactionExtractorTest
                         hasAmount("EUR", 7.50), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 2.50),  hasFees("EUR", 0.00), //
                         hasSource(null), hasNote("Notiz"))));
+    }
+
+    @Test
+    public void testBuyTransactionWithForex()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setTickerSymbol("SAP.DE");
+        security.setCurrencyCode("USD");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] {
+                        "2013-01-02", "", // Date + Time
+                        "DE0007164600", "SAP", "", // ISIN + TickerSymbol + WKN
+                        "-100", "EUR", // Amount + Currency
+                        "SELL", // Type
+                        "SAP SE", "1,9", // Security name + Shares
+                        "Notiz", // Note
+                        "12", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "110", "USD", // Gross + Gross currency
+                        "0,9091" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        AccountTransaction t = entry.getAccountTransaction();
+        assertThat(t.getType(), is(AccountTransaction.Type.SELL));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(t.getSecurity(), is(security));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 12_00)));
+        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.FEE).isPresent(), is(false));
+
+        Unit grossAmount = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossAmount.getAmount(), is(Money.of("EUR", 112_00)));
+        assertThat(grossAmount.getForex(), is(Money.of("USD", 123_20)));
+        assertThat(grossAmount.getExchangeRate(), is(BigDecimal.valueOf(0.9091)));
+    }
+
+    @Test
+    public void testGrossValueIsCreated()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("LU0419741177");
+        security.setCurrencyCode(CurrencyUnit.USD);
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] {
+                        "2015-09-15", "XX:XX", // Date + Time
+                        "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
+                        "56", "EUR", // Amount + Currency
+                        "BUY", // Type
+                        "", "-0,701124", // Security name + Shares
+                        "Notiz", // Note
+                        "", "0,14", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "", "USD", // Gross + Gross currency
+                        "1,1194" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+        
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        BuySellEntry entry = (BuySellEntry) results.get(0).getSubject();
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getMonetaryAmount(),
+                        is(Money.of("EUR", Values.Amount.factorize(56))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.701124)));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.14))));
+
+        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new).getForex(),
+                        is(Money.of(security.getCurrencyCode(), Values.Amount.factorize(62.53))));
     }
 }
