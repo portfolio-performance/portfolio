@@ -21,30 +21,33 @@ public class TLVTradeCalendarTest
     {
         var calendar = TradeCalendarManager.getInstance("tlv");
 
-        // Passover Night - Erev Passover, Passover I and Passover II
+        // Passover I Evening and Day, Passover II Evening and Day
         assertThat(calendar.isHoliday(LocalDate.parse("2024-04-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2024-04-23")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2024-04-24")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-04-28")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2024-04-29")), is(true));
 
         assertThat(calendar.isHoliday(LocalDate.parse("2025-04-12")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-04-13")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2025-04-14")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-04-18")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-04-19")), is(true));
 
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-04-02")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2026-04-03")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-04-07")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-04-08")), is(true));
 
-        // JEWISH NEW YEARS EVE
+        // Jewish New Years Eve
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-02")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-09-22")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-11")), is(true));
 
-        // JEWISH NEW YEARS DAY I
+        // Jewish New Years Day I
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-03")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-09-23")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-12")), is(true));
 
-        // JEWISH NEW YEARS DAY II
+        // Jewish New Years Day II
         assertThat(calendar.isHoliday(LocalDate.parse("2024-10-04")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2025-09-24")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2026-09-13")), is(true));

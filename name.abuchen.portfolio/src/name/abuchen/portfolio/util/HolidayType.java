@@ -257,63 +257,7 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         }
     }
 
-    /**
-     * Holiday type for Israeli Holocaust Remembrance Day (Yom HaShoah). Date
-     * varies based on day of week to avoid Sabbath conflicts.
-     */
-    private static class IsraeliHolocaustCalendarHolidayType extends HolidayType
-    {
-        private final CalendarImpl calendar = new CalendarImpl();
 
-        public IsraeliHolocaustCalendarHolidayType(HolidayName name)
-        {
-            super(name);
-        }
-
-        @Override
-        protected Holiday doGetHoliday(int gregorianYear)
-        {
-            var startOfYearAbsolute = calendar.absoluteFromGregorianDate(new JewishCalendarDate(1, 1, gregorianYear));
-            var hebrewYearStart = calendar.hebrewDateFromAbsolute(startOfYearAbsolute);
-
-            var holocaustDate = calculateHolocaustDate(hebrewYearStart.getYear());
-            var gregorianDate = calendar
-                            .gregorianDateFromAbsolute(calendar.absoluteFromHebrewDate(holocaustDate));
-
-            var date = LocalDate.of(gregorianDate.getYear(), gregorianDate.getMonth(), gregorianDate.getDay());
-            return new Holiday(getName(), date);
-        }
-
-        /**
-         * Calculates the Hebrew date for Holocaust Remembrance Day. Nissan 27,
-         * but moved to avoid Friday/Saturday.
-         */
-        private JewishCalendarDate calculateHolocaustDate(int hebrewYear)
-        {
-            var weekday = getWeekdayOfHebrewDate(27, 1, hebrewYear); // Nissan
-                                                                     // 27
-
-            if (weekday == 5)
-            { // Friday - move to Thursday
-                return new JewishCalendarDate(26, 1, hebrewYear);
-            }
-            else if (hebrewYear >= 5757 && weekday == 0)
-            { // Saturday after 1997 - move to Sunday
-                return new JewishCalendarDate(28, 1, hebrewYear);
-            }
-            else
-            {
-                return new JewishCalendarDate(27, 1, hebrewYear); // Default
-                                                                  // date
-            }
-        }
-
-        private int getWeekdayOfHebrewDate(int day, int month, int year)
-        {
-            var absoluteDate = calendar.absoluteFromHebrewDate(new JewishCalendarDate(day, month, year));
-            return absoluteDate % 7;
-        }
-    }
 
     /**
      * Holiday type for Purim, which falls on different Hebrew months in leap
@@ -441,10 +385,6 @@ import name.abuchen.portfolio.util.JewishCalendar.JewishCalendarDate;
         return new JewishPurimCalendarHolidayType(name);
     }
 
-    public static HolidayType israeliHolocaustCalendar(HolidayName name, int daysToAdd)
-    {
-        return new IsraeliHolocaustCalendarHolidayType(name);
-    }
 
     public static HolidayType israeliMemorialCalendar(HolidayName name)
     {

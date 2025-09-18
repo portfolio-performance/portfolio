@@ -46,9 +46,10 @@ import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR_HOLIDAY;
-import static name.abuchen.portfolio.util.HolidayName.PASSOVER_EVE;
 import static name.abuchen.portfolio.util.HolidayName.PASSOVER_I;
 import static name.abuchen.portfolio.util.HolidayName.PASSOVER_II;
+import static name.abuchen.portfolio.util.HolidayName.PASSOVER_II_EVE;
+import static name.abuchen.portfolio.util.HolidayName.PASSOVER_I_EVE;
 import static name.abuchen.portfolio.util.HolidayName.PATRON_DAY;
 import static name.abuchen.portfolio.util.HolidayName.PURIM;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
@@ -369,9 +370,11 @@ public class TradeCalendarManager
         // Tel Aviv Stock Exchange starting 2026
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
         tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND); //$NON-NLS-1$
-        tc.add(fixedJewishCalendar(PASSOVER_EVE, 1, 14, 0));
+        tc.add(fixedJewishCalendar(PASSOVER_I_EVE, 1, 14, 0));
         tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
-        tc.add(fixedJewishCalendar(PASSOVER_II, 1, 16, 0));
+        tc.add(fixedJewishCalendar(PASSOVER_II_EVE, 1, 20, 0));
+        tc.add(fixedJewishCalendar(PASSOVER_II, 1, 21, 0));
+
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_EVE, 6, 29, 0));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_I, 6, 29, 1));
         tc.add(fixedJewishCalendar(JEWISH_NEW_YEAR_DAY_II, 6, 29, 2));
