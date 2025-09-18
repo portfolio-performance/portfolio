@@ -1,11 +1,16 @@
 <!DOCTYPE html>
+<html>
+<head>
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="${/META-INF/css/THEME.css}">
+</head>
 <body>
 <script src="${/META-INF/js/d3.min.js}"></script>
 <script src="${/META-INF/js/pp.js}"></script>
 <script>
+window.addEventListener('load', createFlare);
 
+function createFlare(){	
 pp.onResizeEnd(function() {
   width = pp.getInnerWidth();
   height = pp.getInnerHeight();
@@ -239,4 +244,7 @@ function brightness(rgb) {
 }
 
 flare.setContent(loadData());
+}
 </script>
+</body>
+</html>
