@@ -56,10 +56,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Sell" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Buy|Verkauf)) .* [\\.,\\d]+ Stk\\..*$") //
+                        .match("^(?<type>(Kauf|Buy|Verkauf|Sell)) .* [\\.,\\d]+ (Stk|pc)\\..*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type"))) //
+                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -79,10 +80,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
                                         // LU0908500753
+                                        //
+                                        // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
+                                        // NL0010273215
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Buy (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -97,10 +101,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
+                                        // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Buy .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))))
 
                         // @formatter:off
@@ -116,9 +121,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift 472,00 EUR
                         // Belastung 200,00 EUR
                         // Debit 85.65 EUR
+                        // Credit 14,951.10 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Total|Gutschrift|Belastung|Debit) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift|Belastung|Debit|Credit) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
