@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+UmweltBank AG  ·  Laufertorgraben 6  ·  90489 Nürnberg
+Depotnummer 17708936
+ 
+ Kundennummer 9026332
+anPPsT QTWstpVj LketGI
+ Auftragsnummer 653140/64.00
+HU. CUiomM uhRwrPlD HYRFUc Datum 06.05.2025
+Hq ckanVnWLRlW 4 Rechnungsnummer W06187-0000014534/25
+77884 OfCEOz Umsatzsteuer-ID DE166608980   
+ 
+Wertpapier Abrechnung Kauf-Festpreisgeschäft 
+Auftrag vom 02.05.2025 16:02:20 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 235 GSU.P - UMWELTSPEKTRUM MIX         LU2078716052 (A2PU29)
+ACT. AU PORT. A EUR DIS. ON        
+Handels-/Ausführungsplatz Außerbörslich (Best Execution)
+Schlusstag 06.05.2025 Auftraggeber wkRmoM OWCDHzpI qPtTDs
+Ausführungskurs 55,49 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 13.040,15- EUR
+Entgelt 247,76- EUR
+Kundenbonifikation 100 % vom Ausgabeaufschlag 380,70 EUR
+Ausmachender Betrag 12.907,21- EUR
+Ausgabeaufschlag pro Anteil 3,00 %
+ 
+Den Gegenwert buchen wir mit Valuta 08.05.2025 zu Lasten des Kontos 0366422 (IBAN DE26 7603 5000 9153 6396 35),
+BLZ 76035000 (BIC UMWEDE7NXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war das Institut selbst.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6187.05062115.0000013OR07                                                             
