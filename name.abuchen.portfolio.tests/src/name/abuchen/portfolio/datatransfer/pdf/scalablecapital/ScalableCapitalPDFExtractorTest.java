@@ -184,6 +184,39 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy02()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7731211089"), hasWkn(null), hasTicker(null), //
+                        hasName("Rocket Lab"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-18T21:33:30"), hasShares(50.00), //
+                        hasSource("Buy02.txt"), //
+                        hasNote("Order ID: tqnWxZxTmNwP8xJ"), //
+                        hasAmount("EUR", 2000.00), hasGrossValue("EUR", 2000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -312,6 +345,39 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote("Ord.-Nr.: SCAL1SRff6HgHQD"), //
                         hasAmount("EUR", 1125.91), hasGrossValue("EUR", 1176.42), //
                         hasTaxes("EUR", 47.87 + 2.64), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
+    public void testSecuritySell01()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010273215"), hasWkn(null), hasTicker(null), //
+                        hasName("ASML Holding"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-09-18T13:15:54"), hasShares(19.00), //
+                        hasSource("Sell01.txt"), //
+                        hasNote("Order ID: vsDaTlnzwGCiNLQ"), //
+                        hasAmount("EUR", 14951.10), hasGrossValue("EUR", 14951.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
     }
 
