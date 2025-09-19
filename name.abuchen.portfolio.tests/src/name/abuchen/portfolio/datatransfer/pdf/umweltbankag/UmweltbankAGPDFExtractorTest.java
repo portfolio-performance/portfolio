@@ -68,4 +68,36 @@ public class UmweltbankAGPDFExtractorTest
                         hasAmount("EUR", 5268.32), hasGrossValue("EUR", 5211.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 57.32))));
     }
+
+    @Test
+    public void testWertpapierkauf02()
+    {
+        var extractor = new UmweltbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2078716052"), hasWkn("A2PU29"), hasTicker(null), //
+                        hasName("GSU.P - UMWELTSPEKTRUM MIX ACT. AU PORT. A EUR DIS. ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-05-06"), hasShares(235.00), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Auftragsnummer 653140/64.00"), //
+                        hasAmount("EUR", 13040.15 - 380.70), hasGrossValue("EUR", 13040.15 - 380.70 - 247.76), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 247.76))));
+    }
 }
