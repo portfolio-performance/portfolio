@@ -368,7 +368,7 @@ public class TradeCalendarManager
 
         // Tel Aviv Stock Exchange starting 2026
         // https://www.tase.co.il/en/content/knowledge_center/trading_vacation_schedule#vacations
-        tc = new TradeCalendar("tlv", Messages.LabelTradeCalendarTLV, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc = new TelAvivStockExchangeTradeCalendar();
         tc.add(fixedJewishCalendar(PASSOVER_I_EVE, 1, 14, 0));
         tc.add(fixedJewishCalendar(PASSOVER_I, 1, 15, 0));
         tc.add(fixedJewishCalendar(PASSOVER_II_EVE, 1, 20, 0));

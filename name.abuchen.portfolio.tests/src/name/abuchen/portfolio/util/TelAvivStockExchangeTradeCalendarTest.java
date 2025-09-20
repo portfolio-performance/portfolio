@@ -129,13 +129,30 @@ public class TelAvivStockExchangeTradeCalendarTest
     }
 
     @Test
-    public void testWeekendsAfter2016()
+    public void testWeekendsBefore2026()
     {
         var calendar = TradeCalendarManager.getInstance("tlv");
 
         assertNotNull(calendar);
-        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-10")), is(true));
-        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-11")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-18")), is(false)); // Thursday
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-19")), is(true)); // Friday
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-20")), is(true)); // Saturday
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-21")), is(false)); // Sunday
+
+        // new year eve
+        assertThat(calendar.isHoliday(LocalDate.parse("2025-09-22")), is(true));
+    }
+
+    @Test
+    public void testWeekendsAfter2026()
+    {
+        var calendar = TradeCalendarManager.getInstance("tlv");
+
+        assertNotNull(calendar);
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-09")), is(false)); // Friday
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-10")), is(true)); // Saturday
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-11")), is(true)); // Sunday
+        assertThat(calendar.isHoliday(LocalDate.parse("2026-01-12")), is(false)); // Monday
     }
 
     @Test
