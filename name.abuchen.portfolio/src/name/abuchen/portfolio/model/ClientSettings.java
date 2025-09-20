@@ -247,8 +247,11 @@ public class ClientSettings
     @SuppressWarnings("unchecked")
     public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type)
     {
+        // issue: unfortunately, the name got translated. Therefore checking
+        // only for 'logo' is not good enough
+
         return getAttributeTypes().filter(t -> t.getConverter() instanceof AttributeType.ImageConverter
-                        && t.getName().equalsIgnoreCase("logo") //$NON-NLS-1$
+                        && (t.getName().equalsIgnoreCase("logo") || Messages.AttributesLogoName.equals(t.getName())) //$NON-NLS-1$
                         && t.supports((Class<? extends Attributable>) type)).findFirst();
     }
 }
