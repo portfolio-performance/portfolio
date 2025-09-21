@@ -1005,6 +1005,7 @@ public class Messages extends NLS
     public static String MenuCreateAndManageClientFilter;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
+    public static String MenuCreateRemovalForDividendAction;
     public static String MenuDashboardColumnWidth;
     public static String MenuDashboardColumnWidthDecrease;
     public static String MenuDashboardColumnWidthIncrease;

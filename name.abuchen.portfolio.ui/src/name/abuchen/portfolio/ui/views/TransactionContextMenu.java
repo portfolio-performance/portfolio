@@ -30,6 +30,8 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
 
 public class TransactionContextMenu
 {
@@ -60,7 +62,12 @@ public class TransactionContextMenu
         if (!selection.isEmpty())
         {
             if (fullContextMenu)
+            {
+                fillContextMenuAccountTxList(manager, selection);
                 fillContextMenuPortfolioTxList(manager, selection);
+            }
+
+            manager.add(new Separator());
 
             manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
                 for (Object tx : selection.toArray())
@@ -93,6 +100,36 @@ public class TransactionContextMenu
         }
     }
 
+    private void fillContextMenuAccountTxList(IMenuManager manager, IStructuredSelection selection)
+    {
+        @SuppressWarnings("unchecked")
+        var accountTxPairs = selection.stream() //
+                        .filter(p -> ((TransactionPair<?>) p).isAccountTransaction())
+                        .map(p -> ((TransactionPair<AccountTransaction>) p)) //
+                        .toList();
+
+        if (accountTxPairs.size() != selection.size())
+            return;
+
+        var transfers = accountTxPairs.stream()
+                        .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_IN
+                                        || p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_OUT)
+                        .map(p -> p.getTransaction()).toList();
+
+        if (transfers.size() == accountTxPairs.size())
+        {
+            manager.add(new ConvertTransferToDepositRemovalAction(owner.getClient(), transfers));
+        }
+
+        var dividends = accountTxPairs.stream()
+                        .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.DIVIDENDS).toList();
+
+        if (dividends.size() == accountTxPairs.size())
+        {
+            manager.add(new CreateRemovalForDividendAction(owner.getClient(), dividends));
+        }
+    }
+
     private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
     {
         Collection<TransactionPair<PortfolioTransaction>> txCollection = new ArrayList<>(selection.size());
@@ -103,7 +140,7 @@ public class TransactionContextMenu
             foo.withPortfolioTransaction().ifPresent(txCollection::add);
         }
 
-        if (txCollection.isEmpty())
+        if (txCollection.size() != selection.size())
             return;
 
         boolean allBuyOrSellType = true;
@@ -123,13 +160,11 @@ public class TransactionContextMenu
         if (allBuyOrSellType)
         {
             manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
         }
 
         if (allDelivery)
         {
             manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
         }
     }
 
