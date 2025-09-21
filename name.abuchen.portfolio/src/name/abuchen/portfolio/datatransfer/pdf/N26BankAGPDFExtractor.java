@@ -10,9 +10,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
+public class N26BankAGPDFExtractor extends AbstractPDFExtractor
 {
-    public N26BankAGkPDFExtractor(Client client)
+    public N26BankAGPDFExtractor(Client client)
     {
         super(client);
 
@@ -130,11 +130,17 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                                         // Steuer 0,00€
                                         // Zinsertrag +8,55€
                                         // Gesamt +8,55€
+                                        //
+                                        // 01.05.2025 bis 31.05.2025
+                                        // Gebühren 0,00€
+                                        // Steuern 0,00€
+                                        // Zinsertrag +6,60€
+                                        // Gesamt +6,60€
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "tax", "taxCurrency", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                                                        .match("^Steuer (\\-)?(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
+                                                        .match("^Steuer(n)? (\\-)?(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
                                                         .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));

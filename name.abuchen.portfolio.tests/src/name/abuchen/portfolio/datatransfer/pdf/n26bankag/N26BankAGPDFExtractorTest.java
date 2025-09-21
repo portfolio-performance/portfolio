@@ -24,7 +24,7 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.N26BankAGkPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.N26BankAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
@@ -34,7 +34,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -96,7 +96,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -121,7 +121,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -146,7 +146,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -175,7 +175,7 @@ public class N26BankAGPDFExtractorTest
     @Test
     public void testKontoauszug06()
     {
-        var extractor = new N26BankAGkPDFExtractor(new Client());
+        var extractor = new N26BankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -206,6 +206,51 @@ public class N26BankAGPDFExtractorTest
                         hasSource("Kontoauszug06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.55), hasGrossValue("EUR", 8.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new N26BankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-04"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-12"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-26"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-05-27"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-05-27"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-05-01T00:00"), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 6.60), hasGrossValue("EUR", 6.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

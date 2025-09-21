@@ -350,7 +350,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, "USD");
+        new AssertImportActions().check(results, "EUR");
 
         // check securities
         assertThat(results, hasItem(security( //
@@ -377,26 +377,26 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
         assertThat(results, hasItem(fee( //
                         hasDate("2025-06-30T00:00"), hasShares(0.00), //
                         hasSource("Comisiones01.txt"), //
-                        hasAmount("USD", 16.50), hasGrossValue("USD", 16.50), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+                        hasAmount("EUR", 20.88 + 4.38), hasGrossValue("EUR", 20.88 + 4.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
                         hasDate("2025-06-30T00:00"), hasShares(0.00), //
                         hasSource("Comisiones01.txt"), //
-                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+                        hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
                         hasDate("2025-06-30T00:00"), hasShares(0.00), //
                         hasSource("Comisiones01.txt"), //
-                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+                        hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(fee( //
                         hasDate("2025-06-30T00:00"), hasShares(0.00), //
                         hasSource("Comisiones01.txt"), //
-                        hasAmount("USD", 23.70), hasGrossValue("USD", 23.70), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+                        hasAmount("EUR", 30.00 + 6.30), hasGrossValue("EUR", 30.00 + 6.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
 }

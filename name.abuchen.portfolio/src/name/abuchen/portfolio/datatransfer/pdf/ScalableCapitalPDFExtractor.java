@@ -22,6 +22,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Scalable Capital GmbH");
+        addBankIdentifier("Scalable Capital Bank GmbH");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -32,7 +33,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Scalable Capital GmbH";
+        return "Scalable Capital Bank GmbH";
     }
 
     private void addBuySellTransaction()
@@ -55,10 +56,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Sell" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Buy|Verkauf)) .* [\\.,\\d]+ Stk\\..*$") //
+                        .match("^(?<type>(Kauf|Buy|Verkauf|Sell)) .* [\\.,\\d]+ (Stk|pc)\\..*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type"))) //
+                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -78,10 +80,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
                                         // LU0908500753
+                                        //
+                                        // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
+                                        // NL0010273215
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Buy (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -96,10 +101,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
+                                        // Sell ASML Holding 19.00 pc. 786.90 EUR 14,951.10 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Buy .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(Buy|Sell) .* (?<shares>[\\.,\\d]+) pc\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))))
 
                         // @formatter:off
@@ -115,9 +121,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift 472,00 EUR
                         // Belastung 200,00 EUR
                         // Debit 85.65 EUR
+                        // Credit 14,951.10 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Total|Gutschrift|Belastung|Debit) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift|Belastung|Debit|Credit) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -287,8 +294,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 07.04.2025 07.04.2025 Überweisung +29.715,63 EUR
+        // 14.08.2025 15.08.2025 Lastschrift +558,52 EUR
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Überweisung) \\+[\\.,\\d]+ [A-Z]{3}.*$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(.berweisung" //
+                        + "|Lastschrift) " //
+                        + "\\+[\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -299,7 +310,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(Überweisung)) \\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(.berweisung" //
+                                        + "|Lastschrift)) " //
+                                        + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -444,6 +458,19 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // CA25039N4084
+                        // +0,99
+                        // Ordergebühren
+                        // EUR
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .find("[A-Z]{2}[A-Z0-9]{9}[0-9]") //
+                        .match("^[\\-|\\+](?<fee>[\\.,\\d]+)$") //
+                        .match("^Ordergeb.hren$") //
+                        .match("^(?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Ordergebühren +0,99 EUR

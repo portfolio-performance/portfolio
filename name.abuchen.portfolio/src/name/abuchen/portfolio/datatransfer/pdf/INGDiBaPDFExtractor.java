@@ -153,7 +153,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Kurswert (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Nominale") && !v.get("name1").startsWith("Zinstermin"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -167,7 +167,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^[\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (Compra|Venta) [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .match("^[\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (Compra|Venta) [\\.,\\d]+ (?<currency>[A-Z]{3}) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -197,7 +197,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Nominale [\\w]{3} (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Nominale [A-Z]{3} (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
@@ -210,7 +210,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Nominale (?<shares>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^Nominale (?<shares>[\\.,\\d]+) [A-Z]{3}$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
@@ -256,7 +256,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("[\\.,\\d]+ .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("[\\.,\\d]+ .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -269,7 +269,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$") //
-                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -283,9 +283,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("fxGross", "gross", "termCurrency", "exchangeRate", "baseCurrency") //
-                                                        .match("^Zwischensumme [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                                                        .match("^.* Devisenkurs [\\w]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$") //
-                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Zwischensumme [A-Z]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^.* Devisenkurs [A-Z]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[A-Z]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$") //
+                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -300,7 +300,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "exchangeRate", "baseCurrency", "gross") //
-                                                        .match("^.* (?<termCurrency>[\\w]{3}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}:[\\d]{2} (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .match("^.* (?<termCurrency>[A-Z]{3}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}:[\\d]{2} (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}) (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -325,7 +325,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "note2") //
-                                                        .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [\\w]{3})( .*)?$") //
+                                                        .match("^Diese Order wurde mit folgendem (?<note1>Limit) .*: (?<note2>[\\.,\\d]+ [A-Z]{3})( .*)?$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + ": " + v.get("note2"), " | "))),
                                         // @formatter:off
                                         // Rückzahlung
@@ -395,7 +395,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^(Zins\\-\\/Dividendensatz|(Ertragsaussch.ttung|Vorabpauschale) per St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(Zins\\-\\/Dividendensatz|(Ertragsaussch.ttung|Vorabpauschale) per St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Nominale"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -413,7 +413,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // ISIN (WKN) DE000A3MP4P9 (A3MP4P)
@@ -424,7 +424,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "wkn", "name", "currency") //
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
-                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Nominale [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Valor: ADMIRAL GROUP PLC(ADM) Mercado: LONDRES
@@ -443,7 +443,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "notation") //
-                                                        .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$") //
+                                                        .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[A-Z]{3}))$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
@@ -488,7 +488,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Gesamtbetrag zu Ihren Gunsten (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Gesamtbetrag zu Ihren Gunsten (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -501,7 +501,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[A-Z]{3}) \\- (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             if (v.getTransactionContext().get(FAILURE) == null)
                                                                 t.setType(AccountTransaction.Type.TAXES);
@@ -528,8 +528,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Umg. z. Dev.-Kurs (1,084805) EUR - 37,33
                         // @formatter:on
                         .section("termCurrency", "fxGross", "exchangeRate", "baseCurrency").optional() //
-                        .match("^Brutto (?<termCurrency>[\\w]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$") //
-                        .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<baseCurrency>[\\w]{3}) (\\- )?[\\.,\\d]+$") //
+                        .match("^Brutto (?<termCurrency>[A-Z]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$") //
+                        .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<baseCurrency>[A-Z]{3}) (\\- )?[\\.,\\d]+$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -585,7 +585,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                         .match("^(?<name1>.*)$") //
-                        .match("^Vorabpauschale per St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^Vorabpauschale per St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!v.get("name1").startsWith("Nominale"))
                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -613,7 +613,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Gesamtbetrag zu Ihren Gunsten EUR 0,00
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Gesamtbetrag zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (\\- )?(?<amount>[.,\\d]+)$") //
+                        .match("^Gesamtbetrag zu Ihren (Lasten|Gunsten) (?<currency>[A-Z]{3}) (\\- )?(?<amount>[.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -900,7 +900,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^Nominale St.ck (?<shares>[\\.,\\d]+)$") //
-                                                        .match("^Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Kurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .match("^Ausf.hrungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
@@ -963,14 +963,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
                         .find(".*operación  operación de ING bolsa   total")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Franz. Transaktionssteuer 0,30% EUR 2,52
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Franz\\. Transaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Franz\\. Transaktionssteuer [\\.,\\d]+% (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -979,7 +979,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25,00% EUR 5,91
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -991,8 +991,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // KapSt anteilig 50,00 % 24,45 % EUR 79,46
                         // @formatter:on
                         .section("currency1", "tax1", "currency2", "tax2").optional() //
-                        .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$") //
-                        .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$") //
+                        .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency1>[A-Z]{3}) (?<tax1>[\\.,\\d]+)$") //
+                        .match("^KapSt anteilig [\\.,\\d]+([\\s]+)?% [\\.,\\d]+([\\s]+)?% (?<currency2>[A-Z]{3}) (?<tax2>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -1014,7 +1014,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,50% EUR 0,32
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -1026,8 +1026,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,50 % EUR 4,37
                         // @formatter:on
                         .section("currency1", "tax1", "currency2", "tax2").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$") //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency1>[A-Z]{3}) (?<tax1>[\\.,\\d]+)$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% (?<currency2>[A-Z]{3}) (?<tax2>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -1049,7 +1049,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 5,50% EUR 0,32
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -1061,8 +1061,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 9,00% EUR 7,15
                         // @formatter:on
                         .section("currency1", "tax1", "currency2", "tax2").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency1>[\\w]{3}) (?<tax1>[\\.,\\d]+)$") //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency2>[\\w]{3}) (?<tax2>[\\.,\\d]+)$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency1>[A-Z]{3}) (?<tax1>[\\.,\\d]+)$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% (?<currency2>[A-Z]{3}) (?<tax2>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -1082,14 +1082,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // QuSt 15,00 % (EUR 8,87) USD 9,31
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)\\) [\\w]{3} [\\.,\\d]+$") //
+                        .match("^QuSt [\\.,\\d]+([\\s]+)?% \\((?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+)\\) [A-Z]{3} [\\.,\\d]+$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // QuSt 30,00 % EUR 16,50
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
+                        .match("^QuSt [\\.,\\d]+([\\s]+)?% (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
@@ -1127,7 +1127,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
                         .find(".*operación  operación de ING bolsa   total")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1139,7 +1139,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
                         .find(".*operación  operación de ING bolsa   total")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1152,7 +1152,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
                         .find(".*operación  operación de ING bolsa  cambio   total")
                         .find(".*de divisa")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1165,7 +1165,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
                         .find(".*operación  operación de ING bolsa  cambio   total")
                         .find(".*de divisa")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1178,49 +1178,49 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
                         .find(".*operación  operación de ING bolsa  cambio   total")
                         .find(".*de divisa")
-                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3} (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsplatzgebühr EUR 2,50
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Handelsplatzgeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Handelsplatzgeb.hr (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision EUR 9,90
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsentgelt EUR 3,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Handelsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Handelsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsenentgelt EUR 0,39
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsenentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^B.rsenentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Variables Transaktionsentgelt EUR 2,82
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Variables Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Variables Transaktionsentgelt (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Courtage EUR 3,20
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Courtage (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)") //
+                        .match("^Courtage (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1229,8 +1229,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // Der regul.re Ausgabeaufschlag von 5,263% ist im Kurs enthalten.
                         // @formatter:on
                         .section("currency", "amount", "discountCurrency", "discount", "percentageFee").optional() //
-                        .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .match("^Rabatt (?<discountCurrency>[\\w]{3}) \\- (?<discount>[\\.,\\d]+)$") //
+                        .match("^Kurswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Rabatt (?<discountCurrency>[A-Z]{3}) \\- (?<discount>[\\.,\\d]+)$") //
                         .match("^Der regul.re Ausgabeaufschlag von (?<percentageFee>[\\.,\\d]+)% .*$") //
                         .assign((t, v) -> {
                             var percentageFee = asBigDecimal(v.get("percentageFee"));

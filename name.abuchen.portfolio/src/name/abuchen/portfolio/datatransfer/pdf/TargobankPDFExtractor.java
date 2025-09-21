@@ -118,7 +118,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .match("^Wertpapier (?<name>.*)$") //
                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(Kurs|Preis vom) .* (?<currency>[\\w]{3})$")
+                        .match("^(Kurs|Preis vom) .* (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -148,7 +148,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // Konto-Nr. 0101753165 1.008,91 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Konto\\-Nr\\. .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Konto\\-Nr\\. .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -200,7 +200,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .match("^Wertpapier (?<name>.*)$") //
                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(Aussch.ttung|Dividende) pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^(Aussch.ttung|Dividende) pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -217,15 +217,27 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .match("^Zahlbar (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        // @formatter:off
-                        // Konto-Nr. 1234567890 21,18 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^Konto\\-Nr\\. .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Bruttoertrag in EUR 24,49 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Bruttoertrag in [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Bruttoertrag 15,29 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Bruttoertrag (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         // @formatter:off
                         // Bruttoertrag 23,77 USD
@@ -233,9 +245,9 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // Bruttoertrag in EUR 21,18 EUR
                         // @formatter:on
                         .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency").optional() //
-                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
-                        .match("^Devisenkurs zur Handelsw.hrung (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Bruttoertrag in [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [A-Z]{3}$") //
+                        .match("^Devisenkurs zur Handelsw.hrung (?<termCurrency>[A-Z]{3})\\/(?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Bruttoertrag in [A-Z]{3} [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -289,7 +301,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^Wertpapier (?<name>.*)$") //
                                                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^(Kurs|Preis vom) .* (?<currency>[\\w]{3})$") //
+                                                        .match("^(Kurs|Preis vom) .* (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
@@ -300,7 +312,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^Wertpapier (?<name>.*)$") //
                                                         .match("^WKN \\/ ISIN (?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^Gesamtsumme Steuern [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Gesamtsumme Steuern [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -354,10 +366,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                                         "grossBeforeTaxes", "currencyBeforeTaxes", //
                                                                         "grossAssessmentBasis", "currencyAssessmentBasis", //
                                                                         "deductedTaxes", "currencyDeductedTaxes") //
-                                                        .match("^Teilfreistellung \\(§ 20 InvStG\\) [\\.,\\d]+ % \\- (?<partialExemptionTaxes>[\\.,\\d]+) (?<currencypartialExemptionTaxes>[\\w]{3})$") //
-                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
-                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
-                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
+                                                        .match("^Teilfreistellung \\(§ 20 InvStG\\) [\\.,\\d]+ % \\- (?<partialExemptionTaxes>[\\.,\\d]+) (?<currencypartialExemptionTaxes>[A-Z]{3})$") //
+                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[A-Z]{3})$") //
+                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[A-Z]{3})$") //
+                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var partialExemptionTaxes = Money.of(asCurrencyCode(v.get("currencypartialExemptionTaxes")), asAmount(v.get("partialExemptionTaxes")));
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
@@ -408,11 +420,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                                         "withholdingTaxesTimes4", "currencyWithholdingTaxesTimes4", //
                                                                         "grossAssessmentBasis", "currencyAssessmentBasis", //
                                                                         "deductedTaxes", "currencyDeductedTaxes") //
-                                                        .match("^Anrechenbare ausl.ndische Quellensteuer (?<withHoldingTaxes>[\\.,\\d]+) (?<currencyWithHoldingTaxes>[\\w]{3})$") //
-                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
-                                                        .match("^Anrechnung ausl.ndischer Quellensteuer.* (?<withholdingTaxesTimes4>[\\.,\\d]+) (?<currencyWithholdingTaxesTimes4>[\\w]{3})$") //
-                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
-                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
+                                                        .match("^Anrechenbare ausl.ndische Quellensteuer (?<withHoldingTaxes>[\\.,\\d]+) (?<currencyWithHoldingTaxes>[A-Z]{3})$") //
+                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[A-Z]{3})$") //
+                                                        .match("^Anrechnung ausl.ndischer Quellensteuer.* (?<withholdingTaxesTimes4>[\\.,\\d]+) (?<currencyWithholdingTaxesTimes4>[A-Z]{3})$") //
+                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[A-Z]{3})$") //
+                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var withHoldingTaxes = Money.of(asCurrencyCode(v.get("currencyWithHoldingTaxes")), asAmount(v.get("withHoldingTaxes")));
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
@@ -437,9 +449,9 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("grossBeforeTaxes", "currencyBeforeTaxes", //
                                                                         "grossAssessmentBasis", "currencyAssessmentBasis", //
                                                                         "deductedTaxes", "currencyDeductedTaxes") //
-                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
-                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
-                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
+                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[A-Z]{3})$") //
+                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[A-Z]{3})$") //
+                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
                                                             var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
@@ -469,8 +481,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("grossLoss", "currencyLoss", "grossBeforeTaxes", "currencyBeforeTaxes") //
-                                                        .match("^Ver.u.erungsverlust \\- (?<grossLoss>[\\.,\\d]+) (?<currencyLoss>[\\w]{3})$") //
-                                                        .match("^Ertr.ge\\/Verluste \\- (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
+                                                        .match("^Ver.u.erungsverlust \\- (?<grossLoss>[\\.,\\d]+) (?<currencyLoss>[A-Z]{3})$") //
+                                                        .match("^Ertr.ge\\/Verluste \\- (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var grossLoss = Money.of(asCurrencyCode(v.get("currencyLoss")), asAmount(v.get("grossLoss")));
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
@@ -497,9 +509,9 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("fxCurrency", "fxGross", "currencyWithHoldingTax", "withHoldingTax", "baseCurrency", "termCurrency", "exchangeRate") //
-                                                        .match("^Bruttobetrag:[\\s]{1,}(?<fxCurrency>[\\w]{3})[\\s]{1,}(?<fxGross>[\\.,\\d]+).*$") //
-                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
-                                                        .match("^.*zum Devisenkurs: (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^Bruttobetrag:[\\s]{1,}(?<fxCurrency>[A-Z]{3})[\\s]{1,}(?<fxGross>[\\.,\\d]+).*$") //
+                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[A-Z]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
+                                                        .match("^.*zum Devisenkurs: (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -518,14 +530,14 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "withHoldingTax") //
-                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
+                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[A-Z]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
                                                         .assign((t, v) -> {
                                                             var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
 
                                                             if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
                                                         }))
-                        
+
                         // @formatter:off
                         // Transaktionsreferenz TR TBK14720B024746O001
                         // Transaktionsreferenz INDTBK1234567890
@@ -554,7 +566,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 // Provision 8,90 EUR
                 // @formatter:on
                 .section("fee", "currency").optional()
-                .match("^Provision (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                .match("^Provision (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                 .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
