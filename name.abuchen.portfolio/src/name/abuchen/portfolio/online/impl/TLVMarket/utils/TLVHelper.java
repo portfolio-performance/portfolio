@@ -224,4 +224,17 @@ public class TLVHelper
         return price;
     }
 
+    public static long asLong(String value)
+    {
+        if (value == null)
+            return 0;
+        try
+        {
+            return Long.parseLong(value);
+        }
+        catch (NumberFormatException e)
+        {
+            return 0;
+        }
+    }
 }

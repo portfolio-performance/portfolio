@@ -121,6 +121,7 @@ public class TLVSecurity extends TLVListing
                     Security security)
     {
         QuoteFeedData feed = new QuoteFeedData();
+
         Optional<String> quoteCurrency = getQuoteCurrency(security);
         LatestSecurityPrice price = null;
 
@@ -135,6 +136,7 @@ public class TLVSecurity extends TLVListing
         SecurityHistoryEntry[] historyitemsarray = history.getItems();
         
         for (int i = 0; i < historyitemsarray.length; i++)
+
         {
             SecurityHistoryEntry entry = historyitemsarray[i];
 
@@ -145,10 +147,32 @@ public class TLVSecurity extends TLVListing
                 price.setDate(TLVHelper.asDate(tradeDate.get()));
 
             Optional<String> closePrice = Optional.of(entry.getCloseRate());
-            if (closePrice.isPresent())
+            if (closePrice != null && closePrice.isPresent())
             {
                 long priceL = TLVHelper.asPrice(closePrice.get());
                 price.setValue(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            }
+
+            String highRate = entry.getHighRate();
+            if (highRate != null)
+            {
+                long priceL = TLVHelper.asPrice(highRate);
+                price.setHigh(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            }
+
+            String lowRate = entry.getLowRate();
+            if (lowRate != null)
+            {
+
+                long priceL = TLVHelper.asPrice(lowRate);
+                price.setLow(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            }
+
+            Optional<String> volume = Optional.of(entry.getOverallTurnOverUnits());
+            if (volume != null && volume.isPresent())
+            {
+                long priceL = TLVHelper.asLong(volume.get());
+                price.setVolume(priceL);
             }
 
             if (price.getDate() != null && price.getValue() > 0)

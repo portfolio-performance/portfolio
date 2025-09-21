@@ -218,7 +218,6 @@ public class TLVQuoteFeedMockTest
     @Ignore("Mock Test")
     public void mocked_Security_should_return_historical_Quotes() throws IOException
     {
-
     }
 
     @Test

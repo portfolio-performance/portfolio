@@ -63,7 +63,7 @@ public class TLVSecurityMockTest
 
     private String getSecurityHistory2()
     {
-        return getHistoricalTaseQuotes("response_tase_security_history02.txt");
+        return getHistoricalTaseQuotes("response_tase_security_stock_history02.txt");
     }
 
     private String getHistoricalTaseQuotes(String filename)
@@ -273,6 +273,7 @@ public class TLVSecurityMockTest
 
             assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
 
+
             SecurityPrice firstprice = feedData.getPrices().get(0);
             SecurityPrice lastprice = feedData.getPrices().get(feedData.getPrices().size() - 1);
 
@@ -281,6 +282,19 @@ public class TLVSecurityMockTest
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(118.94)));
             assertThat(lastprice.getValue(), is(Values.Quote.factorize(118.89)));
 
+            // First SecurityPrice in list has no low prices
+            assertFalse("FeedData shoould contain latestprices", feedData.getLatestPrices().isEmpty());
+            LatestSecurityPrice firstlatestprice = feedData.getLatestPrices().get(0);
+            assertThat(firstlatestprice.getDate(), is(LocalDate.of(2025, 9, 1)));
+            assertThat(firstlatestprice.getValue(), is(Values.Quote.factorize(118.94)));
+            assertThat(firstlatestprice.getVolume(), is(313006515L));
+            assertThat(firstlatestprice.getHigh(), is(Values.Quote.factorize(118.96)));
+            assertThat(firstlatestprice.getLow(), is(Values.Quote.factorize(118.60)));
+
+
+
+            // Verify interaction
+            verify(feed).getHistoricalQuotes(security, false);
 
         }
         catch (Exception e)
@@ -331,6 +345,9 @@ public class TLVSecurityMockTest
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(118.94)));
             assertThat(lastprice.getValue(), is(Values.Quote.factorize(118.89)));
 
+            // Verify interaction
+            verify(feed).getHistoricalQuotes(security, false);
+
         }
         catch (Exception e)
         {
@@ -379,6 +396,8 @@ public class TLVSecurityMockTest
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(118.94)));
             assertThat(lastprice.getValue(), is(Values.Quote.factorize(118.89)));
 
+            // Verify interaction
+            verify(feed).getHistoricalQuotes(security, false);
         }
         catch (Exception e)
         {
@@ -386,4 +405,57 @@ public class TLVSecurityMockTest
             assertTrue(false);
         }
     }
+
+    @Test
+    public void live_testing_security_1119478()
+
+    {
+        Security security = new Security();
+        security.setTickerSymbol("DDDD");
+        security.setCurrencyCode("ILA");
+        security.setWkn("1119478");
+
+        SecurityHistory history = null;
+
+        TLVSecurity feed = new TLVSecurity();
+
+        try
+        {
+
+            Optional<QuoteFeedData> feedDataOpt = feed.getHistoricalQuotes(security, false);
+
+            assertFalse("GetHistoricalQoutes feedData should not be empty", feedDataOpt.isEmpty());
+
+            QuoteFeedData feedData = feedDataOpt.get();
+
+            assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
+
+            SecurityPrice firstprice = feedData.getPrices().get(0);
+            SecurityPrice lastprice = feedData.getPrices().get(feedData.getPrices().size() - 1);
+
+            LatestSecurityPrice latestprice = feedData.getLatestPrices().get(0);
+
+            System.out.println("Stock");
+            // System.out.println(firstprice.getValue());
+            // System.out.println(firstprice.getHigh());
+            // System.out.println(firstprice.getLow());
+
+            assertThat(firstprice.getDate(), is(LocalDate.of(2025, 9, 18)));
+            assertThat(lastprice.getDate(), is(LocalDate.of(2025, 8, 10)));
+            assertThat(firstprice.getValue(), is(Values.Quote.factorize(30460.00)));
+            assertThat(lastprice.getValue(), is(Values.Quote.factorize(32430.00)));
+
+            assertThat(latestprice.getDate(), is(LocalDate.of(2025, 9, 18)));
+            assertThat(latestprice.getValue(), greaterThan(0L));
+            assertThat(latestprice.getHigh(), greaterThan(0L));
+            assertThat(latestprice.getLow(), greaterThan(0L));
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+    }
+
 }

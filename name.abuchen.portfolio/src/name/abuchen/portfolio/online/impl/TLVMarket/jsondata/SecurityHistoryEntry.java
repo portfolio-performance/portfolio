@@ -13,11 +13,11 @@ public class SecurityHistoryEntry
     public String OpenRate;
     public String CloseRate;
     public String HighRate;
-    public String LowtRate;
+    public String LowRate;
     public String MarketValue;
     public long RegisteredCapital;
     public float TurnOverValueShekel;
-    public float OverallTurnOverUnits;
+    public String OverallTurnOverUnits;
     public int DealsNo;
     public String Exe;
     public String AdjustmentCoefficient;
@@ -75,12 +75,12 @@ public class SecurityHistoryEntry
 
     public String getLowRate()
     {
-        return LowtRate;
+        return LowRate;
     }
 
     public void setLowRate(String lowRate)
     {
-        LowtRate = lowRate;
+        LowRate = lowRate;
     }
 
     public String getMarketValue()
@@ -126,7 +126,7 @@ public class SecurityHistoryEntry
     {
         return "SecurityHistoryEntry [TradeDate=" + TradeDate + ", Change=" + Change + ", BaseRate=" + BaseRate
                         + ", OpenRate=" + OpenRate + ", CloseRate=" + CloseRate + ", HighRate=" + HighRate
-                        + ", LowtRate=" + LowtRate + ", MarketValue=" + MarketValue + ", RegisteredCapital="
+                        + ", LowtRate=" + LowRate + ", MarketValue=" + MarketValue + ", RegisteredCapital="
                         + RegisteredCapital + ", TurnOverValueShekel=" + TurnOverValueShekel + ", OverallTurnOverUnits="
                         + OverallTurnOverUnits + ", DealsNo=" + DealsNo + ", Exe=" + Exe + ", AdjustmentCoefficient="
                         + AdjustmentCoefficient + ", ExeDesc=" + ExeDesc + ", IANS=" + IANS
@@ -135,5 +135,15 @@ public class SecurityHistoryEntry
                         + BrutoYield + ", IfTraded=" + IfTraded + ", ShareTradingStatus=" + ShareTradingStatus
                         + ", IsOfferingPrice=" + IsOfferingPrice + ", AdjustmentRateDesc=" + AdjustmentRateDesc + "]"
         ;
+    }
+
+    public String getOverallTurnOverUnits()
+    {
+        return OverallTurnOverUnits;
+    }
+
+    public void setOverallTurnOverUnits(String overallTurnOverUnits)
+    {
+        OverallTurnOverUnits = overallTurnOverUnits;
     }
 }
