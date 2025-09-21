@@ -77,7 +77,7 @@ public class CallbackServer
     }
 
     private static final String HOSTNAME = "localhost"; //$NON-NLS-1$
-    private static final int[] PORTS = new int[] { 55968, 55969, 55970 };
+    private static final int[] PORTS = new int[] { 49968, 55968, 59968 };
 
     private static final String ENDPOINT_SUCCESS = "/success"; //$NON-NLS-1$
     private static final int NO_DELAY = 0;
