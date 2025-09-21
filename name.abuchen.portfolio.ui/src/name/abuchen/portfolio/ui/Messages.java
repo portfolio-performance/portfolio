@@ -1204,6 +1204,7 @@ public class Messages extends NLS
     public static String PortfolioMenuDeleteConfirm;
     public static String PortfolioReportMissingAPIKey;
     public static String PortfolioReportMissingAPIURL;
+    public static String PortfolioReportNotificationMessage;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefAutoSaveFrequency;
