@@ -547,6 +547,39 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSparplanausfuehrung06()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002875804"), hasWkn(null), hasTicker(null), //
+                        hasName("British American Tobacco"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-19T13:31:02"), hasShares(0.055472), //
+                        hasSource("Sparplanausfuehrung06.txt"), //
+                        hasNote("Ord.-Nr.: SCALNUFeqbHQBbc"), //
+                        hasAmount("EUR", 2.61), hasGrossValue("EUR", 2.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testSavingsplan01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -851,6 +884,78 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 0.69), hasGrossValue("EUR", 0.91), //
                         hasTaxes("EUR", 0.14 + 0.08), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4278661081"), hasWkn(null), hasTicker(null), //
+                        hasName("Hershey Co., The"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-17T00:00"), hasShares(0.489446), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
+                        hasForexGrossValue("USD", 0.66), //
+                        hasTaxes("EUR", 0.09 + 0.06), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende05WithSecurityInEUR()
+    {
+        var security = new Security("Hershey Co., The", "EUR");
+        security.setIsin("US4278661081");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ScalableCapitalPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-17T00:00"), hasShares(0.489446), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
+                        hasTaxes("EUR", 0.09 + 0.06), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
