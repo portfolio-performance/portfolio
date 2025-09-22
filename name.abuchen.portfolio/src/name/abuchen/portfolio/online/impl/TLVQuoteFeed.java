@@ -95,19 +95,14 @@ public class TLVQuoteFeed implements QuoteFeed
         return this.mappedEntities;
     }
 
-    // public List<IndiceListing> getAllSecurities(Language lang) throws
-    // Exception
-    // {
-    // TLVEntities indices = new TLVEntities();
-    // return indices.getAllListings(Language.ENGLISH).get();
-    //
-    // }
+
 
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
 
         Optional<QuoteFeedData> historicalprices = Optional.of(new QuoteFeedData());
+
         TLVType securityType = this.getSecurityType(security.getWkn());
 
         if (securityType == TLVType.NONE)
@@ -157,6 +152,7 @@ public class TLVQuoteFeed implements QuoteFeed
             return priceOpt;
         }
     }
+
 
     private void mapEntities() throws IOException
     {
@@ -504,7 +500,7 @@ public class TLVQuoteFeed implements QuoteFeed
     /**
      * Calculate the first date to request historical quotes for.
      */
-    /* package */final LocalDate caculateStart(Security security)
+    public LocalDate caculateStart(Security security)
     {
         if (!security.getPrices().isEmpty())
         {

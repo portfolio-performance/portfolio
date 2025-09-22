@@ -31,21 +31,20 @@ import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
-public class TLVFundMockTest
+public class TLVFundTest
 {
-    //@formatter:off
-    /*
-     * Tests should include: 
-     * Test that we get a valid quote
-     * Test getNames
-     * Test all work when it is a non-existing wkn
-     * Test all work when without a wkn
-     * Test conversions of ILS/ILA and back - could be moved to Listing
-     */
-    //@formatter:on
 
     // Mutual Fund Example - 5127121
     // https://maya.tase.co.il/en/funds/mutual-funds/5127121
+    //@formatter:off
+    /*
+     * "FundId": 5127121,
+     * "PurchasePrice": 155.97,
+        "SellPrice": 155.97,
+        "CreationPrice": 155.97,
+        "UnitValuePrice": 155.97,
+     */
+    //@formatter:on
     private String getFundDetails()
     {
         return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
@@ -53,6 +52,28 @@ public class TLVFundMockTest
 
     private String getFundHistory()
     {
+    //@formatter:off
+    /*
+     *  "Total": 206,
+        "StartDate": "2024-11-03T00:00:00",
+        "EndDate": "2024-11-04T00:00:00"
+        "Table":
+        "FundId": null,
+        "TradeDate": "2025-08-25T00:00:00",
+        "LastUpdateDate": "0001-01-01T00:00:00",
+        "PurchasePrice": 146.88,
+        "SellPrice": 146.88,
+        "CreationPrice": null,
+        "DayYield": 0.04,
+        "ShowDayYield": true,
+        "Rate": 0,
+        "ManagmentFee": 0.25,
+        "TrusteeFee": 0.025,
+        "SuccessFee": null,
+        "AssetValue": 130.3
+     */
+    //@formatter:on
+
         return getHistoricalTaseQuotes("response_tase_fund_history01.txt");
     }
 
@@ -182,11 +203,9 @@ public class TLVFundMockTest
         try
         {
             TLVFund tlvFund = Mockito.spy(new TLVFund());
-
-
-
             Mockito.doReturn(Optional.of(mockedFundHistory)).when(tlvFund).getPriceHistory(security, from, to, 1,
                             Language.ENGLISH);
+
             Optional<FundHistory> fundHistoryOptional = tlvFund.getPriceHistory(security, from, to, 1,
                             Language.ENGLISH);
             assertThat(fundHistoryOptional.isPresent(), is(true));
@@ -201,11 +220,11 @@ public class TLVFundMockTest
             FundHistoryEntry lastprice = entries[entries.length - 1];
 
             assertTrue(firstprice != null);
-            assertThat(firstprice.getTradeDate().toLocalDate(), is(to));
+            assertThat(firstprice.getTradeDate(), is(to));
 
             assertThat(firstprice.getSellPrice(), is("146.88"));
 
-            assertThat(lastprice.getTradeDate().toLocalDate(), is(from));
+            assertThat(lastprice.getTradeDate(), is(from));
             verify(tlvFund, times(1)).getPriceHistory(security, from, to, 1, Language.ENGLISH);
 
         }
@@ -225,7 +244,6 @@ public class TLVFundMockTest
         security.setWkn("5127121");
         security.setCurrencyCode("ILA");
 
-        // LocalDate from = LocalDate.of(2025, 7, 14);
         LocalDate to = LocalDate.of(2025, 8, 25);
 
         String response = getFundHistory();
@@ -233,24 +251,21 @@ public class TLVFundMockTest
         assertTrue(response.contains("Table"));
         assertTrue(response.contains("StartDate"));
 
-        // Gson gson = GSONUtil.createGson();
-        // FundHistory mockedFundHistory = gson.fromJson(response,
-        // FundHistory.class);
         FundHistory mockedhistory = FundHistory.fromJson(response);
         Optional<FundHistory> mockedhistoryopt = Optional.of(mockedhistory);
 
-        QuoteFeedData mockedFeedData = null;
-        TLVFund tlvFund = Mockito.spy(new TLVFund());
-        Optional<QuoteFeedData> mockedFeed = tlvFund.convertFundHistoryToQuoteFeedData(mockedhistoryopt, security);
 
         try
         {
+            TLVFund tlvFund = Mockito.spy(new TLVFund());
+            Optional<QuoteFeedData> mockedFeed = tlvFund.convertFundHistoryToQuoteFeedData(mockedhistoryopt, security);
 
-            doReturn(mockedhistoryopt).when(tlvFund).getHistoricalQuotes(security, false);
+            doReturn(mockedFeed).when(tlvFund).getHistoricalQuotes(security, false);
 
             Optional<QuoteFeedData> fundQuoteFeedDataOptional = tlvFund.getHistoricalQuotes(security, false);
             verify(tlvFund, times(1)).getHistoricalQuotes(security, false);
             assertThat(fundQuoteFeedDataOptional.isPresent(), is(true));
+
             QuoteFeedData fundQuoteFeedData  = fundQuoteFeedDataOptional.get();
 
             assertTrue(fundQuoteFeedData.getPrices() != null);
@@ -265,6 +280,7 @@ public class TLVFundMockTest
             assertThat(firstprice.getDate(), is(to));
 
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(146.88)));
+            verify(tlvFund, times(1)).getHistoricalQuotes(security, false);
 
 
 

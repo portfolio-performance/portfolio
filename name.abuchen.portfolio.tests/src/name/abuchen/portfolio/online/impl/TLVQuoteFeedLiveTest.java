@@ -75,18 +75,20 @@ public class TLVQuoteFeedLiveTest
 
             QuoteFeedData prices = tlvFeed.getHistoricalQuotes(security, false);
 
-            assertThat(prices.getLatestPrices().size(), greaterThan(1));
             assertThat(prices.getPrices().size(), greaterThan(1));
+            assertThat(prices.getLatestPrices().size(), greaterThan(1));
+
             SecurityPrice secprice = prices.getPrices().get(0);
             assertTrue(secprice.getDate() instanceof LocalDate);
 
             assertThat(secprice.getValue(), greaterThan(0L));
 
+            // Funds have Purchase and Sell, not high and low
             LatestSecurityPrice latestsecprice = prices.getLatestPrices().get(0);
-            assertThat(latestsecprice.getHigh(), greaterThan(0L));
-            assertThat(latestsecprice.getLow(), greaterThan(0L));
+            assertThat(latestsecprice.getHigh(), is(0L));
+            assertThat(latestsecprice.getLow(), is(0L));
             assertThat(latestsecprice.getValue(), greaterThan(0L));
-            assertThat(latestsecprice.getVolume(), greaterThan(100L));
+            assertThat(latestsecprice.getVolume(), is(0L));
             System.out.println("Test random TVL Fund: " + randomFund.get().getId()
                             + " getHistoricalQuotes for TVL Fund passed");
 

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.mockito.Mockito;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
 
 public class TLVEntitiesTest
 {
@@ -40,15 +42,12 @@ public class TLVEntitiesTest
         String mockedresponse = getEntitiesList();
         assertTrue(mockedresponse.length() > 0);
 
+
         try
         {
             TLVEntities indices = Mockito.spy(new TLVEntities());
 
             Mockito.doReturn((mockedresponse)).when(indices).rpcAllIndices(Language.ENGLISH);
-
-            String allIncides = indices.rpcAllIndices(Language.ENGLISH);
-
-            assertTrue(allIncides.contains("ABRA"));
 
 
             Optional<List<IndiceListing>> iListOptional = indices.getAllListings(Language.ENGLISH);
@@ -61,8 +60,9 @@ public class TLVEntitiesTest
             IndiceListing listing = iList.get(0);
 
             assertTrue(listing.getId().equals("2442"));
-            assertTrue(iList.get(0).getType() == 5);
+            assertTrue(iList.get(0).getType() == SecurityType.DELETED.getValue());
 
+            verify(indices).rpcAllIndices(Language.ENGLISH);
         }
         catch (IOException e)
         {

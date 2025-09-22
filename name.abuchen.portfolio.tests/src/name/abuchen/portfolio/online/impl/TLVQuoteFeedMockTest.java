@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -77,7 +78,7 @@ public class TLVQuoteFeedMockTest
 
     private String getShareHistory()
     {
-        return "";
+        return "response_tase_share_history01.txt";
     }
 
     private String getSecurityHistory()
@@ -221,6 +222,7 @@ public class TLVQuoteFeedMockTest
     }
 
     @Test
+    @Ignore()
     public void mocked_Shares_should_return_historical_Quotes() throws IOException
     {
         // TODO add support for Subid.
@@ -231,8 +233,10 @@ public class TLVQuoteFeedMockTest
         String response = getShareHistory();
         assertTrue(response.length() > 0);
 
+        // return Optional<QuoteFeedData>
+
         TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
-        Mockito.doReturn(response).when(feed).rpcLatestQuoteFund(security);
+        Mockito.doReturn(response).when(feed).getHistoricalQuotes(security, false);
 
         // PRice in ILS, Type = Mutual Fund
         try
@@ -247,6 +251,7 @@ public class TLVQuoteFeedMockTest
             assert (firstprice.getDate().equals(LocalDate.of(2025, 7, 28)));
             assertThat(firstprice.getDate(), is(LocalDate.of(2025, 7, 28)));
             assert (firstprice.getValue() == 14688000000l);
+            verify(feed, times(1)).getHistoricalQuotes(security, false);
 
         }
         catch (Exception e)

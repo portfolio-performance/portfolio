@@ -20,7 +20,7 @@ public class TLVListing
         }
         else
         {
-            return LocalDate.of(1900, 1, 1);
+            return LocalDate.now().minusMonths(3);
         }
     }
 

@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -81,9 +81,9 @@ public class FundHistoryEntry
         return this.FundId;
     }
 
-    public LocalDateTime getTradeDate()
+    public LocalDate getTradeDate()
     {
-        return this.TradeDate;
+        return this.TradeDate.toLocalDate();
     }
 
     public void setTradeDate(LocalDateTime date)
@@ -101,35 +101,7 @@ public class FundHistoryEntry
         AssetValue = assetValue;
     }
 
-    public static FundHistoryEntry fromMap(Map<String, Object> map)
-    {
-        FundHistoryEntry historyentry = new FundHistoryEntry();
-        if (map.containsKey("Rate")) //$NON-NLS-1$
-        {
-            historyentry.setRate((String) map.get("Rate")); //$NON-NLS-1$
-        }
-        if (map.containsKey("FundId")) //$NON-NLS-1$
-        {
-            historyentry.setFundId((String) map.get("FundId")); //$NON-NLS-1$
-        }
-        if (map.containsKey("TradeDate")) //$NON-NLS-1$
-        {
-            historyentry.setTradeDate(LocalDateTime.parse((String) map.get("TradeDate"))); //$NON-NLS-1$
-        }
-        if (map.containsKey("SellPrice")) //$NON-NLS-1$
-        {
-            historyentry.setSellPrice((String) map.get("SellPrice")); //$NON-NLS-1$
-        }
-        if (map.containsKey("PurchasePrice")) //$NON-NLS-1$
-        {
-            historyentry.setPurchasePrice((String) map.get("PurchasePrice")); //$NON-NLS-1$
-        }
-        if (map.containsKey("AssetValue")) //$NON-NLS-1$
-        {
-            historyentry.setAssetValue((String) map.get("AssetValue")); //$NON-NLS-1$
-        }
-        return historyentry;
-    }
+
 
     public static FundHistoryEntry fromJson(String json)
     {

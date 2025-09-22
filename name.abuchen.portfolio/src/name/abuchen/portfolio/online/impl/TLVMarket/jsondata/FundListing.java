@@ -2,6 +2,8 @@ package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,7 +87,7 @@ public class FundListing
     private String SellPrice;
     private String CreationPrice;
     private String UnitValuePrice;
-    private String UnitValueValidDate;
+    private LocalDateTime UnitValueValidDate;
     private String DayYield;
     // private boolean ShowDayYield;
     // private String DailyRemark;
@@ -181,12 +183,12 @@ public class FundListing
         UnitValuePrice = unitValuePrice;
     }
 
-    public String getUnitValueValidDate()
+    public LocalDate getUnitValueValidDate()
     {
-        return UnitValueValidDate;
+        return UnitValueValidDate.toLocalDate();
     }
 
-    public void setUnitValueValidDate(String unitValueValidDate)
+    public void setUnitValueValidDate(LocalDateTime unitValueValidDate)
     {
         UnitValueValidDate = unitValueValidDate;
     }
