@@ -917,7 +917,7 @@ public class SecuritiesChart
         chart.setRedraw(false);
         chart.suspendUpdate(true);
 
-        ColorWheel colorWheel = new ColorWheel(securities.length);
+        ColorWheel colorWheel = new ColorWheel(MAX_SECURITIES_BENCHMARK);
 
         try
         {
