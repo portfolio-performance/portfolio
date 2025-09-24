@@ -150,6 +150,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
         hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));
+        assetViewer.hookKeyListener();
 
         assetViewer.getTableViewer().addSelectionChangedListener(e -> {
             var selection = e.getStructuredSelection();

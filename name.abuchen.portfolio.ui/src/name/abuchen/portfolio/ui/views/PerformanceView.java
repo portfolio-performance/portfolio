@@ -28,6 +28,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -417,6 +419,7 @@ public class PerformanceView extends AbstractHistoricView
         item.setImage(Images.VIEW_TABLE.image());
 
         hookContextMenu(calculation.getTree(), this::fillContextMenu);
+        hookKeyListener();
     }
 
     private void fillContextMenu(IMenuManager manager) // NOSONAR
@@ -430,6 +433,20 @@ public class PerformanceView extends AbstractHistoricView
 
         Security security = ((ClientPerformanceSnapshot.Position) selection).getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
+    }
+
+    private void hookKeyListener()
+    {
+        calculation.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                Object selection = ((IStructuredSelection) calculation.getSelection()).getFirstElement();
+                if (selection instanceof ClientPerformanceSnapshot.Position position)
+                    new SecurityContextMenu(PerformanceView.this).handleEditKey(e, position.getSecurity());
+            }
+        });
     }
 
     private void addTreeActionsContextMenu(IMenuManager manager, Object obj)

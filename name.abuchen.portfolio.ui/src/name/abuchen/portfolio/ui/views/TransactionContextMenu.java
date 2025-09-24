@@ -46,7 +46,7 @@ public class TransactionContextMenu
     {
         if (selection.isEmpty() && fullContextMenu)
         {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
+            new SecurityContextMenu(owner, fullContextMenu).menuAboutToShow(manager, null, null);
         }
 
         if (selection.size() == 1)
@@ -203,7 +203,8 @@ public class TransactionContextMenu
         manager.add(new Separator());
 
         if (fullContextMenu)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
+            new SecurityContextMenu(owner, fullContextMenu).menuAboutToShow(manager, ptx.getSecurity(),
+                            (Portfolio) tx.getOwner());
         else
             manager.add(new BookmarkMenu(owner.getPart(), ptx.getSecurity()));
     }

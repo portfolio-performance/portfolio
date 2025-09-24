@@ -40,6 +40,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -1063,6 +1065,20 @@ public class StatementOfAssetsViewer
 
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), reference);
         }
+    }
+
+    public void hookKeyListener()
+    {
+        assets.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                Element element = (Element) assets.getStructuredSelection().getFirstElement();
+                if (element != null && element.isSecurity())
+                    new SecurityContextMenu(owner).handleEditKey(e, element.getSecurity());
+            }
+        });
     }
 
     public TableViewer getTableViewer()

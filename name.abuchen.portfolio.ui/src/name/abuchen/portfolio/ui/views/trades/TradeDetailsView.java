@@ -23,6 +23,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -428,6 +430,7 @@ public class TradeDetailsView extends AbstractFinanceView
         update();
 
         new ContextMenu(table.getTableViewer().getControl(), this::fillContextMenu).hook();
+        hookKeyListener();
 
         return control;
     }
@@ -451,6 +454,23 @@ public class TradeDetailsView extends AbstractFinanceView
 
         Trade trade = (Trade) selection.getFirstElement();
         new SecurityContextMenu(this).menuAboutToShow(manager, trade.getSecurity(), trade.getPortfolio());
+    }
+
+    private void hookKeyListener()
+    {
+        table.getTableViewer().getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                IStructuredSelection selection = table.getTableViewer().getStructuredSelection();
+                if (selection.isEmpty() || selection.size() > 1)
+                    return;
+
+                Trade trade = (Trade) selection.getFirstElement();
+                new SecurityContextMenu(TradeDetailsView.this).handleEditKey(e, trade.getSecurity());
+            }
+        });
     }
 
     private void update()

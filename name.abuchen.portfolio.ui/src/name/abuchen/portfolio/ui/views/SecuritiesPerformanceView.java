@@ -45,6 +45,8 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -778,6 +780,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         new SecurityDragListener(records));
 
         hookContextMenu(records.getTable(), this::fillContextMenu);
+        hookKeyListener();
 
         records.addSelectionChangedListener(event -> {
             var selection = event.getStructuredSelection();
@@ -1867,5 +1870,22 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         Security security = row.performanceRecord.getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
+    }
+
+    private void hookKeyListener()
+    {
+        records.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                RowElement row = (RowElement) ((IStructuredSelection) records.getSelection()).getFirstElement();
+                if (row == null || !row.isRecord())
+                    return;
+
+                Security security = row.performanceRecord.getSecurity();
+                new SecurityContextMenu(SecuritiesPerformanceView.this).handleEditKey(e, security);
+            }
+        });
     }
 }
