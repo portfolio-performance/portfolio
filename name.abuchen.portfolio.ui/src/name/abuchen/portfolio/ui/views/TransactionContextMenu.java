@@ -203,7 +203,8 @@ public class TransactionContextMenu
         manager.add(new Separator());
 
         if (fullContextMenu)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
+            new SecurityContextMenu(owner).withoutAccelerator() //
+                            .menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
         else
             manager.add(new BookmarkMenu(owner.getPart(), ptx.getSecurity()));
     }

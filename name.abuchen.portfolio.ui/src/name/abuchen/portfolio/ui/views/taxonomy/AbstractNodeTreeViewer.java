@@ -39,6 +39,7 @@ import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -472,6 +473,7 @@ import name.abuchen.portfolio.util.TextUtil;
         nodeViewer.setInput(getModel());
 
         new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
+        hookKeyListener();
 
         return container;
     }
@@ -924,6 +926,20 @@ import name.abuchen.portfolio.util.TextUtil;
                 new SecurityContextMenu(this.view).menuAboutToShow(manager, security);
             }
         }
+    }
+
+    private void hookKeyListener()
+    {
+        nodeViewer.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = nodeViewer.getStructuredSelection();
+            if (selection.isEmpty() || selection.size() > 1)
+                return;
+
+            var node = (TaxonomyNode) selection.getFirstElement();
+            var security = node.getBackingSecurity();
+            if (security != null)
+                new SecurityContextMenu(view).handleEditKey(e, security);
+        }));
     }
 
     private void addAvailableAssignments(MenuManager manager, TaxonomyNode targetNode)

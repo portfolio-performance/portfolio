@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -178,6 +179,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         model.addUpdateListener(() -> updateColumns(tableViewer, tableLayout));
 
         new ContextMenu(tableViewer.getControl(), this::fillContextMenu).hook();
+        hookKeyListener();
 
         return container;
     }
@@ -356,5 +358,21 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         {
             new SecurityContextMenu(view).menuAboutToShow(manager, security);
         }
+    }
+
+    private void hookKeyListener()
+    {
+        tableViewer.getControl().addKeyListener(KeyListener.keyPressedAdapter(e -> {
+            var selection = tableViewer.getStructuredSelection();
+            if (selection.isEmpty() || selection.size() > 1)
+                return;
+
+            var line = (Line) selection.getFirstElement();
+            var vehicle = line.getVehicle();
+            if (vehicle instanceof Security security)
+            {
+                new SecurityContextMenu(view).handleEditKey(e, security);
+            }
+        }));
     }
 }
