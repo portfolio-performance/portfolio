@@ -3,7 +3,14 @@ package name.abuchen.portfolio.oauth.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,20 +19,16 @@ import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.oauth.AccessToken;
 
 public class TokenStorage
 {
     private static final String TOKEN_STORAGE = "token_storage"; //$NON-NLS-1$
-    private static final String ID_TOKEN = "id_token"; //$NON-NLS-1$
-    private static final String ACCESS_TOKENS = "access_tokens"; //$NON-NLS-1$
     private static final String REFRESH_TOKEN = "refresh_token"; //$NON-NLS-1$
 
     private ISecurePreferences preferences;
+    private Path tokenFile;
 
     private String idToken;
     private Map<String, AccessToken> accessTokenMap = new HashMap<>();
@@ -35,33 +38,25 @@ public class TokenStorage
     {
         try
         {
-            var url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio/secure_storage").toURL()); //$NON-NLS-1$ //NOSONAR
-            preferences = SecurePreferencesFactory.open(url, null);
+            var url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio/token_storage").toURL()); //$NON-NLS-1$ //NOSONAR
+            tokenFile = Paths.get(url.toURI());
+
+            this.refreshToken = loadRefreshTokenFromFile();
+
+            if (this.refreshToken == null)
+            {
+                loadFromSecurePreferences();
+
+                if (this.refreshToken != null)
+                {
+                    saveRefreshTokenToFile(this.refreshToken);
+                    clearSecurePreferences();
+                }
+            }
+
+            this.accessTokenMap = new HashMap<>();
         }
         catch (URISyntaxException | IOException e)
-        {
-            PortfolioLog.error(e);
-            return;
-        }
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            this.idToken = node.get(ID_TOKEN, null);
-            this.refreshToken = node.get(REFRESH_TOKEN, null);
-            String accessTokensJson = node.get(ACCESS_TOKENS, null);
-            if (accessTokensJson != null)
-            {
-                this.accessTokenMap = new Gson().fromJson(accessTokensJson, new TypeToken<Map<String, AccessToken>>()
-                {
-                }.getType());
-            }
-            else
-            {
-                this.accessTokenMap = new HashMap<>();
-            }
-        }
-        catch (StorageException e)
         {
             PortfolioLog.error(e);
         }
@@ -69,59 +64,38 @@ public class TokenStorage
 
     public String getIdToken()
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
         return idToken;
     }
 
     public void setIdToken(String idToken)
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
 
         this.idToken = idToken;
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            node.put(ID_TOKEN, idToken, true);
-            node.flush();
-        }
-        catch (StorageException | IOException e)
-        {
-            PortfolioLog.error(e);
-        }
     }
 
     public String getRefreshToken()
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
         return refreshToken;
     }
 
     public void setRefreshToken(String refreshToken)
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
 
         this.refreshToken = refreshToken;
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            node.put(REFRESH_TOKEN, refreshToken, true);
-            node.flush();
-        }
-        catch (StorageException | IOException e)
-        {
-            PortfolioLog.error(e);
-        }
+        saveRefreshTokenToFile(refreshToken);
     }
 
     public Optional<AccessToken> getAccessToken(String resource)
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
 
         var token = accessTokenMap.get(resource == null ? "" : resource); //$NON-NLS-1$
@@ -135,64 +109,30 @@ public class TokenStorage
 
     public void setAccessToken(String resource, AccessToken accessToken)
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
 
         accessTokenMap.put(resource == null ? "" : resource, accessToken); //$NON-NLS-1$
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            node.put(ACCESS_TOKENS, new Gson().toJson(accessTokenMap), true);
-            node.flush();
-        }
-        catch (StorageException | IOException e)
-        {
-            PortfolioLog.error(e);
-        }
     }
 
     public void deleteAccessToken(String resource)
     {
-        if (preferences == null)
+        if (tokenFile == null)
             init();
 
         accessTokenMap.remove(resource == null ? "" : resource); //$NON-NLS-1$
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            node.put(ACCESS_TOKENS, new Gson().toJson(accessTokenMap), true);
-            node.flush();
-        }
-        catch (StorageException | IOException e)
-        {
-            PortfolioLog.error(e);
-        }
     }
 
     public void save(String idToken, AccessToken accessToken, String refreshToken)
     {
+        if (tokenFile == null)
+            init();
+
         this.idToken = idToken;
-        this.refreshToken = refreshToken;
         this.accessTokenMap.put(accessToken.getScopes(), accessToken);
 
-        if (preferences == null)
-            preferences = SecurePreferencesFactory.getDefault();
-
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
-        try
-        {
-            node.put(ID_TOKEN, idToken, true);
-            node.put(ACCESS_TOKENS, new Gson().toJson(accessTokenMap), true);
-            node.put(REFRESH_TOKEN, refreshToken, true);
-
-            node.flush();
-        }
-        catch (StorageException | IOException e)
-        {
-            PortfolioLog.error(e);
-        }
+        this.refreshToken = refreshToken;
+        saveRefreshTokenToFile(refreshToken);
     }
 
     public void clear()
@@ -201,10 +141,96 @@ public class TokenStorage
         this.refreshToken = null;
         this.accessTokenMap.clear();
 
-        if (preferences == null)
-            preferences = SecurePreferencesFactory.getDefault();
+        if (tokenFile != null && Files.exists(tokenFile))
+        {
+            try
+            {
+                Files.delete(tokenFile);
+            }
+            catch (Exception e)
+            {
+                PortfolioLog.error(e);
+            }
+        }
 
-        ISecurePreferences node = preferences.node(TOKEN_STORAGE);
+        clearSecurePreferences();
+    }
+
+    private String loadRefreshTokenFromFile()
+    {
+        if (tokenFile == null || !Files.exists(tokenFile))
+            return null;
+
+        try
+        {
+            var lines = Files.readAllLines(tokenFile);
+            if (!lines.isEmpty())
+                return new String(Base64.getDecoder().decode(lines.get(0)), StandardCharsets.UTF_8);
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+        }
+        return null;
+    }
+
+    private void saveRefreshTokenToFile(String token)
+    {
+        if (tokenFile == null || token == null)
+            return;
+
+        try
+        {
+            Files.createDirectories(tokenFile.getParent());
+            Files.write(tokenFile, List.of(Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8))),
+                            StandardCharsets.UTF_8);
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+        }
+
+        try
+        {
+            var perms = PosixFilePermissions.fromString("rw-------"); //$NON-NLS-1$
+            Files.setPosixFilePermissions(tokenFile, perms);
+        }
+        catch (IOException | UnsupportedOperationException | SecurityException ignore)
+        {
+            // ignore unsupported OS or file system
+        }
+    }
+
+    private void loadFromSecurePreferences()
+    {
+        try
+        {
+            var url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio/secure_storage").toURL()); //$NON-NLS-1$ //NOSONAR
+            preferences = SecurePreferencesFactory.open(url, null);
+        }
+        catch (URISyntaxException | IOException e)
+        {
+            PortfolioLog.error(e);
+            return;
+        }
+
+        var node = preferences.node(TOKEN_STORAGE);
+        try
+        {
+            this.refreshToken = node.get(REFRESH_TOKEN, null);
+        }
+        catch (StorageException e)
+        {
+            PortfolioLog.error(e);
+        }
+    }
+
+    private void clearSecurePreferences()
+    {
+        if (preferences == null)
+            return;
+
+        var node = preferences.node(TOKEN_STORAGE);
         try
         {
             node.clear();
