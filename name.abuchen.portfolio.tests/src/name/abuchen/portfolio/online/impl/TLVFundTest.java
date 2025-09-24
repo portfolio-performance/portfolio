@@ -216,15 +216,37 @@ public class TLVFundTest
 
             FundHistoryEntry[] entries = mockedFundHistory.getItems();
 
+          //@formatter:off
+            /*
+             *  "Total": 206,
+                "StartDate": "2024-11-03T00:00:00",
+                "EndDate": "2024-11-04T00:00:00"
+                "Table":
+                "FundId": null,
+                "TradeDate": "2025-08-25T00:00:00",
+                "LastUpdateDate": "0001-01-01T00:00:00",
+                "PurchasePrice": 146.88,
+                "SellPrice": 146.88,
+                "CreationPrice": null,
+                "DayYield": 0.04,
+                "ShowDayYield": true,
+                "Rate": 0,
+                "ManagmentFee": 0.25,
+                "TrusteeFee": 0.025,
+                "SuccessFee": null,
+                "AssetValue": 130.3
+             */
+            //@formatter:on
             FundHistoryEntry firstprice = entries[0];
-            FundHistoryEntry lastprice = entries[entries.length - 1];
 
             assertTrue(firstprice != null);
             assertThat(firstprice.getTradeDate(), is(to));
 
             assertThat(firstprice.getSellPrice(), is("146.88"));
 
+            FundHistoryEntry lastprice = entries[entries.length - 1];
             assertThat(lastprice.getTradeDate(), is(from));
+
             verify(tlvFund, times(1)).getPriceHistory(security, from, to, 1, Language.ENGLISH);
 
         }
@@ -268,6 +290,28 @@ public class TLVFundTest
 
             QuoteFeedData fundQuoteFeedData  = fundQuoteFeedDataOptional.get();
 
+          //@formatter:off
+            /*
+             *  "Total": 206,
+                "StartDate": "2024-11-03T00:00:00",
+                "EndDate": "2024-11-04T00:00:00"
+                "Table":
+                "FundId": null,
+                "TradeDate": "2025-08-25T00:00:00",
+                "LastUpdateDate": "0001-01-01T00:00:00",
+                "PurchasePrice": 146.88,
+                "SellPrice": 146.88,
+                "CreationPrice": null,
+                "DayYield": 0.04,
+                "ShowDayYield": true,
+                "Rate": 0,
+                "ManagmentFee": 0.25,
+                "TrusteeFee": 0.025,
+                "SuccessFee": null,
+                "AssetValue": 130.3
+             */
+            //@formatter:on
+
             assertTrue(fundQuoteFeedData.getPrices() != null);
             assertThat(fundQuoteFeedData.getPrices().size(), is(30));
 
@@ -278,8 +322,8 @@ public class TLVFundTest
 
             assertTrue(firstprice != null);
             assertThat(firstprice.getDate(), is(to));
-
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(146.88)));
+
             verify(tlvFund, times(1)).getHistoricalQuotes(security, false);
 
 

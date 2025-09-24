@@ -32,7 +32,7 @@ public class TLVEntitiesTest
         Scanner scanner = new Scanner(getClass().getResourceAsStream(filename), "UTF-8");
         responseBody = scanner.useDelimiter("\\A").next();
         scanner.close();
-
+        
         return responseBody;
     }
 

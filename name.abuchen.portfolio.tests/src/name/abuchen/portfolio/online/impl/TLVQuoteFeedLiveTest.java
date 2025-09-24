@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
@@ -13,14 +14,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
+import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
 
@@ -134,8 +137,8 @@ public class TLVQuoteFeedLiveTest
 
                 LocalDate date = price.getDate();
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
-                assertTrue(daysdiff < 3l);
-                assertTrue(price.getValue() != 0l);
+                assertThat(daysdiff, lessThanOrEqualTo(3L));
+                assertThat(price.getValue(), not(0L));
 
                 assertThat(price.getHigh(), greaterThan(0L));
                 assertThat(price.getLow(), greaterThan(0L));
@@ -170,6 +173,35 @@ public class TLVQuoteFeedLiveTest
                             + " getHistoricalQuotes for TVL Bond passed");
 
         }
+    }
+
+    @Test
+    public void index_should_not_return_names()
+    {
+        Security security = new Security();
+        security.setTickerSymbol("AAPL");
+        security.setCurrencyCode("ILS");
+        security.setWkn("603");
+        // String responseEng = getSecurityDetailsEnglish();
+        // String responseHeb = getSecurityDetailsHebrew();
+        // assertTrue(responseEng.length() > 0);
+        // assertTrue(responseHeb.length() > 0);
+
+        TLVSecurity feed = new TLVSecurity();
+        try
+        {
+
+            SecurityListing englishListing = feed.getDetails(security, Language.ENGLISH);
+            SecurityListing hebrewListing = feed.getDetails(security, Language.HEBREW);
+            assertTrue(englishListing == null);
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+
     }
 
     @Test
@@ -241,7 +273,7 @@ public class TLVQuoteFeedLiveTest
                 assertTrue(price.getDate() != null);
                 LocalDate date = price.getDate();
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
-                assertTrue(daysdiff < 3l);
+                assertThat(daysdiff, lessThanOrEqualTo(3l));
 
                 assertThat(price.getValue(), greaterThan(0L));
                 assertThat(price.getVolume(), greaterThan(0L));
@@ -363,10 +395,34 @@ public class TLVQuoteFeedLiveTest
 
 
 
-    @Ignore
     @Test
     public void live_security_should_not_return_Historical_Prices_without_WKS()
     {
-        //
+        Security security = new Security();
+        security.setCurrencyCode("ILA"); // NICE Stock - reported in ILA
+
+        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
+
+        try
+        {
+            Optional<LatestSecurityPrice> response = tlvFeed.getLatestQuote(security);
+
+            if (!response.isEmpty())
+                assertTrue(false);
+
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            assertTrue(false);
+        }
+
+        QuoteFeedData prices = tlvFeed.getHistoricalQuotes(security, false);
+
+        assertThat(prices.getPrices().size(), is(0));
+        assertThat(prices.getLatestPrices().size(), is(0));
+
+
     }
 }

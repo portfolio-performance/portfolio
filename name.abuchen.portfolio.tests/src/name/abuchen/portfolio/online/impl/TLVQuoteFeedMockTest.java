@@ -51,7 +51,7 @@ public class TLVQuoteFeedMockTest
     // https://market.tase.co.il/en/market_data/security/1135912/major_data
     private String getSecurityDetails()
     {
-        return getHistoricalTaseQuotes("response_tase_security_details01.txt");
+        return getHistoricalTaseQuotes("response_tase_security_bond_details01.txt");
     }
 
     private String getSecurityDetailsEnglish()
@@ -297,12 +297,7 @@ public class TLVQuoteFeedMockTest
 
     }
 
-    @Ignore
-    @Test
-    public void mocked_index_should_not_return_names()
-    {
-        //
-    }
+
 
     @Ignore
     @Test
