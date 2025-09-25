@@ -66,15 +66,4 @@ import java.util.Map;
             copy.addSeries(new ExchangeRateTimeSeriesImpl(series));
         return copy;
     }
-
-    public void doPostLoadProcessing(ECBExchangeRateProvider provider)
-    {
-        currency2series = new HashMap<>();
-
-        for (ExchangeRateTimeSeriesImpl series : timeSeries)
-        {
-            series.setProvider(provider);
-            currency2series.put(series.getTermCurrency(), series);
-        }
-    }
 }
