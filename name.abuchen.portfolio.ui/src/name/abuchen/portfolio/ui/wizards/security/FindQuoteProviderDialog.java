@@ -207,7 +207,11 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
             for (var result : results)
             {
-                if (!property.apply(result).contains(identifier))
+                // check if the result contains the search term
+                var resultIdentifier = property.apply(result);
+                if (resultIdentifier == null)
+                    continue;
+                if (!resultIdentifier.contains(identifier))
                     continue;
 
                 var markets = (result.getMarkets().isEmpty() ? List.of(result) : result.getMarkets()) //
