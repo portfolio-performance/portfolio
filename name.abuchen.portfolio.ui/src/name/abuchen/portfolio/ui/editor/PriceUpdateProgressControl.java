@@ -56,10 +56,10 @@ public class PriceUpdateProgressControl implements PriceUpdateProgress.Listener
         this.lastStatus = status;
         if (progressBar != null && !progressBar.isDisposed())
         {
-            progressBar.setMaximum(status.getCount());
-            progressBar.setSelection(status.getCompleted());
-            progressBar.setVisible(status.getCount() != status.getCompleted());
-            progressBar.setToolTipText(status.getCompleted() + " / " + status.getCount()); //$NON-NLS-1$
+            progressBar.setMaximum(status.getTaskCount());
+            progressBar.setSelection(status.getCompletedTaskCount());
+            progressBar.setVisible(status.getTaskCount() != status.getCompletedTaskCount());
+            progressBar.setToolTipText(status.getCompletedTaskCount() + " / " + status.getTaskCount()); //$NON-NLS-1$
         }
     }
 }
