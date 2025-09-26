@@ -6,6 +6,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import java.math.BigDecimal;
+
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -93,7 +95,37 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Ordertyp .* (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Ordertyp .* (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Aug-2025 12:47:54
+                                        // ISIN IE00B4L5Y983 Valuta 07-Aug-2025
+                                        // Symbol SWDA:xswx Order-ID 5311230162
+                                        // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -2.394,19 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "tickerSymbol", "currency") //
+                                                        .match("^Instrument (?<name>.*) Handelszeit.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Berichtszeitraum
+                                        // 05-Jun-2025 bis 05-Jun-2025
+                                        // ETF
+                                        // iShares Core Euro STOXX 50 (DE) UCITS
+                                        // Instrument Handelszeit 05-Jun-2025 12:56:00
+                                        // ETF
+                                        // ISIN DE0005933956 Valuta 10-Jun-2025
+                                        // Symbol DJSXE:xswx Order-ID 8482757546
+                                        // Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -16'997.84 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "tickerSymbol", "currency") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
@@ -106,7 +138,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Trade time.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^.*Traded Value (\\-)?[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.*Traded Value (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -115,14 +147,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Er.ffnung\\/Schluss To-Open Menge (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Er.ffnung\\/Schluss To-Open Menge (?<shares>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // K/V Kauf Menge 49,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^K\\/V Kauf Menge (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^K\\/V Kauf Menge (?<shares>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Order Type Limit Order Quantity 10.000,00
@@ -130,7 +162,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^.*Quantity (?<shares>[\\.,'\\d]+)$") //
                                                         .find("Bond Traded Value") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
@@ -142,10 +174,11 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // B/S Buy Quantity 49,00
                                         // Order Type Limit Order Quantity 49,00
+                                        // Ordertyp Marktorder Menge 306.00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
+                                                        .match("^.*(Quantity|Menge) (?<shares>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -163,11 +196,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // Nettobetrag - - - - - -12,14 -4.869,43
                                         // Nettobetrag - - - - - 0,00 -3.057,58
                                         // Net Amount - - - - - 0,00 -981,98
+                                        // Nettobetrag - - - - - -39.83 -15'972.49
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,\\d]+ \\-(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,'\\d]+ \\-(?<amount>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -190,8 +224,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
                                                         .match("^ID (?<baseCurrency>[A-Z]{3}) [A-Z]{3} (?<termCurrency>[A-Z]{3})$") //
-                                                        .match("^(Aktienbetrag|Share Amount) .* (?<exchangeRate>[\\.,\\d]+) \\-[\\.,\\d]+ \\-[\\.,\\d]+$") //
-                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,\\d]+ \\-(?<gross>[\\.,\\d]+)$") //
+                                                        .match("^(Aktienbetrag|Share Amount) .* (?<exchangeRate>[\\.,'\\d]+) \\-[\\.,'\\d]+ \\-[\\.,'\\d]+$") //
+                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,'\\d]+ \\-(?<gross>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -243,7 +277,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note1", "note2") //
                                                         .match("^(?<note1>Bond Accrued).*$") //
-                                                        .match("[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<note2>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+$") //
+                                                        .match("[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<note2>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                                                         .find("Interest.*") //
                                                         .assign((t, v) -> {
 
@@ -275,7 +309,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Event (Dividend|Cash dividend).*$");
+        var firstRelevantLine = new Block("^Event (Dividend|Cash dividend|Bardividende).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -295,23 +329,43 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "tickerSymbol", "isin") //
-                                                        .match("^Description (?<name>.*) Dividend per share [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Description (?<name>.*) Dividend per share [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Description iShares (CH) Swiss Dividend ETF Dividende pro Aktie 0.26 CHF
+                                        // Symbol CHDVD:xswx Umrechnungskurs 1.000000
+                                        // ISIN CH0237935637 Kapitalmaßnahmen - Bardividenden 19.50 CHF
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "tickerSymbol", "isin") //
+                                                        .match("^Description (?<name>.*) Dividende pro Aktie [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Event Dividend reinvestment Eligible quantity 604
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^.*Eligible quantity (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Event Dividend reinvestment Eligible quantity 604
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.*Eligible quantity (?<shares>[\\.,'\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Event Bardividende Geeignete Menge 75
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.*Geeignete Menge (?<shares>[\\.,'\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // 43640515029 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 56,11 1,000000 56,11
                         // @formatter:on
                         .section("date") //
-                        .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$") //
+                        .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .oneOf( //
@@ -321,11 +375,23 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^Net Amount .* [\\.,\\d]+ [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Net Amount .* [\\.,'\\d]+ [\\.,'\\d]+ (?<amount>[\\.,'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Nettobetrag - - - - - 12.67 1.000000 12.67
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^Nettobetrag .* [\\.,'\\d]+ [\\.,'\\d]+ (?<amount>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
+
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -374,7 +440,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Net Amount .* (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Net Amount .* (?<currency>[A-Z]{3}) [\\.,'\\d]+ (?<amount>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -415,7 +481,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note", "date", "amount", "currency") //
                                                         .find("Bargeldtransfer") //
-                                                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
                                                         .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
@@ -432,7 +498,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note", "date", "amount", "currency") //
                                                         .find("Cash Transfer") //
-                                                        .match("^Deposit (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Deposit (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
                                                         .match("^.*Currency: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
@@ -460,7 +526,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,\\d]+ [\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,'\\d]+ [\\.,'\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -475,8 +541,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} " //
                                         + "(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) " //
                                         + "DEPOSIT .* " //
-                                        + "(?<amount>[\\.,\\d]+)" //
-                                        + "[\\.,\\d]+$") //
+                                        + "(?<amount>[\\.,'\\d]+)" //
+                                        + "[\\.,'\\d]+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -497,7 +563,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currencyConversionFee", "tax").optional() //
                         .documentContext("currency") //
-                        .match("^Stempelgeb.hr .* (\\-)?(?<currencyConversionFee>[\\.,\\d]+) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^Stempelgeb.hr .* (\\-)?(?<currencyConversionFee>[\\.,'\\d]+) \\-(?<tax>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             var taxes = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
@@ -509,12 +575,22 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // 45865563190 15-Jul-2025 16-Jul-2025 - 17-Jul-2025 -6.83 1.000000 -6.83
+                        // Quellensteuer
+                        // @formatter:on
+                        .section("withHoldingTax").optional() //
+                        .documentContext("currency") //
+                        .match("^.*[\\.,'\\d]+ [\\.,'\\d]+ \\-(?<withHoldingTax>[\\.,'\\d]+)$") //
+                        .match("^Quellensteuer$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
                         // 43640515030 15-Apr-2025 15-Apr-2025 02-Apr-2025 30-Apr-2025 -8,42 1,000000 -8,42
                         // Withholding Tax
                         // @formatter:on
                         .section("withHoldingTax").optional() //
                         .documentContext("currency") //
-                        .match("^.*[\\.,\\d]+ [\\.,\\d]+ \\-(?<withHoldingTax>[\\.,\\d]+)$") //
+                        .match("^.*[\\.,'\\d]+ [\\.,'\\d]+ \\-(?<withHoldingTax>[\\.,'\\d]+)$") //
                         .match("^Withholding Tax$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
@@ -530,7 +606,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currencyConversionFee", "fee").optional() //
                         .documentContext("currency") //
-                        .match("^(Provision|Commission) .* (\\-)?(?<currencyConversionFee>[\\.,\\d]+) \\-(?<fee>[\\.,\\d]+)$") //
+                        .match("^(Provision|Commission) .* (\\-)?(?<currencyConversionFee>[\\.,'\\d]+) \\-(?<fee>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             var fees = Money.of(v.get("currency"), asAmount(v.get("fee")));
                             var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
@@ -549,24 +625,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .find("Bond Accrued.*") //
-                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+$") //
+                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .find("Interest.*") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
-                        // Saxo is counterparty No Total Trading Costs -1,00 USD
-                        // @formatter:on
-                        .section("fee").optional() //
-                        .documentContext("currency") //
-                        .match("^.*Trading Costs \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
-                        // Open/Close OPEN Spread Costs 0,00 USD
-                        // @formatter:on
-                        .section("fee").optional() //
-                        .documentContext("currency") //
-                        .match("^.*Spread Costs \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -574,7 +634,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee").optional() //
                         .documentContext("currency") //
-                        .match("^Stempelgeb.hr .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
+                        .match("^Stempelgeb.hr .* \\-(?<fee>[\\.,'\\d]+) \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -582,7 +642,92 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee").optional() //
                         .documentContext("currency") //
-                        .match("^Aktienbetrag .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
+                        .match("^Aktienbetrag .* \\-(?<fee>[\\.,'\\d]+) \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+
+    @Override
+    protected long asAmount(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var apostrophe = value.indexOf("\'");
+        if (apostrophe >= 0)
+        {
+            language = "de";
+            country = "CH";
+        }
+        else
+        {
+            var lastDot = value.lastIndexOf(".");
+            var lastComma = value.lastIndexOf(",");
+
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en";
+                country = "US";
+            }
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var apostrophe = value.indexOf("\'");
+        if (apostrophe >= 0)
+        {
+            language = "de";
+            country = "CH";
+        }
+        else
+        {
+            var lastDot = value.lastIndexOf(".");
+            var lastComma = value.lastIndexOf(",");
+
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en";
+                country = "US";
+            }
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var apostrophe = value.indexOf("\'");
+        if (apostrophe >= 0)
+        {
+            language = "de";
+            country = "CH";
+        }
+        else
+        {
+            var lastDot = value.lastIndexOf(".");
+            var lastComma = value.lastIndexOf(",");
+
+            // returns the greater of two int values
+            if (Math.max(lastDot, lastComma) == lastDot)
+            {
+                language = "en";
+                country = "US";
+            }
+        }
+
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 }

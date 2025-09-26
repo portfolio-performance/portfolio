@@ -1,0 +1,51 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.77.3
+System: linux | x86_64 | 21.0.7+6-Ubuntu-0ubuntu124.04 | Ubuntu
+-----------------------------------------
+CH-55846013 - 04220131
+Bericht zu Trade-Details
+Berichtszeitraum: 05-Jun-2025 - 05-Jun-2025
+Generiert um: 02-Aug-2025 01:26:32 13:26:32 (W. Europe Standard Time)
+CH-47128434 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-92358935 Berichtszeitraum
+Währung: CHF 05-Jun-2025 - 05-Jun-2025
+Seite 1 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025
+Trade details, CHF
+Berichtszeitraum
+05-Jun-2025 bis 05-Jun-2025
+ETF
+iShares Core Euro STOXX 50 (DE) UCITS
+Instrument Handelszeit 05-Jun-2025 12:56:00
+ETF
+ISIN DE0005933956 Valuta 10-Jun-2025
+Symbol DJSXE:xswx Order-ID 8482757546
+Börsenbeschreibung J.P. MORGAN SE (JPEU) Trade-ID 3805096641
+Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -16'997.84 EUR
+Handelsplatz Exchange Preis 55.5485 EUR
+Ordertyp Marktorder Menge 306.00
+K/V Kauf Spread-Kosten 0.00 CHF
+Eröffnung/Schluss To-Open Gesamte Trading-Kosten -63.70 CHF
+Saxo is counterparty No
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID EUR CHF CHF
+Schweizerische
+Stempelgebühr 13530457723 05-Xsc-2025 10-Jun-2025 -25.50 0.938270 -0.06 -23.93
+Ausland
+Aktienbetrag 44682066414 05-Jun-2025 10-Jun-2025 -16'997.84 0.938270 -39.77 -15'948.56
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-85230340 Berichtszeitraum
+Währung: CHF 05-Jun-2025 - 05-Jun-2025
+Seite 2 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025
+Trade details, CHF
+Berichtszeitraum
+05-Jun-2025 bis 05-Jun-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID EUR CHF CHF
+Nettobetrag - - - - - -39.83 -15'972.49
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-36255898 Berichtszeitraum
+Währung: CHF 05-Jun-2025 - 05-Jun-2025
+Seite 3 von 3 Konten: AutoInvest 80000/148386 Generiert um: 02-Aug-2025
