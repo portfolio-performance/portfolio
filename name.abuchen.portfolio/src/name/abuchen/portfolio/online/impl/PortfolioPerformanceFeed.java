@@ -428,12 +428,12 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     @Override
     public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        var parameter = "isin"; //$NON-NLS-1$
+        var parameter = PortfolioPerformanceSearchProvider.Parameter.ISIN;
         var query = subject.getIsin();
 
         if (query == null || query.isBlank())
         {
-            parameter = "symbol"; //$NON-NLS-1$
+            parameter = PortfolioPerformanceSearchProvider.Parameter.SYMBOL;
             query = subject.getTickerSymbol();
         }
 
@@ -443,7 +443,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
         try
         {
             var answer = new ArrayList<Exchange>();
-            var candidates = new PortfolioPerformanceSearchProvider().internalSearch(parameter, query);
+            var candidates = new PortfolioPerformanceSearchProvider().search(parameter, query);
 
             for (var candidate : candidates) // NOSONAR
             {
