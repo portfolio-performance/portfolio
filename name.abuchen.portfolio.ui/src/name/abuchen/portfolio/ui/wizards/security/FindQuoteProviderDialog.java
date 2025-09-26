@@ -260,19 +260,26 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 if (markets.isEmpty())
                     continue;
 
+                var proposedMarket = !QuoteFeed.MANUAL.equals(item.security.getFeed())
+                                && !PortfolioPerformanceFeed.ID.equals(item.security.getFeed())
+                                                ? markets.stream()
+                                                                .filter(m -> Objects.equal(m.getSymbol(),
+                                                                                item.security.getTickerSymbol()))
+                                                                .findFirst().orElse(markets.getFirst())
+                                                : null;
+
                 addSecurityInfoAction(item, result);
 
-                markets.forEach(r -> {
-                    var useAction = new UseBuiltInFeedAction(item, r);
-                    item.actions.add(useAction);
+                for (var market : markets)
+                {
+                    var action = new UseBuiltInFeedAction(item, market);
+                    item.actions.add(action);
 
-                    if (!QuoteFeed.MANUAL.equals(item.security.getFeed())
-                                    && !PortfolioPerformanceFeed.ID.equals(item.security.getFeed())
-                                    && item.selectedAction == null)
+                    if (proposedMarket != null && market == proposedMarket)
                     {
-                        item.selectedAction = useAction;
+                        item.selectedAction = action;
                     }
-                });
+                }
             }
 
             listener.accept(item);
