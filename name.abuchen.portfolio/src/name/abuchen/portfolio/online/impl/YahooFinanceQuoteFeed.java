@@ -478,7 +478,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             answer.add(createExchange(plainSymbol));
 
-            ExchangeLabels.getAllExchangeKeys("yahoo.").forEach(e -> answer.add(createExchange(plainSymbol + "." + e))); //$NON-NLS-1$ //$NON-NLS-2$
+            ExchangeLabels.getAllExchangeKeys(ExchangeLabels.YAHOO)
+                            .forEach(e -> answer.add(createExchange(plainSymbol + "." + e))); //$NON-NLS-1$
         }
 
         return answer;
