@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -12,6 +13,8 @@ import java.util.function.Function;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -22,6 +25,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -66,9 +70,51 @@ import name.abuchen.portfolio.ui.util.LoginButton;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class FindQuoteProviderDialog extends TitleAreaDialog
 {
+    private static final class UseBuiltInFeedAction extends SimpleAction
+    {
+        private final ResultItem resultItem;
+
+        public UseBuiltInFeedAction(SecurityItem item, ResultItem onlineItem)
+        {
+            super(MessageFormat.format("{0} * {1} * {2}", //$NON-NLS-1$
+                            onlineItem.getCurrencyCode(), //
+                            onlineItem.getSymbol(), //
+                            MarketIdentifierCodes.getLabel(onlineItem.getExchange())), a -> {
+                                item.security.setFeed(PortfolioPerformanceFeed.ID);
+
+                                item.security.setIsin(onlineItem.getIsin());
+                                item.security.setTickerSymbol(onlineItem.getSymbol());
+
+                                // if and only if the label includes the
+                                // characters of a newly imported security (e.g.
+                                // "Imported security: {0}"), then we also
+                                // update the name of the instrument.
+                                // Because we do not know which identifier was
+                                // used to construct the name, we check with
+                                // indexOf.
+
+                                var labelOfNewlyImportedSecurity = MessageFormat
+                                                .format(name.abuchen.portfolio.Messages.CSVImportedSecurityLabel, ""); //$NON-NLS-1$
+                                if (item.security.getName().indexOf(labelOfNewlyImportedSecurity) >= 0)
+                                {
+                                    item.security.setName(onlineItem.getName());
+                                }
+                            });
+
+            this.resultItem = onlineItem;
+        }
+
+        public String getExchange()
+        {
+            return resultItem.getExchange();
+        }
+    }
+
     private static final class SecurityItem implements Adaptable
     {
         final Security security;
@@ -225,7 +271,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 addSecurityInfoAction(item, result);
 
                 markets.forEach(r -> {
-                    var useAction = addAction(item, r);
+                    var useAction = new UseBuiltInFeedAction(item, r);
+                    item.actions.add(useAction);
 
                     if (!QuoteFeed.MANUAL.equals(item.security.getFeed())
                                     && !PortfolioPerformanceFeed.ID.equals(item.security.getFeed())
@@ -248,39 +295,6 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
             item.actions.add(new LabelOnly(label));
         }
-
-        private Action addAction(SecurityItem item, ResultItem onlineItem)
-        {
-            var label = MessageFormat.format("{0} * {1} * {2}", //$NON-NLS-1$
-                            onlineItem.getCurrencyCode(), //
-                            onlineItem.getSymbol(), //
-                            MarketIdentifierCodes.getLabel(onlineItem.getExchange()));
-
-            Action action = new SimpleAction(label, onlineItem.hasPrices() ? Images.VIEW_LINECHART : null, a -> {
-                item.security.setFeed(PortfolioPerformanceFeed.ID);
-
-                item.security.setIsin(onlineItem.getIsin());
-                item.security.setTickerSymbol(onlineItem.getSymbol());
-
-                // if and only if the label includes the characters of a newly
-                // imported security (e.g. "Imported security: {0}"), then we
-                // also update the name of the instrument. Because we do not
-                // know which identifier was used to construct the name, we
-                // check with indexOf.
-
-                var labelOfNewlyImportedSecurity = MessageFormat
-                                .format(name.abuchen.portfolio.Messages.CSVImportedSecurityLabel, ""); //$NON-NLS-1$
-                if (item.security.getName().indexOf(labelOfNewlyImportedSecurity) >= 0)
-                {
-                    item.security.setName(onlineItem.getName());
-                }
-            });
-
-            item.actions.add(action);
-
-            return action;
-        }
-
     }
 
     private static final int DO_NOT_CHANGE_ID = 5712;
@@ -547,8 +561,54 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                     tableViewer.refresh();
                 });
                 menuManager.add(noop);
+
+                addAvailableExchanges(tableViewer, menuManager, selection);
             }
 
         }).hook();
+    }
+
+    private void addAvailableExchanges(TableViewer tableViewer, IMenuManager menuManager,
+                    IStructuredSelection selection)
+    {
+        var exchanges = new HashSet<Pair<String, String>>();
+        for (Object item : selection)
+        {
+            var actions = ((SecurityItem) item).actions;
+            for (var action : actions)
+            {
+                if (action instanceof UseBuiltInFeedAction builtIn)
+                {
+                    var exchange = builtIn.getExchange();
+                    if (exchange != null)
+                        exchanges.add(new Pair<>(exchange, MarketIdentifierCodes.getLabel(exchange)));
+                }
+            }
+        }
+
+        if (!exchanges.isEmpty())
+        {
+            menuManager.add(new Separator());
+            menuManager.add(new LabelOnly(Messages.LabelExchange));
+
+            exchanges.stream() //
+                            .sorted((l, r) -> TextUtil.compare(l.getValue(), r.getValue())) //
+                            .forEach(exchange -> menuManager.add(new SimpleAction(exchange.getValue(), a -> {
+                                for (var item : selection)
+                                {
+                                    var securityItem = (SecurityItem) item;
+                                    for (var action : securityItem.actions)
+                                    {
+                                        if (action instanceof UseBuiltInFeedAction builtIn
+                                                        && exchange.getKey().equals(builtIn.getExchange()))
+                                        {
+                                            securityItem.selectedAction = action;
+                                            break;
+                                        }
+                                    }
+                                }
+                                tableViewer.refresh();
+                            })));
+        }
     }
 }
