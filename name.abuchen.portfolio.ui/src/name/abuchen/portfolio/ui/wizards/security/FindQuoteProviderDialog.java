@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -182,8 +181,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                     }
 
                     // search for ISIN
-                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty()
-                                    && searchByIdentifier(item, item.security.getIsin(), ResultItem::getIsin))
+                    if (item.security.getIsin() != null && !item.security.getIsin().isEmpty() && searchByIdentifier(
+                                    item, item.security.getIsin(), PortfolioPerformanceSearchProvider.Parameter.ISIN))
                     {
                         monitor.worked(1);
                         continue;
@@ -191,8 +190,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
                     // search for ticker symbol
                     if (item.security.getTickerSymbol() != null && !item.security.getTickerSymbol().isEmpty()
-                                    && searchByIdentifier(item, item.security.getTickerSymbolWithoutStockMarket(),
-                                                    ResultItem::getSymbolWithoutStockMarket))
+                                    && searchByIdentifier(item, item.security.getTickerSymbol(),
+                                                    PortfolioPerformanceSearchProvider.Parameter.SYMBOL))
                     {
                         monitor.worked(1);
                         continue;
@@ -243,23 +242,16 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
             listener.accept(item);
         }
 
-        private boolean searchByIdentifier(SecurityItem item, String identifier, Function<ResultItem, String> property)
-                        throws IOException
+        private boolean searchByIdentifier(SecurityItem item, String identifier,
+                        PortfolioPerformanceSearchProvider.Parameter parameter) throws IOException
         {
-            var results = new PortfolioPerformanceSearchProvider().search(identifier);
+            var results = new PortfolioPerformanceSearchProvider().search(parameter, identifier);
 
             if (results.isEmpty())
                 return false;
 
             for (var result : results)
             {
-                // check if the result contains the search term
-                var resultIdentifier = property.apply(result);
-                if (resultIdentifier == null)
-                    continue;
-                if (!resultIdentifier.contains(identifier))
-                    continue;
-
                 var markets = (result.getMarkets().isEmpty() ? List.of(result) : result.getMarkets()) //
                                 .stream()
                                 .filter(r -> Objects.equal(item.security.getCurrencyCode(), r.getCurrencyCode()))
