@@ -1,35 +1,37 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 public class SecurityListing
 {
 
-    public String Id;
-    public String Name;
+    private String Id;
+    private String Name;
     private String Smb;
-    public String ISIN;
+    private String ISIN;
     private String Type;
     private String SubType;
     private String SubTypeDesc;
-    public String SubId;
+    private String SubId;
     private String ETFType;
     private String BaseRate;
     private String HighRate;
     private String LowRate;
     private String OpenRate;
-    // private String InDay;
-    // private String ShareType;
     private String TradeDataLink;
     private String EODTradeDate;
-    // private String TurnOverValueShekel;
     private String TurnOverValue;
     private String MarketValue;
+    private String OverallTurnOverUnits;
+    private String LongName;
+    private String TradeDate;
+    private String LastRate;
+    private String SecurityLongName;
+    // public String FullBranch;
+    // private String CUSIP;
+
     // private String CompanyName;
-    public String FullBranch;
-    private String CUSIP;
+    // private String TurnOverValueShekel;
+    // private String InDay;
+    // private String ShareType;
     // private String RegisteredCapital;
     // private String Exe;
     // private String ExeDesc;
@@ -37,7 +39,7 @@ public class SecurityListing
     // private String MinimumVolume;
     // private String MinimumVolumeBlock;
     // private String DealsNo;
-    private String OverallTurnOverUnits;
+
     // private String MonthYield;
     // private String AnnualYield;
     // private String AdjustmentCoefficient;
@@ -62,7 +64,7 @@ public class SecurityListing
     // private String BaseIndicesDate;
     // private String CompanyLogo;
     // private String LastDealTime;
-    public boolean IsForeignETF;
+    // public boolean IsForeignETF;
     // private String ExchangeDate;
     // private String LastStrikeDate;
     // private String LinkageType;
@@ -78,8 +80,8 @@ public class SecurityListing
     // private String ExchangeRateType;
     // private String ExchangeRelation;
     // private String NoSharesFromOption;
-    public boolean isTrading;
-    private String LongName;
+    // public boolean isTrading;
+
     // private String CorporateNo;
     // private String Classification_Super;
     // private String Classification_Primary;
@@ -91,23 +93,22 @@ public class SecurityListing
     // private String Appendix;
     // private String AdditionalDocs;
     // private String RepresetativeDetails;
-    public String CompanyId;
+    // public String CompanyId;
     // private String SecuritySubType;
-    private String TradeDate;
     // private String TradeTime;
-    private String LastRate;
+
     // private String Change;
     // private String TradingStage;
     // private String TradingStageDesc;
     // private String TradingStageMob;
     private Indicator[] GreenIndicators;
     private Indicator[] RedIndicators;
-    private String SecurityTypeInSite;
+    // private String SecurityTypeInSite;
     // private String ETFTypeInSite;
-    public String SecurityLongName;
-    public boolean IsTASEUP;
-    public boolean AllowTasePlus;
-    public boolean HasOfferingPrice;
+
+    // public boolean IsTASEUP;
+    // public boolean AllowTasePlus;
+    // public boolean HasOfferingPrice;
     // private String BlockMonetaryTurnOver;
     // private String BlockDealTime;
 
@@ -117,7 +118,22 @@ public class SecurityListing
         private boolean Value;
         private String Desc;
 
+        public String getKey()
+        {
+            return Key;
+        }
+
+        public boolean getValue()
+        {
+            return Value;
+        }
+
+        public String getDesc()
+        {
+            return Desc;
+        }
     }
+
     public SecurityListing(String Name, String Smb, String ISIN, String Type, String SubType)
     {
         this.Name = Name;
@@ -152,29 +168,29 @@ public class SecurityListing
         return ((var1 == null) || (var1.length() == 0)) ? var2 : ""; //$NON-NLS-1$
     }
 
-    public Map<String, String> toMap()
-    {
-        Map<String, String> map = parameters(this);
-        return map;
-    }
-
-    private static Map<String, String> parameters(Object obj)
-    {
-        Map<String, String> map = new HashMap<>();
-        for (Field field : obj.getClass().getDeclaredFields())
-        {
-            field.setAccessible(true);
-            try
-            {
-                map.put(field.getName(), field.get(obj).toString());
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-        return map;
-    }
+    // public Map<String, String> toMap()
+    // {
+    // Map<String, String> map = parameters(this);
+    // return map;
+    // }
+    //
+    // private static Map<String, String> parameters(Object obj)
+    // {
+    // Map<String, String> map = new HashMap<>();
+    // for (Field field : obj.getClass().getDeclaredFields())
+    // {
+    // field.setAccessible(true);
+    // try
+    // {
+    // map.put(field.getName(), field.get(obj).toString());
+    // }
+    // catch (Exception e)
+    // {
+    //
+    // }
+    // }
+    // return map;
+    // }
 
     @Override
     public String toString()

@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+// import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,11 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.gson.Gson;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -26,25 +25,16 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
+// import
+// name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity.LocalDateTypeAdapter;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
 public class TLVFundTest
 {
 
-    // Mutual Fund Example - 5127121
-    // https://maya.tase.co.il/en/funds/mutual-funds/5127121
-    //@formatter:off
-    /*
-     * "FundId": 5127121,
-     * "PurchasePrice": 155.97,
-        "SellPrice": 155.97,
-        "CreationPrice": 155.97,
-        "UnitValuePrice": 155.97,
-     */
-    //@formatter:on
+
     private String getFundDetails()
     {
         return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
@@ -52,27 +42,6 @@ public class TLVFundTest
 
     private String getFundHistory()
     {
-    //@formatter:off
-    /*
-     *  "Total": 206,
-        "StartDate": "2024-11-03T00:00:00",
-        "EndDate": "2024-11-04T00:00:00"
-        "Table":
-        "FundId": null,
-        "TradeDate": "2025-08-25T00:00:00",
-        "LastUpdateDate": "0001-01-01T00:00:00",
-        "PurchasePrice": 146.88,
-        "SellPrice": 146.88,
-        "CreationPrice": null,
-        "DayYield": 0.04,
-        "ShowDayYield": true,
-        "Rate": 0,
-        "ManagmentFee": 0.25,
-        "TrusteeFee": 0.025,
-        "SuccessFee": null,
-        "AssetValue": 130.3
-     */
-    //@formatter:on
 
         return getHistoricalTaseQuotes("response_tase_fund_history01.txt");
     }
@@ -118,7 +87,7 @@ public class TLVFundTest
         }
         catch (IOException e)
         {
-            assert (false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
@@ -148,7 +117,7 @@ public class TLVFundTest
         }
         catch (IOException e)
         {
-            assert (false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
@@ -176,7 +145,7 @@ public class TLVFundTest
         }
         catch (IOException e)
         {
-            assert (false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
@@ -197,8 +166,13 @@ public class TLVFundTest
         assertTrue(response.contains("Table"));
         assertTrue(response.contains("StartDate"));
 
-        Gson gson = GSONUtil.createGson();
-        FundHistory mockedFundHistory = gson.fromJson(response, FundHistory.class);
+        new FundHistory();
+        // Gson gson = GSONUtil.createGson();
+        // Gon gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new
+        // LocalDateTypeAdapter()).create();
+        // FundHistory mockedFundHistory = gson.fromJson(response,
+        // FundHistory.class);
+        FundHistory mockedFundHistory = FundHistory.fromJson(response);
 
         try
         {
@@ -252,8 +226,7 @@ public class TLVFundTest
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
 
 
@@ -318,7 +291,6 @@ public class TLVFundTest
             List<SecurityPrice> entries = fundQuoteFeedData.getPrices();
 
             SecurityPrice firstprice = entries.get(0);
-            SecurityPrice lastprice = entries.get(entries.size() - 1);
 
             assertTrue(firstprice != null);
             assertThat(firstprice.getDate(), is(to));
@@ -331,8 +303,7 @@ public class TLVFundTest
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
 
 
@@ -352,8 +323,6 @@ public class TLVFundTest
         assertTrue(response.contains("Table"));
         assertTrue(response.contains("StartDate"));
 
-        Gson gson = GSONUtil.createGson();
-        FundHistory historyListing = gson.fromJson(response, FundHistory.class);
 
         try
         {
@@ -369,8 +338,7 @@ public class TLVFundTest
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
 
         security.setWkn("");
@@ -387,25 +355,11 @@ public class TLVFundTest
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
 
 
 
-    @Ignore("This class is under development and not ready for testing")
-    @Test
-    public void mocked_Fund_returns_correct_details()
-    {
-        //
-    }
-
-    @Ignore("This class is under development and not ready for testing")
-    @Test
-    public void mocked_funds_without_Wks_does_not_return_details()
-    {
-        //
-    }
 }

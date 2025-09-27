@@ -20,15 +20,21 @@ public class FundHistoryEntry
 
     private String FundId;
     private LocalDateTime TradeDate;
-    // private LocalDateTime LastUpdateDate;
     private String PurchasePrice;
     private String SellPrice;
-    // private float CreationPrice;
     private String DateYield;
     private String Rate;
-    // private float ManagmentFee;
-    // private float TrusteeFee;
-    // private float SuccessFee;
+    /*
+     * @formatter:off
+     * Fields returned in JSON but not used, may be used in future:
+     *   private LocalDateTime LastUpdateDate;
+     *   private float CreationPrice;
+     *   private float ManagmentFee;
+     *   private float TrusteeFee;
+     *   private float SuccessFee;
+     *   @formatter:On
+     */
+     
     private String AssetValue;
 
     public String getPurchasePrice()
@@ -122,7 +128,6 @@ public class FundHistoryEntry
             public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
                             final JsonDeserializationContext context) throws JsonParseException
             {
-                // return LocalDateTime.parse(json.getAsString(), formatter);
                 return LocalDateTime.parse(json.getAsString(), formatter);
             }
 

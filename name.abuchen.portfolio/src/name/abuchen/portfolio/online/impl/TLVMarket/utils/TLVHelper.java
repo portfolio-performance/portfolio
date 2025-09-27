@@ -1,37 +1,22 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.utils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.money.Values;
-
 public class TLVHelper
 {
 
 
 
-    static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
-    {
-        @Override
-        protected DecimalFormat initialValue()
-        {
-            DecimalFormat fmt = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
-            fmt.setParseBigDecimal(true);
-            return fmt;
-        }
-    };
+    // static final ThreadLocal<DecimalFormat> FMT_PRICE = new
+    // ThreadLocal<DecimalFormat>()
+    // {
+    // @Override
+    // protected DecimalFormat initialValue()
+    // {
+    // DecimalFormat fmt = new DecimalFormat("0.###", new
+    // DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+    // fmt.setParseBigDecimal(true);
+    // return fmt;
+    // }
+    // };
 
 //@formatter:off
     /*
@@ -138,103 +123,104 @@ public class TLVHelper
         }
     }
     
+//    public static LocalDate asDateTime(String s)
+//    {
+//        DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
+//
+//        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
+//            return null;
+//        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+//        return LocalDate.parse(dt, datetimeFormatter); // $NON-NLS-1$
+//    }
 
-    public static LocalDate asDate(String s)
-    {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-
-        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
-            return null;
-        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        return LocalDate.parse(dt, formatter); // $NON-NLS-1$
-    }
+//    public static LocalDate asDate(String s)
+//    {
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
+//
+//        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
+//            return null;
+//        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+//        return LocalDate.parse(dt, formatter); // $NON-NLS-1$
+//    }
     
-    public static Optional<String> extract(String body, int startIndex, String startToken, String endToken)
-    {
-        int begin = body.indexOf(startToken, startIndex);
+//    public static Optional<String> extract(String body, int startIndex, String startToken, String endToken)
+//    {
+//        int begin = body.indexOf(startToken, startIndex);
+//
+//        if (begin < 0)
+//            return Optional.empty();
+//
+//        int end = body.indexOf(endToken, begin + startToken.length());
+//        if (end < 0)
+//            return Optional.empty();
+//
+//        return Optional.of(body.substring(begin + startToken.length(), end));
+//    }
 
-        if (begin < 0)
-            return Optional.empty();
+//    public static long asPrice(String s)
+//    {
+//        try 
+//        {
+//            return asPrice(s, BigDecimal.ONE);
+//        }
+//        catch (ParseException e) 
+//        {
+//            return -1l;
+//        }
+//    }
+//
+//    static long asPrice(String s, BigDecimal factor) throws ParseException
+//    {
+//        if ("N/A".equals(s) || "null".equals(s) || "NaN".equals(s) || ".".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+//            return LatestSecurityPrice.NOT_AVAILABLE;
+//        BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
+//        return v.multiply(factor).multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP)
+//                        .longValue();
+//    }
 
-        int end = body.indexOf(endToken, begin + startToken.length());
-        if (end < 0)
-            return Optional.empty();
-
-        return Optional.of(body.substring(begin + startToken.length(), end));
-    }
-
-    public static long asPrice(String s)
-    {
-        try 
-        {
-            return asPrice(s, BigDecimal.ONE);
-        }
-        catch (ParseException e) 
-        {
-            return -1l;
-        }
-    }
-
-    static long asPrice(String s, BigDecimal factor) throws ParseException
-    {
-        if ("N/A".equals(s) || "null".equals(s) || "NaN".equals(s) || ".".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-            return LatestSecurityPrice.NOT_AVAILABLE;
-        BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
-        return v.multiply(factor).multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP)
-                        .longValue();
-    }
-
-    static int asNumber(String s) throws ParseException
-    {
-        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
-            return -1;
-        return FMT_PRICE.get().parse(s).intValue();
-    }
+//    static int asNumber(String s) throws ParseException
+//    {
+//        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
+//            return -1;
+//        return FMT_PRICE.get().parse(s).intValue();
+//    }
 
     
-    public static LocalDate asDateTime(String s)
-    {
-        DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
+   
 
-        if ("\"N/A\"".equals(s)) //$NON-NLS-1$
-            return null;
-        String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
-        return LocalDate.parse(dt, datetimeFormatter); // $NON-NLS-1$
-    }
+//    public static Map<String, Object> ObjectToMap(Object listing)
+//    {
+//        Gson gson = GSONUtil.createGson();
+//        String json = gson.toJson(listing);
+//        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
+//        {
+//        }.getType());
+//        return map;
+//    }
 
-    public static Map<String, Object> ObjectToMap(Object listing)
-    {
-        Gson gson = GSONUtil.createGson();
-        String json = gson.toJson(listing);
-        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
-        {
-        }.getType());
-        return map;
-    }
+//    public static long convertILS(long price, String quoteCurrency, String securityCurrency)
+//    {
+//        if (quoteCurrency != null)
+//        {
+//            if ("ILA".equals(quoteCurrency) && "ILS".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+//                return price / 100;
+//            if ("ILS".equals(quoteCurrency) && "ILA".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+//                return price * 100;
+//        }
+//        return price;
+//    }
 
-    public static long convertILS(long price, String quoteCurrency, String securityCurrency)
-    {
-        if (quoteCurrency != null)
-        {
-            if ("ILA".equals(quoteCurrency) && "ILS".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
-                return price / 100;
-            if ("ILS".equals(quoteCurrency) && "ILA".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
-                return price * 100;
-        }
-        return price;
-    }
-
-    public static long asLong(String value)
-    {
-        if (value == null)
-            return 0;
-        try
-        {
-            return Long.parseLong(value);
-        }
-        catch (NumberFormatException e)
-        {
-            return 0;
-        }
-    }
+//    public static long asLong(String value)
+//    {
+//        if (value == null)
+//            return 0;
+//        try
+//        {
+//            return Long.parseLong(value);
+//        }
+//        catch (NumberFormatException e)
+//        {
+//            return 0;
+//        }
+//    }
 }

@@ -5,15 +5,15 @@ import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
 public class IndiceListing
 {
 
-    private String Id; // "Id": "1209790",
-    private String Name; // "Name": "ABOU FAMILY B1",
-    private String Smb; // "Smb": "ABUF.B1",
-    private String ISIN; // "ISIN": "IL0012097908",
-    private int Type; // "Type": 1,
-    private String SubType; // "SubType": "5",
-    private String SubTypeDesc; // "SubTypeDesc": "Corporate Bonds",
-    private String SubId; // "SubId": "002442",
-    private String ETFType; // "ETFType": null
+    private String Id;
+    private String Name;
+    private String Smb;
+    private String ISIN;
+    private int Type;
+    private String SubType;
+    private String SubTypeDesc;
+    private String SubId;
+    private String ETFType;
     private TLVType TLVType;
 
     public String getId()

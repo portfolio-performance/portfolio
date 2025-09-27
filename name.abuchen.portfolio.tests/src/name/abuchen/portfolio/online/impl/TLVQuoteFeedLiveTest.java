@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
+// import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,10 +22,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
 
@@ -53,7 +52,7 @@ public class TLVQuoteFeedLiveTest
                 Optional<LatestSecurityPrice> response = tlvFeed.getLatestQuote(security);
 
                 if (response.isEmpty())
-                    assertTrue(false);
+                    fail("Expected a response");
                 LatestSecurityPrice price = response.get();
                 assertTrue(price.getDate() != null);
 
@@ -175,34 +174,7 @@ public class TLVQuoteFeedLiveTest
         }
     }
 
-    @Test
-    public void index_should_not_return_names()
-    {
-        Security security = new Security();
-        security.setTickerSymbol("AAPL");
-        security.setCurrencyCode("ILS");
-        security.setWkn("603");
-        // String responseEng = getSecurityDetailsEnglish();
-        // String responseHeb = getSecurityDetailsHebrew();
-        // assertTrue(responseEng.length() > 0);
-        // assertTrue(responseHeb.length() > 0);
 
-        TLVSecurity feed = new TLVSecurity();
-        try
-        {
-
-            SecurityListing englishListing = feed.getDetails(security, Language.ENGLISH);
-            SecurityListing hebrewListing = feed.getDetails(security, Language.HEBREW);
-            assertTrue(englishListing == null);
-
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            assertTrue(false);
-        }
-
-    }
 
     @Test
     public void bond_should_not_return_latest_quotes_without_wks()

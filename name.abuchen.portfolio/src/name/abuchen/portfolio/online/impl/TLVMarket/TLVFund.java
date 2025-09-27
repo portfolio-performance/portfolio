@@ -6,9 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.hc.core5.http.NameValuePair;
@@ -24,29 +22,27 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.GSONUtil;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class TLVFund extends TLVListing
 {
     public static final int TYPE = 4;
-    private int period = 0;
+    // private int period = 0;
     private final String URL = "mayaapi.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/fund/details"; //$NON-NLS-1$
     private final String CURRENCY_CODE = "ILS"; //$NON-NLS-1$
-    private Type FundListingType = new TypeToken<FundListing>()
-    {
-    }.getType();
+    // private Type FundListingType = new TypeToken<FundListing>()
+    // {
+    // }.getType();
 
 
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
@@ -60,7 +56,7 @@ public class TLVFund extends TLVListing
         }
         catch (IOException e)
         {
-            System.out.println(e.getMessage());
+            PortfolioLog.error(e);
             return Optional.empty();
         }
 
@@ -73,7 +69,7 @@ public class TLVFund extends TLVListing
 
         LocalDate from = caculateStart(security);
         LocalDate to = LocalDate.now();
-        // System.out.println(security.getWkn() + " " + from + " " + to);
+
         try
         {
             Optional<FundHistory> fundHistory = getPriceHistoryChunkInternal(security, from, to, 1, Language.ENGLISH);
@@ -83,7 +79,7 @@ public class TLVFund extends TLVListing
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            PortfolioLog.error(e);
             return Optional.empty();
         }
     }
@@ -120,8 +116,8 @@ public class TLVFund extends TLVListing
             Optional<String> sellPrice = Optional.of(entry.getSellPrice());
             if (sellPrice.isPresent())
             {
-                long priceL = TLVHelper.asPrice(sellPrice.get());
-                price.setValue(TLVHelper.convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
+                long priceL = asPrice(sellPrice.get());
+                price.setValue(convertILS(priceL, quoteCurrency.orElse(null), security.getCurrencyCode()));
             }
 
             if (price.getDate() != null && price.getValue() > 0)
@@ -132,18 +128,7 @@ public class TLVFund extends TLVListing
         return Optional.of(feed);
     }
 
-    public Map<String, String> getNames(FundListing englishDetails, FundListing hebrewDetails)
-    {
 
-        Map<String, String> names = new HashMap<>();
-        names.getOrDefault(names, null);
-        names.put("english_short_name", (String) englishDetails.FundLongName); //$NON-NLS-1$
-        names.put("english_long_name", (String) englishDetails.FundLongName); //$NON-NLS-1$
-
-        names.put("hebrew_short_name", (String) hebrewDetails.FundShortName); //$NON-NLS-1$
-        names.put("hebrew_long_name", (String) hebrewDetails.FundShortName); //$NON-NLS-1$
-        return names;
-    }
 
     public String rpcLatestQuoteFund(Security security) throws IOException
     {
@@ -169,10 +154,7 @@ public class TLVFund extends TLVListing
         formParams.add(new BasicNameValuePair("FundId", security.getWkn())); //$NON-NLS-1$
         formParams.add(new BasicNameValuePair("Page", Integer.toString(_page))); //$NON-NLS-1$
         formParams.add(new BasicNameValuePair("Period", Integer.toString(0))); //$NON-NLS-1$
-        // httpPost.setEntity(new UrlEncodedFormEntity(formParams,
-        // ContentType.APPLICATION_FORM_URLENCODED));
 
-        // System.err.println(JSONValue.toJSONString(formParams));
         try
         {
             String response = new WebAccess("mayaapi.tase.co.il", "/api/fund/history") //$NON-NLS-1$ //$NON-NLS-2$
@@ -184,12 +166,12 @@ public class TLVFund extends TLVListing
                             .addHeader("Accept-Language", "en-US") //$NON-NLS-1$ //$NON-NLS-2$
                             .postUrlEncoding(formParams);
 
-            Gson gson = GSONUtil.createGson();
-            Optional<FundHistory> fundListing = Optional.of(gson.fromJson(response, FundHistory.class));
+            Optional<FundHistory> fundListing = Optional.of(FundHistory.fromJson(response));
             return fundListing;
         }
         catch (Exception e)
         {
+            PortfolioLog.error(e);
             return Optional.empty();
         }
     }
@@ -217,16 +199,11 @@ public class TLVFund extends TLVListing
         class LocalDateTimeTypeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
         {
 
-            // private final DateTimeFormatter formatter =
-            // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss");
-            // //$NON-NLS-1$
 
             @Override
             public JsonElement serialize(final LocalDateTime date, final Type typeOfSrc,
                             final JsonSerializationContext context)
             {
-                // System.out.println("d " +
-                // date.format(DateTimeFormatter.ISO_LOCAL_DATE));
                 return new JsonPrimitive(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
 
@@ -234,8 +211,6 @@ public class TLVFund extends TLVListing
             public LocalDateTime deserialize(final JsonElement json, final Type typeOfT,
                             final JsonDeserializationContext context) throws JsonParseException
             {
-                // System.out.println(json.getAsString() + " " +
-                // LocalDateTime.parse(json.getAsString()));
                 return LocalDateTime.parse(json.getAsString());
             }
         }
@@ -273,22 +248,10 @@ public class TLVFund extends TLVListing
         if (lastRate.isPresent())
         {
             String p = lastRate.get().trim();
-            long asPrice = TLVHelper.asPrice(p);
-            price.setValue(TLVHelper.convertILS(asPrice, quoteCurrency.orElse(null), security.getCurrencyCode()));
+            long asPrice = asPrice(p);
+            price.setValue(convertILS(asPrice, quoteCurrency.orElse(null), security.getCurrencyCode()));
         }
 
-        // MarketVolume - OverallTurnOverUnits
-        // Optional<String> marketvolume = Optional.of(listing.getAssetValue());
-        //
-        // if (marketvolume.isPresent())
-        // {
-        // price.setVolume(Long.parseLong(Double.parseDouble(listing.getAssetValue()));
-        // }
-        // else
-        // {
-        // price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
-        //
-        // }
         price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
         price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
@@ -320,46 +283,10 @@ public class TLVFund extends TLVListing
     }
 
 
-    // TODO: getDetails change to Optional
-    public FundListing getDetails(Security security, Language lang) throws Exception
-    {
-        String responseString = rpcLatestQuoteFundWithLanguage(security, lang);
-        Gson gson = new Gson();
-        FundListing listing = gson.fromJson(responseString, this.FundListingType);
-
-        return listing;
-    }
-
-    private Optional<String> getQuoteCurrency(Security security)
+    @Override
+    protected Optional<String> getQuoteCurrency(Security security)
     {
         return Optional.of(this.CURRENCY_CODE);
     }
 
-
-
-    // Yahoo Function - not in use
-    public Optional<String> extract(String body, int startIndex, String startToken, String endToken)
-    {
-        int begin = body.indexOf(startToken, startIndex);
-
-        if (begin < 0)
-            return Optional.empty();
-
-        int end = body.indexOf(endToken, begin + startToken.length());
-        if (end < 0)
-            return Optional.empty();
-
-        return Optional.of(body.substring(begin + startToken.length(), end));
-    }
-
-    // TODO - No in use
-    public static Map<String, Object> ObjectToMap(FundListing listing)
-    {
-        Gson gson = GSONUtil.createGson();
-        String json = gson.toJson(listing);
-        Map<String, Object> map = gson.fromJson(json, new TypeToken<Map<String, Object>>()
-        {
-        }.getType());
-        return map;
-    }
 }

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -43,10 +44,6 @@ public class TLVSecurityMockTest
             
     }
 
-    private String getSecurityDetails()
-    {
-        return "";
-    }
 
     // Mutual Fund Example - 5127121
     // https://maya.tase.co.il/en/funds/mutual-funds/5127121
@@ -87,7 +84,7 @@ public class TLVSecurityMockTest
                                      // Reporting in ILA
 
         String mockedresponse = getBondDetails();
-        assertTrue(mockedresponse.length() > 0);
+        assertThat(mockedresponse.length(), greaterThan(0));
 
         try
         {
@@ -113,7 +110,7 @@ public class TLVSecurityMockTest
                 "TradeDate": "26/08/2025",
              */
             //@formatter:on
-            assertTrue("Expected price to be present", optionalPrice.isPresent());
+            assertThat(optionalPrice.isPresent(), is(true));
 
             LatestSecurityPrice price = optionalPrice.get();
             assertFalse("Date should not be null", price.getDate() == null);
@@ -130,7 +127,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            assert (false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
@@ -164,7 +161,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            assert (false);
+            fail("Exception not expected" + e.getMessage());
         }
 
     }
@@ -346,8 +343,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
     }
 
@@ -397,8 +393,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
     }
 
@@ -482,8 +477,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
     }
 
@@ -496,7 +490,6 @@ public class TLVSecurityMockTest
         security.setCurrencyCode("ILA");
         security.setWkn("1119478");
 
-        SecurityHistory history = null;
 
         TLVSecurity feed = new TLVSecurity();
 
@@ -516,10 +509,6 @@ public class TLVSecurityMockTest
 
             LatestSecurityPrice latestprice = feedData.getLatestPrices().get(0);
 
-            System.out.println("Stock");
-            // System.out.println(firstprice.getValue());
-            // System.out.println(firstprice.getHigh());
-            // System.out.println(firstprice.getLow());
 
             assertThat(firstprice.getDate(), greaterThan(LocalDate.now().minusDays(5)));
             assertThat(lastprice.getDate(), greaterThan(LocalDate.now().minusMonths(2)));
@@ -534,8 +523,7 @@ public class TLVSecurityMockTest
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
-            assertTrue(false);
+            fail("Exception not expected" + e.getMessage());
         }
     }
 

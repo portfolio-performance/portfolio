@@ -17,8 +17,9 @@ import com.google.gson.JsonSerializer;
 
 public class SecurityHistory
 {
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
-    private static final Gson gson = new Gson();
+    // private static DateTimeFormatter formatter =
+    // DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
+    // private static final Gson gson = new Gson();
 
     public SecurityHistoryEntry[] Items;
     public int TotalRec;
@@ -129,6 +130,7 @@ public class SecurityHistory
 
     public String toJson()
     {
+        Gson gson = new Gson();
         return gson.toJson(this);
 
     }

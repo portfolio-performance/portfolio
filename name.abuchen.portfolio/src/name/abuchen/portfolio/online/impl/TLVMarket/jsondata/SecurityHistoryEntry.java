@@ -1,11 +1,8 @@
 package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
 
-import java.time.format.DateTimeFormatter;
-
 public class SecurityHistoryEntry
 {
 
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
 
     public String TradeDate;
     public float Change;
@@ -93,32 +90,16 @@ public class SecurityHistoryEntry
         MarketValue = marketValue;
     }
 
-    // public static SecurityHistoryEntry fromMap(Map<String, Object> map)
-    // {
-    // SecurityHistoryEntry historyentry = new SecurityHistoryEntry();
-    // if (map.containsKey("MarketValue")) //$NON-NLS-1$
-    // {
-    // historyentry.setMarketValue(((Double)
-    // map.get("MarketValue")).floatValue()); //$NON-NLS-1$
-    // }
-    // if (map.containsKey("LowRate")) //$NON-NLS-1$
-    // {
-    // historyentry.setLowRate(((Double) map.get("LowRate")).floatValue());
-    // //$NON-NLS-1$
-    // }
-    // if (map.containsKey("HighRate")) //$NON-NLS-1$
-    // {
-    // historyentry.setHighRate(((Double) map.get("HighRate")).floatValue());
-    // //$NON-NLS-1$
-    // }
-    // if (map.containsKey("TradeDate")) //$NON-NLS-1$
-    // {
-    // historyentry.setTradeDate(LocalDate.parse((String) map.get("TradeDate"),
-    // formatter)); //$NON-NLS-1$
-    // }
-    //
-    // return historyentry;
-    // }
+    public String getOverallTurnOverUnits()
+    {
+        return OverallTurnOverUnits;
+    }
+
+    public void setOverallTurnOverUnits(String overallTurnOverUnits)
+    {
+        OverallTurnOverUnits = overallTurnOverUnits;
+    }
+
 
     @SuppressWarnings("nls")
     @Override
@@ -137,13 +118,5 @@ public class SecurityHistoryEntry
         ;
     }
 
-    public String getOverallTurnOverUnits()
-    {
-        return OverallTurnOverUnits;
-    }
 
-    public void setOverallTurnOverUnits(String overallTurnOverUnits)
-    {
-        OverallTurnOverUnits = overallTurnOverUnits;
-    }
 }

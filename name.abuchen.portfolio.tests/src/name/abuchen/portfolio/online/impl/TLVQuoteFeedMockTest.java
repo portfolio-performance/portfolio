@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -25,9 +24,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
 
 
 public class TLVQuoteFeedMockTest
@@ -261,41 +257,47 @@ public class TLVQuoteFeedMockTest
         }
     }
 
-    @Test
-    public void mocked_security_should_return_names()
-    {
-        Security security = new Security();
-        security.setTickerSymbol("AAPL");
-        security.setCurrencyCode("ILS");
-        security.setWkn("5127121");
-        String responseEng = getSecurityDetailsEnglish();
-        String responseHeb = getSecurityDetailsHebrew();
-        assertTrue(responseEng.length() > 0);
-        assertTrue(responseHeb.length() > 0);
-
-        TLVSecurity feed = Mockito.spy(new TLVSecurity());
-        try
-        {
-            Mockito.doReturn(responseEng).when(feed).rpcLatestQuoteSecuritywithLanguage(security, Language.ENGLISH);
-            Mockito.doReturn(responseHeb).when(feed).rpcLatestQuoteSecuritywithLanguage(security, Language.HEBREW);
-
-            SecurityListing englishListing = feed.getDetails(security, Language.ENGLISH);
-            SecurityListing hebrewListing = feed.getDetails(security, Language.HEBREW);
-
-            Map<String, String> names = (feed.getNames(englishListing, hebrewListing));
-            assertTrue(names.getOrDefault("Id", null) == null);
-            assertTrue(names.getOrDefault("english_short_name", null).equals("ILCPI % 1025"));
-            assertTrue(names.getOrDefault("hebrew_short_name", null).equals("ממשל צמודה 1025"));
-
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            assertTrue(false);
-        }
-
-
-    }
+    // public void mocked_security_should_return_names()
+    // {
+    // Security security = new Security();
+    // security.setTickerSymbol("AAPL");
+    // security.setCurrencyCode("ILS");
+    // security.setWkn("5127121");
+    // String responseEng = getSecurityDetailsEnglish();
+    // String responseHeb = getSecurityDetailsHebrew();
+    // assertTrue(responseEng.length() > 0);
+    // assertTrue(responseHeb.length() > 0);
+    //
+    // TLVSecurity feed = Mockito.spy(new TLVSecurity());
+    // try
+    // {
+    // Mockito.doReturn(responseEng).when(feed).rpcLatestQuoteSecuritywithLanguage(security,
+    // Language.ENGLISH);
+    // Mockito.doReturn(responseHeb).when(feed).rpcLatestQuoteSecuritywithLanguage(security,
+    // Language.HEBREW);
+    //
+    // SecurityListing englishListing = feed.getDetails(security,
+    // Language.ENGLISH);
+    // SecurityListing hebrewListing = feed.getDetails(security,
+    // Language.HEBREW);
+    //
+    // Map<String, String> names = (feed.getNames(englishListing,
+    // hebrewListing));
+    // assertTrue(names.getOrDefault("Id", null) == null);
+    // assertTrue(names.getOrDefault("english_short_name", null).equals("ILCPI %
+    // 1025"));
+    // assertTrue(names.getOrDefault("hebrew_short_name", null).equals("ממשל
+    // צמודה 1025"));
+    //
+    // }
+    // catch (Exception e)
+    // {
+    // System.out.println(e.getMessage());
+    // assertTrue(false);
+    // }
+    //
+    //
+    // }
 
 
 
