@@ -6,9 +6,11 @@
 <script src="${/META-INF/js/d3.min.js}"></script>
 <script src="${/META-INF/js/pp.js}"></script>
 <script>
+window.addEventListener('load', createPie)
 var data = JSON.parse(loadData());
 var total = d3.sum(data, function(d) {return d.value;} );
 
+function createPie() {
 pp.onResizeEnd(function() {
     thePieChart.resize();
 });
@@ -245,4 +247,7 @@ thePieChart.update(data);
 function brightness(rgb) {
   return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
 }
+}
 </script>
+</body>
+</html>

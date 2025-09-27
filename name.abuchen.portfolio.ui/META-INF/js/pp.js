@@ -31,18 +31,26 @@
 
 	pp.getInitialHeight = function() {
 		if (typeof (document.height) == 'number') {
-			return document.height;
+			height = document.height;
 		} else {
-			return window.innerHeight - 4;
+			height = window.innerHeight - 4;
 		}
+		if (height <=0){
+			height = 50;
+		}		
+		return height;
 	}
 	
 	pp.getInitialWidth = function() {
 		if (typeof (document.width) == 'number') {
-			return document.width;
+			width = document.width;
 		} else {
-			return window.innerWidth - 4;
+			width = window.innerWidth - 4;
 		}
+		if (width <=0){
+			width = 50;
+		}		
+		return width;
 	}
 	
 	pp.getInnerHeight = function() {
