@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private int alignment = SWT.LEFT;
     private ImageHyperlink chevron;
     private Menu chevronMenu;
+    private int maxWidth = -1; // -1 means no limit
 
     private List<ContributionItem> invisible = new ArrayList<>();
 
@@ -72,6 +73,15 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         });
     }
 
+    /**
+     * Sets the maximum width available for the toolbar. If set, the layout will
+     * use this width instead of the composite's bounds width.
+     */
+    public void setMaxWidth(int maxWidth)
+    {
+        this.maxWidth = maxWidth;
+    }
+
     @Override
     protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
     {
@@ -87,6 +97,10 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         ToolBar toolBar = getToolBar(composite);
 
         Rectangle availableBounds = composite.getBounds();
+
+        // Use maxWidth if set, otherwise use the composite's bounds width
+        int availableWidth = maxWidth > 0 ? maxWidth : availableBounds.width;
+
         Point chevronSize = this.chevron.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 
         // check which toolbar items are visible
@@ -106,9 +120,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             // b) if the current item uses up the space for the chevron that
             // will have to be shown for the next item
 
-            if ((width + itemBounds.width > availableBounds.width) // a
+            if ((width + itemBounds.width > availableWidth) // a
                             || ((index + 1 < items.length) && // b
-                                            (width + itemBounds.width + chevronSize.x > availableBounds.width)))
+                                            (width + itemBounds.width + chevronSize.x > availableWidth)))
             {
                 // the tool item is not visible anymore
                 for (int jj = index; jj < items.length; jj++)
@@ -133,9 +147,11 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             if (chevron.isVisible())
                 chevron.setVisible(false);
 
-            // all items are visible - give the tool bar the full space, the
-            // alignment is up to the tool bar itself
-            toolBar.setBounds(0, 0, availableBounds.width, availableBounds.height);
+            // all items are visible - give the tool bar the available space
+            if (alignment == SWT.LEFT)
+                toolBar.setBounds(0, 0, availableWidth, availableBounds.height);
+            else
+                toolBar.setBounds(availableWidth - width, 0, width, availableBounds.height);
         }
         else
         {
@@ -143,20 +159,20 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 // due to the padding issues on Linux, make the tool bar always
                 // as big as possible
-                chevron.setBounds(availableBounds.width - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
+                chevron.setBounds(availableWidth - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
                                 chevronSize.x, chevronSize.y);
 
-                toolBar.setBounds(0, 0, availableBounds.width - chevronSize.x, availableBounds.height);
+                toolBar.setBounds(0, 0, availableWidth - chevronSize.x, availableBounds.height);
             }
             else
             {
-                int x = alignment == SWT.LEFT ? width : availableBounds.width - chevronSize.x;
+                int x = alignment == SWT.LEFT ? width : availableWidth - chevronSize.x;
                 chevron.setBounds(x, (availableBounds.height - chevronSize.y) / 2, chevronSize.x, chevronSize.y);
 
                 if (alignment == SWT.LEFT)
                     toolBar.setBounds(0, 0, width, availableBounds.height);
                 else
-                    toolBar.setBounds(availableBounds.width - chevronSize.x - width, 0, width, availableBounds.height);
+                    toolBar.setBounds(availableWidth - chevronSize.x - width, 0, width, availableBounds.height);
             }
 
             if (!chevron.isVisible())
