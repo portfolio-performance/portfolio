@@ -307,7 +307,11 @@ public class TaxonomyJSONImporter
                 // create new classification
 
                 String id = UUID.randomUUID().toString();
-                Classification newClassification = new Classification(parent, id, name);
+                var newClassification = new Classification(parent, id, name);
+
+                // assign a weight of 0 to the new category in order to not
+                // destroy the existing sum of weights
+                newClassification.setWeight(0);
 
                 if (!parent.getChildren().isEmpty())
                 {
