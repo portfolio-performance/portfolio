@@ -37,6 +37,26 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.1" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Improvement: Reduced the number of login requests through improved handling.</li>
+          <li>Improvement: Added option to recursively sort taxonomies by name, value, or type.</li>
+          <li>Improvement: Added the accelerator Ctrl-E (or Cmd-E) to edit instruments in more views.</li>
+          <li>Improvement: Assign stable colors when multiple instruments are selected in the price chart.</li>
+          <li>Improvement: Enhanced price feed search with exact ticker lookup and bulk exchange updates.</li>
+          <li>Improvement: Set the weight of newly imported classifications to zero when importing taxonomies from JSON.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital and Saxo Bank.</li>
+          <li xml:lang="de">Verbesserung: Login-Anfragen durch verbessertes Handling reduziert.</li>
+          <li xml:lang="de">Verbesserung: Option hinzugefügt, Taxonomien rekursiv nach Name, Wert oder Typ zu sortieren.</li>
+          <li xml:lang="de">Verbesserung: Tastenkürzel Strg-E (bzw. Cmd-E auf macOS) zum Bearbeiten von Wertpapieren in weiteren Ansichten hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Verwendung von stabile Farben wenn mehrere Wertpapiere im Kursdiagramm ausgewählt werden.</li>
+          <li xml:lang="de">Verbesserung: Kurssuche verbessert mit exakter Tickersuche und Massenänderung des Börsenpatzes.</li>
+          <li xml:lang="de">Verbesserung: Gewichtung neu importierter Klassifikationen werden beim Import von Taxonomien aus JSON auf Null gesetzt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital und Saxo Bank verbessert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.80.0" date="2025-09-21">
       <description>
         <ul>
