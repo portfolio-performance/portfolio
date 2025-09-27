@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.2" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Fix: Fixed a java.net.URISyntaxException when path contains spaces.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem wenn ein Pfad Leerzeichen enthält.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.80.1" date="2025-09-27">
       <description>
         <ul>
