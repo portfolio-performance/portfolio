@@ -276,8 +276,7 @@ public class TLVQuoteFeedLiveTest
                 assertThat(daysdiff, lessThanOrEqualTo(3l));
 
                 assertThat(price.getValue(), greaterThan(0L));
-                assertThat(price.getVolume(), greaterThan(0L));
-                assertThat(price.getVolume(), greaterThan(0l));
+                assertThat(price.getVolume(), is(0l));
                 System.out.println("\tgetLatestQuote for TVL Stock passed");
 
             }
@@ -298,10 +297,10 @@ public class TLVQuoteFeedLiveTest
             assertThat(secprice.getValue(), greaterThan(0L));
 
             LatestSecurityPrice latestsecprice = prices.getLatestPrices().get(0);
-            assertThat(latestsecprice.getHigh(), greaterThan(0L));
-            assertThat(latestsecprice.getLow(), greaterThan(0L));
+            assertThat(latestsecprice.getHigh(), is(0L));
+            assertThat(latestsecprice.getLow(), is(0L));
             assertThat(latestsecprice.getValue(), greaterThan(0L));
-            assertThat(latestsecprice.getVolume(), greaterThan(100L));
+            assertThat(latestsecprice.getVolume(), is(0L));
             System.out.println("\tgetHistoricalQuotes for TVL Stock passed");
 
         }

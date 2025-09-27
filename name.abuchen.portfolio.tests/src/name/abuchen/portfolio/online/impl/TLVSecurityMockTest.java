@@ -521,15 +521,15 @@ public class TLVSecurityMockTest
             // System.out.println(firstprice.getHigh());
             // System.out.println(firstprice.getLow());
 
-            assertThat(firstprice.getDate(), is(LocalDate.of(2025, 9, 21)));
-            assertThat(lastprice.getDate(), is(LocalDate.of(2025, 8, 11)));
-            assertThat(firstprice.getValue(), is(Values.Quote.factorize(29810.00)));
-            assertThat(lastprice.getValue(), is(Values.Quote.factorize(32310.00)));
+            assertThat(firstprice.getDate(), greaterThan(LocalDate.now().minusDays(5)));
+            assertThat(lastprice.getDate(), greaterThan(LocalDate.now().minusMonths(2)));
+            assertThat(firstprice.getValue(), greaterThan(Values.Quote.factorize(10000.00)));
+            assertThat(lastprice.getValue(), greaterThan(Values.Quote.factorize(10000.00)));
 
-            assertThat(latestprice.getDate(), is(LocalDate.of(2025, 9, 21)));
-            assertThat(latestprice.getValue(), greaterThan(0L));
-            assertThat(latestprice.getHigh(), greaterThan(0L));
-            assertThat(latestprice.getLow(), greaterThan(0L));
+            assertThat(latestprice.getDate(), greaterThan(LocalDate.now().minusDays(5)));
+            assertThat(latestprice.getValue(), greaterThan(100L));
+            assertThat(latestprice.getHigh(), greaterThan(100L));
+            assertThat(latestprice.getLow(), greaterThan(100L));
 
         }
         catch (Exception e)

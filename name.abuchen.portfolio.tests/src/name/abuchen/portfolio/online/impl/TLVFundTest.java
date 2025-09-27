@@ -264,7 +264,7 @@ public class TLVFundTest
     {
         Security security = new Security();
         security.setWkn("5127121");
-        security.setCurrencyCode("ILA");
+        security.setCurrencyCode("ILS");
 
         LocalDate to = LocalDate.of(2025, 8, 25);
 
