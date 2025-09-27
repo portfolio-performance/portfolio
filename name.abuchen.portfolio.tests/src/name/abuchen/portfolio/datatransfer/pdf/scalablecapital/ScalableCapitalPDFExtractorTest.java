@@ -966,6 +966,78 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testDividende06()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2875106242"), hasWkn(null), hasTicker(null), //
+                        hasName("Leverage Shares PLC"), //
+                        hasCurrencyCode("USD"))));
+
+        // check interest transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-14T00:00"), hasShares(5.940872), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.82), hasGrossValue("EUR", 0.82), //
+                        hasForexGrossValue("USD", 0.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende06WithSecurityInEUR()
+    {
+        var security = new Security("Leverage Shares PLC", "EUR");
+        security.setIsin("XS2875106242");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ScalableCapitalPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check interest transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-14T00:00"), hasShares(5.940872), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.82), hasGrossValue("EUR", 0.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testRechnungsabschluss01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
