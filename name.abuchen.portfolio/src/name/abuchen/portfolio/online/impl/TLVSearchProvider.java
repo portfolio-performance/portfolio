@@ -4,131 +4,315 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
 import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
 import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
 
+/**
+     * @see https://api.tase.co.il/api/content/searchentities?lang=1
+     * 
+     *  @formatter:off
+     *  @array 
+     *  [
+     *      {
+            "Id": "1397",
+            "Name": "ABRA",
+            "Smb": null,
+            "ISIN": null,
+            "Type": 5,
+            "SubType": "0",
+            "SubTypeDesc": "Company",
+            "SubId": "01101666",
+            "ETFType": null
+        },
+        {
+            "Id": "273011",
+            "Name": "NICE",
+            "Smb": "NICE",
+            "ISIN": "IL0002730112",
+            "Type": 1,
+            "SubType": "1",
+            "SubTypeDesc": "Shares",
+            "SubId": "000273",
+            "ETFType": null
+        },
+        
+        ]
+        
+    }
+     *  @formatter:on
+     */
 public class TLVSearchProvider implements SecuritySearchProvider
 {
-    List<SecurityListing> allsecurities = new ArrayList<>();
-    // private Map<String, Set<String>> mappedSecurities;
-    private List<IndiceListing> mappedEntities;
-    private Boolean mapped = false;
 
-    public TLVSearchProvider()
+    static class Result implements ResultItem
     {
-        try
+        private String Id;
+        private String name;
+        private String symbol;
+        private String isin;
+        private String exchange;
+        private String type;
+        private String currencyCode;
+
+        @SuppressWarnings("nls")
+        // public static Result from(JSONObject json)
+        // {
+        // PortfolioLog.info(json.toString());
+        // // Extract values from the JSON object
+        // var isin = (String) json.get("ISIN");
+        // var tickerSymbol = (String) json.get("Smb");
+        // var exchange = "TLV";
+        // var name = (String) json.get("Name");
+        // var type = String.valueOf(json.get("Type"));
+        //
+        // var currencyCode = (String) "ILA";
+        // var id = (String) json.get("Id");
+        //
+        // var symbol = new StringBuilder(tickerSymbol);
+        // symbol.append(".");
+        // symbol.append("TLV");
+        //
+        // return new Result(isin, symbol.toString(), id, currencyCode, name,
+        // type, exchange);
+        //
+        // }
+
+        public static Result from(IndiceListing listing)
         {
-            this.mapEntities();
-            this.mapped = true;
+            String id = (String) listing.getId();
+            String name = (String) listing.getName();
+            String smb = (String) listing.getSmb();
+            String isin = (String) listing.getISIN();
+            String type = String.valueOf(listing.getType());
+            
+            // TODO - fix
+            var currencyCode = (String) "ILA";
+            var exchange = "TLV";
+
+            return new Result(isin, smb, id, currencyCode, name, type, exchange);
         }
-        catch (IOException e)
+
+        public Result(String isin, String symbol, String id, String name, String exchange, String type,
+                        String currencyCode)
         {
-            System.out.print("Could not resolved TLV securities from TLV API"); //$NON-NLS-1$
-            PortfolioLog.abbreviated(e);
-            this.mapped = false;
+            this.isin = isin;
+            this.symbol = symbol;
+            this.name = name;
+            this.exchange = exchange;
+            this.type = type;
+            this.currencyCode = currencyCode;
+            this.Id = id;
+        }
+
+        @Override
+        public String getSymbol()
+        {
+            return symbol;
+        }
+
+        @Override
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public String getType()
+        {
+            return type;
+        }
+
+        @Override
+        public String getExchange()
+        {
+            return exchange;
+        }
+
+        @Override
+        public String getIsin()
+        {
+            return isin;
+        }
+
+        @Override
+        public String getWkn()
+        {
+            return Id;
+        }
+
+        @Override
+        public String getCurrencyCode()
+        {
+            return currencyCode;
+        }
+
+        @Override
+        public String getSource()
+        {
+            return NAME;
+        }
+
+        @Override
+        public String getFeedId()
+        {
+            return TLVQuoteFeed.ID;
+        }
+
+        @Override
+        public boolean hasPrices()
+        {
+            return true;
+        }
+
+        @Override
+        public String getSymbolWithoutStockMarket()
+        {
+            PortfolioLog.info("getSymbolwithoutStockmarket for TLV");
+
+            String symbol = getSymbol();
+            if (symbol == null)
+                return null;
+
+            int p = symbol.indexOf('.');
+            // return (p >= 0) ? symbol.substring(0, p) : symbol;
+            if (p >= 0)
+            {
+                String d = symbol.substring(p, symbol.length());
+                PortfolioLog.error("getSymbol " + symbol);
+
+                return d.equals("TLV") ? symbol.substring(0, p) : symbol;
+                // $NON-NLS-1$
+            }
+            PortfolioLog.error("getSymbol " + symbol);
+            return symbol;
+        }
+
+        @Override
+        public Security create(Client client)
+        {
+            var security = new Security(name, currencyCode);
+            security.setTickerSymbol(symbol);
+            security.setWkn(Id);
+            security.setFeed(TLVQuoteFeed.ID);
+            return security;
         }
     }
 
-    private void mapEntities() throws IOException
+    private static final String NAME = "Tel Aviv Exchange"; //$NON-NLS-1$
+    private static final String URL = "api.tase.co.il"; //$NON-NLS-1$
+    private static final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
+    private List<IndiceListing> tlvIndices;
+
+    
+
+
+    public TLVSearchProvider()
     {
-        TLVEntities entities = new TLVEntities();
-        Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
+        super();
+        TLVQuoteFeed feed = new TLVQuoteFeed();
+        this.tlvIndices = feed.getTLVEntities();
 
-        if (!mappedEntitiesOptional.isEmpty())
-        {
-            this.mappedEntities = mappedEntitiesOptional.get();
-
-            Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
-
-            while (entitiesIterator.hasNext())
-            {
-                IndiceListing listing = entitiesIterator.next();
-                String id = listing.getId();
-
-                int type = listing.getType();
-                String subtype = listing.getSubType();
-                TLVType tlvType = TLVType.NONE;
-
-                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype.equals("")) //$NON-NLS-1$
-                {
-                    listing.setTLVType(TLVType.FUND);
-                }
-                if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
-                {
-                    listing.setTLVType(TLVType.SECURITY);
-                }
-            }
-        }
+        PortfolioLog.info("TLVIndices has " + this.tlvIndices.size() + " entries");
+        Stream<IndiceListing> tlvFilteredIndices = this.tlvIndices.stream()
+                        .filter(a -> a.getTLVType() == TLVType.FUND || //
+                                        a.getType() == TLVType.SECURITY.getValue());
+        this.tlvIndices = tlvFilteredIndices.collect(Collectors.toList());
+        PortfolioLog.info("TLVIndices has " + this.tlvIndices.size() + " entries");
 
     }
 
     @Override
     public String getName()
     {
-        return Messages.LabelYahooFinance;
+        return NAME;
     }
 
-
-
-    /*
-     * Return a list of ResultItems ResultItems is an interface defined in
-     * SecurityProvider
-     */
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
         List<ResultItem> answer = new ArrayList<>();
+        PortfolioLog.info("search " + query + " in TLV");
+        // addStocksearchPage(answer, query.trim());
 
-        // Take the mappedSecurities and search on the query.
-        // Return the matching Result Entries.
-        // addSearchPage(answer, query);
-        // addSymbolSearchResults(answer, query);
-
-        if (answer.size() >= 10)
+        if (this.tlvIndices == null || this.tlvIndices.isEmpty())
         {
-            YahooSymbolSearch.Result item = new YahooSymbolSearch.Result(Messages.MsgMoreResultsAvailable);
-            answer.add(item);
+            PortfolioLog.info("TLV Listing is empty");
+            return answer;
+        }
+        Iterator<IndiceListing> entitiesIterator = this.tlvIndices.iterator();
+
+        while (entitiesIterator.hasNext())
+        {
+            IndiceListing listing = entitiesIterator.next();
+
+            String isin = listing.getISIN() == null ? "N\\A" : listing.getISIN(); //$NON-NLS-1$
+            String id = listing.getId() == null ? "N\\A" : listing.getId(); //$NON-NLS-1$
+            String sym = listing.getSmb() == null ? "N\\A" : listing.getSmb(); //$NON-NLS-1$
+            
+            PortfolioLog.info("TLV iterating " + isin + " " + id + " " + sym);
+
+            if (sym.equals(query) || id.equals(query) || sym.equals(query))
+                answer.add(Result.from(listing));
+            
+
         }
 
         return answer;
     }
 
-    // private void addSearchPage(List<ResultItem> answer, String query) throws
-    // IOException
+    // private void addStocksearchPage(List<ResultItem> answer, String query)
+    // throws IOException
     // {
-    // @SuppressWarnings("nls")
-    // String html = new WebAccess("query2.finance.yahoo.com",
-    // "/v1/finance/lookup") //
-    // .addUserAgent(OnlineHelper.getYahooFinanceUserAgent()) //
-    // .addParameter("formatted", "true") //
-    // .addParameter("lang", "de-DE").addParameter("region", "DE") //
-    // .addParameter("query", query) //
-    // .addParameter("type", "all") //
-    // .addParameter("count", "25") //
-    // .addParameter("start", "0") //
-    // .addParameter("corsDomain", "de.finance.yahoo.com") //
+    // // Filter out MUTUAL FUNDS
+    // // Filter out SECURITIES
+    //
+    // // Filter out STOCK
+    // // Add to answer
+    //
+    // var array = new WebAccess(URL, PATH) //
+    // .addParameter("id", query)
+    // .addParameter("lang", "1") // //$NON-NLS-1$ //$NON-NLS-2$
+    // .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL
+    // 7.0.6.01001") //$NON-NLS-1$
+    // .addHeader("Accept", "*/*") //$NON-NLS-1$ //$NON-NLS-2$
+    // .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$
+    // //$NON-NLS-2$
+    // .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$
+    // .addHeader("Content-Type", "application/json") //$NON-NLS-1$
+    // //$NON-NLS-2$
     // .get();
     //
-    // extractFrom(answer, html);
-    // }
-
-    // private void mapSecurities() throws Exception
-    // {
-    // TLVEntities indices = new TLVEntities();
-    // List<IndiceListing> allSecurityList =
-    // indices.getAllListings(Language.ENGLISH);
+    // var result = extract(array);
     //
+    // for (var item : result)
+    // {
+    // var isin = item.getIsin();
+    // answer.add(item);
+    // }
     // }
 
+    // private List<Result> extract(String array)
+    // {
+    // var jsonArray = (JSONArray) JSONValue.parse(array);
+    //
+    // if (jsonArray.isEmpty())
+    // return Collections.emptyList();
+    //
+    // List<Result> answer = new ArrayList<>();
+    // for (Object element : jsonArray)
+    // {
+    // var item = (JSONObject) element;
+    // if (item.get("Smb") != null)
+    // answer.add(Result.from(item));
+    // }
+    // return answer;
+    // }
 
 }

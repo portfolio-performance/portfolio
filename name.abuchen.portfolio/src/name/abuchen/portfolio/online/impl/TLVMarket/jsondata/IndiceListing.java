@@ -94,4 +94,14 @@ public class IndiceListing
                         + ", subType=" + SubType + ", subTypeDesc=" + SubTypeDesc + ", subId=" + SubId + ", ETFType="
                         + ETFType + ", TLVType=" + TLVType + "]";
     }
+
+    public String getSmb()
+    {
+        return Smb;
+    }
+
+    public void setSmb(String smb)
+    {
+        Smb = smb;
+    }
 }
