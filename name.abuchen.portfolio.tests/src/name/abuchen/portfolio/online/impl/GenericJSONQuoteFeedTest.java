@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -465,7 +466,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("yyyyMMdd"), Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.of(DateTimeFormatter.ofPattern("yyyyMMdd")), Optional.empty());
 
         assertEquals(LocalDate.of(2021, 3, 13), date);
     }
@@ -478,7 +479,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("dd.MM.yyyy"), Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.of(DateTimeFormatter.ofPattern("dd.MM.yyyy")), Optional.empty());
 
         assertEquals(LocalDate.of(2021, 3, 14), date);
     }
@@ -550,7 +551,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss"), Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.of(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), Optional.empty());
 
         assertEquals(LocalDate.of(2011, 12, 3), date);
     }
@@ -562,7 +563,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss VV"), Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.of(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss VV")), Optional.empty());
 
         assertEquals(LocalDate.of(2011, 12, 3), date);
     }
@@ -610,7 +611,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss"), Optional.of("-10:16"));
+        LocalDate date = feed.extractDate(object, Optional.of(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), Optional.of("-10:16"));
 
         assertEquals(LocalDate.of(2011, 12, 2), date);
     }

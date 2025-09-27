@@ -91,7 +91,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
      */
     public boolean isHoliday(LocalDate date)
     {
-        if (weekend.contains(date.getDayOfWeek()))
+        if (isWeekend(date))
             return true;
 
         return cache.get(date.getYear()).containsKey(date);

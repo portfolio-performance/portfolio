@@ -37,7 +37,7 @@ public class TestUtilities
                         new String[] { "pt_BR" }, new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" },
                         new String[] { "cs" }, new String[] { "ru" }, new String[] { "sk" }, new String[] { "pl" },
                         new String[] { "zh" }, new String[] { "zh_TW" }, new String[] { "da" }, new String[] { "tr" },
-                        new String[] { "vi" });
+                        new String[] { "vi" }, new String[] { "ca" });
     }
 
     /**

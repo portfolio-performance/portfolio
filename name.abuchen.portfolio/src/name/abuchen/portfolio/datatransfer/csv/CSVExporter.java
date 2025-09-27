@@ -46,6 +46,9 @@ public class CSVExporter
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_TransactionCurrency, //
+                            Messages.CSVColumn_GrossAmount, //
+                            Messages.CSVColumn_CurrencyGrossAmount, //
+                            Messages.CSVColumn_ExchangeRate, //
                             Messages.CSVColumn_Fees, //
                             Messages.CSVColumn_Taxes, //
                             Messages.CSVColumn_Shares, //
@@ -65,6 +68,21 @@ public class CSVExporter
                 printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
                 var transaction = t.getCrossEntry() instanceof BuySellEntry entry ? entry.getPortfolioTransaction() : t;
+                // gross amount
+                Optional<Unit> grossAmount = transaction.getUnit(Unit.Type.GROSS_VALUE);
+                if (grossAmount.isPresent())
+                {
+                    Money forex = grossAmount.get().getForex();
+                    printer.print(Values.Amount.format(forex.getAmount()));
+                    printer.print(forex.getCurrencyCode());
+                    printer.print(Values.ExchangeRate.format(grossAmount.get().getExchangeRate()));
+                }
+                else
+                {
+                    printer.print(""); //$NON-NLS-1$
+                    printer.print(""); //$NON-NLS-1$
+                    printer.print(""); //$NON-NLS-1$
+                }
                 printer.print(Values.Amount.formatNonZero(transaction.getUnitSum(Unit.Type.FEE).getAmount()));
                 printer.print(Values.Amount.formatNonZero(transaction.getUnitSum(Unit.Type.TAX).getAmount()));
                 printer.print(Values.Share.formatNonZero(transaction.getShares()));

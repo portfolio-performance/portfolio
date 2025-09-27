@@ -80,6 +80,7 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.actions.CreateRemovalForDividendAction;
 import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -562,7 +563,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         if (!selection.isEmpty())
         {
-            fillTransactionsContextMenuList(manager, selection);
+            fillConvertTransferToDepositRemovalAction(manager, selection);
+            fillCreateRemovalForDividendAction(manager, selection);
         }
 
         if (transaction != null)
@@ -590,7 +592,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         }
     }
 
-    private void fillTransactionsContextMenuList(IMenuManager manager, IStructuredSelection selection)
+    private void fillConvertTransferToDepositRemovalAction(IMenuManager manager, IStructuredSelection selection)
     {
         // create collection with all selected transactions
         Collection<AccountTransaction> accountTxCollection = new ArrayList<>(selection.size());
@@ -609,11 +611,26 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                             || tx.getType() == AccountTransaction.Type.TRANSFER_OUT;
         }
 
-        // create action to split transfer action into deposit/removal
         if (allTransfer)
         {
+            // create action to split transfer action into deposit/removal
             manager.add(new Separator());
             manager.add(new ConvertTransferToDepositRemovalAction(client, accountTxCollection));
+        }
+    }
+
+    private void fillCreateRemovalForDividendAction(IMenuManager manager, IStructuredSelection selection)
+    {
+        // create collection with all selected transactions
+        var dividendTransactionPairs = selection.stream()
+                        .filter(t -> ((AccountTransaction) t).getType() == AccountTransaction.Type.DIVIDENDS)
+                        .map(t -> new TransactionPair<>(account, (AccountTransaction) t)).toList();
+
+        if (dividendTransactionPairs.size() == selection.size())
+        {
+            // create action to create corresponding remove transaction
+            manager.add(new Separator());
+            manager.add(new CreateRemovalForDividendAction(client, dividendTransactionPairs));
         }
     }
 

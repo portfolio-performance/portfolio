@@ -109,6 +109,7 @@ public class TaxonomyJSONImporterTest
         assertThat(newCategory.getKey(), is("new-key"));
         assertThat(newCategory.getNote(), is("A new test category"));
         assertThat(newCategory.getColor(), is("#FF0000"));
+        assertThat(newCategory.getWeight(), is(0));
 
         // verify the assignment exists on the new category
         assertThat(newCategory.getAssignments().size(), is(1));
@@ -678,6 +679,7 @@ public class TaxonomyJSONImporterTest
         var newCategory = taxonomy.getRoot().getChildren().stream().filter(c -> "cat3".equals(c.getKey())).findFirst()
                         .orElse(null);
         assertThat(newCategory, is(notNullValue()));
+        assertThat(newCategory.getWeight(), is(0));
 
         // Check operations in result
         assertThat(result.getChanges(), hasItem(allOf(hasProperty("operation", is(Operation.DELETE)),

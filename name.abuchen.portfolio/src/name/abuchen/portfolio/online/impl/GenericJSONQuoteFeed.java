@@ -249,6 +249,9 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             List<Object> dates = ctx.read(dateP);
             List<Object> close = ctx.read(closeP);
 
+            // Create DateTimeFormatter once if custom format is provided
+            Optional<DateTimeFormatter> customFormatter = dateFormat.map(DateTimeFormatter::ofPattern);
+
             Optional<List<Object>> high = Optional.empty();
             Optional<List<Object>> low = Optional.empty();
             Optional<List<Object>> volume = Optional.empty();
@@ -301,7 +304,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
                     // date
                     Object object = dates.get(index);
-                    price.setDate(this.extractDate(object, dateFormat, dateTimezone));
+                    price.setDate(this.extractDate(object, customFormatter, dateTimezone));
 
                     // close
                     object = close.get(index);
@@ -383,15 +386,16 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     @VisibleForTesting
-    /* testing */ LocalDate extractDate(Object object, Optional<String> dateFormat, Optional<String> dateTimezone)
+    /* testing */ LocalDate extractDate(Object object, Optional<DateTimeFormatter> customFormatter,
+                    Optional<String> dateTimezone)
     {
         final ZoneOffset offset = dateTimezone.isPresent()
                         ? ZoneId.of(dateTimezone.get()).getRules().getOffset(Instant.now())
                         : ZoneOffset.UTC;
 
-        if (dateFormat.isPresent())
+        if (customFormatter.isPresent())
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat.get());
+            var formatter = customFormatter.get();
             return parseDate(object.toString(), formatter, offset);
         }
 

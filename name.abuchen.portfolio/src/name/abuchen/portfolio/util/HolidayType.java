@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
+
 /* package */ abstract class HolidayType
 {
     private static class MoveIf
@@ -171,18 +173,255 @@ import java.util.Set;
         }
     }
 
-    private final HolidayName name;
+    /**
+     * Holiday type for Israeli Memorial/Independence Days. Dates vary based on
+     * day of week to avoid Sabbath conflicts.
+     */
+    private static class IsraeliMemorialCalendarHolidayType extends HolidayType
+    {
+        private final HebrewCalendar calendar = new HebrewCalendar();
 
+        public IsraeliMemorialCalendarHolidayType(HolidayName name)
+        {
+            super(name);
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
+        {
+            var startOfYearAbsolute = calendar.getAbsoluteFromGregorianDate(LocalDate.of(gregorianYear, 1, 1));
+            var hebrewYearStart = calendar.getHebrewDateFromAbsolute(startOfYearAbsolute);
+
+            var memorialDate = calculateMemorialDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar.getGregorianDateFromAbsolute(calendar.getAbsoluteFromHebrewDate(memorialDate));
+
+            return new Holiday(getName(), gregorianDate);
+        }
+
+        /**
+         * Calculates the Hebrew date for Memorial Day. Iyyar 4, but moved to
+         * avoid Thursday/Friday/Saturday.
+         */
+        protected HebrewDate calculateMemorialDate(int hebrewYear)
+        {
+            var weekday = getWeekdayOfHebrewDate(4, 2, hebrewYear); // Iyyar 4
+
+            if (weekday == 5)
+            {
+                // Friday - move to Wednesday
+                return HebrewDate.of(hebrewYear, 2, 2);
+            }
+            else if (weekday == 4)
+            {
+                // Thursday - move to Wednesday
+                return HebrewDate.of(hebrewYear, 2, 3);
+            }
+            else if (hebrewYear >= 5764 && weekday == 0)
+            {
+                // Saturday after 2004 - move to Sunday
+                return HebrewDate.of(hebrewYear, 2, 5);
+            }
+            else
+            {
+                return HebrewDate.of(hebrewYear, 2, 4); // Default date
+            }
+        }
+
+        private int getWeekdayOfHebrewDate(int day, int month, int year)
+        {
+            var absoluteDate = calendar.getAbsoluteFromHebrewDate(HebrewDate.of(year, month, day));
+            return absoluteDate % 7;
+        }
+    }
+
+    /**
+     * Holiday type for Israeli Independence Day (Yom Ha'atzmaut). Date varies
+     * based on day of week and follows Memorial Day.
+     */
+    private static class IsraeliIndependenceCalendarHolidayType extends IsraeliMemorialCalendarHolidayType
+    {
+        private final HebrewCalendar calendar = new HebrewCalendar();
+
+        public IsraeliIndependenceCalendarHolidayType(HolidayName name)
+        {
+            super(name);
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
+        {
+            var startOfYearAbsolute = calendar.getAbsoluteFromGregorianDate(LocalDate.of(gregorianYear, 1, 1));
+            var hebrewYearStart = calendar.getHebrewDateFromAbsolute(startOfYearAbsolute);
+
+            var independenceDate = calculateIndependenceDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar
+                            .getGregorianDateFromAbsolute(calendar.getAbsoluteFromHebrewDate(independenceDate));
+
+            return new Holiday(getName(), gregorianDate);
+        }
+
+        /**
+         * Calculates the Hebrew date for Independence Day. Usually Iyyar 5, but
+         * moved to follow Memorial Day rules and avoid Sabbath conflicts.
+         */
+        private HebrewDate calculateIndependenceDate(int hebrewYear)
+        {
+            // Independence Day follows Memorial Day, so we need to calculate
+            // Memorial Day first
+            var memorialDate = calculateMemorialDate(hebrewYear);
+
+            // Independence Day is the day after Memorial Day
+            var independenceDay = memorialDate.getDay() + 1;
+            var independenceMonth = memorialDate.getMonth();
+            var independenceYear = memorialDate.getYear();
+
+            // Handle month overflow (though unlikely with Iyyar)
+            var maxDayInMonth = calendar.getLastDayOfHebrewMonth(independenceMonth, independenceYear);
+            if (independenceDay > maxDayInMonth)
+            {
+                independenceDay = 1;
+                independenceMonth++;
+                if (independenceMonth > calendar.getLastMonthOfHebrewYear(independenceYear))
+                {
+                    independenceMonth = 1;
+                    independenceYear++;
+                }
+            }
+
+            return HebrewDate.of(independenceYear, independenceMonth, independenceDay);
+        }
+    }
+
+    /**
+     * Holiday type for fixed Jewish calendar dates.
+     */
+    private static class FixedJewishCalendarHolidayType extends HolidayType
+    {
+        private final int hebrewMonth;
+        private final int hebrewDayOfMonth;
+        private final int daysToAdd;
+
+        public FixedJewishCalendarHolidayType(HolidayName name, int hebrewMonth, int hebrewDayOfMonth, int daysToAdd)
+        {
+            super(name);
+            this.hebrewMonth = hebrewMonth;
+            this.hebrewDayOfMonth = hebrewDayOfMonth;
+            this.daysToAdd = daysToAdd;
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int year)
+        {
+            var gregorianDate = calculateHebrewHolidayInGregorianYear(year, hebrewMonth, hebrewDayOfMonth, daysToAdd);
+            return new Holiday(getName(), gregorianDate);
+        }
+
+        /**
+         * Utility method to calculate Hebrew holidays that fall within a
+         * Gregorian year. Handles the complexity of Hebrew calendar spanning
+         * Gregorian years.
+         */
+        private LocalDate calculateHebrewHolidayInGregorianYear(int gregorianYear, int hebrewMonth, int hebrewDay,
+                        int additionalDays)
+        {
+            var calendar = new HebrewCalendar();
+
+            // Get absolute dates for start and end of Gregorian year
+            var yearStartAbsolute = calendar.getAbsoluteFromGregorianDate(LocalDate.of(gregorianYear, 1, 1));
+            var yearEndAbsolute = calendar.getAbsoluteFromGregorianDate(LocalDate.of(gregorianYear, 12, 31));
+
+            // Get corresponding Hebrew dates
+            var hebrewYearStart = calendar.getHebrewDateFromAbsolute(yearStartAbsolute);
+            var hebrewYearEnd = calendar.getHebrewDateFromAbsolute(yearEndAbsolute);
+
+            var holidayDay = hebrewDay + additionalDays;
+
+            // Try the Hebrew holiday in the same Hebrew year as start of
+            // Gregorian
+            // year
+            var holidayCurrentYear = HebrewDate.of(hebrewYearStart.getYear(), hebrewMonth, holidayDay);
+            var gregorianCurrentYear = calendar
+                            .getGregorianDateFromAbsolute(calendar.getAbsoluteFromHebrewDate(holidayCurrentYear));
+
+            if (gregorianCurrentYear.getYear() == gregorianYear)
+                return gregorianCurrentYear;
+
+            // Try the Hebrew holiday in the next Hebrew year
+            var holidayNextYear = HebrewDate.of(hebrewYearEnd.getYear(), hebrewMonth, holidayDay);
+            return calendar.getGregorianDateFromAbsolute(calendar.getAbsoluteFromHebrewDate(holidayNextYear));
+        }
+    }
+
+    /**
+     * Holiday type for Purim, which falls on different Hebrew months in leap
+     * years.
+     */
+    private static class JewishPurimCalendarHolidayType extends HolidayType
+    {
+        private final HebrewCalendar calendar = new HebrewCalendar();
+
+        public JewishPurimCalendarHolidayType(HolidayName name)
+        {
+            super(name);
+        }
+
+        @Override
+        protected Holiday doGetHoliday(int gregorianYear)
+        {
+            var startOfYearAbsolute = calendar.getAbsoluteFromGregorianDate(LocalDate.of(gregorianYear, 1, 1));
+            var hebrewYearStart = calendar.getHebrewDateFromAbsolute(startOfYearAbsolute);
+
+            var purimDate = calculatePurimDate(hebrewYearStart.getYear());
+            var gregorianDate = calendar.getGregorianDateFromAbsolute(calendar.getAbsoluteFromHebrewDate(purimDate));
+
+            return new Holiday(getName(), gregorianDate);
+        }
+
+        /**
+         * Calculates the Hebrew date for Purim. Adar 14 (or Adar II 14 in leap
+         * years).
+         */
+        private HebrewDate calculatePurimDate(int hebrewYear)
+        {
+            // Adar II or Adar
+            var purimMonth = calendar.isHebrewLeapYear(hebrewYear) ? 13 : 12;
+            return HebrewDate.of(hebrewYear, purimMonth, 14);
+        }
+    }
+
+    // Instance variables
+    private final HolidayName name;
     private int validFrom = -1;
     private int validTo = -1;
     private final Set<Integer> exceptIn = new HashSet<>();
-
     private final List<MoveIf> moveIf = new ArrayList<>();
     private DayOfWeek moveTo = null;
 
-    public HolidayType(HolidayName name)
+    protected HolidayType(HolidayName name)
     {
         this.name = name;
+    }
+
+    // Factory methods
+    public static HolidayType fixedJewishCalendar(HolidayName name, int hebrewMonth, int hebrewDayOfMonth,
+                    int daysToAdd)
+    {
+        return new FixedJewishCalendarHolidayType(name, hebrewMonth, hebrewDayOfMonth, daysToAdd);
+    }
+
+    public static HolidayType jewishPurimCalendar(HolidayName name)
+    {
+        return new JewishPurimCalendarHolidayType(name);
+    }
+
+    public static HolidayType israeliMemorialCalendar(HolidayName name)
+    {
+        return new IsraeliMemorialCalendarHolidayType(name);
+    }
+
+    public static HolidayType israeliIndependenceCalendar(HolidayName name)
+    {
+        return new IsraeliIndependenceCalendarHolidayType(name);
     }
 
     public static HolidayType fixed(HolidayName name, Month month, int dayOfMonth)

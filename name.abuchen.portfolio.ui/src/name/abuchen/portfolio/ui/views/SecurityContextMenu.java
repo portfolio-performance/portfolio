@@ -3,9 +3,10 @@ package name.abuchen.portfolio.ui.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -27,10 +28,17 @@ import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 public class SecurityContextMenu
 {
     private AbstractFinanceView owner;
+    private boolean showAccelerator = true;
 
     public SecurityContextMenu(AbstractFinanceView owner)
     {
         this.owner = owner;
+    }
+
+    public SecurityContextMenu withoutAccelerator()
+    {
+        this.showAccelerator = false;
+        return this;
     }
 
     public void menuAboutToShow(IMenuManager manager, final Security security)
@@ -150,24 +158,41 @@ public class SecurityContextMenu
                             .with(security));
 
             manager.add(new Separator());
-
-            manager.add(new Action(Messages.SecurityMenuEditSecurity)
-            {
-                @Override
-                public void run()
-                {
-                    Dialog dialog = owner.make(EditSecurityDialog.class, security);
-
-                    if (dialog.open() == Window.OK)
-                    {
-                        owner.markDirty();
-                        owner.notifyModelUpdated();
-                    }
-                }
-            });
+            manager.add(new EditSecurityAction(security));
 
             manager.add(new Separator());
             manager.add(new BookmarkMenu(owner.getPart(), security));
         }
+    }
+
+    private final class EditSecurityAction extends Action
+    {
+        private Security security;
+
+        private EditSecurityAction(Security security)
+        {
+            super(Messages.SecurityMenuEditSecurity);
+            this.security = security;
+            if (showAccelerator)
+                setAccelerator(SWT.MOD1 | 'E');
+        }
+
+        @Override
+        public void run()
+        {
+            var dialog = owner.make(EditSecurityDialog.class, security);
+
+            if (dialog.open() == Window.OK)
+            {
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }
+        }
+    }
+
+    public void handleEditKey(KeyEvent e, Security security)
+    {
+        if (e.keyCode == 'e' && e.stateMask == SWT.MOD1 && security != null)
+            new EditSecurityAction(security).run();
     }
 }

@@ -133,6 +133,7 @@ public class PDFImportAssistant
         extractors.add(new TradegateAGPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new UBSAGBankingAGPDFExtractor(client));
+        extractors.add(new UmweltbankAGPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VanguardGroupEuropePDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));

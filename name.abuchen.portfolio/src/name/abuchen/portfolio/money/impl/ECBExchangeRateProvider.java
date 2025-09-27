@@ -11,13 +11,10 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-
-import com.thoughtworks.xstream.XStream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
@@ -28,7 +25,6 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.util.ProtobufUtil;
-import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 
 /**
  * Load and manage exchanges rates provided by the European Central Bank (ECB).
@@ -47,10 +43,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     public static final String EUR = "EUR"; //$NON-NLS-1$
 
     private static final String FILE_STORAGE_PB = "ecb_exchange_rates.pb"; //$NON-NLS-1$
-    private static final String FILE_STORAGE_XML = "ecb_exchange_rates.xml"; //$NON-NLS-1$
-    private static final String FILE_SUMMARY_XML = "ecb_exchange_rates_summary.xml"; //$NON-NLS-1$
 
-    private volatile XStream xstream; // NOSONAR
     private ECBData data = new ECBData();
 
     public ECBExchangeRateProvider()
@@ -72,42 +65,13 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     @Override
     public synchronized void load(IProgressMonitor monitor) throws IOException
     {
-        monitor.beginTask(MessageFormat.format(Messages.MsgLoadingExchangeRates, getName()), 2);
+        monitor.beginTask(MessageFormat.format(Messages.MsgLoadingExchangeRates, getName()), 1);
 
         File file = getStorageFile(FILE_STORAGE_PB);
         if (file.exists())
         {
             PECBData binary = read(file);
             data = convert(binary);
-            monitor.worked(2);
-        }
-        else
-        {
-            // for the time being, fall back to reading the XML file
-            file = getStorageFile(FILE_SUMMARY_XML);
-            if (file.exists())
-            {
-                @SuppressWarnings("unchecked")
-                Map<String, ExchangeRate> loaded = (Map<String, ExchangeRate>) xstream().fromXML(file);
-
-                ECBData summary = new ECBData();
-                for (Map.Entry<String, ExchangeRate> entry : loaded.entrySet())
-                {
-                    ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, entry.getKey());
-                    s.addRate(entry.getValue());
-                    summary.addSeries(s);
-                }
-                data = summary;
-            }
-            monitor.worked(1);
-
-            file = getStorageFile(FILE_STORAGE_XML);
-            if (file.exists())
-            {
-                ECBData loaded = (ECBData) xstream().fromXML(file);
-                loaded.doPostLoadProcessing(this);
-                data = loaded;
-            }
             monitor.worked(1);
         }
     }
@@ -262,38 +226,4 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         s.addRate(new ExchangeRate(LocalDate.parse(date), value));
         return s;
     }
-
-    @SuppressWarnings("nls")
-    private XStream xstream()
-    {
-        if (xstream == null)
-        {
-            synchronized (this)
-            {
-                if (xstream == null)
-                {
-                    XStream xstream = new XStream();
-
-                    xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.money.**" });
-
-                    xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
-
-                    xstream.registerConverter(new XStreamLocalDateConverter());
-
-                    xstream.alias("data", ECBData.class);
-                    xstream.alias("series", ExchangeRateTimeSeriesImpl.class);
-
-                    xstream.alias("rate", ExchangeRate.class);
-                    xstream.useAttributeFor(ExchangeRate.class, "time");
-                    xstream.aliasField("t", ExchangeRate.class, "time");
-                    xstream.useAttributeFor(ExchangeRate.class, "value");
-                    xstream.aliasField("v", ExchangeRate.class, "value");
-
-                    this.xstream = xstream;
-                }
-            }
-        }
-        return xstream;
-    }
-
 }

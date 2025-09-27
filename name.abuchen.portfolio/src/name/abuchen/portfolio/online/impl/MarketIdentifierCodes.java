@@ -84,7 +84,7 @@ public class MarketIdentifierCodes
             // identifier codes over other custom exchange codes.
 
             var yahoo = MIC2YAHOO.get(marketIdentifierCode);
-            return yahoo != null ? ExchangeLabels.getString("yahoo." + yahoo) : BUNDLE.getString(marketIdentifierCode);
+            return yahoo != null ? ExchangeLabels.getYahoo(yahoo) : BUNDLE.getString(marketIdentifierCode);
         }
         catch (MissingResourceException e)
         {

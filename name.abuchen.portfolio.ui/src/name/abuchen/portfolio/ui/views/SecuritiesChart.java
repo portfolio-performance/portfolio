@@ -74,11 +74,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.ChartColorWheel;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
-import name.abuchen.portfolio.ui.views.dataseries.ColorWheel;
 import name.abuchen.portfolio.ui.views.securitychart.SharesHeldChartSeries;
 import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Interval;
@@ -419,6 +419,11 @@ public class SecuritiesChart
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
+
+    /**
+     * Assign and remember stable colors if multiple instruments are selected.
+     */
+    private ChartColorWheel colorWheel = new ChartColorWheel();
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
@@ -917,8 +922,6 @@ public class SecuritiesChart
         chart.setRedraw(false);
         chart.suspendUpdate(true);
 
-        ColorWheel colorWheel = new ColorWheel(securities.length);
-
         try
         {
 
@@ -1068,7 +1071,7 @@ public class SecuritiesChart
                 ILineSeries<Integer> lineSeries = (ILineSeries<Integer>) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, seriesIdent);
                 lineSeries.setSymbolType(PlotSymbolType.NONE);
-                Color color = isSingleSecurityMode ? colorQuote : new Color(colorWheel.next());
+                Color color = isSingleSecurityMode ? colorQuote : new Color(colorWheel.getRGB(security));
                 boolean enableArea = !showAreaRelativeToFirstQuote && isSingleSecurityMode;
                 configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID, enableArea,
                                 !isSingleSecurityMode);

@@ -906,15 +906,15 @@ public class ClientFactory
                 fixNullSecurityEvents(client);
             case 64: // NOSONAR
                 assignDashboardIds(client);
-            case 65: // NOSOANR
+            case 65: // NOSONAR
                 // moved 'source' field to security event
+            case 66: // NOSONAR
+                removePortfolioReportSyncProperties(client);
+                fixLogoAttributeName(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
-
-                // no need to create a new version. For now, always remove.
-                removePortfolioReportSyncProperties(client);
                 break;
             default:
                 break;
@@ -1723,6 +1723,33 @@ public class ClientFactory
         // the experimental sync feature used to store these two properties
         client.removeProperty("net.portfolio-report.portfolioId"); //$NON-NLS-1$
         client.removeProperty("net.portfolio-report.synchronizedAt"); //$NON-NLS-1$
+    }
+
+    private static void fixLogoAttributeName(Client client)
+    {
+        // problem: the logo attribute name got translated, but the lookup
+        // always looks for an attribute with the name 'Logo'.
+
+        // fix: if there exists a logo attribute type with the translated name
+        // and there exists no other attribute with logo, then rename the
+        // attribute
+
+        var types = List.of(Security.class, Account.class, Portfolio.class, InvestmentPlan.class);
+
+        for (var type : types)
+        {
+            var logoAttribute = client.getSettings().getOptionalLogoAttributeType(type);
+            if (logoAttribute.isPresent())
+                continue;
+
+            var translatedAttribute = client.getSettings().getAttributeTypes()
+                            .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter)
+                            .filter(t -> Messages.AttributesLogoColumn.equals(t.getName()))
+                            .filter(t -> t.supports(type)).findFirst();
+
+            if (translatedAttribute.isPresent())
+                translatedAttribute.get().setName("Logo"); //$NON-NLS-1$
+        }
     }
 
     private static synchronized XStream xstreamReader()

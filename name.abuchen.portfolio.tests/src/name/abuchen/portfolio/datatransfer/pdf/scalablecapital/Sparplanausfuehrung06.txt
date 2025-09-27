@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+qaZnTyI jEglHdiHyMbo
+uywrCi vmObBzSjBzL 4 
+62477 QmtAPdL Datum 19.09.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order SCALNUFeqbHQBbc
+Ausführung 19.09.2025 13:31:02 Geschäft 19750P9JDV220250
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 1111111102 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf British American Tobacco 0,055472 Stk. 47,05 EUR 2,61 EUR
+GB0002875804
+Belastung 2,61 EUR
+Der Betrag wird mit dem Verrechnungskonto DE11111111111111161111 (Valuta: 23.09.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

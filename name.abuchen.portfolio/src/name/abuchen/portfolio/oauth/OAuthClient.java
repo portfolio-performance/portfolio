@@ -70,7 +70,7 @@ public class OAuthClient // NOSONAR
 
     public boolean isAuthenticated()
     {
-        return tokenStorage.getIdToken() != null;
+        return tokenStorage.getRefreshToken() != null;
     }
 
     public Optional<UserInfo> getUserInfo() throws AuthenticationException

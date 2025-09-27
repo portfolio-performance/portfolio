@@ -27,6 +27,18 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public class PortfolioPerformanceSearchProvider implements SecuritySearchProvider
 {
+    public enum Parameter
+    {
+        QUERY("q"), ISIN("isin"), SYMBOL("symbol"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        private final String value;
+
+        private Parameter(String value)
+        {
+            this.value = value;
+        }
+    }
+
     static class Result implements ResultItem
     {
         private String provider;
@@ -229,16 +241,16 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
-        return internalSearch("q", query); //$NON-NLS-1$
+        return search(Parameter.QUERY, query);
     }
 
-    /* package */ List<ResultItem> internalSearch(String parameter, String query) throws IOException
+    public List<ResultItem> search(Parameter parameter, String query) throws IOException
     {
         try
         {
             @SuppressWarnings("nls")
             var json = new WebAccess("api.portfolio-performance.info", "/v1/search") //
-                            .addParameter(parameter, query).get();
+                            .addParameter(parameter.value, query).get();
 
             var response = (JSONArray) JSONValue.parse(json);
             if (response != null)

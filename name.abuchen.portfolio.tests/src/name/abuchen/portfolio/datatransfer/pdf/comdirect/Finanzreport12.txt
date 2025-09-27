@@ -1,0 +1,154 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: linux | x86_64 | 21.0.8+2 | Flathub
+-----------------------------------------
+comdirect, 25449 Quickborn 118 89 010
+JUEUn Telefon: 04106 - 708 25 00
+rZzXPSixy kvgol Telefax: 04106 - 708 25 85
+AbszDNknWLt. 22 E-Mail: www.comdirect.de/kontakt
+01701 tqSBLTvNIFAy (E-Mail über Kontaktformular)
+Kundennummer: 047 8219489
+Finanzreport Nr. 8 per 01.09.2025 02.09.2025
+Sehr geehrter flUY IZRuY,
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Kundenverbindung:
+• die Übersicht über Einzelsalden sowie Ihr bei comdirect verfügbarer Gesamtsaldo
+• in der aktuellen Periode angefallene Umsätze und/oder eine Übersicht Ihrer Depotstände
+zum Stichtag mit Ausweis der Veränderung zum Kaufwert
+Haben Sie noch Fragen? Alle Informationen zu unseren Produkten und Services finden Sie unter
+www.comdirect.de
+Viele Grüße
+Ihr comdirect Team
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 114 103 514
+25449 Quickborn
+Finanzreport Nr. 8 per 01.09.2025 - Seite 2
+Kundennummer 983 1839558
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto OG50 4547 3357 5235 0162 00 +101,14
+Tagesgeld PLUS-Konto Fk23 9028 4897 2185 8319 84 +0,00
+Depot +52.604,95
+Gesamtsaldo 01.09.2025 +52.706,09
+ 
+Girokonto Dispositionskredit 0 EUR
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.08.2025 +100,00
+06.08.2025 DTA-glt. TkSDtlDRV kHQms Sparplan ETF Weltportfolio Lastschr +100,00
+06.08.2025 Buchung AB12345678901234567890 ETF Sparplan 18
+572C21MD258Z PBNKDEFFXXX End-to-End-Ref.:
+CJL2/365 2809D37CE5DA48D9AE2A4EA9188F107C
+CORE / Mandatsref.:
+140725094148ZY98765678901234567890
+Gläubiger-ID:
+DE38ZZZ00000020140
+07.08.2025 Wertpapiere VANG.FTSE DEV.EU.UETF EOD -14,97
+11.08.2025 5E5C21MG0BZJ WPKNR: A1T8FS ISIN: IE00B945VV12
+0FWE/2
+07.08.2025 Wertpapiere VANG.FTSE DEV.W.U.ETF DLD -64,96
+11.08.2025 5E5C21MG0C5 WPKNR: A12CX1 ISIN: IE00BKX55T58
+NBUFB/2
+07.08.2025 Wertpapiere VANGUARD FTSE EMU.ETF DLD -19,99
+11.08.2025 685C21MG0GB WPKNR: A1JX51 ISIN: IE00B3VVMM84
+9DK1P/2
+20.08.2025 Kupon ERTRAEGNISGUTSCHRIFT VOM 20.08.25 +1,06
+20.08.2025 105C21MS0AOT DEPOTBESTAND: 0,363
+H6FV/5 FONDAK A
+847101 EUR 3,587
+Abr.Betrag Brutto 1,30 EUR
+Steuerabzug 0,24- EUR
+Neuer Saldo 01.09.2025 +101,14
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.08.2025 +0,00
+Neuer Saldo 01.09.2025 +0,00
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 114 103 514
+25449 Quickborn
+Finanzreport Nr. 8 per 01.09.2025 - Seite 3
+Kundennummer 356 9555528
+Depot
+Depotbestand EUR EUR EUR
+WKN / Verwahrart Anzahl / Nominal letzter Währung Kurswert Kaufwert Gewinn / Verlust
+Bezeichnung Kurs Stückzinsen
+A1JX51 / Wertpapierrechnung 175,328 59,875 EUR 10.497,83 10.209,94 +287,89
+Grossbritannien über AKV +0,00
+VANGUARD FTSE EMU.ETF DLD
+A1T8FS / Wertpapierrechnung 181,349 42,506 EUR 7.708,35 7.632,14 +76,21
+Grossbritannien über AKV +0,00
+VANG.FTSE DEV.EU.UETF EOD
+A12CX1 / Wertpapierrechnung 332,626 103,114 EUR 34.298,24 33.107,96 +1.190,28
+Grossbritannien über AKV +0,00
+VANG.FTSE DEV.W.U.ETF DLD
+847101 / Girosammelverwahrung 0,363 216,680 EUR 78,65 49,98 +28,67
+FONDAK A +0,00
+980500 / Girosammelverwahrung 17,643 1,240 EUR 21,88 1.073,04 -1.051,16
+CS EUROREAL ANTEILE +0,00
+Gesamtkurswert 52.604,95 52.073,06 +531,89
+Stückzinsen gesamt +0,00
+Gesamtwert 52.604,95
+Die Kaufwerte und damit die Gesamtbewertung in der Depotübersicht stellt lediglich eine vereinfachte
+Gewinn/Verlust-Rechnung dar. Steuerliche Gesichtspunkte werden bei dieser Darstellung nicht berücksichtigt.
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste Aktien (Saldo) 0,00
+Verlustverrechnungstopf Aktien 0,00
+Gewinne/Verluste Sonstige (Saldo) 2.939,66
+Verlustverrechnungstopf Sonstige 0,00
+Eingereichter Freibetrag 1.500,00
+In Anspruch genommener Freibetrag 1.500,00
+Verbleibender Freibetrag 0,00
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 351,98
+Abgeführter Solidaritätszuschlag 19,34
+Abgeführte Kirchensteuer 31,65
+Angerechnete ausländische Quellensteuer 0,00
+1 Dieses ist keine Steuerbescheinigung.
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 114 103 514
+25449 Quickborn
+Finanzreport Nr. 8 per 01.09.2025 - Seite 4
+Kundennummer 486 3284940
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 8,65 % p. a. (gültig ab: 20.06.2025)
+Zinssatz für geduldete Überziehungen: 13,15 % p. a. (gültig ab: 20.06.2025)
+Verrechnungskonto/Tagesgeld PLUS-Konto/O&F-Konto
+Zinssatz für geduldete Überziehungen: 13,15 % p. a. (gültig ab: 20.06.2025)
+Zinsgleitklausel für variable Sollzinssätze:
+comdirect – eine Marke der Commerzbank AG (im Folgenden comdirect genannt) wird variable Sollzinssätze entsprechend den Änderungen des
+Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am
+letzten Bankarbeitstag vor dem 15. eines Kalendermonats von comdirect eine Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte
+gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht comdirect den variablen Sollzinssatz entsprechend.
+comdirect verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz
+um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne
+gesonderte Erklärung gegenüber dem Kontoinhaber bei comdirect wirksam. comdirect wird den Kontoinhaber in regelmäßigen Zeitabständen im
+Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite von comdirect bzw. in anderen
+öffentlich zugänglichen Medien (insbesondere www.bundesbank.de) einsehen.
+Wichtige Hinweise
+1. Ihre individuellen Vergünstigungen
+Vergünstigungen Gültigkeit
+Kostenlose Depotführung (5,85 Euro pro Quartal gespart) 01.07.2025 bis 30.09.2025
+Details zu Ihren persönlichen Vergünstigungen können Sie unter www.comdirect.de im Persönlichen Bereich unter Verwaltung
+> Depot & Trading > Vergünstigungen einsehen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dieses innerhalb 6
+Wochen nach Erhalt des Finanzreportes unter Angabe Ihrer Kundennummer in Textform mitzuteilen.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Information zu Ihren Wertpapieren
+In Ihrem Depot verwahrte Wertpapiere und Kundengelder unterliegen der EU-Richtlinie 2014/65/EU (MIFID II-Richtlinie) und
+ihren Durchführungsbestimmungen.
+6. Hinweis zur standardisierten Zahlungskontenterminologie
+Nachfolgende Begriffe entsprechen den Begriffen der standardisierten Zahlungskontenterminologie: girocard (Debitkarte),
+Bankkarte (Visa-Debitkarte), Visa-Karte (Kreditkarte) und Dispositionskredit (eingeräumte Kontoüberziehung).
+7. Übersicht Ihrer Kontodaten IBAN BIC
+Girokonto bp81 6167 4988 0815 5486 86 COBADEHDXXX
+Tagesgeld PLUS-Konto Do17 6453 8881 0132 2138 73
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 114 103 514
+25449 Quickborn

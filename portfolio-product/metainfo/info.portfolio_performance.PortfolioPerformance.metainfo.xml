@@ -37,6 +37,30 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.0" date="2025-09-21">
+      <description>
+        <ul>
+          <li>New: Widget for monthly savings overview showing transfers to and from accounts.</li>
+          <li>New: In the holdings pie chart, pick any date to display the valuation.</li>
+          <li>New: Context action to generate removal transactions for a given dividend.</li>
+          <li>New: Trading calendar support for Tel Aviv Stock Exchange.</li>
+          <li>New: Catalan translation added.</li>
+          <li>Improvement: CSV import now supports gross amount and exchange rate for account transactions.</li>
+          <li>Improvement: Enhanced IBFlex extractor to include management and advisor fees.</li>
+          <li>Improvement: PDF imports updated for Scalable Capital, ING, Comdirect, Sydbank, Sutor, Trade Republic, Bourse Direct, N26, and added support for new banks: Orange Bank, Nordax Bank, MeDirect Bank, and UmweltBank AG.</li>
+          <li>Fix: Resolved issue where the attribute for logos was ignored when translated.</li>
+          <li xml:lang="de">Neu: Widget zur Übersicht der monatlichen Ersparnisse mit Ein- und Auszahlungen auf Konten.</li>
+          <li xml:lang="de">Neu: Im Kreisdiagramm der Bestände kann nun jedes Datum zur Anzeige der Bewertung ausgewählt werden.</li>
+          <li xml:lang="de">Neu: Kontextaktion zum Erstellen von Stornotransaktionen für eine gewählte Dividendenzahlung</li>
+          <li xml:lang="de">Neu: Unterstützung des Handelkalenders für die Tel Aviver Börse.</li>
+          <li xml:lang="de">Neu: Katalanische Übersetzung hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: CSV-Import unterstützt jetzt Bruttobeträge und Wechselkurse für Kontobuchungen.</li>
+          <li xml:lang="de">Verbesserung: IBFlex-Extraktor erweitert, um Management- und Beratergebühren einzubeziehen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe für Scalable Capital, ING, Comdirect, Sydbank, Sutor, Trade Republic, Bourse Direct, N26 aktualisiert und neue Banken hinzugefügt: Orange Bank, Nordax Bank, MeDirect Bank und UmweltBank AG.</li>
+          <li xml:lang="de">Fehlerbehebung: Problem behoben, bei dem das Logo-Attribut bei Übersetzungen ignoriert wurde.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.79.1" date="2025-08-31">
       <description>
         <ul>

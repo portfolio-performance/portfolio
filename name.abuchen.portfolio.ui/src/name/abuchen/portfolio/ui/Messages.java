@@ -848,6 +848,7 @@ public class Messages extends NLS
     public static String LabelRatio;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
+    public static String LabelMonthlyPNTransfers;
     public static String LabelRemoveLogo;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDay;
@@ -1004,6 +1005,7 @@ public class Messages extends NLS
     public static String MenuCreateAndManageClientFilter;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
+    public static String MenuCreateRemovalForDividendAction;
     public static String MenuDashboardColumnWidth;
     public static String MenuDashboardColumnWidthDecrease;
     public static String MenuDashboardColumnWidthIncrease;
@@ -1202,6 +1204,7 @@ public class Messages extends NLS
     public static String PortfolioMenuDeleteConfirm;
     public static String PortfolioReportMissingAPIKey;
     public static String PortfolioReportMissingAPIURL;
+    public static String PortfolioReportNotificationMessage;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefAutoSaveFrequency;

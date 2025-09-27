@@ -21,7 +21,6 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
 
     public ExchangeRateTimeSeriesImpl()
     {
-        // empty constructor needed for xstream
     }
 
     public ExchangeRateTimeSeriesImpl(ExchangeRateTimeSeriesImpl template)

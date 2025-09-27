@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.79.2-SNAPSHOT</version>
+	<version>0.80.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -253,6 +253,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_ca</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_it</id>
 							<removeAll />
 						</filter>
@@ -333,6 +338,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_ca</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
 							<removeAll />
 						</filter>
@@ -389,6 +399,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_ca</id>
 							<removeAll />
 						</filter>
 					</filters>

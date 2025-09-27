@@ -27,13 +27,17 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +72,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -99,6 +104,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -130,6 +136,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -161,6 +168,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -200,6 +208,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -230,6 +239,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -261,6 +271,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -292,6 +303,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -323,6 +335,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -354,6 +367,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -385,6 +399,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -424,6 +439,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -454,6 +470,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -485,6 +502,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -524,6 +542,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -554,6 +573,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -593,6 +613,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -623,6 +644,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -654,6 +676,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -685,6 +708,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -716,6 +740,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -747,6 +772,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -778,6 +804,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -809,6 +836,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -848,6 +876,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -878,6 +907,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -909,6 +939,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -942,6 +973,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -973,6 +1005,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1004,6 +1037,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1040,6 +1074,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1093,6 +1128,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1127,6 +1163,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1159,6 +1196,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1191,6 +1229,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1223,6 +1262,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1255,6 +1295,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1295,6 +1336,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1335,6 +1377,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1384,6 +1427,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1418,6 +1462,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -1450,6 +1495,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "USD");
 
@@ -1490,6 +1536,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1522,6 +1569,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1554,6 +1602,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1594,6 +1643,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1626,6 +1676,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1666,6 +1717,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1706,6 +1758,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1746,6 +1799,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1778,6 +1832,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1818,6 +1873,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1858,6 +1914,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -1884,6 +1941,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1898,8 +1956,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2025-04-09T00:00"), hasShares(1.708), //
                         hasSource("VerkaufMitSteuerbehandlung20.txt"), //
                         hasNote("Ord.-Nr.: 099011756580 | R.-Nr.: 671305787389DC15"), //
-                        hasAmount("EUR", 250.01), hasGrossValue("EUR", 250.01), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 243.26), hasGrossValue("EUR", 250.01), //
+                        hasTaxes("EUR", 6.75), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1916,6 +1974,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -1965,6 +2024,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -1999,6 +2059,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2039,6 +2100,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2065,6 +2127,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2098,6 +2161,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2137,6 +2201,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2169,6 +2234,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2200,6 +2266,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2241,6 +2308,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2273,6 +2341,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2312,6 +2381,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2344,6 +2414,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2383,6 +2454,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2415,6 +2487,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2455,6 +2528,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2487,6 +2561,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2518,6 +2593,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2550,6 +2626,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2583,6 +2660,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2616,6 +2694,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2647,6 +2726,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2679,6 +2759,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2714,6 +2795,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2747,6 +2829,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2778,6 +2861,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2809,6 +2893,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2848,6 +2933,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2881,6 +2967,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2895,7 +2982,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-05-19T00:00"), hasShares(7.499), //
                         hasSource("SteuerbehandlungVonDividende11.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", (5.47 - 4.65) + 0.58), hasGrossValue("EUR", (5.47 - 4.65) + 0.58), //
+                        hasAmount("EUR", (5.47 + 0.82 - 4.65) + 0.58),
+                        hasGrossValue("EUR", (5.47 + 0.82 - 4.65) + 0.58), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -2914,6 +3002,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -2928,9 +3017,9 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-05-19T00:00"), hasShares(7.499), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 0IIFTGGFCJV002JX | Quartalsdividende"), //
-                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
-                        hasForexGrossValue("USD", 5.93), //
-                        hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47 + 0.82), //
+                        hasForexGrossValue("USD", 6.82), //
+                        hasTaxes("EUR", (5.47 + 0.82 - 4.65) + 0.58), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2955,6 +3044,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -2963,8 +3053,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-05-19T00:00"), hasShares(7.499), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 0IIFTGGFCJV002JX | Quartalsdividende"), //
-                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
-                        hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47 + 0.82), //
+                        hasTaxes("EUR", (5.47 + 0.82 - 4.65) + 0.58), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -2989,6 +3079,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3003,8 +3094,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-05-19T00:00"), hasShares(7.499), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 0IIFTGGFCJV002JX | Quartalsdividende"), //
-                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
-                        hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47 + 0.82), //
+                        hasTaxes("EUR", (5.47 + 0.82 - 4.65) + 0.58), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3029,6 +3120,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3037,8 +3129,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-05-19T00:00"), hasShares(7.499), //
                         hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
                         hasNote("Ref.-Nr.: 0IIFTGGFCJV002JX | Quartalsdividende"), //
-                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
-                        hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47 + 0.82), //
+                        hasTaxes("EUR", (5.47 + 0.82 - 4.65) + 0.58), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -3061,6 +3153,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3102,6 +3195,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3135,6 +3229,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3168,6 +3263,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3211,6 +3307,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3245,6 +3342,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3287,6 +3385,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3319,6 +3418,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3351,6 +3451,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3360,15 +3461,13 @@ public class ComdirectPDFExtractorTest
                         hasName("ALLIANZ SE NA O.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-05-14T00:00"), hasShares(16.00), //
-                                        hasSource("SteuerbehandlungVonDividende13.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2018-05-14T00:00"), hasShares(16.00), //
+                        hasSource("SteuerbehandlungVonDividende13.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.40), hasGrossValue("EUR", 4.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3386,6 +3485,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3400,8 +3500,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2018-05-14T00:00"), hasShares(16.00), //
                         hasSource("Dividende13.txt; SteuerbehandlungVonDividende13.txt"), //
                         hasNote("Ref.-Nr.: 1234567890"), //
-                        hasAmount("EUR", 128.00), hasGrossValue("EUR", 128.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 128.00), hasGrossValue("EUR", 128.00 + 4.40), //
+                        hasTaxes("EUR", 4.40), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3419,6 +3519,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3433,8 +3534,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2018-05-14T00:00"), hasShares(16.00), //
                         hasSource("Dividende13.txt; SteuerbehandlungVonDividende13.txt"), //
                         hasNote("Ref.-Nr.: 1234567890"), //
-                        hasAmount("EUR", 128.00), hasGrossValue("EUR", 128.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 128.00), hasGrossValue("EUR", 128.00 + 4.40), //
+                        hasTaxes("EUR", 4.40), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3450,6 +3551,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3489,6 +3591,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3522,6 +3625,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3536,8 +3640,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-11-04T00:00"), hasShares(32.000), //
                         hasSource("SteuerbehandlungVonDividende14.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", (13.70 - 11.64) + 1.38 + 0.07),
-                        hasGrossValue("EUR", (13.70 - 11.64) + 1.38 + 0.07), //
+                        hasAmount("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07),
+                        hasGrossValue("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -3556,6 +3660,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3570,9 +3675,9 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-11-04T00:00"), hasShares(32.000), //
                         hasSource("Dividende14.txt; SteuerbehandlungVonDividende14.txt"), //
                         hasNote("Ref.-Nr.: XXX1234567899ABC | Quartalsdividende"), //
-                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
-                        hasForexGrossValue("USD", 16.00), //
-                        hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70 + 2.05), //
+                        hasForexGrossValue("USD", 18.40), //
+                        hasTaxes("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3597,6 +3702,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3605,8 +3711,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-11-04T00:00"), hasShares(32.000), //
                         hasSource("Dividende14.txt; SteuerbehandlungVonDividende14.txt"), //
                         hasNote("Ref.-Nr.: XXX1234567899ABC | Quartalsdividende"), //
-                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
-                        hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70 + 2.05), //
+                        hasTaxes("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -3631,6 +3737,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3645,8 +3752,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-11-04T00:00"), hasShares(32.000), //
                         hasSource("Dividende14.txt; SteuerbehandlungVonDividende14.txt"), //
                         hasNote("Ref.-Nr.: XXX1234567899ABC | Quartalsdividende"), //
-                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
-                        hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70 + 2.05), //
+                        hasTaxes("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -3671,6 +3778,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3679,8 +3787,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2020-11-04T00:00"), hasShares(32.000), //
                         hasSource("Dividende14.txt; SteuerbehandlungVonDividende14.txt"), //
                         hasNote("Ref.-Nr.: XXX1234567899ABC | Quartalsdividende"), //
-                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
-                        hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70 + 2.05), //
+                        hasTaxes("EUR", (13.70 + 2.05 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -3703,6 +3811,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3741,6 +3850,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3774,6 +3884,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3807,6 +3918,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3847,6 +3959,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3881,6 +3994,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3921,6 +4035,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -3953,6 +4068,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -3985,6 +4101,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4018,6 +4135,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4051,6 +4169,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4082,6 +4201,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4114,6 +4234,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4146,6 +4267,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4178,6 +4300,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4219,6 +4342,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4251,6 +4375,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4290,6 +4415,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4323,6 +4449,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4337,8 +4464,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-09-07T00:00"), hasShares(300.000), //
                         hasSource("SteuerbehandlungVonDividende21.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", (114.21 - 97.08) + 11.42 + 0.62),
-                        hasGrossValue("EUR", (114.21 - 97.08) + 11.42 + 0.62), //
+                        hasAmount("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62),
+                        hasGrossValue("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4357,6 +4484,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4371,9 +4499,9 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-09-07T00:00"), hasShares(300.000), //
                         hasSource("Dividende21.txt; SteuerbehandlungVonDividende21.txt"), //
                         hasNote("Ref.-Nr.: 22IJUON6JHE000NY | Quartalsdividende"), //
-                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
-                        hasForexGrossValue("USD", 123.00), //
-                        hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21 + 17.13), //
+                        hasForexGrossValue("USD", 141.45), //
+                        hasTaxes("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4398,6 +4526,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4406,8 +4535,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-09-07T00:00"), hasShares(300.000), //
                         hasSource("Dividende21.txt; SteuerbehandlungVonDividende21.txt"), //
                         hasNote("Ref.-Nr.: 22IJUON6JHE000NY | Quartalsdividende"), //
-                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
-                        hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21 + 17.13), //
+                        hasTaxes("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -4432,6 +4561,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4446,8 +4576,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-09-07T00:00"), hasShares(300.000), //
                         hasSource("Dividende21.txt; SteuerbehandlungVonDividende21.txt"), //
                         hasNote("Ref.-Nr.: 22IJUON6JHE000NY | Quartalsdividende"), //
-                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
-                        hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21 + 17.13), //
+                        hasTaxes("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4472,6 +4602,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4480,8 +4611,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-09-07T00:00"), hasShares(300.000), //
                         hasSource("Dividende21.txt; SteuerbehandlungVonDividende21.txt"), //
                         hasNote("Ref.-Nr.: 22IJUON6JHE000NY | Quartalsdividende"), //
-                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
-                        hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21 + 17.13), //
+                        hasTaxes("EUR", (114.21 + 17.13 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -4504,6 +4635,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4535,6 +4667,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4566,6 +4699,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4597,6 +4731,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4631,6 +4766,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4664,6 +4800,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4697,6 +4834,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4736,6 +4874,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4769,6 +4908,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4783,7 +4923,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-11-03T00:00"), hasShares(0.516), //
                         hasSource("SteuerbehandlungVonDividende28.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.03 + 0.04), hasGrossValue("EUR", 0.03 + 0.04), //
+                        hasAmount("EUR", 0.03 + 0.04 + 0.04), hasGrossValue("EUR", 0.03 + 0.04 + 0.04), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4802,6 +4942,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4816,9 +4957,9 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-11-03T00:00"), hasShares(0.516), //
                         hasSource("Dividende28.txt; SteuerbehandlungVonDividende28.txt"), //
                         hasNote("Ref.-Nr.: 19IJYGE75X60021N | Quartalsdividende"), //
-                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
-                        hasForexGrossValue("USD", 0.30), //
-                        hasTaxes("EUR", 0.03 + 0.04), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28 + 0.04), //
+                        hasForexGrossValue("USD", 0.34), //
+                        hasTaxes("EUR", 0.03 + 0.04 + 0.04), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4843,6 +4984,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4851,8 +4993,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-11-03T00:00"), hasShares(0.516), //
                         hasSource("Dividende28.txt; SteuerbehandlungVonDividende28.txt"), //
                         hasNote("Ref.-Nr.: 19IJYGE75X60021N | Quartalsdividende"), //
-                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
-                        hasTaxes("EUR", 0.03 + 0.04), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28 + 0.04), //
+                        hasTaxes("EUR", 0.03 + 0.04 + 0.04), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -4877,6 +5019,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4891,8 +5034,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-11-03T00:00"), hasShares(0.516), //
                         hasSource("Dividende28.txt; SteuerbehandlungVonDividende28.txt"), //
                         hasNote("Ref.-Nr.: 19IJYGE75X60021N | Quartalsdividende"), //
-                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
-                        hasTaxes("EUR", 0.07), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28 + 0.04), //
+                        hasTaxes("EUR", 0.07 + 0.04), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4917,6 +5060,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -4925,8 +5069,8 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-11-03T00:00"), hasShares(0.516), //
                         hasSource("Dividende28.txt; SteuerbehandlungVonDividende28.txt"), //
                         hasNote("Ref.-Nr.: 19IJYGE75X60021N | Quartalsdividende"), //
-                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
-                        hasTaxes("EUR", 0.03 + 0.04), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28 + 0.04), //
+                        hasTaxes("EUR", 0.03 + 0.04 + 0.04), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -4949,6 +5093,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4988,6 +5133,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5021,6 +5167,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5056,6 +5203,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5097,6 +5245,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5131,6 +5280,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5171,6 +5321,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5203,6 +5354,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5235,6 +5387,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5268,6 +5421,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5301,6 +5455,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5332,6 +5487,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5371,6 +5527,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5403,6 +5560,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5442,6 +5600,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -5462,6 +5621,139 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testDividende33()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende33.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("V a n E c k M s t r . D M D i v i d e n d . U C . E T F A a n d e l e n o o p t o o n d e r o . N ."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-10T00:00"), hasShares(5920.000), //
+                        hasSource("Dividende33.txt"), //
+                        hasNote("Ref.-Nr.: 29IMEUAZ6PN001NC"), //
+                        hasAmount("EUR", 2131.20), hasGrossValue("EUR", 2131.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende33()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende33.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("VANECK MSTR.DM DIV.UC.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-09-10T00:00"), hasShares(5920.000), //
+                        hasSource("SteuerbehandlungVonDividende33.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 319.68 + 59.65), hasGrossValue("EUR", 319.68 + 59.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende33MitSteuerbehandlungVonDividende33()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende33.txt", "SteuerbehandlungVonDividende33.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("V a n E c k M s t r . D M D i v i d e n d . U C . E T F A a n d e l e n o o p t o o n d e r o . N ."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-10T00:00"), hasShares(5920.000), //
+                        hasSource("Dividende33.txt; SteuerbehandlungVonDividende33.txt"), //
+                        hasNote("Ref.-Nr.: 29IMEUAZ6PN001NC"), //
+                        hasAmount("EUR", 1751.87), hasGrossValue("EUR", 2131.20), //
+                        hasTaxes("EUR", 319.68 + 59.65), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende33MitSteuerbehandlungVonDividende33_SourceFilesReversed()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende33.txt", "Dividende33.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("VANECK MSTR.DM DIV.UC.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-10T00:00"), hasShares(5920.000), //
+                        hasSource("Dividende33.txt; SteuerbehandlungVonDividende33.txt"), //
+                        hasNote("Ref.-Nr.: 29IMEUAZ6PN001NC"), //
+                        hasAmount("EUR", 1751.87), hasGrossValue("EUR", 2131.20), //
+                        hasTaxes("EUR", 319.68 + 59.65), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSteuerbehandlungVonEinloesung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
@@ -5475,6 +5767,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5507,6 +5800,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5539,6 +5833,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -5571,6 +5866,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -5614,6 +5910,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(22L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(22));
         new AssertImportActions().check(results, "EUR");
 
@@ -5723,6 +6020,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(11L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(11));
         new AssertImportActions().check(results, "EUR");
 
@@ -5784,6 +6082,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(13L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(13));
         new AssertImportActions().check(results, "EUR");
 
@@ -5853,6 +6152,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR", "USD"); // Multiple
                                                                 // currencies
@@ -5903,6 +6203,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(17L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(17));
         new AssertImportActions().check(results, "EUR");
 
@@ -5984,6 +6285,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -6021,6 +6323,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6047,6 +6350,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
@@ -6085,6 +6389,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(10L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(10));
         new AssertImportActions().check(results, "EUR");
 
@@ -6143,6 +6448,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -6172,6 +6478,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
@@ -6201,6 +6508,59 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testFinanzreport12()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-08-06"), hasAmount("EUR", 100.00), //
+                        hasSource("Finanzreport12.txt"), hasNote("Lastschrift"))));
+    }
+
+    @Test
+    public void testFinanzreport13()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport13.txt"), errors);
+        // Check if the results list is empty
+        assertTrue(results.isEmpty());
+
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+
+        // Extract the first error from the list
+        var firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, "Comdirect Bank AG",
+                        "Finanzreport13.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+
+    @Test
     public void testWertpapierVerwahrentgelt01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
@@ -6213,6 +6573,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6244,6 +6605,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6276,6 +6638,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -6290,7 +6653,7 @@ public class ComdirectPDFExtractorTest
                         hasDate("2023-07-18T00:00"), hasShares(70), //
                         hasSource("SteuerbehandlungOhneDividende01.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 15.90 - 11.84), hasGrossValue("EUR", 15.90 - 11.84), //
+                        hasAmount("EUR", 15.90 + 2.38 - 11.84), hasGrossValue("EUR", 15.90 + 2.38 - 11.84), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -6324,6 +6687,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(3L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 

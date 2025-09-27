@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
@@ -136,6 +137,9 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
 
+                if (grossAmount.isPresent())
+                    buySellEntry.getPortfolioTransaction().addUnit(grossAmount.get());
+
                 if (taxes != null && taxes.longValue() != 0)
                     buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money
                                     .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(taxes))));
@@ -143,6 +147,11 @@ import name.abuchen.portfolio.money.Money;
                 if (fees != null && fees.longValue() != 0)
                     buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money
                                     .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(fees))));
+
+                if (!grossAmount.isPresent())
+                    createGrossValueIfNecessary(rawValues, field2column, buySellEntry.getPortfolioTransaction());
+
+                ExtractorUtils.fixGrossValueBuySell().accept(buySellEntry);
 
                 if (buySellEntry.getPortfolioTransaction().getAmount() == 0L
                                 && buySellEntry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL)
