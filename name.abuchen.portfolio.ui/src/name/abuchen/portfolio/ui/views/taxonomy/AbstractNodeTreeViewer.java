@@ -353,6 +353,23 @@ import name.abuchen.portfolio.util.TextUtil;
     public void configMenuAboutToShow(IMenuManager manager)
     {
         support.menuAboutToShow(manager);
+
+        manager.add(new Separator());
+
+        MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
+        sorting.add(new SimpleAction(
+                        String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
+                                        SortCriterion.NAME)));
+        sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.TYPE,
+                                        SortCriterion.ACTUAL)));
+        sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName,
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.NAME)));
+        sorting.add(new SimpleAction(Messages.ColumnActualValue,
+                        a -> doSortRecursively(getModel().getClassificationRootNode(), SortCriterion.ACTUAL)));
+
+        manager.add(sorting);
     }
 
     @Override
@@ -1015,7 +1032,33 @@ import name.abuchen.portfolio.util.TextUtil;
         // do not fire model change -> called within modification listener
     }
 
+    /**
+     * Sorts the children of a node and fires an update notification.
+     */
     private void doSort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    {
+        sort(node, false, criteria);
+
+        getModel().markDirty();
+        getModel().fireTaxonomyModelChange(node);
+    }
+
+    /**
+     * Sorts the children of a node recursively and fires an update
+     * notification.
+     */
+    private void doSortRecursively(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
+    {
+        sort(node, true, criteria);
+
+        getModel().markDirty();
+        getModel().fireTaxonomyModelChange(node);
+    }
+
+    /**
+     * Sorts the children of a node, but does not fire update notifications.
+     */
+    private void sort(TaxonomyNode node, boolean recursive, SortCriterion... criteria) // NOSONAR
     {
         Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
             // unassigned category always stays at the end of the list
@@ -1056,7 +1099,13 @@ import name.abuchen.portfolio.util.TextUtil;
         for (TaxonomyNode child : node.getChildren())
             child.setRank(rank++);
 
-        getModel().markDirty();
-        getModel().fireTaxonomyModelChange(node);
+        if (recursive)
+        {
+            for (var child : node.getChildren())
+            {
+                if (child.isClassification())
+                    sort(child, true, criteria);
+            }
+        }
     }
 }
