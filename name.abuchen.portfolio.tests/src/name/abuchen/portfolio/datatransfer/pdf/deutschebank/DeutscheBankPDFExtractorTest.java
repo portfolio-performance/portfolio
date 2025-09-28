@@ -812,6 +812,37 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf09()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008476524"), hasWkn("847652"), hasTicker(null), //
+                        hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-23T00:00"), hasShares(0.6047), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Belegnummer 1572848278 / 211210221"), //
+                        hasAmount("EUR", 199.99), hasGrossValue("EUR", 188.74), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 11.25))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());
