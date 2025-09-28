@@ -6561,6 +6561,50 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testFinanzreport14()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-08-22"), hasAmount("EUR", 510.00), //
+                        hasSource("Finanzreport14.txt"), hasNote("Sparplan"))));
+    }
+
+    @Test
+    public void testFinanzreport15()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2017-02-23"), hasAmount("EUR", 200.00), //
+                        hasSource("Finanzreport15.txt"), hasNote("Sparplan"))));
+    }
+
+    @Test
     public void testWertpapierVerwahrentgelt01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
