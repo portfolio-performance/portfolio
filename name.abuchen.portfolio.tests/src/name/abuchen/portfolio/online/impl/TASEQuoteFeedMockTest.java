@@ -26,7 +26,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
 
 
-public class TLVQuoteFeedMockTest
+public class TASEQuoteFeedMockTest
 {
 
 

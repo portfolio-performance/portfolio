@@ -2,8 +2,10 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,8 +13,8 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 /**
      * @see https://api.tase.co.il/api/content/searchentities?lang=1
@@ -48,7 +50,7 @@ import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
     }
      *  @formatter:on
      */
-public class TLVSearchProvider implements SecuritySearchProvider
+public class TASESearchProvider implements SecuritySearchProvider
 {
 
     static class Result implements ResultItem
@@ -90,13 +92,13 @@ public class TLVSearchProvider implements SecuritySearchProvider
             String name = (String) listing.getName();
             String smb = (String) listing.getSmb();
             String isin = (String) listing.getISIN();
-            String type = String.valueOf(listing.getType());
+            String type = String.valueOf(listing.getSubTypeDesc());
             
             // TODO - fix
             var currencyCode = (String) "ILA";
             var exchange = "TLV";
 
-            return new Result(isin, smb, id, currencyCode, name, type, exchange);
+            return new Result(isin, smb, id, name, exchange, type, currencyCode);
         }
 
         public Result(String isin, String symbol, String id, String name, String exchange, String type,
@@ -153,6 +155,11 @@ public class TLVSearchProvider implements SecuritySearchProvider
             return currencyCode;
         }
 
+        public void setCurrentCode(String code)
+        {
+            currencyCode = code;
+        }
+
         @Override
         public String getSource()
         {
@@ -162,7 +169,7 @@ public class TLVSearchProvider implements SecuritySearchProvider
         @Override
         public String getFeedId()
         {
-            return TLVQuoteFeed.ID;
+            return TASEQuoteFeed.ID;
         }
 
         @Override
@@ -200,33 +207,36 @@ public class TLVSearchProvider implements SecuritySearchProvider
             var security = new Security(name, currencyCode);
             security.setTickerSymbol(symbol);
             security.setWkn(Id);
-            security.setFeed(TLVQuoteFeed.ID);
+            security.setFeed(TASEQuoteFeed.ID);
             return security;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Result [Id=" + Id + ", name=" + name + ", symbol=" + symbol + ", isin=" + isin + ", exchange="
+                            + exchange + ", type=" + type + ", currencyCode=" + currencyCode + "]";
         }
     }
 
     private static final String NAME = "Tel Aviv Exchange"; //$NON-NLS-1$
     private static final String URL = "api.tase.co.il"; //$NON-NLS-1$
     private static final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
-    private List<IndiceListing> tlvIndices;
+    private List<IndiceListing> tlvEntities;
 
     
 
 
-    public TLVSearchProvider()
+    public TASESearchProvider()
     {
         super();
-        TLVQuoteFeed feed = new TLVQuoteFeed();
-        this.tlvIndices = feed.getTLVEntities();
-
-        PortfolioLog.info("TLVIndices has " + this.tlvIndices.size() + " entries");
-        Stream<IndiceListing> tlvFilteredIndices = this.tlvIndices.stream()
-                        .filter(a -> a.getTLVType() == TLVType.FUND || //
-                                        a.getType() == TLVType.SECURITY.getValue());
-        this.tlvIndices = tlvFilteredIndices.collect(Collectors.toList());
-        PortfolioLog.info("TLVIndices has " + this.tlvIndices.size() + " entries");
+        // Since TASE API only has a search by ISIN, cache all the known indices
+        // upfront
+        this.tlvEntities = getFeedEntities();
 
     }
+
+
 
     @Override
     public String getName()
@@ -241,30 +251,89 @@ public class TLVSearchProvider implements SecuritySearchProvider
         PortfolioLog.info("search " + query + " in TLV");
         // addStocksearchPage(answer, query.trim());
 
-        if (this.tlvIndices == null || this.tlvIndices.isEmpty())
+        if (this.tlvEntities == null || this.tlvEntities.isEmpty())
         {
             PortfolioLog.info("TLV Listing is empty");
             return answer;
         }
-        Iterator<IndiceListing> entitiesIterator = this.tlvIndices.iterator();
 
-        while (entitiesIterator.hasNext())
+        String _query = query.trim().toUpperCase();
+        Stream<IndiceListing> filteredListingStreamByQuery = this.tlvEntities.stream()
+                        .filter(a -> a.getId().equals(_query) || a.getSmb().equals(_query) || a.getId().equals(_query)
+        );
+        List<IndiceListing> filteredListingByQuery = filteredListingStreamByQuery.collect(Collectors.toList());
+
+        PortfolioLog.info(filteredListingByQuery.size() + " items found");
+
+        Iterator<IndiceListing> filteredListingIterator = filteredListingByQuery.iterator();
+
+        /*
+         * @formatter:off
+         * @api https://api.tase.co.il/api/content/searchentities?lang=1
+         * @array
+         * [
+         *  {
+            "Id": "777037",
+            "Name": "SHUFERSAL",
+            "Smb": "SAE",
+            "ISIN": "IL0007770378",
+            "Type": 1,
+            "SubType": "1",
+            "SubTypeDesc": "Shares",
+            "SubId": "000777",
+            "ETFType": null
+        },
+         * ]
+         * @formatter:on
+         */
+        while (filteredListingIterator.hasNext())
         {
-            IndiceListing listing = entitiesIterator.next();
+            IndiceListing listing = filteredListingIterator.next();
 
             String isin = listing.getISIN() == null ? "N\\A" : listing.getISIN(); //$NON-NLS-1$
             String id = listing.getId() == null ? "N\\A" : listing.getId(); //$NON-NLS-1$
             String sym = listing.getSmb() == null ? "N\\A" : listing.getSmb(); //$NON-NLS-1$
+            String name = (String) listing.getName();
+            TaseType type = listing.getTaseType();
+            // TODO - fix
+            // var currencyCode = (String) "ILA";
+            var exchange = "TLV";
             
-            PortfolioLog.info("TLV iterating " + isin + " " + id + " " + sym);
+            PortfolioLog.info("TLV iterating " + name + " " + isin + " " + id + " " + sym);
 
-            if (sym.equals(query) || id.equals(query) || sym.equals(query))
-                answer.add(Result.from(listing));
-            
+            // if (sym.equals(query) || id.equals(query) || isin.equals(query))
+            // {
+                // we found an entry either by symbol, id or isin
+                Optional<String> currencyCode = this.getCurrencyType(listing);
+                if (currencyCode.isPresent()) 
+                {
+                    Result a = Result.from(listing);
+                    a.setCurrentCode(currencyCode.get());
+                    PortfolioLog.info(a.toString());
+                    answer.add(Result.from(listing));
+                }
+                
+                // }
+
 
         }
 
         return answer;
+    }
+
+    private Optional<String> getCurrencyType(IndiceListing listing)
+    {
+        TaseType type = listing.getTaseType();
+        // Get the type
+        if (type == TaseType.FUND)
+        { //
+            return Optional.of("ILS"); //$NON-NLS-1$
+        }
+        if (type == TaseType.SECURITY)
+        { //
+            return Optional.of("ILA"); //$NON-NLS-1$
+        }
+        return Optional.of("ILA");//$NON-NLS-1$
     }
 
     // private void addStocksearchPage(List<ResultItem> answer, String query)
@@ -315,4 +384,53 @@ public class TLVSearchProvider implements SecuritySearchProvider
     // return answer;
     // }
 
+    private List<IndiceListing> getFeedEntities()
+    {
+        TASEQuoteFeed feed = new TASEQuoteFeed();
+        List<IndiceListing> unfilteredEntities = feed.getTaseEntities();
+        // return feed.getTaseEntities();
+        if (unfilteredEntities != null && unfilteredEntities.size() > 0)
+        {
+            PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(this.tlvEntities.get(0).toString());
+            PortfolioLog.info(this.tlvEntities.get(1).toString());
+            PortfolioLog.info(this.tlvEntities.get(2).toString());
+            Stream<IndiceListing> tlvFilteredEntities = this.tlvEntities.stream()
+                            .filter(a -> a.getTaseType().equals(TaseType.FUND) || //
+                                            a.getTaseType().equals(TaseType.SECURITY));
+            List<IndiceListing> filtered = tlvFilteredEntities.collect(Collectors.toList());
+            PortfolioLog.info("TLVI has " + this.tlvEntities.size() + " filtered entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(this.tlvEntities.get(0).toString());
+            PortfolioLog.info(this.tlvEntities.get(1).toString());
+            PortfolioLog.info(this.tlvEntities.get(2).toString());
+            return filtered;
+        }
+        return Collections.emptyList();
+    }
+
+    // private List<IndiceListing> populateEntitiesList()
+    // {
+    // // this.tlvEntities = getFeedEntities();
+    //
+    // if (this.tlvEntities != null && this.tlvEntities.size() > 0)
+    // {
+    // PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries");
+    // //$NON-NLS-1$ //$NON-NLS-2$
+    // PortfolioLog.info(this.tlvEntities.get(0).toString());
+    // PortfolioLog.info(this.tlvEntities.get(1).toString());
+    // PortfolioLog.info(this.tlvEntities.get(2).toString());
+    // Stream<IndiceListing> tlvFilteredEntities = this.tlvEntities.stream()
+    // .filter(a -> a.getTaseType().equals(TaseType.FUND) || //
+    // a.getTaseType().equals(TaseType.SECURITY));
+    // List<IndiceListing> filtered =
+    // tlvFilteredEntities.collect(Collectors.toList());
+    // PortfolioLog.info("TLVI has " + this.tlvEntities.size() + " filtered
+    // entries"); //$NON-NLS-1$ //$NON-NLS-2$
+    // PortfolioLog.info(this.tlvEntities.get(0).toString());
+    // PortfolioLog.info(this.tlvEntities.get(1).toString());
+    // PortfolioLog.info(this.tlvEntities.get(2).toString());
+    // return filtered;
+    // }
+    // return Collections.emptyList();
+    // }
 }

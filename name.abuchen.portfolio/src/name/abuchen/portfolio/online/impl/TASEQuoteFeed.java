@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +85,12 @@ public class TASEQuoteFeed implements QuoteFeed
     // companies)
     public List<IndiceListing> getTaseEntities()
     {
-        return this.mappedEntities;
+        if (this.mappedEntities == null)
+            return Collections.emptyList();
+        else
+            return this.mappedEntities;
+        // return (this.mappedEntities != null) ? this.mappedEntities :
+        // Collections.emptyList();
     }
 
 
@@ -184,7 +190,7 @@ public class TASEQuoteFeed implements QuoteFeed
 
     private TaseType getSecurityType(String securityId)
     {
-        if (!this.ismapped)
+        if (!this.ismapped || this.mappedEntities == null)
             return TaseType.NONE;
 
         IndiceListing foundIndice = this.mappedEntities.stream().filter(p -> p.getId().equals(securityId)).findFirst()

@@ -327,6 +327,7 @@ public class TaseQuoteFeedLiveTest
         TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
         List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
+        assertThat(mappedEntities != null, is(true));
         Optional<IndiceListing> randomFund = mappedEntities.stream()
                         .filter(e -> e.getType() == TaseSecurityType.INDEX.getValue() && e.getSubType() == null)
                         .findAny();
