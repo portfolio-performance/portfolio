@@ -89,7 +89,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|R.cknahme Investmentfonds" //
                         + "|Gesamtk.ndigung" //
                         + "|Teilr.ckzahlung mit Nennwert.nderung" //
-                        + "|Teilliquidation mit Nennwertreduzierung)", isJointAccount);
+                        + "|Teilliquidation mit Nennwertreduzierung" //
+                        + "|Einl.sung bei Gesamtf.lligkeit" //
+                        + ")", isJointAccount);
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -105,7 +107,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|R.cknahme Investmentfonds" //
                         + "|Gesamtk.ndigung" //
                         + "|Teilr.ckzahlung mit Nennwert.nderung" //
-                        + "|Teilliquidation mit Nennwertreduzierung)$");
+                        + "|Teilliquidation mit Nennwertreduzierung" //
+                        + "|Einl.sung bei Gesamtf.lligkeit)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -130,17 +133,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Verkauf" //
                                         + "|Verkauf Direkthandel" //
                                         + "|Verkauf aus Kapitalmaßnahme" //
-                                        + "|R.cknahme Investmentfonds" + "|Gesamtk.ndigung"
-                                        + "|Teilr.ckzahlung mit Nennwert.nderung"
-                                        + "|Teilliquidation mit Nennwertreduzierung))$") //
+                                        + "|R.cknahme Investmentfonds" + "|Gesamtk.ndigung" //
+                                        + "|Teilr.ckzahlung mit Nennwert.nderung" //
+                                        + "|Teilliquidation mit Nennwertreduzierung"
+                                        + "||Einl.sung bei Gesamtf.lligkeit))$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
                                             || "Verkauf Direkthandel".equals(v.get("type")) //
                                             || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
                                             || "Rücknahme Investmentfonds".equals(v.get("type")) //
                                             || "Gesamtkündigung".equals(v.get("type")) //
-                                            || "Teilrückzahlung mit Nennwertänderung".equals(v.get("type"))
-                                            || "Teilliquidation mit Nennwertreduzierung".equals(v.get("type"))) //
+                                            || "Teilrückzahlung mit Nennwertänderung".equals(v.get("type")) //
+                                            || "Teilliquidation mit Nennwertreduzierung".equals(v.get("type")) //
+                                            || "Einlösung bei Gesamtfälligkeit".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -175,6 +180,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                                        // Stück 50 VONTOBEL FINANCIAL PRODUCTS DE000VC5YHF3 (VC5YHF)
+                                        // DIZ 26.09.25 TOTAL 48
+                                        // Rückzahlungsbetrag / Stück 48,00 EUR Rückzahlungsdatum 26.09.2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "nameContinued", "currency") //
+                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^R.ckzahlungsbetrag .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -224,6 +242,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Den (Gegenwert|Betrag) buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Fälligkeitstag 26.09.2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^F.lligkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
