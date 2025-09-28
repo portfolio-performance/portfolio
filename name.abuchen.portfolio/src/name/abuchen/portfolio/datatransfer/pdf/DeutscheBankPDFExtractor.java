@@ -121,13 +121,6 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                 t.setDate(asDate(v.get("date")));
                                                         }),
                                         // @formatter:off
-                                        // Belegnummer 1694278628 / 24281 Schlusstag 20.08.2019
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Belegnummer .* Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
-                                        // @formatter:off
                                         // Belegnummer 1522788379 / 181373046 Schlusstag 23.07.2024 18:21
                                         // @formatter:on
                                         section -> section //
@@ -147,7 +140,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Belegnummer 1694278628 / 24281 Schlusstag 20.08.2019
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Belegnummer .* Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off

@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt 
+60262 Frankfurt
+mzwBPQ xOEdLwlPO 
+ZTFAVNgDc Str. 05 Christine Hofmann 
+ 
+84448 zVbtFP Telefon 720 69539673
+24/7-Kundenservice (069) 910-10000
+23. September 2025
+Abrechnung: Kauf von Wertpapieren 
+Depotinhaber: odAPUH TXYZBcIqs
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+284 7418481 01 DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1
+WKN 847652 Nominal ST 0,6047
+ISIN DE0008476524 Kurs EUR 338,80
+Verwahrart Girosammeldepot
+Geschäft Festpreisgeschäft
+Belegnummer 1572848278 / 211210221 Schlusstag 23.09.2025 
+Ihre Referenz DBM01 Ausgabeaufschlag 5,00 %
+Auftragsart sonstiger Auftrag
+Abrechnung Währung Betrag
+Kurswert EUR 204,87
+Preisnachlass EUR -4,88
+Belastung
+Buchung auf Kontonummer 3287232 01 mit Wertstellung 25.09.2025 EUR 199,99
+Die Wertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen 
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen 
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. 
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank 
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID 
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, 
+Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+TR00000001 20250923 278_000_
