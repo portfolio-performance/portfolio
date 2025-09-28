@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
@@ -365,6 +366,7 @@ public class SearchSecurityWizardPage extends WizardPage
 
                 for (SecuritySearchProvider provider : providers)
                 {
+                    PortfolioLog.info(provider.getName());
                     try
                     {
                         progressMonitor.setTaskName(provider.getName());

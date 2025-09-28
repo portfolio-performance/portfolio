@@ -6,5 +6,5 @@ name.abuchen.portfolio.online.impl.YahooSearchProvider
 name.abuchen.portfolio.online.impl.FinnhubSearchProvider
 name.abuchen.portfolio.online.impl.EODHistoricalDataSearchProvider
 name.abuchen.portfolio.online.impl.DivvyDiarySearchProvider
-name.abuchen.portfolio.online.impl.TLVSearchProvider
+name.abuchen.portfolio.online.impl.TASESearchProvider
 
