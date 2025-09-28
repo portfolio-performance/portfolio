@@ -24,12 +24,10 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
-// import
-// name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity.LocalDateTypeAdapter;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.TASEFund;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistory;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistoryEntry;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 
 public class TLVFundTest
 {
@@ -69,7 +67,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund fundfeed = Mockito.spy(new TLVFund());
+            TASEFund fundfeed = Mockito.spy(new TASEFund());
             Mockito.doReturn(mockedresponse).when(fundfeed).rpcLatestQuoteFund(security);
 
             Optional<LatestSecurityPrice> oprice = fundfeed.getLatestQuote(security);
@@ -104,7 +102,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund fundfeed = Mockito.spy(new TLVFund());
+            TASEFund fundfeed = Mockito.spy(new TASEFund());
             Mockito.doReturn(response).when(fundfeed).rpcLatestQuoteFund(security);
 
             // System.out.println(feed.getLatestQuote(security));
@@ -131,7 +129,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund fundfeed = Mockito.spy(new TLVFund());
+            TASEFund fundfeed = Mockito.spy(new TASEFund());
             Mockito.doReturn(response).when(fundfeed).rpcLatestQuoteFund(security);
 
             // System.out.println(feed.getLatestQuote(security));
@@ -176,7 +174,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund tlvFund = Mockito.spy(new TLVFund());
+            TASEFund tlvFund = Mockito.spy(new TASEFund());
             Mockito.doReturn(Optional.of(mockedFundHistory)).when(tlvFund).getPriceHistory(security, from, to, 1,
                             Language.ENGLISH);
 
@@ -252,7 +250,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund tlvFund = Mockito.spy(new TLVFund());
+            TASEFund tlvFund = Mockito.spy(new TASEFund());
             Optional<QuoteFeedData> mockedFeed = tlvFund.convertFundHistoryToQuoteFeedData(mockedhistoryopt, security);
 
             doReturn(mockedFeed).when(tlvFund).getHistoricalQuotes(security, false);
@@ -326,7 +324,7 @@ public class TLVFundTest
 
         try
         {
-            TLVFund tlvFund = Mockito.spy(new TLVFund());
+            TASEFund tlvFund = Mockito.spy(new TASEFund());
 
             // No need to mock as we are testing the conditions for WKN
 
@@ -344,7 +342,7 @@ public class TLVFundTest
         security.setWkn("");
         try
         {
-            TLVFund tlvFund = Mockito.spy(new TLVFund());
+            TASEFund tlvFund = Mockito.spy(new TASEFund());
 
             // No need to mock as we are testing the conditions for WKN
 

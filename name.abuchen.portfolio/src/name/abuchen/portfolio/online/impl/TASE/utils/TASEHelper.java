@@ -1,6 +1,6 @@
-package name.abuchen.portfolio.online.impl.TLVMarket.utils;
+package name.abuchen.portfolio.online.impl.TASE.utils;
 
-public class TLVHelper
+public class TASEHelper
 {
 
 
@@ -55,13 +55,13 @@ public class TLVHelper
      * 16 Form
      */
 // @formatting:on
-    public enum SecurityType
+    public enum TaseSecurityType
     {
         SECURITY(1), INDEX(2), MUTUAL_FUND(4), DELETED(5), UNKOWN(-1);
 
         private final int value;
 
-        SecurityType(int value)
+        TaseSecurityType(int value)
         {
             this.value = value;
         }
@@ -72,13 +72,13 @@ public class TLVHelper
         }
     }
 
-    public enum SecuritySubType
+    public enum TaseSecuritySubType
     {
         COMPANY(0), SHARES(1), WARRENTS(2), CONVERTIBLE_BONDS(3), GOVERNMENT_BONDS(4), CORPORATE_BONDS(5), UNKNOWN(-1);
 
         private final int value;
         
-        SecuritySubType(int value)
+        TaseSecuritySubType(int value)
         {
             this.value = value;
         
@@ -107,13 +107,13 @@ public class TLVHelper
         }
     }
     
-    public enum TLVType
+    public enum TaseType
     {
         FUND(1), SECURITY(2), NONE(0);
         
         private final int value;
         
-        TLVType(int value)
+        TaseType(int value)
         {
             this.value = value;
         }

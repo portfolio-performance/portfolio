@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
+package name.abuchen.portfolio.online.impl.TASE.jsondata;
 
 
 import java.lang.reflect.Type;

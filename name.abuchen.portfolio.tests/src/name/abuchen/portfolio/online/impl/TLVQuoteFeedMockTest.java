@@ -110,7 +110,7 @@ public class TLVQuoteFeedMockTest
 
         try
         {
-            TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+            TASEQuoteFeed feed = Mockito.spy(new TASEQuoteFeed());
             Mockito.doReturn(mockedprice).when(feed).getLatestQuote(security);
 
             // PRice in ILS, Type = Mutual Fund
@@ -231,7 +231,7 @@ public class TLVQuoteFeedMockTest
 
         // return Optional<QuoteFeedData>
 
-        TLVQuoteFeed feed = Mockito.spy(new TLVQuoteFeed());
+        TASEQuoteFeed feed = Mockito.spy(new TASEQuoteFeed());
         Mockito.doReturn(response).when(feed).getHistoricalQuotes(security, false);
 
         // PRice in ILS, Type = Mutual Fund
@@ -450,7 +450,7 @@ public class TLVQuoteFeedMockTest
     public void CalculateDate()
     {
 
-        TLVQuoteFeed feed = new TLVQuoteFeed();
+        TASEQuoteFeed feed = new TASEQuoteFeed();
 
         Security security = new Security();
         security.setName("Daimler AG");

@@ -22,8 +22,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
+import name.abuchen.portfolio.online.impl.TASE.TASESecurity;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityHistory;
 
 public class TLVSecurityMockTest
 {
@@ -88,7 +88,7 @@ public class TLVSecurityMockTest
 
         try
         {
-            TLVSecurity securityfeed = spy(new TLVSecurity());
+            TASESecurity securityfeed = spy(new TASESecurity());
             doReturn(mockedresponse).when(securityfeed).rpcLatestQuoteSecurity(security);
 
             Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
@@ -145,7 +145,7 @@ public class TLVSecurityMockTest
 
         try
         {
-            TLVSecurity securityfeed = spy(new TLVSecurity());
+            TASESecurity securityfeed = spy(new TASESecurity());
             doReturn(mockedresponse).when(securityfeed).rpcLatestQuoteSecurity(security);
 
             Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
@@ -179,7 +179,7 @@ public class TLVSecurityMockTest
 
         try
         {
-            TLVSecurity feed = Mockito.spy(new TLVSecurity());
+            TASESecurity feed = Mockito.spy(new TASESecurity());
             doReturn(mockedresponse).when(feed).rpcLatestQuoteSecurity(security);
 
             Optional<LatestSecurityPrice> optionalPrice = feed.getLatestQuote(security);
@@ -244,7 +244,7 @@ public class TLVSecurityMockTest
         SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
         Optional<SecurityHistory> historyopt = Optional.of(history);
 
-        TLVSecurity feed = Mockito.spy(new TLVSecurity());
+        TASESecurity feed = Mockito.spy(new TASESecurity());
 
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
@@ -362,7 +362,7 @@ public class TLVSecurityMockTest
         SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
         Optional<SecurityHistory> historyopt = Optional.of(history);
 
-        TLVSecurity feed = Mockito.spy(new TLVSecurity());
+        TASESecurity feed = Mockito.spy(new TASESecurity());
 
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
@@ -411,7 +411,7 @@ public class TLVSecurityMockTest
         SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
         Optional<SecurityHistory> historyopt = Optional.of(history);
 
-        TLVSecurity feed = Mockito.spy(new TLVSecurity());
+        TASESecurity feed = Mockito.spy(new TASESecurity());
 
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
@@ -491,7 +491,7 @@ public class TLVSecurityMockTest
         security.setWkn("1119478");
 
 
-        TLVSecurity feed = new TLVSecurity();
+        TASESecurity feed = new TASESecurity();
 
         try
         {

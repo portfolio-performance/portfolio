@@ -12,12 +12,12 @@ import java.util.Scanner;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
+import name.abuchen.portfolio.online.impl.TASE.TASEEntities;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
 
-public class TLVEntitiesTest
+public class TaseEntitiesTest
 {
 
     private String getEntitiesList()
@@ -37,7 +37,7 @@ public class TLVEntitiesTest
     }
 
     @Test
-    public void testTLVGetAllEntitiesResponse()
+    public void testTaseGetAllEntitiesResponse()
     {
         String mockedresponse = getEntitiesList();
         assertTrue(mockedresponse.length() > 0);
@@ -45,7 +45,7 @@ public class TLVEntitiesTest
 
         try
         {
-            TLVEntities indices = Mockito.spy(new TLVEntities());
+            TASEEntities indices = Mockito.spy(new TASEEntities());
 
             Mockito.doReturn((mockedresponse)).when(indices).rpcAllIndices(Language.ENGLISH);
 
@@ -60,7 +60,7 @@ public class TLVEntitiesTest
             IndiceListing listing = iList.get(0);
 
             assertTrue(listing.getId().equals("2442"));
-            assertTrue(iList.get(0).getType() == SecurityType.DELETED.getValue());
+            assertTrue(iList.get(0).getType() == TaseSecurityType.DELETED.getValue());
 
             verify(indices).rpcAllIndices(Language.ENGLISH);
         }

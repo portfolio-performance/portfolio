@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.TLVMarket;
+package name.abuchen.portfolio.online.impl.TASE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,7 +15,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
-public abstract class TLVListing
+public abstract class TASEListing
 {
 
     static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()

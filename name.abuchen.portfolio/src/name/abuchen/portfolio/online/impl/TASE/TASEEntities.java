@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.TLVMarket;
+package name.abuchen.portfolio.online.impl.TASE;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -11,11 +11,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import name.abuchen.portfolio.PortfolioLog;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
-public class TLVEntities
+public class TASEEntities
 {
     private final String URL = "api.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/content/searchentities"; //$NON-NLS-1$
@@ -41,7 +41,7 @@ public class TLVEntities
             {
                 response = new WebAccess(URL, PATH)
                                 .addUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001") //$NON-NLS-1$
-                                .addParameter("lang", lang.toString()) //$NON-NLS-1$
+                                .addParameter("lang", String.valueOf(lang.getValue())) //$NON-NLS-1$
                                 .addHeader("Accept", "*/*") //$NON-NLS-1$ //$NON-NLS-2$
                                 .addHeader("referer", "https://www.tase.co.il/") //$NON-NLS-1$ //$NON-NLS-2$
                                 .addHeader("Cache-Control", "no-cache") //$NON-NLS-1$ //$NON-NLS-2$

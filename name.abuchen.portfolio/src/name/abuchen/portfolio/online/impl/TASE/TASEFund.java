@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.TLVMarket;
+package name.abuchen.portfolio.online.impl.TASE;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -27,13 +27,13 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistory;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundHistoryEntry;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.FundListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistory;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistoryEntry;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.FundListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
-public class TLVFund extends TLVListing
+public class TASEFund extends TASEListing
 {
     public static final int TYPE = 4;
     // private int period = 0;

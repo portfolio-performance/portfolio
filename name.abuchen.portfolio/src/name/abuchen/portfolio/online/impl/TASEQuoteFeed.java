@@ -13,14 +13,14 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVEntities;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVFund;
-import name.abuchen.portfolio.online.impl.TLVMarket.TLVSecurity;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
+import name.abuchen.portfolio.online.impl.TASE.TASEEntities;
+import name.abuchen.portfolio.online.impl.TASE.TASEFund;
+import name.abuchen.portfolio.online.impl.TASE.TASESecurity;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecuritySubType;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 /*
  * @see Developer portal: https://datahubapi.tase.co.il/ List of indices -
@@ -31,21 +31,22 @@ import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
  * https://datahubapi.tase.co.il/spec/a957e6f2-855c-4e5c-a199-033c0e1edf1e/
  * 0b795b36-2f7a-458b-81b9-7b5432daef0c
  */
-public class TLVQuoteFeed implements QuoteFeed
+public class TASEQuoteFeed implements QuoteFeed
 {
 
-    public static final String ID = "TLV"; //$NON-NLS-1$
-    private TLVSecurity TLVSecurities;
-    private TLVFund TLVFunds;
+    public static final String ID = "TASE"; // Tel Aviv Stock //$NON-NLS-1$
+                                            // Exchange
+    private TASESecurity TASESecurities;
+    private TASEFund TASEFunds;
     private Boolean ismapped;
     private List<IndiceListing> mappedEntities;
 
     
     
-    public TLVQuoteFeed()
+    public TASEQuoteFeed()
     {
-        this.TLVSecurities = new TLVSecurity();
-        this.TLVFunds = new TLVFund();
+        this.TASESecurities = new TASESecurity();
+        this.TASEFunds = new TASEFund();
         this.ismapped = false;
 
 
@@ -56,7 +57,7 @@ public class TLVQuoteFeed implements QuoteFeed
         }
         catch (IOException e)
         {
-            PortfolioLog.error("Could not get TLV Stock Exchange Entities"); //$NON-NLS-1$
+            PortfolioLog.error("Could not get Tel Aviv Stock Exchange Entities"); //$NON-NLS-1$
             this.ismapped = false;
         }
     }
@@ -81,7 +82,7 @@ public class TLVQuoteFeed implements QuoteFeed
 
     // returns cached index of all Tel-Aviv Entities (stock, bonds, indexes,
     // companies)
-    public List<IndiceListing> getTLVEntities()
+    public List<IndiceListing> getTaseEntities()
     {
         return this.mappedEntities;
     }
@@ -93,22 +94,22 @@ public class TLVQuoteFeed implements QuoteFeed
 
         Optional<QuoteFeedData> historicalprices = Optional.of(new QuoteFeedData());
 
-        TLVType securityType = this.getSecurityType(security.getWkn());
+        TaseType securityType = this.getSecurityType(security.getWkn());
 
-        if (securityType == TLVType.NONE)
+        if (securityType == TaseType.NONE)
             return new QuoteFeedData();
 
-        if (securityType == TLVType.FUND)
+        if (securityType == TaseType.FUND)
         {
 
-            historicalprices = this.TLVFunds.getHistoricalQuotes(security, false);
+            historicalprices = this.TASEFunds.getHistoricalQuotes(security, false);
             if (historicalprices.isEmpty())
                 return new QuoteFeedData();
             return historicalprices.get();
         }
-        if (securityType == TLVType.SECURITY)
+        if (securityType == TaseType.SECURITY)
         {
-            historicalprices = this.TLVSecurities.getHistoricalQuotes(security, false);
+            historicalprices = this.TASESecurities.getHistoricalQuotes(security, false);
             if (historicalprices.isEmpty())
                 return new QuoteFeedData();
             return historicalprices.get();
@@ -123,17 +124,17 @@ public class TLVQuoteFeed implements QuoteFeed
         if ((security.getWkn() == null) || (security.getWkn().length() == 0))
             return Optional.empty();
 
-        TLVType type = getSecurityType(security.getWkn());
+        TaseType type = getSecurityType(security.getWkn());
         Optional<LatestSecurityPrice> priceOpt = Optional.empty();
 
         try
         {
-            if (type == TLVType.FUND)
+            if (type == TaseType.FUND)
             {
-                priceOpt = this.TLVFunds.getLatestQuote(security);
+                priceOpt = this.TASEFunds.getLatestQuote(security);
             }
-            if (type == TLVType.SECURITY)
-                priceOpt = this.TLVSecurities.getLatestQuote(security);
+            if (type == TaseType.SECURITY)
+                priceOpt = this.TASESecurities.getLatestQuote(security);
 
             return priceOpt;
         }
@@ -147,7 +148,7 @@ public class TLVQuoteFeed implements QuoteFeed
 
     private void mapEntities() throws IOException
     {
-        TLVEntities entities = new TLVEntities();
+        TASEEntities entities = new TASEEntities();
 
         Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
 
@@ -163,15 +164,15 @@ public class TLVQuoteFeed implements QuoteFeed
 
                 int type = listing.getType();
                 String subtype = listing.getSubType();
-                listing.setTLVType(TLVType.NONE);
+                listing.setTaseType(TaseType.NONE);
 
-                if (type == SecurityType.MUTUAL_FUND.getValue() && subtype == null) // $NON-NLS-1$
+                if (type == TaseSecurityType.MUTUAL_FUND.getValue() && subtype == null) // $NON-NLS-1$
                 {
-                    listing.setTLVType(TLVType.FUND);
+                    listing.setTaseType(TaseType.FUND);
                 }
-                if (type == SecurityType.SECURITY.getValue() && subtype != SecuritySubType.WARRENTS.toString())
+                if (type == TaseSecurityType.SECURITY.getValue() && subtype != TaseSecuritySubType.WARRENTS.toString())
                 {
-                    listing.setTLVType(TLVType.SECURITY);
+                    listing.setTaseType(TaseType.SECURITY);
                 }
             }
         }
@@ -181,17 +182,17 @@ public class TLVQuoteFeed implements QuoteFeed
         }
     }
 
-    private TLVType getSecurityType(String securityId)
+    private TaseType getSecurityType(String securityId)
     {
         if (!this.ismapped)
-            return TLVType.NONE;
+            return TaseType.NONE;
 
         IndiceListing foundIndice = this.mappedEntities.stream().filter(p -> p.getId().equals(securityId)).findFirst()
                         .orElse(null);
         if (foundIndice != null)
-            return foundIndice.getTLVType();
+            return foundIndice.getTaseType();
 
-        return TLVType.NONE;
+        return TaseType.NONE;
     }
 
 
@@ -219,12 +220,12 @@ public class TLVQuoteFeed implements QuoteFeed
     public Optional<String> getQuoteCurrency(Security security)
     {
 
-        TLVType type = getSecurityType(security.getWkn());
-        if (type == TLVType.FUND)
+        TaseType type = getSecurityType(security.getWkn());
+        if (type == TaseType.FUND)
         { //
             return Optional.of("ILS"); //$NON-NLS-1$
         }
-        if (type == TLVType.SECURITY)
+        if (type == TaseType.SECURITY)
         { // 
             return Optional.of("ILA"); //$NON-NLS-1$
         }

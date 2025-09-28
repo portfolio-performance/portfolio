@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.TLVMarket;
+package name.abuchen.portfolio.online.impl.TASE;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -24,13 +24,13 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistory;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityHistoryEntry;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.SecurityListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.Language;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityHistory;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityHistoryEntry;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
-public class TLVSecurity extends TLVListing
+public class TASESecurity extends TASEListing
 {
     
     private static final int TYPE = 8;
@@ -118,7 +118,7 @@ public class TLVSecurity extends TLVListing
         try
         {
             Optional<SecurityHistory> securityHistory = getPriceHistoryChunkInternal(security.getWkn(), from, to, 1,
-                            TLVSecurity.RECORDS, Language.ENGLISH);
+                            TASESecurity.RECORDS, Language.ENGLISH);
 
             Optional<QuoteFeedData> feed = convertSecurityHistoryToQuoteFeedData(securityHistory, security);
             return feed;
@@ -308,7 +308,7 @@ public class TLVSecurity extends TLVListing
                     int page,
                     Language lang) throws Exception
     {
-        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TLVSecurity.RECORDS, lang);
+        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TASESecurity.RECORDS, lang);
     }
 
     public Optional<SecurityHistory> getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate,
@@ -318,7 +318,7 @@ public class TLVSecurity extends TLVListing
         if ((security.getWkn() == null) || (security.getWkn().length() == 0))
             return Optional.empty();
         
-        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TLVSecurity.RECORDS, lang);
+        return getPriceHistoryChunkInternal(security.getWkn(), fromDate, toDate, page, TASESecurity.RECORDS, lang);
     }
 
     @SuppressWarnings({ "unchecked" })

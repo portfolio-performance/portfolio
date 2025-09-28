@@ -1,6 +1,6 @@
-package name.abuchen.portfolio.online.impl.TLVMarket.jsondata;
+package name.abuchen.portfolio.online.impl.TASE.jsondata;
 
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.TLVType;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 public class IndiceListing
 {
@@ -14,7 +14,7 @@ public class IndiceListing
     private String SubTypeDesc;
     private String SubId;
     private String ETFType;
-    private TLVType TLVType;
+    private TaseType TaseType;
 
     public String getId()
     {
@@ -76,14 +76,14 @@ public class IndiceListing
         this.SubTypeDesc = subTypeDesc;
     }
 
-    public TLVType getTLVType()
+    public TaseType getTaseType()
     {
-        return TLVType;
+        return TaseType;
     }
 
-    public void setTLVType(TLVType tLVType)
+    public void setTaseType(TaseType taseType)
     {
-        TLVType = tLVType;
+        TaseType = taseType;
     }
 
     @SuppressWarnings("nls")
@@ -92,12 +92,12 @@ public class IndiceListing
     {
         return "IndiceListing [id=" + Id + ", name=" + Name + ", smb=" + Smb + ", ISIN=" + ISIN + ", type=" + Type
                         + ", subType=" + SubType + ", subTypeDesc=" + SubTypeDesc + ", subId=" + SubId + ", ETFType="
-                        + ETFType + ", TLVType=" + TLVType + "]";
+                        + ETFType + ", TaseType=" + TaseType + "]";
     }
 
     public String getSmb()
     {
-        return Smb;
+        return Smb == null ? "" : Smb; //$NON-NLS-1$
     }
 
     public void setSmb(String smb)

@@ -22,11 +22,11 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeedData;
-import name.abuchen.portfolio.online.impl.TLVMarket.jsondata.IndiceListing;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecuritySubType;
-import name.abuchen.portfolio.online.impl.TLVMarket.utils.TLVHelper.SecurityType;
+import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecuritySubType;
+import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
 
-public class TLVQuoteFeedLiveTest
+public class TaseQuoteFeedLiveTest
 {
 
     @Test
@@ -36,11 +36,11 @@ public class TLVQuoteFeedLiveTest
         security.setCurrencyCode("ILS"); // KSM KTF TEL GOV - Mutual Fund,
                                          // reported in ILS
 
-        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
-        List<IndiceListing> mappedEntities = tlvFeed.getTLVEntities();
+        TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
+        List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
         Optional<IndiceListing> randomFund = mappedEntities.stream()
-                        .filter(e -> e.getType() == SecurityType.MUTUAL_FUND.getValue() && e.getSubType() == null)
+                        .filter(e -> e.getType() == TaseSecurityType.MUTUAL_FUND.getValue() && e.getSubType() == null)
                         .findAny();
 
         if (randomFund.isPresent())
@@ -111,12 +111,12 @@ public class TLVQuoteFeedLiveTest
         // security.setWkn("1410307");
         security.setCurrencyCode("ILA"); // Bond - reported in ILA - SHLD.B18
 
-        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
-        List<IndiceListing> mappedEntities = tlvFeed.getTLVEntities();
+        TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
+        List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
         Optional<IndiceListing> randomBond = mappedEntities.stream()
-                        .filter(e -> e.getType() == SecurityType.SECURITY.getValue()
-                                        && Integer.valueOf(e.getSubType()) == SecuritySubType.CORPORATE_BONDS
+                        .filter(e -> e.getType() == TaseSecurityType.SECURITY.getValue()
+                                        && Integer.valueOf(e.getSubType()) == TaseSecuritySubType.CORPORATE_BONDS
                                                         .getValue())
                         .findAny();
 
@@ -183,7 +183,7 @@ public class TLVQuoteFeedLiveTest
         security.setWkn("");
         security.setCurrencyCode("ILA"); // Bond - reported in ILA - SHLD.B18
 
-        TLVQuoteFeed feed = new TLVQuoteFeed();
+        TASEQuoteFeed feed = new TASEQuoteFeed();
         try
         {
             Optional<LatestSecurityPrice> response = feed.getLatestQuote(security);
@@ -223,12 +223,12 @@ public class TLVQuoteFeedLiveTest
         // security.setWkn("273011");
         security.setCurrencyCode("ILA"); // NICE Stock - reported in ILA
 
-        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
-        List<IndiceListing> mappedEntities = tlvFeed.getTLVEntities();
+        TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
+        List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
         Optional<IndiceListing> randomFund = mappedEntities.stream()
-                        .filter(e -> e.getType() == SecurityType.SECURITY.getValue()
-                                        && Integer.valueOf(e.getSubType()) == SecuritySubType.SHARES.getValue())
+                        .filter(e -> e.getType() == TaseSecurityType.SECURITY.getValue()
+                                        && Integer.valueOf(e.getSubType()) == TaseSecuritySubType.SHARES.getValue())
                         .findAny();
 
         if (randomFund.isPresent())
@@ -295,7 +295,7 @@ public class TLVQuoteFeedLiveTest
         security.setCurrencyCode("ILS"); // Bond - reported in ILA - SHLD.B18
 
 
-        TLVQuoteFeed feed = new TLVQuoteFeed();
+        TASEQuoteFeed feed = new TASEQuoteFeed();
         try
         {
             Optional<LatestSecurityPrice> response = feed.getLatestQuote(security);
@@ -324,11 +324,11 @@ public class TLVQuoteFeedLiveTest
         security.setCurrencyCode("ILS"); // KSM KTF TEL GOV - Mutual Fund,
                                          // reported in ILS
 
-        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
-        List<IndiceListing> mappedEntities = tlvFeed.getTLVEntities();
+        TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
+        List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
         Optional<IndiceListing> randomFund = mappedEntities.stream()
-                        .filter(e -> e.getType() == SecurityType.INDEX.getValue() && e.getSubType() == null)
+                        .filter(e -> e.getType() == TaseSecurityType.INDEX.getValue() && e.getSubType() == null)
                         .findAny();
 
         if (randomFund.isPresent())
@@ -372,7 +372,7 @@ public class TLVQuoteFeedLiveTest
         Security security = new Security();
         security.setCurrencyCode("ILA"); // NICE Stock - reported in ILA
 
-        TLVQuoteFeed tlvFeed = new TLVQuoteFeed();
+        TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
 
         try
         {
