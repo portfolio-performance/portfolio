@@ -29,7 +29,7 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistory;
 import name.abuchen.portfolio.online.impl.TASE.jsondata.FundHistoryEntry;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 
-public class TLVFundTest
+public class TASEFundTest
 {
 
 

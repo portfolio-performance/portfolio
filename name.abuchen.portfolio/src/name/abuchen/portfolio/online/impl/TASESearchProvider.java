@@ -388,17 +388,20 @@ public class TASESearchProvider implements SecuritySearchProvider
         TASEQuoteFeed feed = new TASEQuoteFeed();
         this.tlvEntities = feed.getTaseEntities();
 
-        PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
-        PortfolioLog.info(this.tlvEntities.get(0).toString());
-        PortfolioLog.info(this.tlvEntities.get(1).toString());
-        PortfolioLog.info(this.tlvEntities.get(2).toString());
-        Stream<IndiceListing> tlvFilteredEntities = this.tlvEntities.stream()
-                        .filter(a -> a.getTaseType().equals(TaseType.FUND) || //
-                                        a.getTaseType().equals(TaseType.SECURITY));
-        this.tlvEntities = tlvFilteredEntities.collect(Collectors.toList());
-        PortfolioLog.info("TLVI has " + this.tlvEntities.size() + " filtered entries"); //$NON-NLS-1$ //$NON-NLS-2$
-        PortfolioLog.info(this.tlvEntities.get(0).toString());
-        PortfolioLog.info(this.tlvEntities.get(1).toString());
-        PortfolioLog.info(this.tlvEntities.get(2).toString());
+        if (this.tlvEntities != null && this.tlvEntities.size() > 0)
+        {
+            PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(this.tlvEntities.get(0).toString());
+            PortfolioLog.info(this.tlvEntities.get(1).toString());
+            PortfolioLog.info(this.tlvEntities.get(2).toString());
+            Stream<IndiceListing> tlvFilteredEntities = this.tlvEntities.stream()
+                            .filter(a -> a.getTaseType().equals(TaseType.FUND) || //
+                                            a.getTaseType().equals(TaseType.SECURITY));
+            this.tlvEntities = tlvFilteredEntities.collect(Collectors.toList());
+            PortfolioLog.info("TLVI has " + this.tlvEntities.size() + " filtered entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(this.tlvEntities.get(0).toString());
+            PortfolioLog.info(this.tlvEntities.get(1).toString());
+            PortfolioLog.info(this.tlvEntities.get(2).toString());
+        }
     }
 }
