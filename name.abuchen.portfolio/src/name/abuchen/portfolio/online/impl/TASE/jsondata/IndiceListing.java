@@ -27,7 +27,7 @@ public class IndiceListing
 
     public String getId()
     {
-        return Id;
+        return Id == null ? "" : Id; //$NON-NLS-1$
     }
 
     public void setId(String id)
@@ -37,7 +37,7 @@ public class IndiceListing
 
     public String getName()
     {
-        return Name;
+        return Name == null ? "" : Name; //$NON-NLS-1$
     }
 
     public void setName(String name)
@@ -47,7 +47,7 @@ public class IndiceListing
 
     public String getISIN()
     {
-        return ISIN;
+        return ISIN == null ? "" : ISIN; //$NON-NLS-1$
     }
 
     public void setISIN(String iSIN)
