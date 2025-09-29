@@ -258,8 +258,11 @@ public class TASESearchProvider implements SecuritySearchProvider
 
         String _query = query.trim().toUpperCase();
         Stream<IndiceListing> filteredListingStreamByQuery = this.tlvEntities.stream()
-                        .filter(a -> a.getId().equals(_query) || a.getSmb().equals(_query) || a.getId().equals(_query)
-        );
+                        .filter(a -> a.getId().equals(_query) || //
+                                        a.getSmb().equals(_query) || //
+                                        a.getId().equals(_query) || //
+                                        a.getISIN().equals(_query));
+
         List<IndiceListing> filteredListingByQuery = filteredListingStreamByQuery.collect(Collectors.toList());
 
         PortfolioLog.info(filteredListingByQuery.size() + " items found");
@@ -391,18 +394,18 @@ public class TASESearchProvider implements SecuritySearchProvider
         if (unfilteredEntities != null && unfilteredEntities.size() > 0)
 
         {
-            PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
-            PortfolioLog.info(this.tlvEntities.get(0).toString());
-            PortfolioLog.info(this.tlvEntities.get(1).toString());
-            PortfolioLog.info(this.tlvEntities.get(2).toString());
-            Stream<IndiceListing> tlvFilteredEntities = this.tlvEntities.stream()
+            PortfolioLog.info("TLV has " + unfilteredEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(unfilteredEntities.get(0).toString());
+            PortfolioLog.info(unfilteredEntities.get(1).toString());
+            PortfolioLog.info(unfilteredEntities.get(2).toString());
+            Stream<IndiceListing> tlvFilteredEntities = unfilteredEntities.stream()
                             .filter(a -> a.getTaseType().equals(TaseType.FUND) || //
                                             a.getTaseType().equals(TaseType.SECURITY));
             List<IndiceListing> filtered = tlvFilteredEntities.collect(Collectors.toList());
-            PortfolioLog.info("TLVI has " + this.tlvEntities.size() + " filtered entries"); //$NON-NLS-1$ //$NON-NLS-2$
-            PortfolioLog.info(this.tlvEntities.get(0).toString());
-            PortfolioLog.info(this.tlvEntities.get(1).toString());
-            PortfolioLog.info(this.tlvEntities.get(2).toString());
+            PortfolioLog.info("TLVI has " + filtered.size() + " filtered entries"); //$NON-NLS-1$ //$NON-NLS-2$
+            PortfolioLog.info(filtered.get(0).toString());
+            PortfolioLog.info(filtered.get(1).toString());
+            PortfolioLog.info(filtered.get(2).toString());
             return filtered;
         }
         return Collections.emptyList();

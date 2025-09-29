@@ -12,7 +12,7 @@ import org.junit.Test;
  * Test for Tel Aviv Stock Exchange (TASE) trading calendar.
  */
 @SuppressWarnings("nls")
-public class TelAvivStockExchangeTradeCalendarTest
+public class TASETradeCalendarTest
 {
 
     @Test

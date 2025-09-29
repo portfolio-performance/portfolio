@@ -17,7 +17,7 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
 
-public class TaseEntitiesTest
+public class TASEEntitiesTest
 {
 
     private String getEntitiesList()

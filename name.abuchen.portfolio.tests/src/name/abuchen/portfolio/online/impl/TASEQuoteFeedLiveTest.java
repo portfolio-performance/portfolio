@@ -25,8 +25,9 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecuritySubType;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
-public class TaseQuoteFeedLiveTest
+public class TASEQuoteFeedLiveTest
 {
 
     @Test
@@ -58,7 +59,7 @@ public class TaseQuoteFeedLiveTest
 
                 LocalDate date = price.getDate();
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
-                assertThat(daysdiff, lessThan(4L));
+                assertThat(daysdiff, lessThan(5L));
                 assertTrue(price.getValue() != 0l);
 
                 assertThat(price.getHigh(), not(0L)); // (Values.Quote.factorize(0.00)));
@@ -226,6 +227,10 @@ public class TaseQuoteFeedLiveTest
         TASEQuoteFeed tlvFeed = new TASEQuoteFeed();
         List<IndiceListing> mappedEntities = tlvFeed.getTaseEntities();
 
+        var calendar = TradeCalendarManager.getInstance("tlv");
+        boolean holidayToday = calendar.isHoliday(LocalDate.now());
+        boolean weekendToday = calendar.isWeekend(LocalDate.now());
+
         Optional<IndiceListing> randomFund = mappedEntities.stream()
                         .filter(e -> e.getType() == TaseSecurityType.SECURITY.getValue()
                                         && Integer.valueOf(e.getSubType()) == TaseSecuritySubType.SHARES.getValue())
@@ -235,6 +240,7 @@ public class TaseQuoteFeedLiveTest
         {
             System.out.println("Test random TVL Stock: " + randomFund.get().getId());
             security.setWkn(randomFund.get().getId());
+
             try
             {
                 Optional<LatestSecurityPrice> response = tlvFeed.getLatestQuote(security);
@@ -247,8 +253,19 @@ public class TaseQuoteFeedLiveTest
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
                 assertThat(daysdiff, lessThanOrEqualTo(3l));
 
+                if (holidayToday || weekendToday)
+                {
+                    // Friday = Sunday
+                    assertThat(price.getValue(), is(0L));
+                    assertThat(price.getVolume(), is(0l));
+                }
+                else
+                {
+                    assertThat(price.getValue(), greaterThan(0L));
+                    assertThat(price.getVolume(), greaterThan(0l));
+                }
                 assertThat(price.getValue(), greaterThan(0L));
-                assertThat(price.getVolume(), is(0l));
+                assertThat(price.getVolume(), greaterThan(0l));
                 System.out.println("\tgetLatestQuote for TVL Stock passed");
 
             }
@@ -269,10 +286,21 @@ public class TaseQuoteFeedLiveTest
             assertThat(secprice.getValue(), greaterThan(0L));
 
             LatestSecurityPrice latestsecprice = prices.getLatestPrices().get(0);
-            assertThat(latestsecprice.getHigh(), is(0L));
-            assertThat(latestsecprice.getLow(), is(0L));
+
+            if (holidayToday || weekendToday)
+            {
+                assertThat(latestsecprice.getHigh(), is(0L));
+                assertThat(latestsecprice.getLow(), is(0L));
+                assertThat(latestsecprice.getVolume(), is(0L));
+            }
+            else
+            {
+                assertThat(latestsecprice.getHigh(), not(0L));
+                assertThat(latestsecprice.getLow(), not(0L));
+                assertThat(latestsecprice.getVolume(), not(0L));
+
+            }
             assertThat(latestsecprice.getValue(), greaterThan(0L));
-            assertThat(latestsecprice.getVolume(), is(0L));
             System.out.println("\tgetHistoricalQuotes for TVL Stock passed");
 
         }

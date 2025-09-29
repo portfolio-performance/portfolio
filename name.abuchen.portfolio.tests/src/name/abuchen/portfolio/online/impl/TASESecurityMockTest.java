@@ -25,7 +25,7 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.TASE.TASESecurity;
 import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityHistory;
 
-public class TLVSecurityMockTest
+public class TASESecurityMockTest
 {
 
     // Government Bond Example - 01135912

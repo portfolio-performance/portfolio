@@ -14,7 +14,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
 
-public class TaseSearchProviderTest
+public class TASESearchProviderTest
 {
 
     @Test

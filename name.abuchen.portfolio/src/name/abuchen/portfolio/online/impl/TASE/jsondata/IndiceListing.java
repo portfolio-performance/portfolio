@@ -5,6 +5,7 @@ import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 public class IndiceListing
 {
 
+
     private String Id;
     private String Name;
     private String Smb;
@@ -15,6 +16,14 @@ public class IndiceListing
     private String SubId;
     private String ETFType;
     private TaseType TaseType;
+
+    public IndiceListing(String id, String name, String smb, String iSIN)
+    {
+        Id = id;
+        Name = name;
+        Smb = smb;
+        ISIN = iSIN;
+    }
 
     public String getId()
     {
