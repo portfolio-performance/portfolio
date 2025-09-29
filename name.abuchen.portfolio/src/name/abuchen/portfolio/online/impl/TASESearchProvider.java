@@ -233,10 +233,9 @@ public class TASESearchProvider implements SecuritySearchProvider
         // Since TASE API only has a search by ISIN, cache all the known indices
         // upfront
         this.tlvEntities = getFeedEntities();
+//        populateEntitiesList();
 
     }
-
-
 
     @Override
     public String getName()
@@ -390,6 +389,7 @@ public class TASESearchProvider implements SecuritySearchProvider
         List<IndiceListing> unfilteredEntities = feed.getTaseEntities();
         // return feed.getTaseEntities();
         if (unfilteredEntities != null && unfilteredEntities.size() > 0)
+
         {
             PortfolioLog.info("TLV has " + this.tlvEntities.size() + " entries"); //$NON-NLS-1$ //$NON-NLS-2$
             PortfolioLog.info(this.tlvEntities.get(0).toString());

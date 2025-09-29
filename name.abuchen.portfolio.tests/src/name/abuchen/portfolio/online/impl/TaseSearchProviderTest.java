@@ -25,6 +25,7 @@ public class TaseSearchProviderTest
         Field tlvEntitiesField = TASESearchProvider.class.getDeclaredField("tlvEntities");
         tlvEntitiesField.setAccessible(true);
 
+        @SuppressWarnings("unchecked")
         List<IndiceListing> a = (List<IndiceListing>) tlvEntitiesField.get(tase);
         assertThat(a.size(), greaterThan(0));
 
