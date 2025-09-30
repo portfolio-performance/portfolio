@@ -80,39 +80,47 @@ public class TASESearchProviderTest
             results = tase.search("273011");
             verifyResult(results);
             results = tase.search("NICE.TLV");
+            assertThat(results.size(), is(0));
+            results = tase.search("NICE.TASE");
+            assertThat(results.size(), is(0));
             // verifyResult(results);
 
             results = tase.search("1188572");
             assertThat(results.size(), is(1));
             assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-            assertThat(results.get(0).getExchange(), is("TLV"));
+            assertThat(results.get(0).getExchange(), is("TASE"));
             assertThat(results.get(0).getIsin(), is("IL0011885725"));
             assertThat(results.get(0).getSymbol(), is("ACRO.B1"));
             assertThat(results.get(0).getSymbolWithoutStockMarket(), is("ACRO.B1"));
             assertThat(results.get(0).getName(), is("ACRO B1"));
+            assertThat(results.get(0).getType(), is("Corporate Bonds"));
 
+            // @api
+            // https://market.tase.co.il/en/market_data/security/1184902/major_data
             results = tase.search("1184902");
             assertThat(results.size(), is(1));
             assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-            assertThat(results.get(0).getExchange(), is("TLV"));
+            assertThat(results.get(0).getExchange(), is("TASE"));
             assertThat(results.get(0).getIsin(), is("IL0011849028"));
             assertThat(results.get(0).getSymbol(), is("ACRO"));
             assertThat(results.get(0).getSymbolWithoutStockMarket(), is("ACRO"));
             assertThat(results.get(0).getName(), is("ACRO KVUT"));
+            assertThat(results.get(0).getType(), is("Shares"));
 
             results = tase.search("1135912");
             assertThat(results.size(), is(1));
             assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-            assertThat(results.get(0).getExchange(), is("TLV"));
+            assertThat(results.get(0).getExchange(), is("TASE"));
             assertThat(results.get(0).getIsin(), is("IL0011359127"));
             assertThat(results.get(0).getSymbol(), is("CPI1025"));
             assertThat(results.get(0).getSymbolWithoutStockMarket(), is("CPI1025"));
             assertThat(results.get(0).getName(), is("ILCPI % 1025"));
+            assertThat(results.get(0).getType(), is("Government Bonds"));
 
             results = tase.search("1150192");
             assertThat(results.size(), is(1));
             assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-            assertThat(results.get(0).getExchange(), is("TLV"));
+            assertThat(results.get(0).getExchange(), is("TASE"));
             assertThat(results.get(0).getIsin(), is("IL0011501926"));
             assertThat(results.get(0).getSymbol(), is("HRL.F204"));
             assertThat(results.get(0).getSymbolWithoutStockMarket(), is("HRL.F204"));
@@ -145,9 +153,10 @@ public class TASESearchProviderTest
     {
         assertThat(results.size(), is(1));
         assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-        assertThat(results.get(0).getExchange(), is("TLV"));
+        assertThat(results.get(0).getExchange(), is("TASE"));
         assertThat(results.get(0).getIsin(), is("IL0002730112"));
         assertThat(results.get(0).getSymbol(), is("NICE"));
         assertThat(results.get(0).getSymbolWithoutStockMarket(), is("NICE"));
+        assertThat(results.get(0).getType(), is("Shares"));
     }
 }

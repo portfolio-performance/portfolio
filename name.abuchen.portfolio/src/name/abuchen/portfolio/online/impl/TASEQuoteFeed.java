@@ -89,8 +89,6 @@ public class TASEQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         else
             return this.mappedEntities;
-        // return (this.mappedEntities != null) ? this.mappedEntities :
-        // Collections.emptyList();
     }
 
 

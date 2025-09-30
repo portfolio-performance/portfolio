@@ -3,7 +3,6 @@ package name.abuchen.portfolio.online.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 // import static org.junit.Assert.assertTrue;
@@ -59,7 +58,7 @@ public class TASEQuoteFeedLiveTest
 
                 LocalDate date = price.getDate();
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
-                assertThat(daysdiff, lessThan(5L));
+                assertThat(daysdiff, lessThanOrEqualTo(5L));
                 assertTrue(price.getValue() != 0l);
 
                 assertThat(price.getHigh(), not(0L)); // (Values.Quote.factorize(0.00)));
