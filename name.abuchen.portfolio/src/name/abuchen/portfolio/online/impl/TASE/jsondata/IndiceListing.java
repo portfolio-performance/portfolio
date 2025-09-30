@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.impl.TASE.jsondata;
 
+import com.google.gson.Gson;
+
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 public class IndiceListing
@@ -112,5 +114,68 @@ public class IndiceListing
     public void setSmb(String smb)
     {
         Smb = smb;
+    }
+
+    public static IndiceListing fromJson(String json)
+    {
+
+        // class LocalDateTimeTypeAdapter implements
+        // JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime>
+        // {
+        //
+        // private final DateTimeFormatter formatter1 =
+        // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm"); //$NON-NLS-1$
+        // private final DateTimeFormatter formatter2 =
+        // DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss"); //$NON-NLS-1$
+        //
+        // @Override
+        // public JsonElement serialize(final LocalDateTime date, final Type
+        // typeOfSrc,
+        // final JsonSerializationContext context)
+        // {
+        // try
+        // {
+        // return new JsonPrimitive(date.format(formatter1));
+        // }
+        // catch (DateTimeParseException e)
+        // {
+        // return new JsonPrimitive(date.format(formatter2));
+        // }
+        //
+        // }
+        //
+        // @Override
+        // public LocalDateTime deserialize(final JsonElement json, final Type
+        // typeOfT,
+        // final JsonDeserializationContext context) throws JsonParseException
+        // {
+        // try
+        // {
+        // LocalDateTime d = LocalDateTime.parse(json.getAsString());
+        // return d;
+        // }
+        // catch (DateTimeParseException e)
+        // {
+        // try
+        // {
+        // LocalDateTime d = LocalDateTime.parse(json.getAsString());
+        // return d;
+        // }
+        // catch (DateTimeParseException f)
+        // {
+        // System.out.println(f.getMessage());
+        // return LocalDateTime.now();
+        // }
+        // }
+        // }
+        //
+        // }
+        // Gson gson = new
+        // GsonBuilder().registerTypeAdapter(LocalDateTime.class, new
+        // LocalDateTimeTypeAdapter()).create();
+        Gson gson = new Gson();
+
+        IndiceListing listing = gson.fromJson(json, IndiceListing.class);
+        return listing;
     }
 }
