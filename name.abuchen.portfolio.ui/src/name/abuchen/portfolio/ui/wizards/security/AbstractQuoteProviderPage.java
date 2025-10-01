@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
@@ -443,6 +444,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         && Set.of(AlphavantageQuoteFeed.ID, //
                                         FinnhubQuoteFeed.ID, //
                                         BinanceQuoteFeed.ID, //
+                                        MEXCQuoteFeed.ID, //
                                         BitfinexQuoteFeed.ID, //
                                         CoinGeckoQuoteFeed.ID, //
                                         KrakenQuoteFeed.ID, //

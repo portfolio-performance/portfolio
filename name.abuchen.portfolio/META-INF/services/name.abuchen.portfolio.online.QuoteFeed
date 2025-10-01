@@ -4,6 +4,7 @@ name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed
 name.abuchen.portfolio.online.impl.AMFIIndiaQuoteFeed
 name.abuchen.portfolio.online.impl.BitfinexQuoteFeed
 name.abuchen.portfolio.online.impl.BinanceQuoteFeed
+name.abuchen.portfolio.online.impl.MEXCQuoteFeed
 name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed
 name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed
 name.abuchen.portfolio.online.impl.FinnhubQuoteFeed
