@@ -1,0 +1,44 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+uSAPU oPEcb bFvdSK FECHA 01 sept 2025 - 30 sept 2025
+ZsjtXJ IKi de la RDcGim 996- SA 5 IBAN ES1234567891234567891234
+79571 vUdJSgehe BIC Tkxnvqk6YTX
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta corriente 41.372,82 € 6.991,64 € 8.251,64 € 40.112,82 €
+TRANSACCIONES DE CUENTA
+FECHA TIPO DESCRIPCIÓN ENTRADA DE SALIDA DE BALANCE
+DINERO DINERO
+22 sept 
+Transferencia Outgoing transfer for eBxhX eBxhX eBxhX 1.000,00 € 00.908,29 €
+2025
+26 sept 
+Transferencia Outgoing transfer for 1234567812345673456444 eBxhX eBxhX 200,00 € 00.436,77 €
+2025
+29 sept 
+Transferencia Outgoing transfer for 1234567812345673456444 eBxhX eBxhX 315,00 € 00.121,77 €
+2025
+RESUMEN DEL BALANCE
+a 30 sept 2025
+CUENTAS COLECTIVAS SALDO
+HSBC 00.112,82 €
+NOTAS SOBRE EL EXTRACTO DE CUENTA
+Por favor, compruebe su extracto de cuenta, cualquier objeción deberá ser planteada inmediatamente. Tenga en cuenta que el saldo de 
+la cuenta indicado no tiene en cuenta la fecha de valor de las reservas o transacciones individuales, es decir, el importe indicado no se 
+corresponde necesariamente con el saldo de la cuenta relevante para el cálculo de los intereses. Se considerará que el extracto de 
+cuenta periódico ha sido aprobado si no se presentan objeciones en un plazo de 6 semanas. Para cumplir con el plazo, basta con 
+presentar una objeción a través de nuestro servicio de atención al cliente (chat). Todos los chats son objeto de revisiones independientes 
+por parte del departamento de auditoría interna. En relación con los contratos subyacentes, este extracto de cuenta se considera una 
+factura bajo la Ley alemana del IVA (UStG) de acuerdo con el número de cuenta indicado. Los saldos mantenidos en bancos custodios 
+están protegidos hasta 100.000 € por el sistema de protección de depósitos del banco custodio. Las acciones de fondos del mercado 
+monetario cualificados (QMMF) están protegidas en el improbable caso de insolvencia de Trade Republic. Puede encontrar más 
+información sobre la protección de sus fondos en https://support.traderepublic.com.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 1 oct 2025, 8:05:37 Página 1 de 1

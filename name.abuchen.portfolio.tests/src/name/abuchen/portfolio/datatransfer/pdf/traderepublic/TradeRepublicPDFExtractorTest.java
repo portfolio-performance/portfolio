@@ -4550,6 +4550,35 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testTransaccionesDeCuenta09()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-09-22"), hasAmount("EUR", 1000.00), //
+                        hasSource("TransaccionesDeCuenta09.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-09-26"), hasAmount("EUR", 200.00), //
+                        hasSource("TransaccionesDeCuenta09.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-09-29"), hasAmount("EUR", 315.00), //
+                        hasSource("TransaccionesDeCuenta09.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testSteuerabrechnung01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
