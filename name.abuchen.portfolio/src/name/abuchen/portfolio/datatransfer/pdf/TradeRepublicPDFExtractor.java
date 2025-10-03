@@ -2449,12 +2449,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 30 Jan.
                                         // Überweisung Outgoing transfer for Anonym Anonym Anonym 1.500,00 € 3.447,09 €
                                         // 2025
+                                        //
+                                        // 22 sept
+                                        // Transferencia Outgoing transfer for eBxhX eBxhX eBxhX 1.000,00 € 00.908,29 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^(PayOut to transit" //
-                                                                        + "|(SEPA Echtzeit.berweisung |.berweisung )?Outgoing transfer for" //
+                                                                        + "|(SEPA Echtzeit.berweisung |.berweisung |Transferencia )?Outgoing transfer for" //
                                                                         + "|SEPA\\-Lastschrift).* " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
