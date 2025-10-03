@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -207,6 +208,12 @@ public class ClientFactory
 
     private static class PlainWriterZIP implements ClientPersister
     {
+        /**
+         * ZIP format (PK\x03\x04 signature)
+         * https://en.wikipedia.org/wiki/List_of_file_signatures
+         */
+        private static final byte[] SIGNATURE = { 80, 75, 3, 4 };
+
         private ClientPersister body;
 
         public PlainWriterZIP(ClientPersister body)
@@ -482,54 +489,79 @@ public class ClientFactory
         }
     }
 
-    public static Set<SaveFlag> getFlags(File file) throws IOException
+    /* package */ static Set<SaveFlag> getFlags(File file) throws IOException
     {
-        Set<SaveFlag> flags = EnumSet.noneOf(SaveFlag.class);
+        var filename = file.getName().toLowerCase(Locale.US);
 
-        if (file.getName().endsWith(".zip")) //$NON-NLS-1$
+        if (filename.endsWith(".zip")) //$NON-NLS-1$
         {
-            flags.add(SaveFlag.XML);
-            flags.add(SaveFlag.COMPRESSED);
+            return EnumSet.of(SaveFlag.XML, SaveFlag.COMPRESSED);
         }
-        else if (file.getName().endsWith(".portfolio")) //$NON-NLS-1$
+        else if (filename.endsWith(".portfolio")) //$NON-NLS-1$
         {
-            try (InputStream input = new BufferedInputStream(new FileInputStream(file)))
-            {
-                // read signature
-
-                byte[] signature = new byte[Decryptor.SIGNATURE.length];
-                int read = input.read(signature);
-                if (read != Decryptor.SIGNATURE.length)
-                    throw new IOException(
-                                    "tried to read " + Decryptor.SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
-
-                if (Arrays.equals(Decryptor.SIGNATURE, signature))
-                {
-                    flags.add(SaveFlag.ENCRYPTED);
-                }
-                else if (startsWith(new byte[] { 80, 75, 3, 4 }, signature))
-                {
-                    // https://en.wikipedia.org/wiki/List_of_file_signatures
-                    flags.add(SaveFlag.COMPRESSED);
-                }
-            }
+            return getFlagsByContent(file);
         }
-
-        if (flags.isEmpty())
+        else if (filename.endsWith(".xml")) //$NON-NLS-1$
         {
-            flags.add(SaveFlag.XML);
+            var flags = EnumSet.of(SaveFlag.XML);
             try (Reader input = new InputStreamReader(new FileInputStream(file)))
             {
-                char[] buffer = new char[80];
+                char[] buffer = new char[100];
                 input.read(buffer);
                 if (new String(buffer).contains("<client id=")) //$NON-NLS-1$
                 {
                     flags.add(SaveFlag.ID_REFERENCES);
                 }
             }
+            return flags;
         }
 
-        return flags;
+        // fallback: attempt to detect the type of the file based on the file
+        // content. We do not rely on this method only as we are conservative.
+
+        return getFlagsByContent(file);
+    }
+
+    private static Set<SaveFlag> getFlagsByContent(File file) throws IOException
+    {
+        try (var input = new BufferedInputStream(new FileInputStream(file)))
+        {
+            var buffer = new byte[100];
+            int read = input.read(buffer);
+
+            if (read < 0)
+            {
+                // Empty file - default to XML
+                return EnumSet.of(SaveFlag.XML);
+            }
+
+            // Check for encrypted format (9-byte PORTFOLIO signature)
+            if (read >= Decryptor.SIGNATURE.length && startsWith(Decryptor.SIGNATURE, buffer))
+                return EnumSet.of(SaveFlag.ENCRYPTED);
+
+            // Check for ZIP format (PK\x03\x04 signature)
+            if (read >= PlainWriterZIP.SIGNATURE.length && startsWith(PlainWriterZIP.SIGNATURE, buffer))
+                return EnumSet.of(SaveFlag.COMPRESSED);
+
+            // Check for plain XML
+            if (read > 0 && buffer[0] == '<')
+            {
+                var flags = EnumSet.of(SaveFlag.XML);
+
+                // Check for ID_REFERENCES by searching the buffered content
+                // We accept that we might create replacement characters, if the
+                // 100 splits a multi-byte UTF-8 character
+                String bufferContent = new String(buffer, 0, read, StandardCharsets.UTF_8);
+                if (bufferContent.contains("<client id=")) //$NON-NLS-1$
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+
+                return flags;
+            }
+        }
+
+        return EnumSet.of(SaveFlag.XML);
     }
 
     private static boolean startsWith(byte[] expected, byte[] actual)
