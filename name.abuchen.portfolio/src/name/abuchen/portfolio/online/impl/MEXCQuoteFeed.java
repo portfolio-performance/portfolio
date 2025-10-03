@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -29,9 +30,17 @@ import name.abuchen.portfolio.util.WebAccess;
  */
 public final class MEXCQuoteFeed implements QuoteFeed
 {
+    private static class ResponseData
+    {
+        long startTime;
+        String json;
+    }
+
     public static final String ID = "MEXC"; //$NON-NLS-1$
 
     private static final long MILLISECONDS_PER_DAY = 24L * 60 * 60 * 1000;
+
+    private final PageCache<ResponseData> cache = new PageCache<>(Duration.ofMinutes(1));
 
     @Override
     public String getId()
@@ -160,12 +169,23 @@ public final class MEXCQuoteFeed implements QuoteFeed
                             .addParameter("startTime", startTime.toString()) //$NON-NLS-1$
                             .addParameter("endTime", endTime.toString()) //$NON-NLS-1$
                             .addParameter("limit", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
-            String html = webaccess.get();
+
+            var response = cache.lookup(security.getTickerSymbol());
+
+            if (response == null || response.startTime > startTime)
+            {
+                response = new ResponseData();
+                response.startTime = startTime;
+                response.json = webaccess.get();
+
+                if (response.json != null)
+                    cache.put(security.getTickerSymbol(), response);
+            }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), html);
+                data.addResponse(webaccess.getURL(), response.json);
 
-            var ohlcItems = (JSONArray) JSONValue.parse(html);
+            var ohlcItems = (JSONArray) JSONValue.parse(response.json);
 
             convertMEXCJsonArray(ohlcItems, data);
         }
