@@ -49,19 +49,19 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wir haben am .* f.r Sie (gekauft|verkauft)");
+        var type = new DocumentType("Wir haben am .* f.r Sie (gekauft|verkauft)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Ihr Betreuerteam:.*$");
+        var firstRelevantLine = new Block("^Ihr Betreuerteam:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -88,7 +88,25 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ .* [A-Z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wir haben am 04.02.2022 an der SIX für Sie gekauft
+                                        //  19 Accum Shs Unhedged USD iSh MSCI USA Depotstelle  1
+                                        // Valor: 43695283 / IE00BFNM3G45
+                                        // Menge  19 Kurs USD 8.705 USD  165.40
+                                        //
+                                        // Wir haben am 29.07.2024 an der SIX für Sie verkauft
+                                        //  5 Accum Shs Unhedged USD iShs Jap ESG Depotstelle  1
+                                        // Valor: 43671001 / IE00BFNM3L97
+                                        // Menge  5 Kurs USD 6.68 USD  33.40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ .* Unhedged [A-Z]{3} (?<name>.*) Depotstelle.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Wir haben am 03.09.2024 an der BX Swiss für Sie gekauft
@@ -112,7 +130,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Wir haben am 09.10.2024 an der BX Swiss für Sie gekauft
@@ -125,7 +143,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -147,11 +165,33 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift 351.413.308 Valuta 31.12.2024 CHF  634.21
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Belastung|Gutschrift) .* (?<currency>[\\w]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
+                        .match("^(Belastung|Gutschrift) .* (?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // USD  165.40
+                                        // Devisenkurs  0.9206 CHF  152.25
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency", "gross") //
+                                                        .match("^(?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^Devisenkurs[\\s]+(?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})[\\s]+(?<gross>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                            var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                            var rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // Transaktion 61327806-0002
@@ -159,6 +199,8 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^(?<note>Transaktion .*)$") //
                         .assign((t, v) -> t.setNote(trim(replaceMultipleBlanks(v.get("note")))))
+
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(BuySellEntryItem::new);
 
@@ -168,19 +210,19 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
+        var type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Ertragsaussch.ttung|Dividendenzahlung) .*$");
+        var firstRelevantLine = new Block("^(Ertragsaussch.ttung|Dividendenzahlung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -196,7 +238,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .find("Aufgrund Ihres Bestandes.*") //
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
-                                                        .match("^(?<currency>[\\w]{3}) Zahlbar Datum.*$") //
+                                                        .match("^(?<currency>[A-Z]{3}) Zahlbar Datum.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -208,7 +250,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .find("Aufgrund Ihres Bestandes.*") //
-                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[\\w]{3}) Depotstelle.*$") //
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) Depotstelle.*$") //
                                                         .match("^[\\.'\\d]+ Zahlbar Datum.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -220,7 +262,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "wkn", "isin") //
                                                         .find("Aufgrund Ihres Bestandes.*") //
-                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d]+ Depotstelle.*$") //
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[A-Z]{3}) [\\.'\\d]+ Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -244,7 +286,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift 351.413.308 Valuta 26.06.2024 CHF  116.96
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Gutschrift .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
+                        .match("^Gutschrift .* Valuta [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -256,17 +298,17 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs 0.88255 CHF  116.96
                         // @formatter:on
                         .section("termCurrency", "exchangeRate", "fxGross", "baseCurrency", "gross").optional() //
-                        .match("^Brutto zu (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)$") //
-                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})[\\s]{1,}(?<gross>[\\.,\\d]+)$") //
+                        .match("^Brutto zu (?<termCurrency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)$") //
+                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})[\\s]{1,}(?<gross>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                            ExtrExchangeRate rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
+                            var rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -303,14 +345,14 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // Verrechnungssteuer 35 % CHF -77.00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer .* (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Verrechnungssteuer .* (?<currency>[A-Z]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Eidg. Umsatzabgabe CHF  5.92
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidg\\. Umsatzabgabe (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidg\\. Umsatzabgabe (?<currency>[A-Z]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -323,7 +365,14 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // Eigene Kommission (NEON) CHF -3.19
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Eigene Kommission.* (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^Eigene Kommission.* (?<currency>[A-Z]{3})[\\s]{1,}(\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Externe Ausführungsgebühr CHF  0.15
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Externe Ausf.hrungsgebühr.* (?<currency>[A-Z]{3})[\\s]{1,}(\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

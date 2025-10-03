@@ -20,6 +20,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -32,7 +33,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -41,6 +41,8 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
@@ -49,16 +51,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -80,16 +83,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -111,16 +115,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -142,16 +147,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -173,16 +179,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -204,16 +211,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -235,16 +243,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -264,18 +273,90 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf01()
+    public void testWertpapierKauf08()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3G45"), hasWkn("43695283"), hasTicker(null), //
+                        hasName("iSh MSCI USA"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-02-04T00:00"), hasShares(19.00), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Transaktion 41805757-0041"), //
+                        hasAmount("CHF", 152.63), hasGrossValue("CHF", 152.25), //
+                        hasForexGrossValue("USD", 165.40), //
+                        hasTaxes("CHF", 0.23), hasFees("CHF", 0.15))));
+    }
+
+    @Test
+    public void testWertpapierKauf08WithSecurityInCHF()
+    {
+        var security = new Security("iSh MSCI USA", "CHF");
+        security.setIsin("IE00BFNM3G45");
+        security.setWkn("43695283");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-02-04T00:00"), hasShares(19.00), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Transaktion 41805757-0041"), //
+                        hasAmount("CHF", 152.63), hasGrossValue("CHF", 152.25), //
+                        hasTaxes("CHF", 0.23), hasFees("CHF", 0.15), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -295,18 +376,90 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     }
 
     @Test
-    public void testDividende01()
+    public void testWertpapierVerkauf02()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFNM3L97"), hasWkn("43671001"), hasTicker(null), //
+                        hasName("iShs Jap ESG"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(5.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Transaktion 66334665-0076"), //
+                        hasAmount("CHF", 29.46), hasGrossValue("CHF", 29.55), //
+                        hasForexGrossValue("USD", 33.40), //
+                        hasTaxes("CHF", 0.04), hasFees("CHF", 0.05))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf02WithSecurityInCHF()
+    {
+        var security = new Security("iShs Jap ESG", "CHF");
+        security.setIsin("IE00BFNM3L97");
+        security.setWkn("43671001");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-29T00:00"), hasShares(5.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Transaktion 66334665-0076"), //
+                        hasAmount("CHF", 29.46), hasGrossValue("CHF", 29.55), //
+                        hasTaxes("CHF", 0.04), hasFees("CHF", 0.05), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -329,23 +482,24 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInCHF()
     {
-        Security security = new Security("Van FTSE All Wr", "CHF");
+        var security = new Security("Van FTSE All Wr", "CHF");
         security.setIsin("IE00B3RBWM25");
         security.setWkn("18575459");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -357,10 +511,10 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
                         hasAmount("CHF", 116.96), hasGrossValue("CHF", 116.96), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -368,16 +522,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -400,23 +555,24 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende02WithSecurityInCHF()
     {
-        Security security = new Security("SPDR S&P US Di", "CHF");
+        var security = new Security("SPDR S&P US Di", "CHF");
         security.setIsin("IE00B6YX5D40");
         security.setWkn("13976063");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -428,10 +584,10 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
                         hasAmount("CHF", 2.66), hasGrossValue("CHF", 2.66), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -439,16 +595,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -470,16 +627,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -501,16 +659,17 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
