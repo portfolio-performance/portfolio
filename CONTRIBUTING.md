@@ -238,15 +238,19 @@ Designation basic format as an example:
 
 ## Interactive-Flex-Query Importer
 
-An XML-compliant document is a file that is structured and formatted according to the rules of the eXtensible Markup Language (XML). It consists of a set of tags and attributes that contain information about the structure and content of the document.
+The Interactive Broker Flex Query importer handles XML-compliant Interactive Broker Activity Statements. The IBFlexStatementExtractor implements sophisticated XML parsing with security features and multi-currency support.
 
-A valid XML document must meet the following conditions:
+**Key Features:**
+* Secure XML parsing with XXE prevention and DOCTYPE restrictions
+* Exchange mapping from Interactive Broker to Yahoo Finance symbols
+* Multi-asset support: Stocks, Funds, Options, Certificates, Futures, Warrants, Commodities
+* Automated currency conversion and transaction matching
+* Post-processing for transaction pairing and tax treatment
 
-* It must have a root element that contains all other elements.
-* Each element must be properly closed.
-* Attributes must be defined within a start tag and their values must be specified within quotes.
-* All elements must be properly nested, i.e. they must contain each other and not overlap.
-* There must be no comments or processing instructions outside the root element.
+**Asset Category Support:**
+* STK (Stocks), FUND (Funds), IND (Indices), OPT (Options)
+* IOPT (Certificates), FUT (Futures), FOP (Future Options)
+* WAR (Warrants), CMDTY (Commodities), CASH transactions
 
 ### Source location
 
@@ -257,7 +261,26 @@ Test cases: `name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfe
 
 ### Imported transactions
 
-Imported transactions are processed in the same way as the [PDF importer](#imported-transactions-1).
+The IBFlexStatementExtractor processes complex transaction types:
+
+**Portfolio Transactions:**
+* Buy/Sell transactions with multi-currency support
+* Options transactions (calls, puts, assignments, expirations)
+* Corporate actions (stock splits, spin-offs, mergers)
+* Automated exchange rate conversion when needed
+
+**Account Transactions:**
+* Deposits/Withdrawals (based on amount sign)
+* Dividends and Payment In Lieu Of Dividends
+* Withholding Tax (including tax refunds)
+* Broker Interest (received/paid)
+* Management/Advisor Fees (including refunds)
+
+**Advanced Processing:**
+* Transaction pairing for complex trades
+* Security matching across different exchanges
+* Automated currency conversion using exchange rates
+* Post-processing to merge related transactions
 
 
 ### Naming conventions for detected elements
@@ -294,23 +317,43 @@ All available elements can be found at [ibkrguides.com](https://ibkrguides.com/r
 
 ### Test cases
 
-The test file is an XML file. People anonymize their personal information and account numbers using alternate text or number strings.
+Interactive Broker test files are XML Activity Statements. Users anonymize personal information and account numbers while preserving the XML structure and data relationships.
 
-* The test files should not be modified beyond the anonymization
-* Follow the naming convention for test files (type in the local language, two digit counter):
-	* `testIBFlexStatementFile01.xml`
-* Samples
-	*  Transaction in XML-File: [IBFlexStatementExtractorTest](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java) - see `testIBFlexStatementFile01()`
+**Test File Requirements:**
+* Valid XML structure with proper escaping
+* Anonymized account IDs, account numbers, and personal data
+* Preserved transaction relationships and amounts
+* Include all relevant asset categories and transaction types
+
+**Naming Convention:**
+* `testIBFlexStatementFile01.xml` (numbered sequence)
+* `testOptionsTransactions01.xml` (specific feature focus)
+* `testMultiCurrency01.xml` (currency conversion scenarios)
+
+**Test Coverage:**
+* Basic buy/sell transactions across asset categories
+* Complex options scenarios (calls, puts, assignments)
+* Multi-currency transactions with conversion
+* Corporate actions and special situations
+* Account transactions (deposits, fees, dividends)
+
+**Current Test Examples:**
+* [IBFlexStatementExtractorTest](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/ibflex/IBFlexStatementExtractorTest.java)
+* Tests include comprehensive transaction type coverage
+* Exchange mapping validation
+* Currency conversion verification
 
 
 ## PDF importer
 
 Importers are created for each supported bank and/or broker. The process works like this:
-* The users selects one or more PDF files via the import menu (or drags and drops multiple PDF files to the sidebar navigation)
-* Each PDF file are converted to an array of strings; one entry per line
-* Each importer is presented with the strings and applies the regular expressions to extract transactions
+* The user selects one or more PDF files via the import menu (or drags and drops multiple PDF files to the sidebar navigation)
+* Each PDF file is converted to an array of strings; one entry per line using PDFBox3 (or PDFBox1 for legacy)
+* The PDFImportAssistant coordinates multiple extractors and presents each file to all registered extractors
+* Each extractor applies regular expressions to extract transactions and returns matching results
+* Results are collected, deduplicated, and presented to the user for import
 
-If you want to add an importer for a new bank or a new transaction type, check out the existing importers for naming conventions, structure, formatting, etc.
+If you want to add an importer for a new bank or a new transaction type, check out the current reference implementations for naming conventions, structure, formatting, etc.
 
 
 ### Debug information
@@ -410,18 +453,26 @@ The importers are structured according to the following scheme and the mapping v
    * `fee` --> Amount
    * `currency` --> Currency
 
-A finished PDF importer as a basis would be e.g. the [V-Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/VBankAGPDFExtractor.java) PDF importer.
+**Current reference implementations** (most up-to-date patterns):
+* [Baader Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/BaaderBankPDFExtractor.java) - Comprehensive modern implementation with multiple transaction types
+* [Comdirect Bank AG](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/ComdirectPDFExtractor.java) - Advanced post-processing and document pairing
+* [Saxo Bank A/S](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/SaxoBankPDFExtractor.java) - Modern pattern matching with complex `.oneOf()` sections
 
 
 ### Auxiliary classes
 
-The utility class about standardized conversions, is called by the [AbstractPDFExtractor](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java)
-and processed in the [ExtractorUtils](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorUtils.java).
-The [ExtrExchangeRate](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtrExchangeRate.java) helps processing for foreign currencies.
+The utility classes handle standardized conversions and processing:
 
-Use the [Money](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (it includes the currency and the value rounded to cents). Use *BigDecimal* for exchange rates and the conversion between currencies.
+* [AbstractPDFExtractor](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/AbstractPDFExtractor.java) - Base class for all PDF extractors
+* [PDFImportAssistant](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFImportAssistant.java) - Coordinates the import process and manages all extractors
+* [PDFInputFile](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/pdf/PDFInputFile.java) - Handles PDF-to-text conversion and test case loading
+* [ExtractorUtils](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorUtils.java) - Utility functions for amount conversion, tax/fee processing
+* [ExtrExchangeRate](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtrExchangeRate.java) - Handles foreign currency processing
+* [ExtractorMatchers](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/datatransfer/ExtractorMatchers.java) - Modern matcher patterns for test cases
 
-Use [TextUtil](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) class for some string manipulation such as trimming strings and stripping whitespace characters. The text created from PDF files has some corner cases that are not supported by the usual Java methods.
+Use the [Money](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/money/Money.java) class when working with amounts (includes currency and value rounded to cents). Use *BigDecimal* for exchange rates and currency conversions.
+
+Use [TextUtil](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio/src/name/abuchen/portfolio/util/TextUtil.java) for string manipulation such as trimming and stripping whitespace. PDF text conversion has corner cases not supported by standard Java methods.
 
 
 ### Formatting of PDF importer
@@ -448,11 +499,10 @@ Via the application menu, users can create a test case file. The test file is th
 	* `GiroKontoauzug01.txt` --> Giro account statement
 	* `KreditKontoauszug01.txt` --> Credit card account statement
 	* `Depotauszug01.txt` --> security account transaction history (settlement account)
-* Samples
-	* From April 2023 we will use the simplified notation of test cases (preferred variant)
-	   * [Baader Bank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/baaderbank/BaaderBankPDFExtractorTest.java) with `testWertpapierKauf23()`
-	   * [Sbroker](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testDividende11()`
-	   * [Sbroker](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/sbroker/SBrokerPDFExtractorTest.java) with `testGiroKontoauszug10()`
+* **Modern test patterns** (preferred - use ExtractorMatchers):
+	* [Baader Bank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/baaderbank/BaaderBankPDFExtractorTest.java) - Modern ExtractorMatchers usage with `purchase()`, `security()`, `hasAmount()`, etc.
+	* [Comdirect](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/comdirect/ComdirectPDFExtractorTest.java) - Complex scenarios with document pairing and post-processing
+	* [Saxo Bank](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/saxobank/SaxoBankPDFExtractorTest.java) - Multi-language and complex pattern matching tests
 	*  one transaction per PDF (old version): [Erste Bank Gruppe](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) - see `testWertpapierKauf06()` and `testDividende05()`
 	* supporting securities with multiple currencies: [Erste Bank Gruppe](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.tests/src/name/abuchen/portfolio/datatransfer/pdf/erstebank/erstebankPDFExtractorTest.java) with `testWertpapierKauf09()` / `testWertpapierKauf09WithSecurityInEUR()` and `testDividende10()`/`testDividende10WithSecurityInEUR()`
 		* Background: in the PP model, the currency of the transaction always must match the currency of the security and its historical prices. However, sometimes securities are purchased on an different exchange with prices in an another currency. The importer try to handle this case automatically. This is reflected in the two test cases
