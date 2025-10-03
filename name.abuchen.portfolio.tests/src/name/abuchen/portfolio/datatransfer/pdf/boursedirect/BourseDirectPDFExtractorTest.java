@@ -147,8 +147,8 @@ public class BourseDirectPDFExtractorTest
                         hasDate("2025-08-05T16:35:33"), hasShares(7.00), //
                         hasSource("ReleveDeCompte02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 363.59), hasGrossValue("EUR", 362.60), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+                        hasAmount("EUR", 363.59), hasGrossValue("EUR", 361.15), //
+                        hasTaxes("EUR", 1.45), hasFees("EUR", 0.99))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
