@@ -1,5 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -33,14 +41,43 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("Avis d.Op.ration", //
-                        documentContext -> documentContext //
-                        // @formatter:off
-                        // Date Désignation Débit (€) Crédit (€)
-                        // @formatter:on
-                                        .section("currency") //
-                                        .match("^Date D.signation D.bit \\((?<currency>\\p{Sc})\\).*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        final var type = new DocumentType("Avis d.Op.ration", (context, lines) -> {
+            var pTaxAmountTransaction = Pattern.compile("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]+TAXE TRANSACT FINANCIERES[\\s]+(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]+TTF[\\s]+(?<tax>[\\d]+,[\\d]{2})$");
+
+            var taxAmountTransactionHelper = new TaxAmountTransactionHelper();
+            context.putType(taxAmountTransactionHelper);
+
+            List<TaxAmountTransactionItem> itemsToAddToFront = new ArrayList<>();
+
+            // Add items from pTaxAmountTransaction to the beginning of the list
+            taxAmountTransactionHelper.items.addAll(0, itemsToAddToFront);
+
+            for (var i = 0; i < lines.length; i++)
+            {
+                // Extract currency from header line
+                if (lines[i].matches("^Date D.signation D.bit \\((?<currency>\\p{Sc})\\).*$"))
+                {
+                    var currencyMatcher = Pattern.compile("^Date D.signation D.bit \\((?<currency>\\p{Sc})\\).*$").matcher(lines[i]);
+                    if (currencyMatcher.matches())
+                    {
+                        context.put("currency", asCurrencyCode(currencyMatcher.group("currency")));
+                    }
+                }
+
+                var m = pTaxAmountTransaction.matcher(lines[i]);
+                if (m.matches())
+                {
+                    var item = new TaxAmountTransactionItem();
+                    item.line = i + 1;
+                    item.dateTime = asDate(m.group("date"));
+                    item.isin = m.group("isin");
+                    item.tax = asAmount(m.group("tax"));
+                    item.currency = asCurrencyCode(context.get("currency"));
+
+                    taxAmountTransactionHelper.items.add(item);
+                }
+            }
+        });
 
         this.addDocumentTyp(type);
 
@@ -92,6 +129,15 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            var taxAmountTransactionHelper = type.getCurrentContext().getType(TaxAmountTransactionHelper.class).orElseGet(TaxAmountTransactionHelper::new);
+                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTime(), t.getPortfolioTransaction().getSecurity().getIsin());
+
+                            if (item.isPresent())
+                            {
+                                var tax = Money.of(item.get().currency, item.get().tax);
+                                checkAndSetTax(tax, t, type.getCurrentContext());
+                            }
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -194,6 +240,47 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*COURTAGE :[\\s]{1,}\\+(?<fee>[\\d\\s]+,[\\d]{2})[\\s]{1,}TVA :[\\s]{1,}\\+[\\d\\s]+,[\\d]{2}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private static class TaxAmountTransactionHelper
+    {
+        private List<TaxAmountTransactionItem> items = new ArrayList<>();
+
+        /**
+         * Finds a TaxAmountTransactionItem in the list that has a line number
+         * greater than or equal to the specified line and matches the given
+         * date and ISIN.
+         *
+         * @param line
+         *            The line number to compare against.
+         * @param date
+         *            The date to match.
+         * @param isin
+         *            The ISIN to match.
+         * @return An Optional containing the matching TaxAmountTransactionItem,
+         *         or empty if no match is found.
+         */
+        public Optional<TaxAmountTransactionItem> findItem(int line, LocalDateTime date, String isin)
+        {
+            return items.stream()
+                            .filter(item -> item.line >= line && item.dateTime.toLocalDate().isEqual(date.toLocalDate()) && item.isin.equals(isin))
+                            .findFirst();
+        }
+    }
+
+    private static class TaxAmountTransactionItem
+    {
+        public int line;
+        public LocalDateTime dateTime;
+        public String isin;
+        public long tax;
+        public String currency;
+
+        @Override
+        public String toString()
+        {
+            return "TaxAmountTransactionItem [line=" + line + ", dateTime=" + dateTime + ", isin=" + isin + ", currency=" + currency + ", tax=" + tax + "]";
+        }
     }
 
     @Override
