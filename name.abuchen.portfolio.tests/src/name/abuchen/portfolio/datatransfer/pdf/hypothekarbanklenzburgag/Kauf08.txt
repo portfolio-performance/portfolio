@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Hypothekarbank Lenzburg AG
+5600 Lenzburg 1 | Telefon +41 62 885 11 11
+BC 8307 | PC 50-69-8 | HYPLCH22
+info@hbl.ch | www.hbl.ch | CHE-105.779.532 MWST
+E-Post
+JLHu
+irW IBgBJlM aPKXB
+KwAtTtnqULXJ 84
+4236 rUMdiDRX
+Ihr Betreuerteam: Team EVV / Tel. +41 62 885 12 50
+Lenzburg, 04.02.2022 Seite 1 von 1
+Börse / Kauf Portfolio  123.456.789  Portfolio EVV
+Transaktion 41805757-0041
+Wir haben am 04.02.2022 an der SIX für Sie gekauft
+ 19 Accum Shs Unhedged USD iSh MSCI USA Depotstelle  1
+Valor: 43695283 / IE00BFNM3G45
+Menge  19 Kurs USD 8.705 USD  165.40
+USD  165.40
+Devisenkurs  0.9206 CHF  152.25
+Externe Ausführungsgebühr CHF  0.15
+Eidg. Umsatzabgabe CHF  0.23
+Belastung 123.456.780 Valuta 08.02.2022 CHF  152.63
+Konto EVV
+Die Titel buchen wir in Ihr Portfolio ein.
+Dieser Auftrag erfolgte ohne Beratung durch die Bank.
+Freundliche Grüsse
+Hypothekarbank Lenzburg AG
+Anzeige ohne Unterschrift
