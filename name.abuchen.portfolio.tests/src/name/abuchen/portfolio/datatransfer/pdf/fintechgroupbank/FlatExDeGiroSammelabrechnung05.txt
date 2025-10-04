@@ -1,0 +1,70 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.16.e430-v0790
+-----------------------------------------
+ﬂatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@ﬂatex.de
+ﬂatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0303502000005187548090
+Herrn
+Max Mustermann
+ST Musterbezirk
+Zum Mustermann 77
+12345 Musterdorf
+          Frankfurt, 23.09.2025
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 1001111111
+Depotinhaber:     Max Mustermann
+Nr.300446483/1    Kauf                VONT.FINL PR MINIL (DE000VK9A2S8/VK9A2S)
+Ordervolumen  : 140,00 St.              Handelsplatz  :               Vontobel
+davon ausgef. : 140,00 St.              Schlusstag    :  22.09.2025, 13:04 Uhr
+Kurs          : 10,5500 EUR             Kurswert      :           1.477,00 EUR
+Devisenkurs   :                         Provision     :               3,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+Gewinn/Verlust: 0,00 EUR                grundlage     :               0,00 EUR
+Valuta        : 24.09.2025            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1.480,90 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             0,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :               0,00 EUR
+                                Solidaritätszuschlag  :               0,00 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu ﬁnden Sie im Steuerreport unter der Transaktion-Nr.:
+    4485191452.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1001111111
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz
+2000005187548090 0113303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreﬀen. Kapitalerträge sind ESt-pﬂichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr ﬂatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz
+2000005187548090
