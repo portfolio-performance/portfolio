@@ -4,6 +4,33 @@
 
 Portfolio Performance is an Eclipse RCP (Rich Client Platform) application for tracking and analyzing investment portfolios. The codebase uses Java 21, Maven with Tycho for builds, and follows a modular plugin-based architecture.
 
+## CC-Sessions Workflow System
+
+This project uses **CC-Sessions** for structured task management and workflow enforcement.
+
+**📖 Complete Guide:** See `@CC-SESSIONS.md` for:
+- DAIC Mode (Discussion → Implementation workflow)
+- Task management with persistent context
+- Trigger phrases and branch enforcement
+- Context compaction and agent usage
+
+**Quick Start:**
+- Create task: `"Create a task for: [description]"`
+- Start work: `"Let's work on m-task-name"`
+- Enable implementation: `"go ahead"` / `"los geht's"`
+- Return to discussion: `daic`
+
+**PDF Importer Quick Commands:**
+- New PDF importer: `/pdf-importer BankName Kauf01.txt Dividende01.txt`
+- Debug existing importer: `/pdf-debug BankName Kauf01.txt Buy01.txt`
+
+**Specialized Guides:**
+- **PDF Importer Development**: `@sessions/knowledge/pdf-importer.md`
+  - 5-Phase TDD Workflow
+  - 7 Mandatory Test Assertions
+  - Standard Forex Attributes
+  - Common Pitfalls Documentation
+
 ## Build and Development Commands
 
 ### Build Commands

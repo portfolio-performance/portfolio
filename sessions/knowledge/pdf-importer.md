@@ -122,7 +122,7 @@ import name.abuchen.portfolio.money.Money;
 // Missing imports → "cannot find symbol" compilation error
 ```
 
-### 5 Common Pitfalls (Avoid These!)
+### 6 Common Pitfalls (Avoid These!)
 
 **Pitfall 1: Wrong DocumentType**
 - ❌ Modifying Format01 when document matches Format02's DocumentType
@@ -156,6 +156,16 @@ import name.abuchen.portfolio.money.Money;
   new AssertImportActions().check(results, "EUR");         // ⚠️ REQUIRED #7
   ```
 
+**Pitfall 6: Missing Currency on Security Creation**
+- ❌ Creating a Security without assigning a currency (null or implicit default).
+- ❌ Assuming currency will be set “later” during processing.
+- ✅ Every Security must always have a currency – no exceptions.
+- ✅ Add explicit check after securityCache.lookup:
+  ```java
+  if (security.getCurrencyCode() == null) {
+    throw new IllegalArgumentException("Security must always have a currency: " + values);
+  }
+  ```
 ---
 
 ## 📑 Table of Contents - Jump to Section
