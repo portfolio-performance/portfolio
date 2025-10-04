@@ -68,6 +68,32 @@ fxGross        - Foreign currency gross value
 })
 ```
 
+### 🔴 CRITICAL: Forex Section Ordering Rule
+
+**⚠️ Section Order is IMPLEMENTATION-DEPENDENT - Always check existing extractor first!**
+
+**Pattern: Amount FIRST, Forex AFTER:**
+```java
+// ✅ Used when forex is added as optional Unit to existing amount
+.section("date")
+.match("^Zahlbarkeitstag (?<date>...)$")
+.assign(...)
+
+.section("amount", "currency")
+.match("^Ausmachender Betrag ...")  // ✅ Amount FIRST
+.assign(...)
+
+.section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
+.match("^Devisenkurs ...")  // ✅ Forex AFTER as optional enrichment
+.assign(...)
+```
+
+**How to Choose the Right Order:**
+1. 🔍 **FIRST: Check existing similar transactions in same extractor**
+2. 📋 Copy the section ordering from similar transaction types
+3. ✅ If both dividends exist: Follow their pattern
+4. ⚠️ If unsure: Try Pattern 1 (Amount FIRST) - it's more common
+
 ### 7 Mandatory Test Assertions (🔴 CRITICAL - Copy This EVERY Time!)
 ```java
 // ⚠️⚠️⚠️ Copy this ENTIRE block for EVERY test - NO EXCEPTIONS! ⚠️⚠️⚠️
@@ -82,6 +108,18 @@ new AssertImportActions().check(results, "EUR");         // 7. Validate actions
 
 // 🚨 IMPORTANT: countAccountTransfers is the MOST FORGOTTEN assertion!
 // 🚨 ALWAYS include it, even when value is is(0L)!
+```
+
+### Required Imports for Forex Support (🔴 CRITICAL!)
+```java
+// ⚠️ When adding exchange rate/forex sections, ALWAYS verify these imports exist:
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import name.abuchen.portfolio.money.Money;
+
+// Quick validation command:
+// grep "checkAndSetGrossUnit" YourExtractor.java
+// grep "import.*Money" YourExtractor.java
+// Missing imports → "cannot find symbol" compilation error
 ```
 
 ### 5 Common Pitfalls (Avoid These!)
@@ -141,7 +179,178 @@ new AssertImportActions().check(results, "EUR");         // 7. Validate actions
 
 ## 📋 MODIFICATION WORKFLOW - Follow This Sequence
 
-### Step-by-Step Checklist
+### 🎯 Practical Implementation Workflow (Test-Driven Development)
+
+**Philosophy: Write Tests FIRST, then implement patterns incrementally**
+
+```
+PHASE 1: PREPARATION (Before Writing ANY Code)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ 1.1 READ TEST .TXT FILE FIRST ⚠️ MOST CRITICAL STEP!
+      Use Read tool on: name.abuchen.portfolio.tests/.../Kauf03.txt
+      └─ Identify exact text patterns:
+         • Document header (for DocumentType)
+         • Security name format
+         • Date fields (Zahlbarkeitstag? Handelstag?)
+         • Forex section (Devisenkurs format)
+         • Amount format
+         • Any intermediate lines between patterns
+
+□ 1.2 GREP FOR EXISTING EXTRACTOR
+      grep -n "class.*PDFExtractor" to find extractor file
+      └─ Open and READ existing extractor code
+
+□ 1.3 FIND SIMILAR TRANSACTION IN EXTRACTOR
+      Search for existing Dividende/Kauf methods
+      └─ Check their section ordering (Amount FIRST or Forex FIRST?)
+      └─ Copy their pattern structure as template
+
+
+PHASE 2: WRITE TESTS (Make Them Fail First!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ 2.1 CREATE TEST METHOD
+      Add test method to ExtractorTest.java
+      └─ Use naming: testWertpapierKauf03() / testDividende03()
+      └─ Copy 7-assertion template from CLAUDE-IMPORTER.md (line 97-107)
+      └─ Fill in expected values from .txt file:
+         • hasDate() - use Zahlbarkeitstag, NOT Devisenkursdatum!
+         • hasShares() - exact shares from PDF
+         • hasAmount() - Ausmachender Betrag
+         • hasGrossValue() - before taxes/fees
+         • hasForexGrossValue() - ONLY if forex exists
+
+□ 2.2 ADD WithSecurityInEUR TEST (if forex exists)
+      └─ Pre-create Security with EUR currency
+      └─ NO hasForexGrossValue() in this test!
+      └─ Add CheckCurrenciesAction validation with Account + setCurrencyCode()
+
+□ 2.3 RUN TESTS - EXPECT FAILURES!
+      mvn verify -Dtest=BankPDFExtractorTest
+      └─ Tests SHOULD fail - that's correct!
+      └─ Note error messages for next phase
+
+
+PHASE 3: IMPLEMENT EXTRACTOR PATTERNS (Incrementally!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ 3.1 CHECK/UPDATE DOCUMENTTYPE PATTERN
+      Find: new DocumentType("...")
+      └─ Does it match your document header?
+      └─ If not: Extend pattern: "(OldPattern|NewPattern)"
+      └─ Run test → Check if document is recognized
+
+□ 3.2 CHECK/UPDATE BLOCK TRIGGER
+      Find: new Block("^...$")
+      └─ Does it match first line of your document?
+      └─ Use flexible pattern (city name, not street!)
+      └─ Example: "^.*Hammelburg.*$" instead of "^Am Marktplatz.*$"
+      └─ Run test → Check if block triggers
+
+□ 3.3 ADD/UPDATE SECURITY SECTION
+      Check existing .section("isin", "name", "wkn", "currency")
+      └─ Does pattern match your security name format?
+      └─ Make pattern flexible: (?<name>.*) instead of exact match
+      └─ Run test → Check if security is extracted
+
+□ 3.4 ADD/UPDATE DATE SECTION
+      Check existing .section("date")
+      └─ Match correct date field (Zahlbarkeitstag, NOT Devisenkursdatum!)
+      └─ Run test → Check if date is correct
+
+□ 3.5 ADD/UPDATE SHARES SECTION
+      Check existing .section("shares")
+      └─ Match shares pattern from PDF
+      └─ Run test → Check if shares are correct
+
+□ 3.6 ADD/UPDATE AMOUNT SECTION
+      Check existing .section("amount", "currency")
+      └─ Match "Ausmachender Betrag" pattern
+      └─ Run test → Check if amount is correct
+
+□ 3.7 ADD FOREX SECTION (if needed)
+      ⚠️ CHECK: Where do similar transactions put forex?
+      └─ Amount FIRST → Add forex AFTER amount section
+      └─ Forex FIRST → Add forex BEFORE amount section
+
+      Add required imports:
+      └─ import static ...ExtractorUtils.checkAndSetGrossUnit;
+      └─ import ...money.Money;
+
+      Pattern structure:
+      └─ .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional()
+      └─ .match("^Devisenkurs ...")
+      └─ .match("^Aussch.ttung ...") // or skip intermediate lines
+      └─ .assign((t, v) -> {
+             var rate = asExchangeRate(v);
+             type.getCurrentContext().putType(rate);
+             var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+             var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+         })
+
+      Run test → Check if forex is extracted
+
+□ 3.8 ADD TAXES/FEES SECTIONS
+      Check existing tax/fee sections
+      └─ Extend or add new patterns
+      └─ Run test → Check if taxes/fees correct
+
+
+PHASE 4: DEBUG COMMON FAILURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+If test fails with specific errors:
+
+❌ "NullPointerException"
+   → Missing import or wrong named group
+   → Check: grep "import.*checkAndSetGrossUnit"
+   → Check: Named groups match .attributes() exactly
+
+❌ "forexGrossValue = null" in WithSecurityInEUR test
+   → Forex section in wrong position
+   → Move forex section according to extractor pattern (Amount FIRST or Forex FIRST)
+
+❌ "Pattern doesn't match"
+   → Read .txt file again - are there intermediate lines?
+   → Use .match() to skip intermediate lines: .match("^Devisenkursdatum .*$")
+   → Or use .find() instead of .match() for flexibility
+
+❌ "Date is wrong" (e.g., 2025-10-02 instead of 2025-10-01)
+   → Using wrong date field!
+   → Use Zahlbarkeitstag/Valutadatum, NOT Devisenkursdatum!
+
+❌ "Security not found"
+   → Pattern too restrictive
+   → Make more flexible: (?<name>.*) instead of exact string
+
+❌ "Block not triggered"
+   → Block pattern too specific (street address instead of city)
+   → Use flexible pattern: "^.*Hammelburg.*$"
+
+
+PHASE 5: FINAL VERIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+□ 5.1 RUN ALL TESTS FOR THIS EXTRACTOR
+      mvn verify -Dtest=BankPDFExtractorTest
+      └─ All tests green? ✅ Continue
+      └─ Any test red? → Fix before proceeding
+
+□ 5.2 VERIFY TEST HAS ALL 7 ASSERTIONS
+      Count assertions in your test:
+      1. assertThat(errors, empty())
+      2. assertThat(countSecurities(results), is(...))
+      3. assertThat(countBuySell(results), is(...))
+      4. assertThat(countAccountTransactions(results), is(...))
+      5. assertThat(countAccountTransfers(results), is(...)) ← Often forgotten!
+      6. assertThat(results.size(), is(...))
+      7. new AssertImportActions().check(results, "EUR")
+
+□ 5.3 VERIFY TEST ORDERING
+      Tests must be sorted:
+      1. By transaction type (Kauf → Verkauf → Dividende)
+      2. By number (01, 02, 03)
+      3. WithSecurityInEUR grouped with base test
+```
+
+### Step-by-Step Checklist (Quick Reference)
 
 ```
 □ Step 1: READ TEST FILE FIRST
@@ -919,6 +1128,84 @@ public void testTransactionWithSecurityInEUR()
 - **Forex Amounts**: Test both local and foreign currency amounts with `hasForexGrossValue()`
 - **Exchange Rate Handling**: Verify proper currency conversion calculations
 
+**⚠️ IMPORTANT: CheckCurrenciesAction Differs by Transaction Type!**
+
+For **PortfolioTransaction** (Buy/Sell):
+```java
+check(tx -> {
+    var c = new CheckCurrenciesAction();
+    var s = c.process((PortfolioTransaction) tx, new Portfolio());
+    assertThat(s, is(Status.OK_STATUS));
+})
+```
+
+For **AccountTransaction** (Dividends/Interest/...):
+```java
+check(tx -> {
+    var c = new CheckCurrenciesAction();
+    var account = new Account();
+    account.setCurrencyCode("EUR");  // ⚠️ MUST set currency for Account!
+    var s = c.process((AccountTransaction) tx, account);
+    assertThat(s, is(Status.OK_STATUS));
+})
+```
+
+**Key Differences:**
+- PortfolioTransaction uses `new Portfolio()` (no currency needed)
+- AccountTransaction uses `new Account()` and **MUST** call `setCurrencyCode("EUR")` first!
+
+### 🚨 Common Mistake: hasForexGrossValue in WithSecurityInEUR Tests
+
+**CRITICAL:** Do NOT expect `hasForexGrossValue()` in WithSecurityInEUR tests!
+
+**Base Test (security created from PDF in USD):**
+```java
+@Test
+public void testDividende03() {
+    var extractor = new BankPDFExtractor(new Client());  // No pre-existing security
+    var results = extractor.extract(...);
+
+    // Security will be created in USD (from PDF)
+    assertThat(results, hasItem(security(hasCurrencyCode("USD"))));
+
+    // ✅ Has forexGrossValue because security is USD, account is EUR
+    assertThat(results, hasItem(dividend(
+        hasAmount("EUR", 1.13),
+        hasGrossValue("EUR", 1.38),
+        hasForexGrossValue("USD", 1.63),  // ✅ Forex conversion happened
+    )));
+}
+```
+
+**WithSecurityInEUR Test (security pre-exists in EUR):**
+```java
+@Test
+public void testDividende03WithSecurityInEUR() {
+    var security = new Security("...", "EUR");  // Security currency = EUR
+    security.setIsin("...");
+
+    var client = new Client();
+    client.addSecurity(security);  // Pre-populate with EUR security
+
+    var extractor = new BankPDFExtractor(client);
+    var results = extractor.extract(...);
+
+    // ❌ NO hasForexGrossValue - security currency matches account currency!
+    assertThat(results, hasItem(dividend(
+        hasAmount("EUR", 1.13),
+        hasGrossValue("EUR", 1.38),
+        // ✅ NO hasForexGrossValue here - transaction is direct EUR-to-EUR
+        hasTaxes("EUR", 0.25),
+    )));
+}
+```
+
+**Rule:**
+- **Security currency = Account currency** → NO forexGrossValue (no conversion needed)
+- **Security currency ≠ Account currency** → HAS forexGrossValue (conversion required)
+
+**Real Example:** MerkurPrivatBankPDFExtractorTest.java:354-360 vs 388-400
+
 #### For Multi-Language Test Cases
 **Reference: `SaxoBankPDFExtractorTest.java`**
 - Multi-language document testing
@@ -926,6 +1213,30 @@ public void testTransactionWithSecurityInEUR()
 - DocumentContext testing patterns
 
 ## Regex Patterns
+
+### Multi-Line Patterns with Intermediate Lines
+
+**Common Issue:** Unexpected lines between expected patterns cause matches to fail
+
+**Example Problem:**
+```
+Line 1: Devisenkurs EUR / USD  1,1802
+Line 2: Devisenkursdatum 02.10.2025
+Line 3: Ausschüttung 1,63 USD 1,38+ EUR
+```
+
+**✅ Correct Solution:**
+```java
+// If Devisenkursdatum is always present but you don't need it:
+.match("^Devisenkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3})[\\s]+(?<exchangeRate>[\\.,\\d]+)$")
+.match("^Aussch.ttung (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}$")
+```
+
+**Key Points:**
+- ALWAYS read the complete test .txt file first
+- Don't assume consecutive lines - check for intermediate content
+- Use `.*$` to match lines you don't need data from
+- Use `.find()` for flexibility if line order varies
 
 ### Proven Patterns (from CONTRIBUTING.md)
 
@@ -1135,6 +1446,36 @@ This pattern is used consistently across all PDF extractors for better readabili
 - Group related sections logically
 
 ### Testing
+
+#### Date Field Selection Guide
+
+**Critical:** Use the correct date field from PDF for transaction date
+
+| PDF Field Name | Description | Use for Transaction Date? |
+|---------------|-------------|---------------------------|
+| **Zahlbarkeitstag** | Payment execution date | ✅ **YES** - Primary choice |
+| **Valutadatum** | Value date (when money moves) | ✅ **YES** - Primary choice |
+| **Handelstag** | Trade execution date | ✅ **YES** - For buy/sell |
+| **Buchungstag** | Booking date | ✅ **YES** - Alternative |
+| **Devisenkursdatum** | Exchange rate reference date | ❌ **NO** - Not transaction date! |
+| **Ex-Tag** | Ex-dividend date | ❌ **NO** - Informational only |
+| **Geschäftsjahr** | Fiscal year | ❌ **NO** - Not a date |
+
+**Rule of Thumb:** Use the date when **money actually moved**, not reference/informational dates.
+
+**Example from MerkurPrivatBank Dividende03.txt:**
+```
+Zahlbarkeitstag 01.10.2025      ← ✅ Use this for hasDate("2025-10-01")
+Bestandsstichtag 17.09.2025     ← ❌ Don't use
+Ex-Tag 18.09.2025               ← ❌ Don't use
+Devisenkursdatum 02.10.2025     ← ❌ Don't use - this is just the FX rate date
+```
+
+**Test Assertion:**
+```java
+hasDate("2025-10-01T00:00")  // ✅ Correct - using Zahlbarkeitstag
+hasDate("2025-10-02T00:00")  // ❌ Wrong - using Devisenkursdatum
+```
 
 #### Test Case Organization and Sorting
 Follow consistent naming patterns for test methods and files:
