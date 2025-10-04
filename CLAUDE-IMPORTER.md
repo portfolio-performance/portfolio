@@ -19,10 +19,15 @@ Apply the general project standards from `CLAUDE.md` alongside the PDF-specific 
 ### Critical First Steps (Do These FIRST!)
 
 1. **📖 ALWAYS read the test file first** - Use Read tool on the .txt file to see exact text
-2. **🔍 Find the correct DocumentType** - Grep for document header pattern
-3. **✅ Use standard attributes** - `baseCurrency`, `termCurrency`, `exchangeRate`, `fxGross`
-4. **🔄 Search for similar patterns** - Extend existing patterns instead of duplicating
-5. **⚠️ Include ALL 7 test assertions** - NEVER skip any (see template below)
+2. **📁 Check filename for method hint** - Filename indicates which method to use:
+   - `Kauf01.txt` → use `addBuySellTransaction()`
+   - `Verkauf03.txt` → use `addBuySellTransaction()`
+   - `Dividende02.txt` → use `addDividendeTransaction()` (or extend it if needed)
+3. **🔍 Find the correct DocumentType** - Grep for document header pattern
+4. **🔄 Extend, don't create new** - Check if you can extend existing method (e.g., extend `addDividendeTransaction` instead of creating `addDividendeNettoTransaction`)
+5. **✅ Use standard attributes** - `baseCurrency`, `termCurrency`, `exchangeRate`, `fxGross`
+6. **📝 Copy test template** - Use the 7-assertion template below, don't copy from existing tests (they might be incomplete!)
+7. **⚠️ Verify ALL 7 assertions** - Count them! Missing `countAccountTransfers` is the #1 mistake!
 
 ### Standard Exchange Rate Attributes (MEMORIZE THIS)
 ```
@@ -63,16 +68,20 @@ fxGross        - Foreign currency gross value
 })
 ```
 
-### 7 Mandatory Test Assertions (ALWAYS Copy This Block!)
+### 7 Mandatory Test Assertions (🔴 CRITICAL - Copy This EVERY Time!)
 ```java
-// ⚠️ Copy this ENTIRE block for EVERY test - adjust numbers only!
+// ⚠️⚠️⚠️ Copy this ENTIRE block for EVERY test - NO EXCEPTIONS! ⚠️⚠️⚠️
+// Missing even ONE assertion = incomplete test = will be rejected!
 assertThat(errors, empty());                              // 1. Check no errors
 assertThat(countSecurities(results), is(1L));            // 2. Count securities
 assertThat(countBuySell(results), is(1L));               // 3. Count buy/sell
 assertThat(countAccountTransactions(results), is(0L));   // 4. Count account txns
-assertThat(countAccountTransfers(results), is(0L));      // 5. Count transfers
+assertThat(countAccountTransfers(results), is(0L));      // 5. Count transfers ⚠️ OFTEN FORGOTTEN!
 assertThat(results.size(), is(2));                       // 6. Total count
 new AssertImportActions().check(results, "EUR");         // 7. Validate actions
+
+// 🚨 IMPORTANT: countAccountTransfers is the MOST FORGOTTEN assertion!
+// 🚨 ALWAYS include it, even when value is is(0L)!
 ```
 
 ### 5 Common Pitfalls (Avoid These!)
@@ -93,17 +102,20 @@ new AssertImportActions().check(results, "EUR");         // 7. Validate actions
 - ❌ Pattern only matches "Registered Shares" but document has "Accum Shs Unhedged USD"
 - ✅ Use flexible patterns: `(?<name>.*?)` or broader regex
 
-**Pitfall 5: Incomplete Standard Test Assertions**
-- ❌ Skipping ANY of the standard assertions (countSecurities, countBuySell, countAccountTransactions, countAccountTransfers)
-- ✅ ALWAYS include ALL standard assertions in this EXACT order - NO EXCEPTIONS:
+**Pitfall 5: Incomplete Standard Test Assertions (🔴 MOST COMMON ERROR!)**
+- ❌ Missing `countAccountTransfers` - the MOST FORGOTTEN assertion!
+- ❌ Skipping ANY of the 7 mandatory assertions
+- ❌ Looking at existing tests that might be incomplete - OLD tests may be wrong!
+- ✅ ALWAYS copy the complete template from Quick Reference (lines 66-80)
+- ✅ VERIFY: Does your test have ALL 7 assertions? Count them!
   ```java
-  assertThat(errors, empty());                              // ⚠️ REQUIRED
-  assertThat(countSecurities(results), is(1L));            // ⚠️ REQUIRED
-  assertThat(countBuySell(results), is(1L));               // ⚠️ REQUIRED
-  assertThat(countAccountTransactions(results), is(0L));   // ⚠️ REQUIRED
-  assertThat(countAccountTransfers(results), is(0L));      // ⚠️ REQUIRED
-  assertThat(results.size(), is(2));                       // ⚠️ REQUIRED
-  new AssertImportActions().check(results, "EUR");         // ⚠️ REQUIRED
+  assertThat(errors, empty());                              // ⚠️ REQUIRED #1
+  assertThat(countSecurities(results), is(1L));            // ⚠️ REQUIRED #2
+  assertThat(countBuySell(results), is(1L));               // ⚠️ REQUIRED #3
+  assertThat(countAccountTransactions(results), is(0L));   // ⚠️ REQUIRED #4
+  assertThat(countAccountTransfers(results), is(0L));      // ⚠️ REQUIRED #5 ← OFTEN FORGOTTEN!
+  assertThat(results.size(), is(2));                       // ⚠️ REQUIRED #6
+  new AssertImportActions().check(results, "EUR");         // ⚠️ REQUIRED #7
   ```
 
 ---
@@ -165,7 +177,12 @@ new AssertImportActions().check(results, "EUR");         // 7. Validate actions
 Is this a NEW extractor?
 ├─ YES → Follow "New Extractor Implementation" (see below)
 └─ NO → Is this a NEW transaction type for existing extractor?
-    ├─ YES → Add new transaction method (addXxxTransaction())
+    ├─ YES → ⚠️ WAIT! Check if you can EXTEND existing method first!
+    │         Example: "Bardividende Netto" → Extend addDividendeTransaction
+    │         ✅ Change DocumentType to: "(Ertragsgutschrift|Bardividende Netto)"
+    │         ✅ Update pattern to match both formats
+    │         ❌ DON'T create addDividendeNettoTransaction()
+    │   └─ Only create NEW method if transaction type is fundamentally different
     └─ NO → Modifying existing pattern?
         ├─ Pattern doesn't match at all?
         │   └─ Check: Correct DocumentType? Correct Block? Named groups match?
@@ -641,7 +658,35 @@ assertThat(results, hasItem(purchase( //
 
 ## Test Case Implementation
 
-### Test Class Structure
+### Test Class Structure and Organization
+
+**🔴 CRITICAL: Test Ordering Rules**
+Tests MUST be sorted by:
+1. **Transaction type** (Kauf → Verkauf → Dividende → Vorabpauschale → etc.)
+2. **Numeric order** within each type (01, 02, 03, ...)
+3. **WithSecurityInEUR tests** grouped together AFTER their base tests
+
+**Correct Order Example:**
+```
+testWertpapierKauf01
+testWertpapierVerkauf01
+testWertpapierVerkauf02
+testWertpapierVerkauf03          ← Numeric order!
+testDividende01
+testDividende02
+testDividende02WithSecurityInEUR  ← Grouped together!
+testDividende03
+testDividende03WithSecurityInEUR
+testVorabpauschale01
+```
+
+**❌ Wrong Order:**
+```
+testWertpapierKauf01
+testDividende01                   ← Wrong! Verkauf should come first
+testWertpapierVerkauf03          ← Wrong! Should be after Verkauf01, 02
+testDividende03WithSecurityInEUR ← Wrong! Should be grouped with testDividende03
+```
 
 ```java
 @SuppressWarnings("nls")
@@ -660,7 +705,7 @@ public class [BankName]PDFExtractorTest
         assertThat(countSecurities(results), is(1L));            // 2. Count securities
         assertThat(countBuySell(results), is(1L));               // 3. Count buy/sell transactions
         assertThat(countAccountTransactions(results), is(0L));   // 4. Count account transactions
-        assertThat(countAccountTransfers(results), is(0L));      // 5. Count account transfers
+        assertThat(countAccountTransfers(results), is(0L));      // 5. Count account transfers ⚠️
         assertThat(results.size(), is(2));                       // 6. Total result count
         new AssertImportActions().check(results, "EUR");         // 7. Validate import actions
 
@@ -1103,9 +1148,15 @@ Follow consistent naming patterns for test methods and files:
 4. `testWertpapierKaufMitSteuerbehandlung01()` - Purchase with separate tax document
 5. `testWertpapierVerkaufMitSteuerbehandlung01()` - Sale with separate tax document
 
-**Foreign Currency Tests:**
+**Foreign Currency Tests (WithSecurityInEUR):**
 6. `testWertpapierKauf01WithSecurityInEUR()` / `testBuy01WithSecurityInEUR()` - Pre-populated security tests
 7. `testDividende01WithSecurityInEUR()` / `testDividend01WithSecurityInEUR()` - Foreign currency dividend tests
+
+**⚠️ WHEN to add WithSecurityInEUR tests:**
+- ALWAYS required when PDF has foreign currency dividend (e.g., security in USD, account in EUR)
+- Tests currency conversion with pre-populated security (security already exists with EUR currency)
+- Ensures `CheckCurrenciesAction` validation works correctly
+- Example: `testDividende02WithSecurityInEUR()` tests Dividende02.txt with security pre-created in EUR
 
 **Document Order Tests:**
 8. `testDividende01MitSteuerbehandlung_SourceFilesReversed()` - Test document processing order
@@ -1192,14 +1243,129 @@ Before starting any modification:
 - [ ] ✅ Test incrementally after each change
 
 **Most Common Mistakes to Avoid:**
-1. ❌ Using `fxCurrency` or `forexCurrency` (doesn't exist!)
-2. ❌ Modifying wrong block (check DocumentType first)
-3. ❌ Not reading test file first (leads to wrong regex)
-4. ❌ Duplicating patterns instead of extending existing ones
-5. ❌ Skipping ANY of the 7 mandatory test assertions (especially countAccountTransfers!)
+1. ❌ Missing `countAccountTransfers` assertion (⚠️ THIS IS THE #1 ERROR!)
+2. ❌ Using `fxCurrency` or `forexCurrency` (doesn't exist!)
+3. ❌ Modifying wrong block (check DocumentType first)
+4. ❌ Not reading test file first (leads to wrong regex)
+5. ❌ Duplicating patterns instead of extending existing ones
+6. ❌ Copying from existing tests that might be incomplete
+7. ❌ Creating separate methods when you should extend existing ones
 
 **Emergency Reference:**
 - Standard attributes: `baseCurrency`, `termCurrency`, `exchangeRate`, `fxGross`
 - Exchange rate method: `asExchangeRate(v)` → `type.getCurrentContext().putType(rate)`
 - Gross conversion: `rate.convert(asCurrencyCode(v.get("termCurrency")), gross)`
 - Final step: `checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext())`
+
+---
+
+## 📚 Real-World Examples and Lessons Learned
+
+### Example 1: Extending vs. Creating New Methods (TradegateAG)
+
+**Scenario:** New PDF file `Dividende03.txt` with "Bardividende Netto" header
+
+**❌ Wrong Approach:**
+```java
+// DON'T create a new method!
+private void addDividendeNettoTransaction() {
+    final var type = new DocumentType("Bardividende Netto");
+    // ... implementation
+}
+```
+
+**✅ Correct Approach:**
+```java
+// EXTEND existing method by updating DocumentType pattern
+private void addDividendeTransaction() {
+    // Change from:
+    final var type = new DocumentType("Ertragsgutschrift");
+
+    // To:
+    final var type = new DocumentType("(Ertragsgutschrift|Bardividende Netto)");
+
+    // Update currency pattern to match both formats:
+    .match("^(Aussch.ttung|Dividende) [\\.,\\d]+ (?<currency>[A-Z]{3}) pro St.ck$")
+}
+```
+
+**Lesson:** Always check if you can extend existing patterns before creating new methods!
+
+---
+
+### Example 2: The countAccountTransfers Mistake
+
+**Scenario:** All tests pass but missing mandatory assertion
+
+**❌ Wrong - Missing Assertion:**
+```java
+@Test
+public void testWertpapierVerkauf01() {
+    // ...extract...
+    assertThat(errors, empty());                              // ✓
+    assertThat(countSecurities(results), is(1L));            // ✓
+    assertThat(countBuySell(results), is(1L));               // ✓
+    assertThat(countAccountTransactions(results), is(0L));   // ✓
+    // ❌ MISSING: countAccountTransfers!
+    assertThat(results.size(), is(2));                       // ✓
+    new AssertImportActions().check(results, "EUR");         // ✓
+}
+```
+
+**✅ Correct - All 7 Assertions:**
+```java
+@Test
+public void testWertpapierVerkauf01() {
+    // ...extract...
+    assertThat(errors, empty());                              // 1
+    assertThat(countSecurities(results), is(1L));            // 2
+    assertThat(countBuySell(results), is(1L));               // 3
+    assertThat(countAccountTransactions(results), is(0L));   // 4
+    assertThat(countAccountTransfers(results), is(0L));      // 5
+    assertThat(results.size(), is(2));                       // 6
+    new AssertImportActions().check(results, "EUR");         // 7
+}
+```
+
+**Lesson:** Even if tests pass, ALWAYS include ALL 7 assertions. Old tests might be incomplete!
+
+---
+
+### Example 3: Test Sorting (TradegateAG)
+
+**❌ Wrong Order:**
+```java
+testWertpapierKauf01
+testWertpapierVerkauf01
+testDividende03                    // ❌ Wrong! Not in numeric order
+testWertpapierVerkauf03           // ❌ Wrong! Should be after Verkauf01
+testDividende03WithSecurityInEUR  // ❌ Wrong! Not grouped with other WithSecurityInEUR
+```
+
+**✅ Correct Order:**
+```java
+testWertpapierKauf01
+testWertpapierVerkauf01
+testWertpapierVerkauf02
+testWertpapierVerkauf03           // ✓ Numeric order
+testDividende01
+testDividende02
+testDividende02WithSecurityInEUR  // ✓ Grouped together
+testDividende03                    // ✓ Numeric order
+testDividende03WithSecurityInEUR  // ✓ Grouped together
+testVorabpauschale01
+```
+
+**Lesson:** Follow strict ordering: transaction type → numeric → WithSecurityInEUR grouped!
+
+---
+
+### Example 4: Understanding Filename Hints
+
+**Files:** `Verkauf03.txt` and `Dividende03.txt`
+
+**Rule:** Filename indicates which method to use!
+- `Verkauf03.txt` → Transaction type = "Verkauf" → Use `addBuySellTransaction()`
+- `Dividende03.txt` → Transaction type = "Dividende" → Use `addDividendeTransaction()` (or extend it)
+
+**Lesson:** The filename tells you which void method should process it!
