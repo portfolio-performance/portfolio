@@ -22,6 +22,7 @@ Apply the general project standards from `CLAUDE.md` alongside the PDF-specific 
 2. **🔍 Find the correct DocumentType** - Grep for document header pattern
 3. **✅ Use standard attributes** - `baseCurrency`, `termCurrency`, `exchangeRate`, `fxGross`
 4. **🔄 Search for similar patterns** - Extend existing patterns instead of duplicating
+5. **⚠️ Include ALL 7 test assertions** - NEVER skip any (see template below)
 
 ### Standard Exchange Rate Attributes (MEMORIZE THIS)
 ```
@@ -62,7 +63,19 @@ fxGross        - Foreign currency gross value
 })
 ```
 
-### 4 Common Pitfalls (Avoid These!)
+### 7 Mandatory Test Assertions (ALWAYS Copy This Block!)
+```java
+// ⚠️ Copy this ENTIRE block for EVERY test - adjust numbers only!
+assertThat(errors, empty());                              // 1. Check no errors
+assertThat(countSecurities(results), is(1L));            // 2. Count securities
+assertThat(countBuySell(results), is(1L));               // 3. Count buy/sell
+assertThat(countAccountTransactions(results), is(0L));   // 4. Count account txns
+assertThat(countAccountTransfers(results), is(0L));      // 5. Count transfers
+assertThat(results.size(), is(2));                       // 6. Total count
+new AssertImportActions().check(results, "EUR");         // 7. Validate actions
+```
+
+### 5 Common Pitfalls (Avoid These!)
 
 **Pitfall 1: Wrong DocumentType**
 - ❌ Modifying Format01 when document matches Format02's DocumentType
@@ -79,6 +92,19 @@ fxGross        - Foreign currency gross value
 **Pitfall 4: Security Name Too Restrictive**
 - ❌ Pattern only matches "Registered Shares" but document has "Accum Shs Unhedged USD"
 - ✅ Use flexible patterns: `(?<name>.*?)` or broader regex
+
+**Pitfall 5: Incomplete Standard Test Assertions**
+- ❌ Skipping ANY of the standard assertions (countSecurities, countBuySell, countAccountTransactions, countAccountTransfers)
+- ✅ ALWAYS include ALL standard assertions in this EXACT order - NO EXCEPTIONS:
+  ```java
+  assertThat(errors, empty());                              // ⚠️ REQUIRED
+  assertThat(countSecurities(results), is(1L));            // ⚠️ REQUIRED
+  assertThat(countBuySell(results), is(1L));               // ⚠️ REQUIRED
+  assertThat(countAccountTransactions(results), is(0L));   // ⚠️ REQUIRED
+  assertThat(countAccountTransfers(results), is(0L));      // ⚠️ REQUIRED
+  assertThat(results.size(), is(2));                       // ⚠️ REQUIRED
+  new AssertImportActions().check(results, "EUR");         // ⚠️ REQUIRED
+  ```
 
 ---
 
@@ -629,14 +655,14 @@ public class [BankName]PDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TestFile01.txt"), errors);
 
-        // Standard test assertions - ALWAYS include these
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
+        // ⚠️ MANDATORY: ALL 7 standard assertions in EXACT order - NEVER skip any!
+        assertThat(errors, empty());                              // 1. Check no errors
+        assertThat(countSecurities(results), is(1L));            // 2. Count securities
+        assertThat(countBuySell(results), is(1L));               // 3. Count buy/sell transactions
+        assertThat(countAccountTransactions(results), is(0L));   // 4. Count account transactions
+        assertThat(countAccountTransfers(results), is(0L));      // 5. Count account transfers
+        assertThat(results.size(), is(2));                       // 6. Total result count
+        new AssertImportActions().check(results, "EUR");         // 7. Validate import actions
 
         // Security check
         assertThat(results, hasItem(security( //
@@ -1104,6 +1130,21 @@ Follow consistent naming patterns for test methods and files:
 - Include both simple and complex scenarios for comprehensive coverage
 - Match the language of test files to the bank's document language
 
+**⚠️ CRITICAL Test Assertion Rules:**
+1. **ALWAYS include ALL 7 standard assertions** in this exact order - NO EXCEPTIONS:
+   ```java
+   assertThat(errors, empty());                              // 1. MANDATORY
+   assertThat(countSecurities(results), is(XL));            // 2. MANDATORY
+   assertThat(countBuySell(results), is(XL));               // 3. MANDATORY
+   assertThat(countAccountTransactions(results), is(XL));   // 4. MANDATORY
+   assertThat(countAccountTransfers(results), is(XL));      // 5. MANDATORY - often forgotten!
+   assertThat(results.size(), is(XL));                      // 6. MANDATORY
+   new AssertImportActions().check(results, "EUR");         // 7. MANDATORY
+   ```
+2. **Do NOT skip ANY assertion** - every single one is required for consistency
+3. Adjust the numbers (XL) based on what your test expects, but NEVER omit any line
+4. Copy the entire block from the template to avoid mistakes
+
 ### Security
 - Never commit real personal data
 - Anonymize account numbers and personal information
@@ -1155,6 +1196,7 @@ Before starting any modification:
 2. ❌ Modifying wrong block (check DocumentType first)
 3. ❌ Not reading test file first (leads to wrong regex)
 4. ❌ Duplicating patterns instead of extending existing ones
+5. ❌ Skipping ANY of the 7 mandatory test assertions (especially countAccountTransfers!)
 
 **Emergency Reference:**
 - Standard attributes: `baseCurrency`, `termCurrency`, `exchangeRate`, `fxGross`
