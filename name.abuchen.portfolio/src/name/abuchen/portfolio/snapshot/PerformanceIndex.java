@@ -55,6 +55,9 @@ public class PerformanceIndex
     protected long[] interestCharge;
     protected long[] buys;
     protected long[] sells;
+    protected long[] capitalGains;
+    protected long[] realizedCapitalGains;
+    protected long[] unrealizedCapitalGains;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -321,6 +324,21 @@ public class PerformanceIndex
     public long[] getSells()
     {
         return sells;
+    }
+
+    public long[] getCapitalGains()
+    {
+        return capitalGains;
+    }
+
+    public long[] getRealizedCapitalGains()
+    {
+        return realizedCapitalGains;
+    }
+
+    public long[] getUnrealizedCapitalGains()
+    {
+        return unrealizedCapitalGains;
     }
 
     /**
