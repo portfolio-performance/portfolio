@@ -19,6 +19,8 @@ public class Messages extends NLS
     public static String AttributesVendorName;
     public static String BalanceCheckFutureTransactionsWithMatchingValue;
     public static String BalanceCheckTransactionsOnOtherAccountWithMatchingValue;
+    public static String ColumnAverageIRR;
+    public static String ColumnAverageReturn;
     public static String ColumnCapitalGains;
     public static String ColumnCurrencyGains;
     public static String ColumnEarnings;
@@ -26,7 +28,10 @@ public class Messages extends NLS
     public static String ColumnInitialValue;
     public static String ColumnPaidFees;
     public static String ColumnPaidTaxes;
+    public static String ColumnTotalProfitLoss;
+    public static String ColumnTradeCount;
     public static String ColumnTransfers;
+    public static String ColumnWinRate;
     public static String CSVColumn_AccountName;
     public static String CSVColumn_AccountName2nd;
     public static String CSVColumn_CumulatedPerformanceInPercent;
@@ -210,6 +215,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssets;
     public static String LabelSuffixEntryCorrected;
     public static String LabelSum;
+    public static String LabelTaxonomies;
     public static String LabelTradeCalendarASX;
     public static String LabelTradeCalendarDefault;
     public static String LabelTradeCalendarEmpty;
@@ -228,6 +234,7 @@ public class Messages extends NLS
     public static String LabelTradeCalendarTSX;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarVSE;
+    public static String LabelTradesByTaxonomy;
     public static String LabelTrailTransferFromXtoY;
     public static String LabelTrailWithoutTaxesAndFees;
     public static String LabelTrailXofYShares;
