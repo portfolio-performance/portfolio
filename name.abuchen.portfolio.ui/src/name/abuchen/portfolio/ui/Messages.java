@@ -1381,6 +1381,7 @@ public class Messages extends NLS
     public static String SiteAppLandingpage;
     public static String SiteForum;
     public static String SiteHowTo;
+    public static String SiteInfoPortfolioReportMigration;
     public static String SiteManual;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
