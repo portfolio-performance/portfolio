@@ -37,6 +37,22 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.3" date="2025-10-04">
+      <description>
+        <ul>
+          <li>New: Added MEXC Crypto Exchange as an online price feed.</li>
+          <li>Improvement: Enhanced PDF importers for Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank, and Bourse Direct.</li>
+          <li>Fix: Resolved a crash when switching the securities view while the table was sorted by certain columns.</li>
+          <li>Fix: Fixed loading of dividend transactions without an associated security.</li>
+          <li>Fix: Improved detection of file types based on file content.</li>
+          <li xml:lang="de">Neu: MEXC Crypto Exchange als Online-Kurslieferant hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank und Bourse Direct verbessert.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt einen Fehler, der beim Wechsel der Wertpapieransicht auftrat, wenn die Tabelle nach bestimmten Spalten sortiert war.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem beim Laden von Dividendenbuchungen ohne zugeordnetes Wertpapier.</li>
+          <li xml:lang="de">Fehlerbehebung: Verbessert die Erkennung von Dateitypen anhand des Dateiinhalts.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.80.2" date="2025-09-27">
       <description>
         <ul>
