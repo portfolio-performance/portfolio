@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -36,7 +37,6 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -46,7 +46,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class TradegateAGPDFExtractorTest
@@ -54,16 +53,17 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -85,16 +85,17 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -116,16 +117,17 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -145,18 +147,51 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
-    public void testDividende01()
+    public void testWertpapierVerkauf03()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BVZ6SP04"), hasWkn("A14PHG"), hasTicker(null), //
+                        hasName("PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-07-18T16:22:36"), hasShares(10.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Order-/Ref.nr. 87947243 | Limit 105,0840 EUR"), //
+                        hasAmount("EUR", 1050.90), hasGrossValue("EUR", 1050.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -178,16 +213,17 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -210,25 +246,26 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testDividende02WithSecurityInEUR()
     {
-        Security security = new Security("Vang.USD Em.Mkts Gov.Bd U.ETF Registered Shares USD Dis.oN", CurrencyUnit.EUR);
+        var security = new Security("Vang.USD Em.Mkts Gov.Bd U.ETF Registered Shares USD Dis.oN", "EUR");
         security.setIsin("IE00BZ163L38");
         security.setWkn("A143JQ");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(client);
+        var extractor = new TradegateAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -238,10 +275,83 @@ public class TradegateAGPDFExtractorTest
                         hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
                         hasTaxes("EUR", (2.74 + 0.15) / 1.11856), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende03()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000S9YS762"), hasWkn("A3D7VW"), hasTicker(null), //
+                        hasName("Linde plc Registered Shares EO -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-18T00:00"), hasShares(3.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Order-/Ref.nr. 35894402"), //
+                        hasAmount("EUR", 2.81), hasGrossValue("EUR", 3.81), //
+                        hasForexGrossValue("USD", 4.50), //
+                        hasTaxes("EUR", (0.95 + 0.05)), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende03WithSecurityInEUR()
+    {
+        var security = new Security("Linde plc Registered Shares EO -,001", "EUR");
+        security.setIsin("IE000S9YS762");
+        security.setWkn("A3D7VW");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TradegateAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-18T00:00"), hasShares(3.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Order-/Ref.nr. 35894402"), //
+                        hasAmount("EUR", 2.81), hasGrossValue("EUR", 3.81), //
+                        hasTaxes("EUR", (0.95 + 0.05)), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -249,18 +359,19 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testVorabpauschale01()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -282,18 +393,20 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung01()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxRefund( //
@@ -307,18 +420,20 @@ public class TradegateAGPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung02()
     {
-        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+        var extractor = new TradegateAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
