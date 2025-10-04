@@ -10,4 +10,8 @@ workspace
 *.iml
 *.ipr
 
+### Claude Code Sessions ###
 .claude/settings.local.json
+.claude/state/
+sessions/tasks/*.md
+!sessions/tasks/TEMPLATE.md

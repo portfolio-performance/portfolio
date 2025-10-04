@@ -1,0 +1,46 @@
+{
+  "config": {
+    "task_prefixes": {
+      "priority": {
+        "h-": "High priority",
+        "m-": "Medium priority",
+        "l-": "Low priority",
+        "?-": "Investigate (task may be obsolete, speculative priority)"
+      },
+      "types": {
+        "implement-": "feature/",
+        "fix-": "fix/",
+        "refactor-": "feature/",
+        "research-": "none",
+        "experiment-": "experiment/",
+        "migrate-": "feature/",
+        "test-": "feature/",
+        "docs-": "feature/"
+      }
+    },
+    "trigger_phrases": [
+      "go ahead",
+      "let's do it",
+      "ship it",
+      "make it so",
+      "proceed",
+      "run",
+      "go",
+      "los geht's",
+      "mach es"
+    ],
+    "blocked_tools": [
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "NotebookEdit"
+    ],
+    "project_info": {
+      "name": "Portfolio Performance",
+      "type": "Eclipse RCP Application",
+      "primary_language": "Java 21",
+      "build_system": "Maven with Tycho"
+    }
+  },
+  "api_mode": true
+}
