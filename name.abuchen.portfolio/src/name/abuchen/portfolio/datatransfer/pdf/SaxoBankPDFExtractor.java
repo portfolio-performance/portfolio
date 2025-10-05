@@ -38,7 +38,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Saxo Bank A/S";
+        return "Saxo Bank";
     }
 
     private void addBuySellTransaction()
@@ -494,13 +494,23 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // EUR EUR
                                         // Deposit 45108148786 20-Jun-2025 20-Jun-2025 10,00 1,000000 0,00 10,00
                                         // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+                                        //
+                                        // EUR EUR
+                                        // Withdrawal 46769031349 18-Aug-2025 18-Aug-2025 -3.000,00 1,000000 0,00 -3.000,00
+                                        // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 18-Aug-2025 - 18-Aug-2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note", "date", "amount", "currency") //
+                                                        .attributes("type", "note", "date", "amount", "currency") //
                                                         .find("Cash Transfer") //
-                                                        .match("^Deposit (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
+                                                        .match("^(?<type>(Deposit|Withdrawal)) (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (\\-)?(?<amount>[\\.,'\\d]+)$") //
                                                         .match("^.*Currency: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "Withdrawal" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("Withdrawal".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
