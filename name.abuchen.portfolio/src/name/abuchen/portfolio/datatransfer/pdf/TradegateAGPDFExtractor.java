@@ -122,7 +122,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Ertragsgutschrift|Bardividende Netto)");
+        final var type = new DocumentType("(Ertragsgutschrift|Bardividende)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -350,6 +350,13 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Abgeführte US-Quellensteuer (15,00 %) -0,36 USD
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Abgef.hrte .*Quellensteuer.* \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Abgeführte Kapitalertragsteuer -0,22 EUR

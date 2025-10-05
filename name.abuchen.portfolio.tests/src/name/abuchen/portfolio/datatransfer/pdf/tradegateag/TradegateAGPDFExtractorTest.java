@@ -357,6 +357,111 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
+    public void testDividende04()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006070006"), hasWkn("607000"), hasTicker(null), //
+                        hasName("HOCHTIEF AG Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-07-07T00:00"), hasShares(12.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Order-/Ref.nr. 35894402"), //
+                        hasAmount("EUR", 46.21), hasGrossValue("EUR", 62.76), ////
+                        hasTaxes("EUR", (15.69 + 0.86)), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0382221051"), hasWkn("865177"), hasTicker(null), //
+                        hasName("Applied Materials Inc. Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-13T00:00"), hasShares(6.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Order-/Ref.nr. 35894402"), //
+                        hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.20), //
+                        hasForexGrossValue("USD", 2.40), //
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende05WithSecurityInEUR()
+    {
+        var security = new Security("Applied Materials Inc. Registered Shares o.N.", "EUR");
+        security.setIsin("US0382221051");
+        security.setWkn("865177");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new TradegateAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-13T00:00"), hasShares(6.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Order-/Ref.nr. 35894402"), //
+                        hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.20), //
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         var extractor = new TradegateAGPDFExtractor(new Client());
