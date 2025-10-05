@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -30,17 +29,9 @@ import name.abuchen.portfolio.util.WebAccess;
  */
 public final class MEXCQuoteFeed implements QuoteFeed
 {
-    private static class ResponseData
-    {
-        long startTime;
-        String json;
-    }
-
     public static final String ID = "MEXC"; //$NON-NLS-1$
 
-    private static final long MILLISECONDS_PER_DAY = 24L * 60 * 60 * 1000;
-
-    private final PageCache<ResponseData> cache = new PageCache<>(Duration.ofMinutes(1));
+    private static final long SECONDS_PER_DAY = 24L * 60 * 60;
 
     @Override
     public String getId()
@@ -140,8 +131,8 @@ public final class MEXCQuoteFeed implements QuoteFeed
         long close = YahooHelper.asPrice(ohlcArray.get(4).toString());
         int volume = YahooHelper.asNumber(ohlcArray.get(5).toString());
 
-        var price = new LatestSecurityPrice();
-        price.setDate(LocalDate.ofEpochDay(timestamp / MILLISECONDS_PER_DAY));
+        LatestSecurityPrice price = new LatestSecurityPrice();
+        price.setDate(LocalDate.ofEpochDay(timestamp / 1000 / SECONDS_PER_DAY));
         price.setValue(close);
         price.setHigh(high);
         price.setLow(low);
@@ -158,34 +149,22 @@ public final class MEXCQuoteFeed implements QuoteFeed
 
         QuoteFeedData data = new QuoteFeedData();
 
-        final Long startTime = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
-        final Long endTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
+        final Long tickerStartEpochMilliSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
 
         try
         {
-            var webaccess = new WebAccess("api.mexc.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
+            WebAccess webaccess = new WebAccess("api.mexc.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
+                            // Ticker: BTCEUR, BTCUSDT, ...
                             .addParameter("symbol", security.getTickerSymbol()) //$NON-NLS-1$
                             .addParameter("interval", "1d") //$NON-NLS-1$ //$NON-NLS-2$
-                            .addParameter("startTime", startTime.toString()) //$NON-NLS-1$
-                            .addParameter("endTime", endTime.toString()) //$NON-NLS-1$
+                            .addParameter("startTime", tickerStartEpochMilliSeconds.toString()) //$NON-NLS-1$
                             .addParameter("limit", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            var response = cache.lookup(security.getTickerSymbol());
-
-            if (response == null || response.startTime > startTime)
-            {
-                response = new ResponseData();
-                response.startTime = startTime;
-                response.json = webaccess.get();
-
-                if (response.json != null)
-                    cache.put(security.getTickerSymbol(), response);
-            }
+            String html = webaccess.get();
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), response.json);
+                data.addResponse(webaccess.getURL(), html);
 
-            var ohlcItems = (JSONArray) JSONValue.parse(response.json);
+            JSONArray ohlcItems = (JSONArray) JSONValue.parse(html);
 
             convertMEXCJsonArray(ohlcItems, data);
         }
