@@ -91,7 +91,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     public String getLatestGroupingCriterion(Security security)
     {
         String latestFeed = security.getLatestFeed();
-        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? latestFeed : security.getFeedURL());
+        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL() : security.getFeedURL());
     }
 
     @Override

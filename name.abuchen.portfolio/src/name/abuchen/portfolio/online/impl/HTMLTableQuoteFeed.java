@@ -380,7 +380,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     public String getLatestGroupingCriterion(Security security)
     {
         String latestFeed = security.getLatestFeed();
-        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? latestFeed : security.getFeedURL());
+        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL() : security.getFeedURL());
     }
 
     @Override
@@ -395,8 +395,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         // if latestFeed is null, then the policy is 'use same configuration
         // as historic quotes'
-        String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
-
+        String latestFeed = security.getLatestFeed();
+        String feedURL = latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL() : security.getFeedURL();
+        
         QuoteFeedData data = internalGetQuotes(security, feedURL, false, false);
 
         if (!data.getErrors().isEmpty())
