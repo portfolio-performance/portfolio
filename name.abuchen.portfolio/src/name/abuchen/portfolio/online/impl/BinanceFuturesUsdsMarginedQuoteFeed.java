@@ -23,9 +23,9 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class BinanceQuoteFeed implements QuoteFeed
+public final class BinanceFuturesUsdsMarginedQuoteFeed implements QuoteFeed
 {
-    public static final String ID = "BINANCE"; //$NON-NLS-1$
+    public static final String ID = "BINANCEUSDSMFUTURE"; //$NON-NLS-1$
 
     private static final long SECONDS_PER_DAY = 24L * 60 * 60;
 
@@ -38,7 +38,7 @@ public final class BinanceQuoteFeed implements QuoteFeed
     @Override
     public String getName()
     {
-        return "Binance Spot"; //$NON-NLS-1$
+        return "Binance USDs-M Futures"; //$NON-NLS-1$
     }
 
     @Override
@@ -67,8 +67,8 @@ public final class BinanceQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
             quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
         else
-            // API has a limit of 1000. Therefore read only the most recent days
-            quoteStartDate = LocalDate.now().minusDays(999);
+            // API has a limit of 1500. Therefore read only the most recent days
+            quoteStartDate = LocalDate.now().minusDays(1499);
 
         return getHistoricalQuotes(security, collectRawResponse, quoteStartDate);
     }
@@ -149,12 +149,12 @@ public final class BinanceQuoteFeed implements QuoteFeed
 
         try
         {
-            WebAccess webaccess = new WebAccess("api.binance.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
-                            // Ticker: BTCEUR, BTCUSDT, ...
+            WebAccess webaccess = new WebAccess("fapi.binance.com", "/fapi/v1/klines") //$NON-NLS-1$ //$NON-NLS-2$
+                            // Ticker: BTCUSDC, BTCUSDT, ...
                             .addParameter("symbol", security.getTickerSymbol()) //$NON-NLS-1$
                             .addParameter("interval", "1d") //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("startTime", tickerStartEpochMilliSeconds.toString()) //$NON-NLS-1$
-                            .addParameter("limit", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
+                            .addParameter("limit", "1500"); //$NON-NLS-1$ //$NON-NLS-2$
             String html = webaccess.get();
 
             if (collectRawResponse)
