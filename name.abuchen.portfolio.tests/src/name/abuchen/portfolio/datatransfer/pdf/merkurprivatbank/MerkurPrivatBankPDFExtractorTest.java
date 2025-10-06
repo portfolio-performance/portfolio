@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.merkurprivatbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -24,7 +25,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAc
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -391,6 +391,79 @@ public class MerkurPrivatBankPDFExtractorTest
                         hasNote("Abrechnungsnr. 77550511480"), //
                         hasAmount("EUR", 1.13), hasGrossValue("EUR", 1.38), //
                         hasTaxes("EUR", 0.24 + 0.01), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        var extractor = new MerkurPrivatBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        //new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA1363751027"), hasWkn("897879"), hasTicker(null), //
+                        hasName("CANADIAN NATIONAL RAILWAY CO. REGISTERED SHARES O.N."), //
+                        hasCurrencyCode("CAD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-29T00:00"), hasShares(0.9854), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Abrechnungsnr. 77350300260"), //
+                        hasAmount("EUR", 0.34), hasGrossValue("EUR", 0.53), //
+                        hasForexGrossValue("CAD", 0.87), //
+                        hasTaxes("EUR", 0.13 + 0.05 + 0.01), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende04WithSecurityInEUR()
+    {
+        var security = new Security("CANADIAN NATIONAL RAILWAY CO. REGISTERED SHARES O.N.", "EUR");
+        security.setIsin("CA1363751027");
+        security.setWkn("897879");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new MerkurPrivatBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-29T00:00"), hasShares(0.9854), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Abrechnungsnr. 77350300260"), //
+                        hasAmount("EUR", 0.34), hasGrossValue("EUR", 0.53), //
+                        hasTaxes("EUR", 0.13 + 0.05 + 0.01), hasFees("EUR", 0.00), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
