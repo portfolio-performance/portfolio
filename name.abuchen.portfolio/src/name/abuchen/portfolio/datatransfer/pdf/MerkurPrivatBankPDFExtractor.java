@@ -122,7 +122,8 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     private void addDividendeTransaction()
     {
         var type = new DocumentType("(Ertragsgutschrift nach" //
-                        + "|Aussch.ttung Investmentfonds)");
+                        + "|Aussch.ttung Investmentfonds" //
+                        + "|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -143,11 +144,15 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Stück 55 DEUTSCHE TELEKOM AG DE0005557508 (555750)
                         // NAMENS-AKTIEN O.N.
                         // Zahlbarkeitstag 15.04.2024 Ertrag  pro Stück 0,77 EUR
+                        //
+                        // Stück 0,9854 CANADIAN NATIONAL RAILWAY CO. CA1363751027 (897879)
+                        // REGISTERED SHARES O.N.
+                        // Zahlbarkeitstag 29.09.2025 Dividende pro Stück 0,8875 CAD
                         // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .match("^.* (Ertrag|Aussch.ttung)\s+pro St.*? [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                        .match("^.* (Ertrag|Aussch.ttung|Dividende)[\\s]{1,}pro St.*? [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -159,6 +164,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Zahlbarkeitstag 15.04.2024 Ertrag  pro Stück 0,77 EUR
+                        // Zahlbarkeitstag 29.09.2025 Dividende pro Stück 0,8875 CAD
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
@@ -178,10 +184,14 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs EUR / USD  1,1802
                         // Devisenkursdatum 02.10.2025
                         // Ausschüttung 1,63 USD 1,38+ EUR
+                        //
+                        // Devisenkurs EUR / CAD  1,6415
+                        // Devisenkursdatum 30.09.2025
+                        // Dividendengutschrift 0,87 CAD 0,53+ EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
-                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3})[\\s]+(?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Aussch.ttung (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^(Aussch.ttung|Dividendengutschrift) (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -326,25 +336,27 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25,00% auf 12.960,18 EUR 3.240,05- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s?)teuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Kapitalertrags(s?)teuer [\\.,\\d]+[\\s]*% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag 5,50% auf 3.240,05 EUR 178,20- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+[\\s]*% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Einbehaltene Quellensteuer 15 % auf 914,50 EUR
+                        // Einbehaltene Quellensteuer 25 % auf 0,87 CAD 0,13- EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional()
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+[\\s]*% .* (?<withHoldingTax>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer pro Stück 0,0465 EUR 137,18 EUR
+                        // Anrechenbare Quellensteuer 15 % auf 0,53 EUR 0,08 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional()
                         .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
