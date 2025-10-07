@@ -29,6 +29,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -740,6 +741,71 @@ public class SBrokerPDFExtractorTest
                         hasNote("Abrechnungs-Nr. 53941243"), //
                         hasAmount("EUR", 1007.47), hasGrossValue("EUR", 997.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.97))));
+    }
+
+    @Test
+    public void testWertpapierKauf17()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US50125G1094"), hasWkn("A2QRSQ"), hasTicker(null), //
+                        hasName("KULR TECHNOLOGY GROUP INC. REGISTERED SHARES DL -,0001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-21T12:35"), hasShares(8000.000), //
+                        hasSource("Kauf17.txt"), //
+                        hasNote("Limit 1,22 USD"), //
+                        hasAmount("EUR", 8451.17), hasGrossValue("EUR", 8393.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 51.97 + 6.12), //
+                        hasForexGrossValue("USD", 9600.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf17withSecurityInEUR()
+    {
+        var security = new Security("KULR", CurrencyUnit.EUR);
+        security.setIsin("US50125G1094");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-21T12:35"), hasShares(8000.000), //
+                        hasSource("Kauf17.txt"), //
+                        hasNote("Limit 1,22 USD"), //
+                        hasAmount("EUR", 8451.17), hasGrossValue("EUR", 8393.08), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 51.97 + 6.12))));
     }
 
     @Test
