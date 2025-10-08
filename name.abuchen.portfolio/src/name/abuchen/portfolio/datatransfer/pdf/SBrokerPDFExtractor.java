@@ -107,30 +107,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-                                        // @formatter:off
-                                        // Nominale Wertpapierbezeichnung ISIN (WKN)
-                                        // Stück 8.000 KULR TECHNOLOGY GROUP INC. US50125G1094 (A2QRSQ)
-                                        // REGISTERED SHARES DL -,0001
-                                        // Handels-/Ausführungsplatz New-York-ASE (gemäß Weisung)
-                                        // Börsensegment XASE
-                                        // Limit-Order
-                                        // Limit 1,22 USD
-                                        // Schlusstag/-Zeit 21.04.2025 15:30:00 Auftraggeber QYmpiGRh FudoOOF
-                                        // Ortszeit 21.04.2025 10:30:00 Auftragserteilung/ -ort Online-Banking
-                                        // Ausführungskurs 1,20 USD
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
-                                                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^(?<name1>.*)$") //
-                                                        .find("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
-                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
                         // @formatter:off
