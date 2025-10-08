@@ -136,7 +136,7 @@ public class Messages extends NLS
     public static String LabelDeposits;
     public static String LabelDifference;
     public static String LabelDKKINTERBANKOFFERED3M;
-    public static String LabelECBStatisticalDataWarehouse;
+    public static String LabelECBDataPortal;
     public static String LabelEONIA;
     public static String LabelError;
     public static String LabelESTR;
