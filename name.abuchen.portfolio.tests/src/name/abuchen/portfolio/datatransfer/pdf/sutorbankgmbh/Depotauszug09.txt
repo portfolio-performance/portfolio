@@ -1,0 +1,98 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Sutor Bank GmbH, Postfach 11 33 37, 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Frau Marta Mustermann Fr 8.30 - 16.00 Uhr
+Musterstr. 26 Depotnummer: 1234567890
+12345 Berlin IBAN: DE14 2023 0800 1234 5678 90
+Hamburg, im Oktober 2024
+Depotauszug
+ 
+ 
+Sehr geehrte Frau Mustermann,
+ 
+Sie erhalten heute von uns in der Anlage die Aufstellung über die Kundenfinanzinstrumente per 30.09.2024 zu
+nachfolgendem Vertrag:
+ 
+Raisin Pension Rürup Nr. 1234567890
+ 
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie
+erfolgt automatisch vorbehaltlich Irrtum.
+ 
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach
+Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie
+bitte dem beigefügten „Informationsbogen für den Einleger“, der auch auf www.sutorbank.de/agb als PDF
+hinterlegt ist.
+ 
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig
+mit, anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen.
+ 
+Mit freundlichen Grüßen
+Ihre SUTOR BANK
+Sutor Bank GmbH, Hermannstrasse 46, 20095 Hamburg | info@sutorbank.de | www.sutorbank.de
+Geschäftsleitung: Robert Freitag, Thomas Meier | Mitglied im Einlagensicherungsfonds des Bundesverbandes deutscher Banken
+USt - IdNr DE155617009 | Amtsgericht Hamburg HRB 178357 | BLZ 202 308 00, BIC MHSBDEHBXXX Seite 0 von 2
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+Aufstellung über Kundenfinanzinstrumente per 30.09.2024
+Marta Mustermann
+"Raisin Pension Rürup" Nr. 1234567890 / IBAN: DE14 2023 0800 1234 5678 90
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Dimensional European Value Fund IE00B1W6CW87 Irland Wertpapierrechnung 32,50 % 1.128,9821  Anteile 19,4400 EUR 21.947,41 EUR
+x-tr. Portf.Total Ret. UCITS ETF LU0397221945 Irland Wertpapierrechnung 0,00 % 41,7150  Anteile 293,9580 EUR 12.262,46 EUR
+Dimensional Europ.Small Comp. F acc IE0032769055 Irland Wertpapierrechnung 32,50 % 415,6170  Anteile 53,0700 EUR 22.056,79 EUR
+Lyxor Smart Overnight Return LU2082999306 Deutschland Girosammelverwahrung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+AIS Amundi St. Europe 600 UCITS ETF LU0908500753 Deutschland Girosammelverwahrung 0,00 % 42,3428  Anteile 243,2281 EUR 10.298,96 EUR
+Multi Amundi Nasdaq-100 II UCITS LU1829221024 Deutschland Girosammelverwahrung 0,00 % 193,0895  Anteile 72,5883 EUR 14.016,04 EUR
+iShares Sustainable MSCI EM SRI acc IE00BYVJRP78 Irland Wertpapierrechnung 35,00 % 21,1228  Anteile 8,0123 US$* 151,16 EUR
+iShares Core MSCI Emerging Markets IE00BKM4GZ66 Irland Wertpapierrechnung 0,00 % 319,8967  Anteile 37,0549 US$* 10.587,48 EUR
+* Währungskurs: 1,1196 US$
+Kurswert Gesamt 91.320,30 EUR
+Geldsaldo -0,01 EUR
+AIS Amundi St. Europe 600 UCITS ETF
+Der Name des Fonds Lyxor Core Stoxx Europe 600 acc hat sich geändert in Amundi Stoxx Europe 600 UCITS ETF.
+Der Name des Fonds Amundi Stoxx Europe 600 UCITS ETF hat sich geändert in AIS Amundi Stoxx Europe 600 UCITS ETF.
+Multi Amundi Nasdaq-100 II UCITS
+Der Name des Fonds M.U.L.-Lyxor Nasdaq-100 UCITS hat sich geändert in Multi Amundi Nasdaq-100 II UCITS.
+Erstellt im Oktober 2024 Seite 1 von 2
+Umsätze vom 01.07.2024 bis 30.09.2024 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+15.07.2024 15.07.2024 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+16.07.2024 15.07.2024 Kauf Kauf iShares Sustainable MSCI EM SRI acc 10,3781 1,0907 -70,00
+13:21 Tradegate IE00BYVJRP78 7,3568 US$
+17.07.2024 15.07.2024 Kauf Kauf Dimensional Europ.Small Comp. F acc 1,2481 -65,00
+außerbörslich IE0032769055 52,0800 EUR
+17.07.2024 15.07.2024 Kauf Kauf Dimensional European Value Fund 3,3960 -65,00
+außerbörslich IE00B1W6CW87 19,1400 EUR
+25.07.2024 24.07.2024 Kauf Switch in x-tr. Portf.Total Ret. UCITS ETF 33,0014 -9.588,54
+10:43 Tradegate LU0397221945 290,5499 EUR
+25.07.2024 24.07.2024 Verkauf Switch ex Lyxor Smart Overnight Return -93,3271 9.588,54
+11:07 Tradegate LU2082999306 102,7412 EUR
+02.08.2024 29.07.2024 Kauf Switch in x-tr. Portf.Total Ret. UCITS ETF 8,7136 -2.527,87
+10:39 Tradegate LU0397221945 290,1069 EUR
+02.08.2024 29.07.2024 Kauf Switch in AIS Amundi St. Europe 600 UCITS ETF 42,3428 -10.111,46
+11:00 Tradegate LU0908500753 238,8000 EUR
+02.08.2024 29.07.2024 Kauf Switch in iShares Core MSCI Emerging Markets 319,8967 1,0817 -10.083,69
+11:16 Tradegate IE00BKM4GZ66 34,0970 US$
+02.08.2024 29.07.2024 Kauf Switch in Multi Amundi Nasdaq-100 II UCITS 71,0274 -5.055,73
+11:24 Tradegate LU1829221024 71,1800 EUR
+02.08.2024 29.07.2024 Verkauf Switch ex iShares Sustainable MSCI EM SRI acc -4.214,6388 1,0817 27.778,74
+11:29 Tradegate IE00BYVJRP78 7,1295 US$
+15.08.2024 15.08.2024 Einzahlung automatischer Lastschrifteinzug - 200,00
+-
+16.08.2024 15.08.2024 Kauf Kauf iShares Sustainable MSCI EM SRI acc 10,6968 1,1011 -70,00
+11:52 Tradegate IE00BYVJRP78 7,2056 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 2
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
