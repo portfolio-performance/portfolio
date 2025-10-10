@@ -116,25 +116,32 @@ public class ClientSecurityFilter implements ClientFilter
 
                 AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
                                 t.getSecurity(), t.getType());
+                copy.setOriginalTransaction(t);
 
                 t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
 
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(copy);
-                getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                amount + taxes, null, AccountTransaction.Type.REMOVAL));
+
+                var reverseDividend = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes, null,
+                                AccountTransaction.Type.REMOVAL);
+                reverseDividend.setOriginalTransaction(t);
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(reverseDividend);
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
-                getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
+
+                var reverseFees = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), t.getAmount(), null,
+                                AccountTransaction.Type.DEPOSIT);
+                reverseFees.setOriginalTransaction(t);
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(reverseFees);
                 break;
             case FEES_REFUND:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
-                getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), null, AccountTransaction.Type.REMOVAL));
+
+                var reverseRefund = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), t.getAmount(), null,
+                                AccountTransaction.Type.REMOVAL);
+                reverseRefund.setOriginalTransaction(t);
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(reverseRefund);
                 break;
             case TAXES:
             case TAX_REFUND:
@@ -156,6 +163,8 @@ public class ClientSecurityFilter implements ClientFilter
     private PortfolioTransaction convertToDelivery(PortfolioTransaction t, PortfolioTransaction.Type targetType)
     {
         PortfolioTransaction pseudo = new PortfolioTransaction();
+        pseudo.setOriginalTransaction(t);
+
         pseudo.setDateTime(t.getDateTime());
         pseudo.setCurrencyCode(t.getCurrencyCode());
         pseudo.setSecurity(t.getSecurity());

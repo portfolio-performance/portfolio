@@ -196,7 +196,8 @@ public class ClientClassificationFilter implements ClientFilter
         long securityAmount = value(t.getAmount(), securityWeight);
         securityAmount = t.getType() == PortfolioTransaction.Type.BUY ? securityAmount - taxes : securityAmount + taxes;
 
-        Account account = (Account) t.getCrossEntry().getCrossOwner(t);
+        var entry = (BuySellEntry) t.getCrossEntry();
+        Account account = (Account) entry.getCrossOwner(t);
         BigDecimal accountWeight = state.getWeight(account);
         long accountAmount = value(t.getAmount(), accountWeight);
 
@@ -209,6 +210,9 @@ public class ClientClassificationFilter implements ClientFilter
         // assignment and the security assignment
 
         BuySellEntry copy = new BuySellEntry(state.asReadOnly(portfolio), state.account2readonly.get(account));
+        copy.getPortfolioTransaction().setOriginalTransaction(t);
+        copy.getAccountTransaction().setOriginalTransaction(entry.getAccountTransaction());
+
         copy.setDate(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
@@ -232,6 +236,7 @@ public class ClientClassificationFilter implements ClientFilter
                             accountAmount - commonAmount, null,
                             t.getType() == PortfolioTransaction.Type.BUY ? AccountTransaction.Type.REMOVAL
                                             : AccountTransaction.Type.DEPOSIT);
+            ta.setOriginalTransaction(t);
 
             state.asReadOnly(account).internalAddTransaction(ta);
         }
@@ -242,6 +247,7 @@ public class ClientClassificationFilter implements ClientFilter
         if (securityAmount - commonAmount > 0)
         {
             PortfolioTransaction tp = new PortfolioTransaction();
+            tp.setOriginalTransaction(t);
             tp.setDateTime(t.getDateTime());
             tp.setCurrencyCode(t.getCurrencyCode());
             tp.setSecurity(t.getSecurity());
@@ -262,6 +268,7 @@ public class ClientClassificationFilter implements ClientFilter
                     PortfolioTransaction.Type targetType, BigDecimal weight)
     {
         PortfolioTransaction copy = new PortfolioTransaction();
+        copy.setOriginalTransaction(t);
         copy.setDateTime(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
@@ -290,6 +297,9 @@ public class ClientClassificationFilter implements ClientFilter
         {
             long amount = value(t.getAmount(), accountWeight);
 
+            var copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount, null, null);
+            copy.setOriginalTransaction(t);
+
             switch (t.getType())
             {
                 case SELL:
@@ -298,20 +308,26 @@ public class ClientClassificationFilter implements ClientFilter
                     // #adaptPortfolioTransactions method), create a deposit or
                     // removal in the account
                     if (!state.isCategorized(t.getSecurity()))
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    {
+                        copy.setType(AccountTransaction.Type.DEPOSIT);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     break;
 
                 case BUY:
                     if (!state.isCategorized(t.getSecurity()))
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    {
+                        copy.setType(AccountTransaction.Type.REMOVAL);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     break;
 
                 case DIVIDENDS:
                     if (!state.isCategorized(t.getSecurity()))
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    {
+                        copy.setType(AccountTransaction.Type.DEPOSIT);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     else
                         addSecurityRelatedAccountT(state, account, t);
                     break;
@@ -320,22 +336,30 @@ public class ClientClassificationFilter implements ClientFilter
                     if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
                         addSecurityRelatedAccountT(state, account, t);
                     else if (t.getSecurity() != null)
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    {
+                        copy.setType(AccountTransaction.Type.DEPOSIT);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     else
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, t.getType()));
+                    {
+                        copy.setType(t.getType());
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     break;
 
                 case FEES:
                     if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
                         addSecurityRelatedAccountT(state, account, t);
                     else if (t.getSecurity() != null)
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    {
+                        copy.setType(AccountTransaction.Type.REMOVAL);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     else
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, t.getType()));
+                    {
+                        copy.setType(t.getType());
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     break;
 
                 case TRANSFER_IN:
@@ -343,8 +367,10 @@ public class ClientClassificationFilter implements ClientFilter
                     // deposit right away. Otherwise a full transfer transaction
                     // is created.
                     if (!state.isCategorized((Account) t.getCrossEntry().getCrossOwner(t)))
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    {
+                        copy.setType(AccountTransaction.Type.DEPOSIT);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     else
                         addTransferT(state, account, t);
                     break;
@@ -354,32 +380,42 @@ public class ClientClassificationFilter implements ClientFilter
                     // above); only if the inbound account is not categorized,
                     // then create a removal transaction
                     if (!state.isCategorized((Account) t.getCrossEntry().getCrossOwner(t)))
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    {
+                        copy.setType(AccountTransaction.Type.REMOVAL);
+                        state.asReadOnly(account).internalAddTransaction(copy);
+                    }
                     break;
 
                 case TAX_REFUND:
                     // taxes are never included
-                    state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                    t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    copy.setType(AccountTransaction.Type.DEPOSIT);
+                    state.asReadOnly(account).internalAddTransaction(copy);
                     break;
 
                 case TAXES:
                     // taxes are never included
-                    state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                    t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    copy.setType(AccountTransaction.Type.REMOVAL);
+                    state.asReadOnly(account).internalAddTransaction(copy);
                     break;
 
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:
                 case INTEREST_CHARGE:
-                    long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), accountWeight); // for INTEREST
-                    state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                    t.getCurrencyCode(), amount + taxes, null, t.getType()));
+                    // for INTEREST
+                    long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), accountWeight);
+
+                    copy.setType(t.getType());
+                    copy.setAmount(amount + taxes);
+                    state.asReadOnly(account).internalAddTransaction(copy);
+
                     if (taxes != 0)
-                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                        t.getCurrencyCode(), taxes, null, AccountTransaction.Type.REMOVAL));
+                    {
+                        var removal = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), taxes, null,
+                                        AccountTransaction.Type.REMOVAL);
+                        removal.setOriginalTransaction(t);
+                        state.asReadOnly(account).internalAddTransaction(removal);
+                    }
                     break;
 
                 default:
@@ -398,6 +434,7 @@ public class ClientClassificationFilter implements ClientFilter
 
         AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
                         t.getSecurity(), t.getType());
+        copy.setOriginalTransaction(t);
         t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, securityWeight)));
         state.asReadOnly(account).internalAddTransaction(copy);
 
@@ -409,8 +446,10 @@ public class ClientClassificationFilter implements ClientFilter
         {
             AccountTransaction.Type deltaType = delta > 0 ^ t.getType().isDebit() ? AccountTransaction.Type.DEPOSIT
                             : AccountTransaction.Type.REMOVAL;
-            state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                            t.getCurrencyCode(), Math.abs(delta), null, deltaType));
+            var deltaTx = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), Math.abs(delta), null,
+                            deltaType);
+            deltaTx.setOriginalTransaction(t);
+            state.asReadOnly(account).internalAddTransaction(deltaTx);
         }
     }
 
@@ -445,10 +484,11 @@ public class ClientClassificationFilter implements ClientFilter
 
             AccountTransaction ot = (AccountTransaction) t.getCrossEntry().getCrossTransaction(t);
 
-            state.asReadOnly(outboundAccount)
-                            .internalAddTransaction(new AccountTransaction(ot.getDateTime(), ot.getCurrencyCode(),
-                                            value(ot.getAmount(), outboundWeight.subtract(inboundWeight)), null,
-                                            AccountTransaction.Type.REMOVAL));
+            var removal = new AccountTransaction(ot.getDateTime(), ot.getCurrencyCode(),
+                            value(ot.getAmount(), outboundWeight.subtract(inboundWeight)), null,
+                            AccountTransaction.Type.REMOVAL);
+            removal.setOriginalTransaction(t);
+            state.asReadOnly(outboundAccount).internalAddTransaction(removal);
         }
         else // inboundWeight > outboundWeight
         {
@@ -458,16 +498,20 @@ public class ClientClassificationFilter implements ClientFilter
             state.asReadOnly(inboundAccount).internalAddTransaction(entry.getTargetTransaction());
             state.asReadOnly(outboundAccount).internalAddTransaction(entry.getSourceTransaction());
 
-            state.asReadOnly(inboundAccount)
-                            .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                            value(t.getAmount(), inboundWeight.subtract(outboundWeight)), null,
-                                            AccountTransaction.Type.DEPOSIT));
+            var deposit = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                            value(t.getAmount(), inboundWeight.subtract(outboundWeight)), null,
+                            AccountTransaction.Type.DEPOSIT);
+            deposit.setOriginalTransaction(t);
+            state.asReadOnly(inboundAccount).internalAddTransaction(deposit);
         }
     }
 
     private AccountTransferEntry createTransferEntry(AccountTransferEntry entry, BigDecimal weight)
     {
         AccountTransferEntry copy = new AccountTransferEntry();
+        copy.getSourceTransaction().setOriginalTransaction(entry.getSourceTransaction());
+        copy.getTargetTransaction().setOriginalTransaction(entry.getTargetTransaction());
+
         copy.setDate(entry.getSourceTransaction().getDateTime());
         copy.setNote(entry.getSourceTransaction().getNote());
 
@@ -496,26 +540,39 @@ public class ClientClassificationFilter implements ClientFilter
                     long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
                     long amount = value(t.getAmount(), weight);
 
-                    AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    amount + taxes, t.getSecurity(), t.getType());
+                    var dividend = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                                    t.getSecurity(), t.getType());
+                    dividend.setOriginalTransaction(t);
+                    t.getUnits().filter(u -> u.getType() != Unit.Type.TAX)
+                                    .forEach(u -> dividend.addUnit(value(u, weight)));
+                    readOnlyAccount.internalAddTransaction(dividend);
 
-                    t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(value(u, weight)));
-
-                    readOnlyAccount.internalAddTransaction(copy);
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    amount + taxes, null, AccountTransaction.Type.REMOVAL));
+                    var reverseDividend = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                                    null, AccountTransaction.Type.REMOVAL);
+                    reverseDividend.setOriginalTransaction(t);
+                    readOnlyAccount.internalAddTransaction(reverseDividend);
                     break;
                 case FEES:
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), t.getType()));
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), null, AccountTransaction.Type.DEPOSIT));
+                    var fee = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), value(t.getAmount(), weight),
+                                    t.getSecurity(), t.getType());
+                    fee.setOriginalTransaction(t);
+                    readOnlyAccount.internalAddTransaction(fee);
+
+                    var reverseFees = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    value(t.getAmount(), weight), null, AccountTransaction.Type.DEPOSIT);
+                    reverseFees.setOriginalTransaction(t);
+                    readOnlyAccount.internalAddTransaction(reverseFees);
                     break;
                 case FEES_REFUND:
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), t.getType()));
-                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), null, AccountTransaction.Type.REMOVAL));
+                    var refund = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    value(t.getAmount(), weight), t.getSecurity(), t.getType());
+                    refund.setOriginalTransaction(t);
+                    readOnlyAccount.internalAddTransaction(refund);
+
+                    var reverseRefund = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                    value(t.getAmount(), weight), null, AccountTransaction.Type.REMOVAL);
+                    reverseRefund.setOriginalTransaction(t);
+                    readOnlyAccount.internalAddTransaction(reverseRefund);
                     break;
                 case TAXES:
                 case TAX_REFUND:
