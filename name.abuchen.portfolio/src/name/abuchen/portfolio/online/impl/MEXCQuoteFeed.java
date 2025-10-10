@@ -32,14 +32,13 @@ public final class MEXCQuoteFeed implements QuoteFeed
 {
     private static class ResponseData
     {
-        long startTime;
+        LocalDate start;
         String json;
     }
 
     public static final String ID = "MEXC"; //$NON-NLS-1$
 
-    private static final long MILLISECONDS_PER_DAY = 24L * 60 * 60 * 1000;
-
+    private static final long SECONDS_PER_DAY = 24L * 60 * 60;
     private final PageCache<ResponseData> cache = new PageCache<>(Duration.ofMinutes(1));
 
     @Override
@@ -141,7 +140,7 @@ public final class MEXCQuoteFeed implements QuoteFeed
         int volume = YahooHelper.asNumber(ohlcArray.get(5).toString());
 
         var price = new LatestSecurityPrice();
-        price.setDate(LocalDate.ofEpochDay(timestamp / MILLISECONDS_PER_DAY));
+        price.setDate(LocalDate.ofEpochDay(timestamp / 1000 / SECONDS_PER_DAY));
         price.setValue(close);
         price.setHigh(high);
         price.setLow(low);
@@ -158,24 +157,23 @@ public final class MEXCQuoteFeed implements QuoteFeed
 
         QuoteFeedData data = new QuoteFeedData();
 
-        final Long startTime = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
-        final Long endTime = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
+        final Long tickerStartEpochMilliSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond() * 1000;
 
         try
         {
-            var webaccess = new WebAccess("api.mexc.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
+            WebAccess webaccess = new WebAccess("api.mexc.com", "/api/v3/klines") //$NON-NLS-1$ //$NON-NLS-2$
+                            // Ticker: BTCEUR, BTCUSDT, ...
                             .addParameter("symbol", security.getTickerSymbol()) //$NON-NLS-1$
                             .addParameter("interval", "1d") //$NON-NLS-1$ //$NON-NLS-2$
-                            .addParameter("startTime", startTime.toString()) //$NON-NLS-1$
-                            .addParameter("endTime", endTime.toString()) //$NON-NLS-1$
+                            .addParameter("startTime", tickerStartEpochMilliSeconds.toString()) //$NON-NLS-1$
                             .addParameter("limit", "1000"); //$NON-NLS-1$ //$NON-NLS-2$
 
             var response = cache.lookup(security.getTickerSymbol());
 
-            if (response == null || response.startTime > startTime)
+            if (response == null || response.start.isAfter(start))
             {
                 response = new ResponseData();
-                response.startTime = startTime;
+                response.start = start;
                 response.json = webaccess.get();
 
                 if (response.json != null)
