@@ -1,0 +1,53 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-20672455 - 20672455
+Trade Details Report
+Reporting period: 05-Aug-2025 - 05-Aug-2025
+Generated at: 02-Okt-2025 10:37:51 10:37:51 (W. Europe Standard Time)
+CH-20672455 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 1 of 3 Account(s): AutoInvest 80000/167617 Generated at: 02-Okt-2025
+Trade details, CHF
+Reporting period
+05-Aug-2025 to 05-Aug-2025
+ETF
+iShares Swiss Domestic Government Bnd 3-7
+Instrument Trade time 05-Aug-2025 13:02:36
+(CH) ETF
+ISIN CH0016999846 Value Date 07-Aug-2025
+Symbol CSBGC7:xswx Order ID 5311259140
+Exchange Description J.P. MORGAN SE (JPEU) Trade ID 6358773884
+SIX Swiss Exchange ETFs on Bonds of the
+Primary Exchange Traded Value -375,99 CHF
+Swiss Conf
+Venue Exchange Price 75,19880769 CHF
+Order Type Market Order Quantity 5,00
+B/S Buy Spread Costs 0,00 CHF
+Open/Close OPEN Total Trading Costs -0,28 CHF
+Saxo is counterparty No
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID CHF CHF CHF
+Share Amount 46403752826 05-Aug-2025 07-Aug-2025 -375,99 1,000000 0,00 -375,99
+Swiss Stamp Duty
+46406605890 05-Aug-2025 07-Aug-2025 -0,28 1,000000 0,00 -0,28
+Domestic
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 2 of 3 Account(s): AutoInvest 80000/167617 Generated at: 02-Okt-2025
+Trade details, CHF
+Reporting period
+05-Aug-2025 to 05-Aug-2025
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID CHF CHF CHF
+Net Amount - - - - - 0,00 -376,27
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Reporting period
+Currency: CHF 05-Aug-2025 - 05-Aug-2025
+Page 3 of 3 Account(s): AutoInvest 80000/167617 Generated at: 02-Okt-2025
