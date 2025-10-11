@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ da
+ 
+   
+Raiffeisenbank Untersberg eGen  
+Hauptstraße 28  
+5082 Grödig    b
+ 
+ 
+a  
+a  
+Abrechnung Dauerauftrag a  
+11111111 - 23.09.2024 a  
+Depotnummer: 11.111.111  
+Ing. Max Mustermann Ing. Max Mustermann
+Maxiz-Muster.Straße 11/1
+5011 Wohnort 11/1
+Beratung Grödig
+Wir haben für Sie am 23.09.2024 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ausgabe Fonds aus Dauerauftrag Dauerauftrag-Nr.: 51 - 26.05.2021
+Auftragseingang: 20.09.2024 - 16:38:14
+Zugang: 0,256 Stk   
+Titel: AT0000A1TX20 Raiffeisen-MegaTr.-ESG Aktien(RZ) T
+Miteigentumsanteile - Thesaurierend
+Fondsgesellschaft: Raiffeisen Kapitalanlageges. m.b.H.
+Kurs: 187,34 EUR
+Handelsplatz: AT_F AT FONDS
+Handelszeit: 20.09.2024 
+Verwahrart: SV
+Positionsdaten: Loco: AT Österreich
+Kurswert: -47,96 EUR 
+Transaktionsservice Grundpreis: -1,14 EUR 
+Transaktionsservice variabel: -0,95 EUR 
+Zu Lasten IBAN AT11 1111 1111 1111 1111 -50,05 EUR 
+Valuta 23.09.2024
+Schlusstag: 20.09.2024
+Kassatag: 23.09.2024
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 0,256 Stk
+steuerlicher Anschaffungswert: 47,96 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+23.09.2024 1 / 1
