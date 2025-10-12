@@ -266,15 +266,26 @@ public final class TransactionsViewer implements ModificationListener
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> {
+        var typeLabelProvider = new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction pt)
                 return pt.getType().toString();
             else if (t instanceof AccountTransaction at)
                 return at.getType().toString();
             else
                 return null;
-        }));
+        })
+        {
+            @Override
+            public Image getImage(Object element)
+            {
+                return element instanceof TransactionPair<?> pair
+                                && pair.getTransaction().getOriginalTransaction() != null ? Images.CALCULATOR.image()
+                                                : null;
+            }
+        };
+
+        column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(typeLabelProvider);
         ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             if (t instanceof PortfolioTransaction pt)
