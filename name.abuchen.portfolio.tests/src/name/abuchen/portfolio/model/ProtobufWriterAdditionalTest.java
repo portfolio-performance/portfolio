@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class ProtobufWriterAdditionalTest
 {
 
@@ -45,7 +47,6 @@ public class ProtobufWriterAdditionalTest
         assertThat(actual, is(expected));
     }
 
-    @SuppressWarnings("nls")
     @Test
     public void testCurrencyMismatchErrorHandling() throws IOException
     {
@@ -100,5 +101,51 @@ public class ProtobufWriterAdditionalTest
         // check that transaction is skipped
         assertThat(reloadedClient.getPortfolios().get(0).getTransactions().size(), is(0));
         assertThat(reloadedClient.getAccounts().get(0).getTransactions().size(), is(0));
+    }
+
+    @Test
+    public void testDividendWithoutSecurityConvertedToInterest() throws IOException
+    {
+        // This test verifies that when loading a file with a dividend
+        // transaction that has no security, it is automatically converted
+        // to an interest payment transaction
+
+        var client = new Client();
+
+        var account = new Account();
+        account.setName("Account");
+        account.setCurrencyCode(CurrencyUnit.EUR);
+        client.addAccount(account);
+
+        // Create a dividend transaction without a security
+        // (which should not be possible in the current codebase, but may
+        // exist in old files)
+        var dividend = new AccountTransaction();
+        dividend.setType(AccountTransaction.Type.DIVIDENDS);
+        dividend.setDateTime(LocalDateTime.now());
+        dividend.setCurrencyCode(CurrencyUnit.EUR);
+        dividend.setAmount(Values.Amount.factorize(100));
+        dividend.setSecurity(null); // explicitly no security
+        account.addTransaction(dividend);
+
+        // Save to binary format
+        var protobufWriter = new ProtobufWriter();
+        var stream = new ByteArrayOutputStream();
+        protobufWriter.save(client, stream);
+        stream.close();
+
+        // Load from binary format
+        var in = new ByteArrayInputStream(stream.toByteArray());
+        Client reloadedClient = protobufWriter.load(in);
+
+        // Verify the transaction was converted to INTEREST
+        assertThat(reloadedClient.getAccounts().size(), is(1));
+        assertThat(reloadedClient.getAccounts().get(0).getTransactions().size(), is(1));
+
+        var reloadedTransaction = reloadedClient.getAccounts().get(0).getTransactions().get(0);
+        assertThat(reloadedTransaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(reloadedTransaction.getSecurity(), is((Security) null));
+        assertThat(reloadedTransaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
     }
 }

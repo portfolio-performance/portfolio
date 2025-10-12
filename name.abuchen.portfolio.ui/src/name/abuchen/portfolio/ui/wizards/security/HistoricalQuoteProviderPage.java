@@ -30,6 +30,8 @@ import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.AMFIIndiaQuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed;
+import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
@@ -233,6 +235,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BinanceQuoteFeed.ID.equals(getFeed()))
             return BinanceQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (BinanceFuturesUsdsMarginedQuoteFeed.ID.equals(getFeed()))
+            return BinanceFuturesUsdsMarginedQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (MEXCQuoteFeed.ID.equals(getFeed()))
+            return MEXCQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BitfinexQuoteFeed.ID.equals(getFeed()))
             return BitfinexQuoteFeed.ID + getModel().getTickerSymbol();
         else if (KrakenQuoteFeed.ID.equals(getFeed()))

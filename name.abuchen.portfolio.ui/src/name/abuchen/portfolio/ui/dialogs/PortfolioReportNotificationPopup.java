@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 
 public class PortfolioReportNotificationPopup extends AbstractNotificationPopup
@@ -65,6 +66,15 @@ public class PortfolioReportNotificationPopup extends AbstractNotificationPopup
             close();
             openFindQuoteProviderDialog();
         }));
+
+        var infoLink = new Link(messageComposite, SWT.NONE);
+        infoLink.setBackground(Colors.WHITE);
+        infoLink.setText("<a>" + Messages.LabelInfo + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+        infoLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            DesktopAPI.browse(Messages.SiteInfoPortfolioReportMigration);
+            close();
+        }));
+
     }
 
     private void openFindQuoteProviderDialog()

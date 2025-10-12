@@ -1,0 +1,31 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+1/1
+Nous vous prions de trouver ci-dessous votre relevé d'opérations. Sans observation de votre part au
+sujet du présent relevé, nous le considérerons comme ayant obtenu votre accord. Veuillez agréer nos
+salutations distinguées.
+Le 16/03/2021
+Avis d'Opération
+COMPTE N° 508TI00085554410EUR Ordinaire MR SLlPD yVlqGo
+192 ROUTE DE qRRZPSm
+MR lYoBQ xsdjTp 77158  IvQiGu
+Date Désignation Débit (€) Crédit (€)
+ 16/03/2021  VENTE ETRANGER  US0995021062  BOOZ ALLEN CL.A  2 977,53
+ QUANTITE :  -45
+ COURS :  +66,356440254  BRUT :  +2 986,04
+ COURTAGE :  +8,50  TVA :  +0,00
+ COURS EN USD :  +79,2  TX USD/EUR :  +1,193554080
+ TAXE ETRANG :  +0,01
+ Heure Execution: 19:50:11       Lieu: NEW YORK STOCK EXCHANGE, INC.
+ 16/03/2021  VENTE ETRANGER  US5024311095  L3HARRIS TECHN.  3 178,78
+ QUANTITE :  -20
+ COURS :  +159,364458794  BRUT :  +3 187,29
+ COURTAGE :  +8,50  TVA :  +0,00
+ COURS EN USD :  +190,2101  TX USD/EUR :  +1,193554080
+ TAXE ETRANG :  +0,01
+ Heure Execution: 19:45:03       Lieu: NEW YORK STOCK EXCHANGE, INC.
+Sous réserve de bonne fin / Ce relevé ne constitue pas une facture
+Les montants des colonnes Débit et Crédit sont stipulés TVA Comprise
+Bourse Direct ,  SA au capital de 13.988.845,75 €, R.C.S Paris B 408 790 608, Siège Social : 374 rue Saint-Honoré, 75001 Paris -  Groupe VIEL et Cie

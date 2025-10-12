@@ -42,17 +42,17 @@ import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
 
-public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
+public class ECBDataPortalQuoteFeed implements QuoteFeed
 {
 
     public static final String ID = "ECBSDW"; //$NON-NLS-1$
 
-    private static final String ECB_SDW_PROTOCOL = "https"; //$NON-NLS-1$
-    private static final String ECB_SDW_HOST = "sdw-wsrest.ecb.europa.eu"; //$NON-NLS-1$
-    private static final String ECB_SDW_DATA_PATH = "/service/data/"; //$NON-NLS-1$
+    private static final String ECB_EDP_PROTOCOL = "https"; //$NON-NLS-1$
+    private static final String ECB_EDP_HOST = "data-api.ecb.europa.eu"; //$NON-NLS-1$
+    private static final String ECB_EDP_DATA_PATH = "/service/data/"; //$NON-NLS-1$
     private static final String MONTH_REGEX = "\\d\\d\\d\\d-\\d\\d"; //$NON-NLS-1$
     private static final String MONTH_POSTFIX = "-01"; //$NON-NLS-1$
-    private static final String ECB_SDW_DATE_FORMAT = "yyyy-MM-dd"; //$NON-NLS-1$
+    private static final String ECB_EDP_DATE_FORMAT = "yyyy-MM-dd"; //$NON-NLS-1$
 
     private static final String ESTR_EONIA_COMBINED_ID = "€STR/EONIA"; //$NON-NLS-1$
     private static final String ESTR_ID = "ECB,EST,1.0/B.EU000A2QQF08.CI"; //$NON-NLS-1$
@@ -152,7 +152,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
     @Override
     public String getName()
     {
-        return Messages.LabelECBStatisticalDataWarehouse;
+        return Messages.LabelECBDataPortal;
     }
 
     @Override
@@ -232,8 +232,8 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
     private String requestData(String dataSeriesID, boolean collectRawResponse, QuoteFeedData data)
                     throws IOException, URISyntaxException
     {
-        WebAccess webaccess = new WebAccess(ECB_SDW_HOST, ECB_SDW_DATA_PATH + dataSeriesID) //
-                        .withScheme(ECB_SDW_PROTOCOL); //
+        WebAccess webaccess = new WebAccess(ECB_EDP_HOST, ECB_EDP_DATA_PATH + dataSeriesID) //
+                        .withScheme(ECB_EDP_PROTOCOL); //
 
         String text = webaccess.get();
 
@@ -320,7 +320,7 @@ public class ECBStatisticalDataWarehouseQuoteFeed implements QuoteFeed
         NodeList dataList = root.getElementsByTagName("generic:Obs"); //$NON-NLS-1$
 
         List<Pair<LocalDate, BigDecimal>> dataSeries = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECB_SDW_DATE_FORMAT);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ECB_EDP_DATE_FORMAT);
         LocalDate lastInterestRateDay = LocalDate.MIN;
 
         for (int i = 0; i < dataList.getLength(); i++)

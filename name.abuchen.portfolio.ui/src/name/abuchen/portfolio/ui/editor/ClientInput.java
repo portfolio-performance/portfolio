@@ -46,7 +46,6 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -698,13 +697,6 @@ public class ClientInput
 
     private void checkAndShowPortfolioReportNotification()
     {
-        // for the time being, show the popup only to users that are
-        // authenticated. That way we gradually roll it out to users that are
-        // already familiar with the build-in provider.
-
-        if (!OAuthClient.INSTANCE.isAuthenticated())
-            return;
-
         var portfolioReportSecurities = client.getSecurities().stream()
                         .filter(s -> PortfolioReportQuoteFeed.ID.equals(s.getFeed())).toList();
 

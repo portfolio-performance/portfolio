@@ -37,6 +37,50 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.3" date="2025-10-04">
+      <description>
+        <ul>
+          <li>New: Added MEXC Crypto Exchange as an online price feed.</li>
+          <li>Improvement: Enhanced PDF importers for Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank, and Bourse Direct.</li>
+          <li>Fix: Resolved a crash when switching the securities view while the table was sorted by certain columns.</li>
+          <li>Fix: Fixed loading of dividend transactions without an associated security.</li>
+          <li>Fix: Improved detection of file types based on file content.</li>
+          <li xml:lang="de">Neu: MEXC Crypto Exchange als Online-Kurslieferant hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Merkur Privatbank, Tradegate AG, flatex, Hypothekarbank Lenzburg, Trade Republic, Comdirect, DKB, Deutsche Bank und Bourse Direct verbessert.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt einen Fehler, der beim Wechsel der Wertpapieransicht auftrat, wenn die Tabelle nach bestimmten Spalten sortiert war.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem beim Laden von Dividendenbuchungen ohne zugeordnetes Wertpapier.</li>
+          <li xml:lang="de">Fehlerbehebung: Verbessert die Erkennung von Dateitypen anhand des Dateiinhalts.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.2" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Fix: Fixed a java.net.URISyntaxException when path contains spaces.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem wenn ein Pfad Leerzeichen enthält.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.80.1" date="2025-09-27">
+      <description>
+        <ul>
+          <li>Improvement: Reduced the number of login requests through improved handling.</li>
+          <li>Improvement: Added option to recursively sort taxonomies by name, value, or type.</li>
+          <li>Improvement: Added the accelerator Ctrl-E (or Cmd-E) to edit instruments in more views.</li>
+          <li>Improvement: Assign stable colors when multiple instruments are selected in the price chart.</li>
+          <li>Improvement: Enhanced price feed search with exact ticker lookup and bulk exchange updates.</li>
+          <li>Improvement: Set the weight of newly imported classifications to zero when importing taxonomies from JSON.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital and Saxo Bank.</li>
+          <li xml:lang="de">Verbesserung: Login-Anfragen durch verbessertes Handling reduziert.</li>
+          <li xml:lang="de">Verbesserung: Option hinzugefügt, Taxonomien rekursiv nach Name, Wert oder Typ zu sortieren.</li>
+          <li xml:lang="de">Verbesserung: Tastenkürzel Strg-E (bzw. Cmd-E auf macOS) zum Bearbeiten von Wertpapieren in weiteren Ansichten hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Verwendung von stabile Farben wenn mehrere Wertpapiere im Kursdiagramm ausgewählt werden.</li>
+          <li xml:lang="de">Verbesserung: Kurssuche verbessert mit exakter Tickersuche und Massenänderung des Börsenpatzes.</li>
+          <li xml:lang="de">Verbesserung: Gewichtung neu importierter Klassifikationen werden beim Import von Taxonomien aus JSON auf Null gesetzt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital und Saxo Bank verbessert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.80.0" date="2025-09-21">
       <description>
         <ul>

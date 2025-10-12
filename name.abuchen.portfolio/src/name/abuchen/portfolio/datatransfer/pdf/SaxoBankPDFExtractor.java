@@ -38,7 +38,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Saxo Bank A/S";
+        return "Saxo Bank";
     }
 
     private void addBuySellTransaction()
@@ -48,6 +48,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Währung: CHF 05-Dez-2024 - 05-Dez-2024
                                         // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 09-Apr-2025 - 09-Apr-2025
+                                        // Currency: CHF 05-Aug-2025 - 05-Aug-2025
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^.*(W.hrung|Currency): (?<currency>[A-Z]{3}).*$") //
@@ -94,7 +95,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^Ordertyp .* (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -107,7 +108,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -124,7 +125,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("isin", "tickerSymbol", "currency") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -132,12 +133,29 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN US26923G8226 Value Date 10-Apr-2025
                                         // Symbol PFFA:arcx Order ID 5276831204
                                         // Venue Exchange Traded Value -980,98 USD
+                                        //
+                                        // Instrument iShares MSCI ACWI USD Acc UCITS ETF Trade time 05-Aug-2025 12:46:23
+                                        // ISIN IE00B6R52259 Value Date 07-Aug-2025
+                                        // Symbol Symbol SSAC_CHF:xswx Order ID 5311227095
+                                        // Venue Exchange Price 80,4666 CHF
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Trade time.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^.*Traded Value (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+
+                                        // ISIN CH0016999846 Value Date 07-Aug-2025
+                                        // Symbol CSBGC7:xswx Order ID 5311259140
+                                        // Venue Exchange Price 75,19880769 CHF
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "tickerSymbol", "currency") ///
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Value.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^.*Traded Value (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -330,7 +348,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "tickerSymbol", "isin") //
                                                         .match("^Description (?<name>.*) Dividend per share [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -341,7 +359,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "tickerSymbol", "isin") //
                                                         .match("^Description (?<name>.*) Dividende pro Aktie [\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -494,13 +512,23 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // EUR EUR
                                         // Deposit 45108148786 20-Jun-2025 20-Jun-2025 10,00 1,000000 0,00 10,00
                                         // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 20-Jun-2025 - 20-Jun-2025
+                                        //
+                                        // EUR EUR
+                                        // Withdrawal 46769031349 18-Aug-2025 18-Aug-2025 -3.000,00 1,000000 0,00 -3.000,00
+                                        // / Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: EUR 18-Aug-2025 - 18-Aug-2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note", "date", "amount", "currency") //
+                                                        .attributes("type", "note", "date", "amount", "currency") //
                                                         .find("Cash Transfer") //
-                                                        .match("^Deposit (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
+                                                        .match("^(?<type>(Deposit|Withdrawal)) (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (\\-)?(?<amount>[\\.,'\\d]+)$") //
                                                         .match("^.*Currency: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "Withdrawal" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("Withdrawal".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -635,6 +663,16 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^Stempelgeb.hr .* \\-(?<fee>[\\.,'\\d]+) \\-[\\.,'\\d]+$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Swiss Stamp Duty
+                        // 46406463093 05-Aug-2025 07-Aug-2025 -1,69 1,000000 0,00 -1,69
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find("Swiss Stamp Duty.*") //
+                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off

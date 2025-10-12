@@ -1642,8 +1642,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         + "|Bar" //
                         + "|Visa\\-Kartenabre" //
                         + "|Korrektur Barauszahlung" //
-                        + "|.*Lastschr).* " //
-                        + "\\+[\\.,\\d]+$");
+                        + "|.*Lastschr" //
+                        + "|.*Sparplan).* " //
+                        + "\\+[\\.\\d]+,[\\d]{2}$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(3);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -1663,7 +1664,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "|Bar" //
                                         + "|Visa\\-Kartenabre" //
                                         + "|Korrektur Barauszahlung" //
-                                        + "|.*Lastschr)" //
+                                        + "|.*Lastschr" //
+                                        + "|.*Sparplan)" //
                                         + "(?<note2>.*) " //
                                         + "\\+(?<amount>[\\.,\\d]+)$") //
                         .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
@@ -1705,6 +1707,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Visa-Kartenabrechnung");
                             else if (v.get("note1").matches("^(?i).*Lastschr.*$"))
                                 v.put("note", "Lastschrift");
+                            else if (v.get("note1").matches("^(?i).*Sparplan.*$"))
+                                v.put("note", "Sparplan");
                             else
                                 v.put("note", v.get("note1"));
 

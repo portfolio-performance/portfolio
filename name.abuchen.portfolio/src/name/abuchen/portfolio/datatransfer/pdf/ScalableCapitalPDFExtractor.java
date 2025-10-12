@@ -248,7 +248,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Rechnungsabschluss$");
+        var firstRelevantLine = new Block("^Deutschland Seite 1.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -285,6 +285,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDepotStatementTransaction()
@@ -427,7 +429,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
-                        // Kirchensteuer 0,00 EUR
+                        // Kirchensteuer 0,19 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //

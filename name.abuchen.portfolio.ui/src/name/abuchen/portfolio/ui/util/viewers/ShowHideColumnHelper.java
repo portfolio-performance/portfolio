@@ -292,13 +292,13 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             CellLabelProvider labelProvider = column.getLabelProvider().get();
             col.setLabelProvider(labelProvider);
 
-            setCommonParameters(column, col, direction);
-
             if (labelProvider instanceof CellItemImageClickedListener listener)
                 setupImageClickedListener(col, listener);
 
             if (labelProvider instanceof ParameterizedColumnLabelProvider parametrized)
                 parametrized.setTableColumn(tableColumn);
+
+            setCommonParameters(column, col, direction);
 
             return tableColumn;
         }

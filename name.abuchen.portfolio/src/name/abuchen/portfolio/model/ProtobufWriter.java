@@ -474,7 +474,15 @@ import name.abuchen.portfolio.money.Money;
                 case DIVIDEND:
                     AccountTransaction dividend = new AccountTransaction(newTransaction.getUuid());
                     dividend.setType(AccountTransaction.Type.DIVIDENDS);
-                    loadCommonTransaction(newTransaction, dividend, lookup, true);
+                    loadCommonTransaction(newTransaction, dividend, lookup, false);
+
+                    // If the dividend has no instrument, convert it to an
+                    // interest payment. In the past, it was possible to create
+                    // such a transaction.
+
+                    if (dividend.getSecurity() == null)
+                        dividend.setType(AccountTransaction.Type.INTEREST);
+
                     lookup.getAccount(newTransaction.getAccount()).addTransaction(dividend);
 
                     break;

@@ -42,10 +42,12 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
+import name.abuchen.portfolio.online.impl.BinanceFuturesUsdsMarginedQuoteFeed;
+import name.abuchen.portfolio.online.impl.MEXCQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
-import name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed;
+import name.abuchen.portfolio.online.impl.ECBDataPortalQuoteFeed;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
@@ -297,7 +299,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                         || feed.getId().equals(TwelveDataQuoteFeed.ID) //
-                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
+                        || feed.getId().equals(ECBDataPortalQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
@@ -430,7 +432,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         (feed.getId().startsWith(YAHOO) //
                                         || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
+                                        || feed.getId().equals(ECBDataPortalQuoteFeed.ID) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                                         || feed.getId().equals(TwelveDataQuoteFeed.ID));
 
@@ -443,6 +445,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         && Set.of(AlphavantageQuoteFeed.ID, //
                                         FinnhubQuoteFeed.ID, //
                                         BinanceQuoteFeed.ID, //
+                                        BinanceFuturesUsdsMarginedQuoteFeed.ID, //
+                                        MEXCQuoteFeed.ID, //
                                         BitfinexQuoteFeed.ID, //
                                         CoinGeckoQuoteFeed.ID, //
                                         KrakenQuoteFeed.ID, //
@@ -753,7 +757,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                                         || feed.getId().equals(TwelveDataQuoteFeed.ID) //
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
-                                        || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID)))
+                                        || feed.getId().equals(ECBDataPortalQuoteFeed.ID)))
         {
             updateExchangesDropdown(feed);
         }

@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Base64;
 import java.util.HashMap;
@@ -39,7 +38,7 @@ public class TokenStorage
         try
         {
             var url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio/token_storage").toURL()); //$NON-NLS-1$ //NOSONAR
-            tokenFile = Paths.get(url.toURI());
+            tokenFile = Path.of(new URI(url.getProtocol(), url.getHost(), url.getPath(), null));
 
             this.refreshToken = loadRefreshTokenFromFile();
 
