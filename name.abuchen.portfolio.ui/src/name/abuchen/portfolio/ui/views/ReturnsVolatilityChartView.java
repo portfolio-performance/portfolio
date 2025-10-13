@@ -21,11 +21,13 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 
 import com.google.common.collect.Lists;
@@ -82,9 +84,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private static final String KEY_USE_IRR = ReturnsVolatilityChartView.class.getSimpleName() + "-use-irr"; //$NON-NLS-1$
     private static final String KEY_RISK_METRIC = ReturnsVolatilityChartView.class.getSimpleName() + "-risk-metric"; //$NON-NLS-1$
+    private static final String KEY_DISPLAY_UNIT_RISK_LINE = ReturnsVolatilityChartView.class.getSimpleName()
+                    + "display-unit-risk-line"; //$NON-NLS-1$
 
     private boolean useIRR = false;
     private RiskMetric riskMetric = RiskMetric.VOLATILITY;
+    private boolean displayUnitRiskLine = false;
 
     private ScatterChart chart;
     private LocalResourceManager resources;
@@ -109,6 +114,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 // unknown risk metric type; continue to use the default one
             }
         }
+
+        this.displayUnitRiskLine = getPreferenceStore().getBoolean(KEY_DISPLAY_UNIT_RISK_LINE);
     }
 
     @PreDestroy
@@ -116,6 +123,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         getPreferenceStore().setValue(KEY_USE_IRR, this.useIRR);
         getPreferenceStore().setValue(KEY_RISK_METRIC, riskMetric.name());
+        getPreferenceStore().setValue(KEY_DISPLAY_UNIT_RISK_LINE, this.displayUnitRiskLine);
     }
 
     @Override
@@ -173,6 +181,14 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             }
 
             manager.add(new Separator());
+            Action unitRisk = new SimpleAction(Messages.MenuAddUnitRiskLine, a -> {
+                this.displayUnitRiskLine = !this.displayUnitRiskLine;
+                reportingPeriodUpdated();
+            });
+            unitRisk.setChecked(this.displayUnitRiskLine);
+            manager.add(unitRisk);
+
+            manager.add(new Separator());
             manager.add(new LabelOnly(Messages.LabelDataSeries));
             configurator.configMenuAboutToShow(manager);
         }));
@@ -202,6 +218,8 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
+
+        prepareUnitRiskLine();
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
         legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
@@ -298,6 +316,46 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             lineSeries.setSymbolType(series.isBenchmark() ? PlotSymbolType.DIAMOND : PlotSymbolType.CIRCLE);
             lineSeries.enableArea(series.isShowArea());
             lineSeries.setLineStyle(series.getLineStyle());
+        });
+    }
+
+    private void prepareUnitRiskLine()
+    {
+        chart.getPlotArea().addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                if (!displayUnitRiskLine)
+                    return;
+
+                var oldForeground = e.gc.getForeground();
+                var oldLineStyle = e.gc.getLineStyle();
+
+                var gray = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+                e.gc.setForeground(gray);
+                e.gc.setLineStyle(SWT.LINE_DOT);
+
+                var xAxis = chart.getAxisSet().getXAxis(0);
+                var yAxis = chart.getAxisSet().getYAxis(0);
+                int x0 = xAxis.getPixelCoordinate(0);
+                int y0 = yAxis.getPixelCoordinate(0);
+
+                // Double.MAX_VALUE does not work. We take a big enough pixel.
+                int x1 = xAxis.getPixelCoordinate(9999);
+                int y1 = yAxis.getPixelCoordinate(9999);
+
+                e.gc.drawLine(x0, y0, x1, y1);
+
+                e.gc.setForeground(oldForeground);
+                e.gc.setLineStyle(oldLineStyle);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return true;
+            }
         });
     }
 
