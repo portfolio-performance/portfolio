@@ -29,7 +29,6 @@ public class BrowserWidget extends WidgetDelegate<Object>
         addConfig(new ChartHeightConfig(this));
     }
 
-    @SuppressWarnings("restriction")
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
