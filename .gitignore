@@ -9,5 +9,5 @@ workspace
 *.iws
 *.iml
 *.ipr
-
+.vscode/*
 .claude/settings.local.json

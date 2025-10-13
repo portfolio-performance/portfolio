@@ -68,12 +68,9 @@ jobs:
         maven-version: 3.9.11
     - name: Build with Maven
       run: |
-        mvn -B verify sonar:sonar \
+        mvn verify sonar:sonar \
         --batch-mode \
         -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-        -Dsonar.projectKey=arnonm_portfolio \
-        -Dsonar.organization=arnonm \
         --file portfolio-app/pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
