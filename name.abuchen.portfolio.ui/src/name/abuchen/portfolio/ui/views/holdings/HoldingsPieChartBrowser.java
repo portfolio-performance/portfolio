@@ -33,7 +33,7 @@ public class HoldingsPieChartBrowser implements IPieChart
     }
 
     @Override
-    public Control createControl(@SuppressWarnings("restriction") Composite parent)
+    public Control createControl(Composite parent)
     {
         return browser.createControl(parent, LoadDataFunction::new,
             b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
@@ -60,8 +60,7 @@ public class HoldingsPieChartBrowser implements IPieChart
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-        @SuppressWarnings("restriction")
-        private LoadDataFunction(@SuppressWarnings("restriction") Browser browser) // NOSONAR
+        private LoadDataFunction(Browser browser) // NOSONAR
         {
             super(browser, "loadData"); //$NON-NLS-1$
         }
