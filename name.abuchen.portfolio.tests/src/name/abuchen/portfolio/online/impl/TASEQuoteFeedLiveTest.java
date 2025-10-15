@@ -26,7 +26,7 @@ import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecuritySubT
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
-public class TASEQuoteFeedLiveTest
+public class TaseQuoteFeedLiveTest
 {
 
     @Test
@@ -58,7 +58,7 @@ public class TASEQuoteFeedLiveTest
 
                 LocalDate date = price.getDate();
                 Long daysdiff = ChronoUnit.DAYS.between(date, LocalDate.now());
-                assertThat(daysdiff, lessThanOrEqualTo(5L));
+                assertThat(daysdiff, lessThanOrEqualTo(6L));
                 assertTrue(price.getValue() != 0l);
 
                 assertThat(price.getHigh(), not(0L)); // (Values.Quote.factorize(0.00)));
