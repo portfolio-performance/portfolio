@@ -224,7 +224,7 @@ public class Messages extends NLS
     public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarSix;
     public static String LabelTradeCalendarTARGET2;
-    public static String LabelTradeCalendarTLV;
+    public static String LabelTradeCalendarTASE;
     public static String LabelTradeCalendarTSX;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarVSE;
@@ -239,6 +239,7 @@ public class Messages extends NLS
     public static String LabelXwithCurrencyY;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String LabelTelAvivFinance;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
