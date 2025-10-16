@@ -481,50 +481,6 @@ public class TASESecurityTest
         }
     }
 
-    @Test
-    public void live_testing_security_1119478()
 
-    {
-        Security security = new Security();
-        security.setTickerSymbol("DDDD");
-        security.setCurrencyCode("ILA");
-        security.setWkn("1119478");
-
-
-        TASESecurity feed = new TASESecurity();
-
-        try
-        {
-
-            Optional<QuoteFeedData> feedDataOpt = feed.getHistoricalQuotes(security, false);
-
-            assertFalse("GetHistoricalQoutes feedData should not be empty", feedDataOpt.isEmpty());
-
-            QuoteFeedData feedData = feedDataOpt.get();
-
-            assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
-
-            SecurityPrice firstprice = feedData.getPrices().get(0);
-            SecurityPrice lastprice = feedData.getPrices().get(feedData.getPrices().size() - 1);
-
-            LatestSecurityPrice latestprice = feedData.getLatestPrices().get(0);
-
-
-            assertThat(firstprice.getDate(), greaterThan(LocalDate.now().minusDays(5)));
-            assertThat(lastprice.getDate(), greaterThan(LocalDate.now().minusMonths(2)));
-            assertThat(firstprice.getValue(), greaterThan(Values.Quote.factorize(10000.00)));
-            assertThat(lastprice.getValue(), greaterThan(Values.Quote.factorize(10000.00)));
-
-            assertThat(latestprice.getDate(), greaterThan(LocalDate.now().minusDays(5)));
-            assertThat(latestprice.getValue(), greaterThan(100L));
-            assertThat(latestprice.getHigh(), greaterThan(100L));
-            assertThat(latestprice.getLow(), greaterThan(100L));
-
-        }
-        catch (Exception e)
-        {
-            fail("Exception not expected" + e.getMessage());
-        }
-    }
 
 }

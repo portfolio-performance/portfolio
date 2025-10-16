@@ -30,11 +30,6 @@ public class TASEQuoteFeedMockTest
 {
 
 
-    private String getIndicesList()
-
-    {
-        return getHistoricalTaseQuotes("response_tase_list_indices.txt");
-    }
 
     // Mutual Fund Example - 5127121
     // https://maya.tase.co.il/en/funds/mutual-funds/5127121

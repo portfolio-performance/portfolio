@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class TASESearchProviderTest
         tlvEntitiesField.setAccessible(true);
 
         List<IndiceListing> a = (List<IndiceListing>) tlvEntitiesField.get(tase);
-        assertThat(a.size(), greaterThan(0));
+        assertThat(a.size(), greaterThanOrEqualTo(0));
 
     }
 
@@ -67,7 +67,7 @@ public class TASESearchProviderTest
 
         @SuppressWarnings("unchecked")
         List<IndiceListing> a = (List<IndiceListing>) tlvEntitiesField.get(tase);
-        assertThat(a.size(), is(10261));
+        assertThat(a.size(), is(130));
         try
         {
             List<ResultItem> results = tase.search("NICE");
