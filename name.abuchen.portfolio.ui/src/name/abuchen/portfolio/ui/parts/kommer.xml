@@ -66,21 +66,6 @@
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
     <security>
-      <uuid>dfd4a396-34fe-484c-8130-4fecde91039d</uuid>
-      <name>MSCI World</name>
-      <tickerSymbol></tickerSymbol>
-      <feed>GENERIC_HTML_TABLE</feed>
-      <feedURL>http://www.onvista.de/index/MSCI-WORLD-Index-3194141</feedURL>
-      <prices/>
-      <latestFeed>MANUAL</latestFeed>
-      <attributes>
-        <map/>
-      </attributes>
-      <events/>
-      <isRetired>false</isRetired>
-      <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
-    </security>
-    <security>
       <uuid>c770a389-0a84-442c-ad85-2a58c3066924</uuid>
       <name>iShares Core MSCI Europe UCITS ETF EUR (Dist)</name>
       <currencyCode>EUR</currencyCode>
@@ -492,7 +477,6 @@
         <security reference="../../../../securities/security"/>
         <security reference="../../../../securities/security[2]"/>
         <security reference="../../../../securities/security[3]"/>
-        <security reference="../../../../securities/security[4]"/>
       </securities>
     </watchlist>
     <watchlist>
@@ -521,7 +505,7 @@
           <date>2019-01-07T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>294683</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <crossEntry class="buysell">
             <portfolio>
               <uuid>dc6fac85-6c6e-47f1-a968-2b5b84d90997</uuid>
@@ -534,7 +518,7 @@
                   <date>2019-01-07T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>294683</amount>
-                  <security reference="../../../../../../../../../securities/security[9]"/>
+                  <security reference="../../../../../../../../../securities/security[8]"/>
                   <crossEntry class="buysell" reference="../../../.."/>
                   <shares>2400000000</shares>
                   <units>
@@ -550,7 +534,7 @@
                   <date>2019-01-07T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>133025</amount>
-                  <security reference="../../../../../../../../../securities/security[5]"/>
+                  <security reference="../../../../../../../../../securities/security[4]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -560,7 +544,7 @@
                       <date>2019-01-07T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>133025</amount>
-                      <security reference="../../../../../../../../../../../securities/security[5]"/>
+                      <security reference="../../../../../../../../../../../securities/security[4]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-02-16T07:17:00.710042Z</updatedAt>
@@ -581,7 +565,7 @@
                   <date>2019-01-08T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>140843</amount>
-                  <security reference="../../../../../../../../../securities/security[10]"/>
+                  <security reference="../../../../../../../../../securities/security[9]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -591,7 +575,7 @@
                       <date>2019-01-08T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>140843</amount>
-                      <security reference="../../../../../../../../../../../securities/security[10]"/>
+                      <security reference="../../../../../../../../../../../securities/security[9]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-02-16T07:17:00.710074Z</updatedAt>
@@ -612,7 +596,7 @@
                   <date>2019-01-07T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>212272</amount>
-                  <security reference="../../../../../../../../../securities/security[8]"/>
+                  <security reference="../../../../../../../../../securities/security[7]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -622,7 +606,7 @@
                       <date>2019-01-07T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>212272</amount>
-                      <security reference="../../../../../../../../../../../securities/security[8]"/>
+                      <security reference="../../../../../../../../../../../securities/security[7]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-02-16T07:17:00.710051Z</updatedAt>
@@ -643,7 +627,7 @@
                   <date>2019-01-07T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>163528</amount>
-                  <security reference="../../../../../../../../../securities/security[6]"/>
+                  <security reference="../../../../../../../../../securities/security[5]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -653,7 +637,7 @@
                       <date>2019-01-07T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>163528</amount>
-                      <security reference="../../../../../../../../../../../securities/security[6]"/>
+                      <security reference="../../../../../../../../../../../securities/security[5]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-02-16T07:17:00.710054Z</updatedAt>
@@ -674,7 +658,7 @@
                   <date>2019-01-07T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>48640</amount>
-                  <security reference="../../../../../../../../../securities/security[7]"/>
+                  <security reference="../../../../../../../../../securities/security[6]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -684,7 +668,7 @@
                       <date>2019-01-07T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>48640</amount>
-                      <security reference="../../../../../../../../../../../securities/security[7]"/>
+                      <security reference="../../../../../../../../../../../securities/security[6]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-02-16T07:17:00.710063Z</updatedAt>
@@ -705,7 +689,7 @@
                   <date>2022-04-27T00:00</date>
                   <currencyCode>USD</currencyCode>
                   <amount>267600</amount>
-                  <security reference="../../../../../../../../../securities/security[13]"/>
+                  <security reference="../../../../../../../../../securities/security[12]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -729,7 +713,7 @@
                           <date>2022-04-27T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>267600</amount>
-                          <security reference="../../../../../../../../../../../../../securities/security[13]"/>
+                          <security reference="../../../../../../../../../../../../../securities/security[12]"/>
                           <crossEntry class="buysell" reference="../../../.."/>
                           <shares>0</shares>
                           <updatedAt>2024-05-21T21:07:21.595456Z</updatedAt>
@@ -757,7 +741,7 @@
                   <date>2021-11-01T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>87580</amount>
-                  <security reference="../../../../../../../../../securities/security[14]"/>
+                  <security reference="../../../../../../../../../securities/security[13]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -767,7 +751,7 @@
                       <date>2021-11-01T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>87580</amount>
-                      <security reference="../../../../../../../../../../../securities/security[14]"/>
+                      <security reference="../../../../../../../../../../../securities/security[13]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-05-21T21:22:42.944048Z</updatedAt>
@@ -788,7 +772,7 @@
                   <date>2022-10-01T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>26240</amount>
-                  <security reference="../../../../../../../../../securities/security[16]"/>
+                  <security reference="../../../../../../../../../securities/security[15]"/>
                   <crossEntry class="buysell">
                     <portfolio reference="../../../.."/>
                     <portfolioTransaction reference="../.."/>
@@ -798,7 +782,7 @@
                       <date>2022-10-01T00:00</date>
                       <currencyCode>EUR</currencyCode>
                       <amount>26240</amount>
-                      <security reference="../../../../../../../../../../../securities/security[16]"/>
+                      <security reference="../../../../../../../../../../../securities/security[15]"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
                       <updatedAt>2024-05-21T21:37:46.696935Z</updatedAt>
@@ -838,7 +822,7 @@
           <date>2019-08-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>870</amount>
-          <security reference="../../../../../securities/security[7]"/>
+          <security reference="../../../../../securities/security[6]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -853,7 +837,7 @@
           <date>2020-08-10T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>750</amount>
-          <security reference="../../../../../securities/security[7]"/>
+          <security reference="../../../../../securities/security[6]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -868,7 +852,7 @@
           <date>2019-03-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>498</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -883,7 +867,7 @@
           <date>2019-06-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>468</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -898,7 +882,7 @@
           <date>2019-09-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>498</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -913,7 +897,7 @@
           <date>2019-12-18T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>498</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -928,7 +912,7 @@
           <date>2020-03-16T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>527</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -943,7 +927,7 @@
           <date>2020-06-11T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>498</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -958,7 +942,7 @@
           <date>2020-09-16T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>410</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -973,7 +957,7 @@
           <date>2020-12-16T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>410</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -988,7 +972,7 @@
           <date>2019-03-11T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>384</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1003,7 +987,7 @@
           <date>2020-12-07T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>432</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1018,7 +1002,7 @@
           <date>2020-09-17T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1536</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1033,7 +1017,7 @@
           <date>2020-06-18T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>672</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1048,7 +1032,7 @@
           <date>2020-03-04T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>384</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1063,7 +1047,7 @@
           <date>2019-12-16T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>336</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1078,7 +1062,7 @@
           <date>2019-09-27T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1824</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1093,7 +1077,7 @@
           <date>2019-06-13T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>672</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1108,7 +1092,7 @@
           <date>2019-06-11T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>792</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1123,7 +1107,7 @@
           <date>2020-01-09T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>684</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1138,7 +1122,7 @@
           <date>2020-06-10T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>450</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1153,7 +1137,7 @@
           <date>2019-05-14T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1327</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1168,7 +1152,7 @@
           <date>2019-08-05T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1281</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1183,7 +1167,7 @@
           <date>2019-11-14T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>595</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1198,7 +1182,7 @@
           <date>2020-02-20T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>320</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1213,7 +1197,7 @@
           <date>2020-05-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>869</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1228,7 +1212,7 @@
           <date>2020-08-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>732</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1243,7 +1227,7 @@
           <date>2020-11-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>366</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1258,7 +1242,7 @@
           <date>2024-02-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>412</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1273,7 +1257,7 @@
           <date>2023-11-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>549</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1288,7 +1272,7 @@
           <date>2023-08-31T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1418</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1303,7 +1287,7 @@
           <date>2023-05-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1556</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1318,7 +1302,7 @@
           <date>2023-02-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>412</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1333,7 +1317,7 @@
           <date>2022-11-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>549</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1348,7 +1332,7 @@
           <date>2022-08-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1281</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1363,7 +1347,7 @@
           <date>2022-05-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1418</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1378,7 +1362,7 @@
           <date>2022-02-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>320</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1393,7 +1377,7 @@
           <date>2021-11-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>686</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1408,7 +1392,7 @@
           <date>2021-08-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>915</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1423,7 +1407,7 @@
           <date>2021-05-26T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1235</amount>
-          <security reference="../../../../../securities/security[5]"/>
+          <security reference="../../../../../securities/security[4]"/>
           <shares>6100000000</shares>
           <units>
             <unit type="TAX">
@@ -1438,7 +1422,7 @@
           <date>2024-01-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1656</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1453,7 +1437,7 @@
           <date>2023-07-26T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1242</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1468,7 +1452,7 @@
           <date>2023-01-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>738</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1483,7 +1467,7 @@
           <date>2022-07-27T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>306</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1498,7 +1482,7 @@
           <date>2022-01-26T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>234</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1513,7 +1497,7 @@
           <date>2021-07-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>234</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1528,7 +1512,7 @@
           <date>2021-01-27T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>324</amount>
-          <security reference="../../../../../securities/security[9]"/>
+          <security reference="../../../../../securities/security[8]"/>
           <shares>2400000000</shares>
           <units>
             <unit type="TAX">
@@ -1543,7 +1527,7 @@
           <date>2023-12-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>576</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1558,7 +1542,7 @@
           <date>2023-09-27T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1920</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1573,7 +1557,7 @@
           <date>2023-06-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1056</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1588,7 +1572,7 @@
           <date>2023-03-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>480</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1603,7 +1587,7 @@
           <date>2022-12-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>624</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1618,7 +1602,7 @@
           <date>2022-09-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>2400</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1633,7 +1617,7 @@
           <date>2022-06-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1248</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1648,7 +1632,7 @@
           <date>2022-03-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>624</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1663,7 +1647,7 @@
           <date>2021-12-31T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>768</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1678,7 +1662,7 @@
           <date>2021-09-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1632</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1693,7 +1677,7 @@
           <date>2021-06-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>960</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1708,7 +1692,7 @@
           <date>2021-03-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>624</amount>
-          <security reference="../../../../../securities/security[8]"/>
+          <security reference="../../../../../securities/security[7]"/>
           <shares>6400000000</shares>
           <units>
             <unit type="TAX">
@@ -1723,7 +1707,7 @@
           <date>2023-12-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>585</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1738,7 +1722,7 @@
           <date>2023-09-27T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>585</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1753,7 +1737,7 @@
           <date>2023-06-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>585</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1768,7 +1752,7 @@
           <date>2023-03-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>527</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1783,7 +1767,7 @@
           <date>2022-12-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>585</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1798,7 +1782,7 @@
           <date>2022-09-28T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>673</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1813,7 +1797,7 @@
           <date>2022-06-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>556</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1828,7 +1812,7 @@
           <date>2022-03-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>468</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1843,7 +1827,7 @@
           <date>2021-12-31T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>439</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1858,7 +1842,7 @@
           <date>2021-09-29T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>439</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1873,7 +1857,7 @@
           <date>2021-06-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>410</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1888,7 +1872,7 @@
           <date>2021-03-24T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>410</amount>
-          <security reference="../../../../../securities/security[6]"/>
+          <security reference="../../../../../securities/security[5]"/>
           <shares>3900000000</shares>
           <units>
             <unit type="TAX">
@@ -1903,7 +1887,7 @@
           <date>2023-12-14T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>795</amount>
-          <security reference="../../../../../securities/security[7]"/>
+          <security reference="../../../../../securities/security[6]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -1919,7 +1903,7 @@
           <date>2022-05-02T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>3750</amount>
-          <security reference="../../../../../securities/security[14]"/>
+          <security reference="../../../../../securities/security[13]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -1934,7 +1918,7 @@
           <date>2023-05-04T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>3900</amount>
-          <security reference="../../../../../securities/security[14]"/>
+          <security reference="../../../../../securities/security[13]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -1949,7 +1933,7 @@
           <date>2024-05-09T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>3975</amount>
-          <security reference="../../../../../securities/security[14]"/>
+          <security reference="../../../../../securities/security[13]"/>
           <shares>1000000000</shares>
           <units>
             <unit type="TAX">
@@ -1974,7 +1958,7 @@
           <date>2022-11-30T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -1989,7 +1973,7 @@
           <date>2023-03-07T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -2004,7 +1988,7 @@
           <date>2023-06-07T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -2019,7 +2003,7 @@
           <date>2023-09-06T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -2034,7 +2018,7 @@
           <date>2023-12-05T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -2049,7 +2033,7 @@
           <date>2024-03-05T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>6</amount>
-          <security reference="../../../../../securities/security[16]"/>
+          <security reference="../../../../../securities/security[15]"/>
           <shares>200000000</shares>
           <units>
             <unit type="TAX">
@@ -2122,7 +2106,7 @@
           <date>2020-01-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1000</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>130100</shares>
           <updatedAt>2024-02-16T07:21:10.269927Z</updatedAt>
           <type>DELIVERY_INBOUND</type>
@@ -2132,7 +2116,7 @@
           <date>2020-01-25T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>10000</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>1282400</shares>
           <updatedAt>2024-02-16T07:21:10.272634Z</updatedAt>
           <type>DELIVERY_INBOUND</type>
@@ -2142,7 +2126,7 @@
           <date>2020-11-21T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>10000</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>636567</shares>
           <updatedAt>2024-02-16T07:21:10.272725Z</updatedAt>
           <type>DELIVERY_OUTBOUND</type>
@@ -2152,7 +2136,7 @@
           <date>2021-01-11T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>19562</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>775933</shares>
           <updatedAt>2024-02-16T07:21:10.272819Z</updatedAt>
           <type>DELIVERY_OUTBOUND</type>
@@ -2162,7 +2146,7 @@
           <date>2021-02-16T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>19562</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>478631</shares>
           <updatedAt>2024-02-16T07:21:10.272923Z</updatedAt>
           <type>DELIVERY_INBOUND</type>
@@ -2172,7 +2156,7 @@
           <date>2021-09-20T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>17510</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>478631</shares>
           <updatedAt>2024-02-16T07:21:10.273006Z</updatedAt>
           <type>DELIVERY_OUTBOUND</type>
@@ -2182,7 +2166,7 @@
           <date>2022-06-13T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>4762</amount>
-          <security reference="../../../../../securities/security[12]"/>
+          <security reference="../../../../../securities/security[11]"/>
           <shares>180296</shares>
           <updatedAt>2024-02-16T07:21:10.273297Z</updatedAt>
           <type>DELIVERY_INBOUND</type>
@@ -2225,7 +2209,7 @@
                 <rank>1</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[12]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[11]"/>
                 <weight>10000</weight>
                 <rank>2</rank>
               </assignment>
@@ -2272,47 +2256,42 @@
                 <rank>11</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>10000</weight>
                 <rank>3</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>10000</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>10000</weight>
                 <rank>1</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>10000</weight>
                 <rank>2</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[13]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[12]"/>
                 <weight>10000</weight>
                 <rank>4</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[15]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[14]"/>
                 <weight>10000</weight>
                 <rank>5</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[14]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[13]"/>
                 <weight>10000</weight>
                 <rank>6</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
-                <weight>10000</weight>
-                <rank>7</rank>
-              </assignment>
-              <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[16]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[15]"/>
                 <weight>10000</weight>
                 <rank>8</rank>
               </assignment>
@@ -2334,7 +2313,7 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[9]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
                 <weight>10000</weight>
                 <rank>0</rank>
               </assignment>
@@ -2372,7 +2351,7 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[10]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[9]"/>
                 <weight>10000</weight>
                 <rank>0</rank>
               </assignment>
@@ -2424,7 +2403,7 @@
                 <rank>4</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[9]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
                 <weight>10000</weight>
                 <rank>2147483647</rank>
               </assignment>
@@ -2446,7 +2425,7 @@
                 <children/>
                 <assignments>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[8]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[7]"/>
                     <weight>10000</weight>
                     <rank>2147483647</rank>
                   </assignment>
@@ -2472,7 +2451,7 @@
                 <children/>
                 <assignments>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[10]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[9]"/>
                     <weight>10000</weight>
                     <rank>2147483647</rank>
                   </assignment>
@@ -2488,12 +2467,12 @@
                 <children/>
                 <assignments>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[6]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[5]"/>
                     <weight>10000</weight>
                     <rank>1</rank>
                   </assignment>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[13]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[12]"/>
                     <weight>10000</weight>
                     <rank>0</rank>
                   </assignment>
@@ -2509,17 +2488,17 @@
                 <children/>
                 <assignments>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[5]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[4]"/>
                     <weight>10000</weight>
                     <rank>2</rank>
                   </assignment>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[15]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[14]"/>
                     <weight>10000</weight>
                     <rank>0</rank>
                   </assignment>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[14]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[13]"/>
                     <weight>10000</weight>
                     <rank>1</rank>
                   </assignment>
@@ -2535,7 +2514,7 @@
                 <children/>
                 <assignments>
                   <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[7]"/>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[6]"/>
                     <weight>10000</weight>
                     <rank>2147483647</rank>
                   </assignment>
@@ -2579,17 +2558,17 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>442</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>256</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>480</weight>
                 <rank>0</rank>
               </assignment>
@@ -2615,22 +2594,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>825</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>302</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>736</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>712</weight>
                 <rank>0</rank>
               </assignment>
@@ -2656,22 +2635,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>1447</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>841</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>1643</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>422</weight>
                 <rank>0</rank>
               </assignment>
@@ -2697,22 +2676,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>1143</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>1192</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>1446</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>1865</weight>
                 <rank>0</rank>
               </assignment>
@@ -2738,22 +2717,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>1333</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>612</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>690</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>572</weight>
                 <rank>0</rank>
               </assignment>
@@ -2779,22 +2758,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>1420</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>1290</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>1027</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>464</weight>
                 <rank>0</rank>
               </assignment>
@@ -2820,22 +2799,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>1560</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>1110</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>1796</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>1855</weight>
                 <rank>0</rank>
               </assignment>
@@ -2861,22 +2840,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>755</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>2807</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>1047</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>1982</weight>
                 <rank>0</rank>
               </assignment>
@@ -2898,22 +2877,22 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>394</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>1046</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>751</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>1172</weight>
                 <rank>0</rank>
               </assignment>
@@ -2939,12 +2918,12 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
                 <weight>496</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[5]"/>
                 <weight>275</weight>
                 <rank>0</rank>
               </assignment>
@@ -2970,12 +2949,12 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>544</weight>
                 <rank>0</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
                 <weight>206</weight>
                 <rank>0</rank>
               </assignment>
@@ -3001,7 +2980,7 @@
             <children/>
             <assignments>
               <assignment>
-                <investmentVehicle class="security" reference="../../../../../../../../securities/security[9]"/>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[8]"/>
                 <weight>9986</weight>
                 <rank>0</rank>
               </assignment>
@@ -3060,7 +3039,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>401</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3114,12 +3093,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>166</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>141</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3149,7 +3128,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>2257</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3203,12 +3182,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>23</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>192</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3310,7 +3289,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>533</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3344,20 +3323,20 @@
                 </data>
               </classification>
               <classification>
-                <id>R1020</id>
+                <id>8162adb6-483e-46bc-9cf9-6fcad1e274dd</id>
                 <name>Westeuropa</name>
                 <color>#97c5e0</color>
                 <parent reference="../../.."/>
                 <children>
                   <classification>
-                    <id>country_AT</id>
+                    <id>2d5c3f54-fa29-4239-a43d-9985e02ee713</id>
                     <name>Österreich</name>
                     <color>#f5fe91</color>
                     <parent reference="../../.."/>
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>352</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3387,7 +3366,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>583</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3417,12 +3396,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1778</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>2474</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3452,22 +3431,22 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1499</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>1780</weight>
                         <rank>3</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
                         <weight>10000</weight>
                         <rank>1</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
                         <weight>10000</weight>
                         <rank>2</rank>
                       </assignment>
@@ -3569,12 +3548,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>618</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>452</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3604,7 +3583,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1510</weight>
                         <rank>0</rank>
                       </assignment>
@@ -3795,7 +3774,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>297</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4034,12 +4013,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>382</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>2233</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4117,7 +4096,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>226</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4215,12 +4194,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>393</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>1396</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4332,7 +4311,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
                         <weight>455</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4386,7 +4365,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>174</weight>
                         <rank>0</rank>
                       </assignment>
@@ -4440,17 +4419,17 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
                         <weight>9517</weight>
                         <rank>2</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[12]"/>
                         <weight>10000</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[16]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
                         <weight>10000</weight>
                         <rank>1</rank>
                       </assignment>
@@ -5367,7 +5346,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>392</weight>
                         <rank>0</rank>
                       </assignment>
@@ -5983,7 +5962,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>194</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6259,12 +6238,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>39</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>3933</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6294,7 +6273,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>813</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6324,7 +6303,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>6821</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6426,7 +6405,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>1293</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6456,7 +6435,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>1257</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6575,7 +6554,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>916</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6910,7 +6889,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>286</weight>
                         <rank>0</rank>
                       </assignment>
@@ -6940,7 +6919,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>181</weight>
                         <rank>0</rank>
                       </assignment>
@@ -8436,7 +8415,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>356</weight>
                         <rank>0</rank>
                       </assignment>
@@ -8500,7 +8479,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>1908</weight>
                         <rank>0</rank>
                       </assignment>
@@ -8530,7 +8509,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>106</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9198,7 +9177,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
                         <weight>455</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9228,17 +9207,17 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
                         <weight>9517</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[12]"/>
                         <weight>10000</weight>
                         <rank>1</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[16]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
                         <weight>10000</weight>
                         <rank>2</rank>
                       </assignment>
@@ -9285,7 +9264,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>352</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9315,7 +9294,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>583</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9345,7 +9324,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>401</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9375,12 +9354,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>166</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>141</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9410,12 +9389,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1778</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>2474</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9445,22 +9424,22 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1499</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>1780</weight>
                         <rank>3</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
                         <weight>10000</weight>
                         <rank>1</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
                         <weight>10000</weight>
                         <rank>2</rank>
                       </assignment>
@@ -9490,12 +9469,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>23</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>192</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9549,12 +9528,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>382</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>2233</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9584,12 +9563,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>618</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>452</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9643,7 +9622,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>226</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9673,12 +9652,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>393</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
                         <weight>1396</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9708,7 +9687,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>533</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9738,7 +9717,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>1510</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9768,7 +9747,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[5]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[4]"/>
                         <weight>2257</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9815,7 +9794,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>1908</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9845,7 +9824,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>813</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9875,7 +9854,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>6821</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9905,7 +9884,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>106</weight>
                         <rank>0</rank>
                       </assignment>
@@ -9935,7 +9914,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>286</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10023,7 +10002,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>392</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10101,7 +10080,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>174</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10340,7 +10319,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>297</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10370,7 +10349,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>194</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10400,7 +10379,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>356</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10491,12 +10470,12 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>39</weight>
                         <rank>0</rank>
                       </assignment>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>3933</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10526,7 +10505,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>916</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10604,7 +10583,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>1293</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10706,7 +10685,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>1257</weight>
                         <rank>0</rank>
                       </assignment>
@@ -10736,7 +10715,7 @@
                     <children/>
                     <assignments>
                       <assignment>
-                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[8]"/>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[7]"/>
                         <weight>181</weight>
                         <rank>0</rank>
                       </assignment>
@@ -12407,8 +12386,8 @@
             </config>
             <config>
               <uuid>78948e2e-1633-40e9-a127-c14097da0834</uuid>
-              <name>MSCI World (Benchmark)</name>
-              <data>Client-totals;#0432ff;SOLID;false,Classification6c3f0511-3f9b-4951-9432-641ffd3a4993;#ff9300;SOLID;false,[b]ConsumerPriceIndex;#787878;DASHDOTDOT;false,[b]Securitydfd4a396-34fe-484c-8130-4fecde91039d;#008e00;SOLID;false</data>
+              <name>Dow Jones (Benchmark)</name>
+              <data>Client-totals;#0432ff;SOLID;false;2;true;#0432ff,Classification6c3f0511-3f9b-4951-9432-641ffd3a4993;#ff9300;SOLID;false;2;true;#ff9300,[b]Security381e03f2-f019-4686-bac5-2444576e2df2;#f55d8d;SOLID;false;2;true;#f55d8d</data>
             </config>
           </configurations>
         </config-set>
