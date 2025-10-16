@@ -93,23 +93,7 @@ public class TASESecurityTest
 
             Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
 
-            //@formatter:off
-            /*
-             * 
-                "BaseRate": 118.72,
-                "HighRate": 118.75,
-                "LowRate": 118.5,
-                "OpenRate": 118.5,
-                "InDay": 1,
-                "ShareType": "0406",
-                "TradeDataLink": null,
-                "EODTradeDate": "25/08/2025",
-                "OverallTurnOverUnits": 2919229,
-                "MarketValue": 13124707,
-                "LastRate": 118.75,
-                "TradeDate": "26/08/2025",
-             */
-            //@formatter:on
+
             assertThat(optionalPrice.isPresent(), is(true));
 
             LatestSecurityPrice price = optionalPrice.get();
@@ -121,7 +105,6 @@ public class TASESecurityTest
             assertThat(price.getDate(), is(LocalDate.of(2025, 8, 26)));
             assertThat(price.getVolume(), is(2919229L));
 
-            // Verify interaction
             verify(securityfeed).rpcLatestQuoteSecurity(security);
 
         }
@@ -150,12 +133,8 @@ public class TASESecurityTest
 
             Optional<LatestSecurityPrice> optionalPrice = securityfeed.getLatestQuote(security);
 
-            // Assert
             assertTrue("Expected price to be present", optionalPrice.isEmpty());
 
-
-
-            // Verify interaction
             verify(securityfeed).rpcLatestQuoteSecurity(security);
 
         }
@@ -184,24 +163,7 @@ public class TASESecurityTest
 
             Optional<LatestSecurityPrice> optionalPrice = feed.getLatestQuote(security);
 
-            // Assert
-            //@formatter:off
-            /*
-             *  BaseRate": 47440.00,
-                "HighRate": 47190.00,
-                "LowRate": 46050.00,
-                "OpenRate": 47100.00,
-                "InDay": 0,
-                "ShareType": "0101",
-                "TradeDataLink": null,
-                "EODTradeDate": "31/08/2025",
-                "TurnOverValueShekel": 23829007.00,
-                "TurnOverValue": null,
-                "MarketValue": 28432054,
-                "LastRate": 46050.00,
-                "OverallTurnOverUnits": 50975,
-             */
-            //@formatter:on
+
             assertTrue("Expected price to be present", optionalPrice.isPresent());
 
             LatestSecurityPrice price = optionalPrice.get();
@@ -241,16 +203,18 @@ public class TASESecurityTest
         String mockedResponse = getSecurityBondHistory();
         assertTrue(mockedResponse.length() > 0);
 
-        SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
-        Optional<SecurityHistory> historyopt = Optional.of(history);
-
         TASESecurity feed = Mockito.spy(new TASESecurity());
 
+        // Convert mockedResponse to the QuoteFeedData format expected by
+        // getHistoricalQuotes
+        SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
+        Optional<SecurityHistory> historyopt = Optional.of(history);
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
         try
         {
 
+            // Return mockedFeed instead of real feed
             doReturn(mockedFeed).when(feed).getHistoricalQuotes(security, false);
 
 
@@ -261,35 +225,7 @@ public class TASESecurityTest
             assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
             assertFalse("FeedData shoould contain latestprices", feedData.getLatestPrices().isEmpty());
 
-            //@formatter:off
-            /*
-             * "TradeDate": "01/09/2025",
-            "Change": 0.01,
-            "BaseRate": 118.9300,
-            "OpenRate": 118.6000,
-            "CloseRate": 118.9400,
-            "HighRate": 118.9600,
-            "LowRate": 118.6000,
-            "MarketValue": 13149028,
-            "RegisteredCapital": 11055177366,
-            "TurnOverValueShekel": 372343043.0,
-            "OverallTurnOverUnits": 313006515,
-            "DealsNo": 90,
-            "Exe": "",
-            "AdjustmentCoefficient": null,
-            "ExeDesc": "",
-            "IANS": 11055177366.0,
-            "IndexAdjustedFreeFloat": 100.00,
-            "LastIANSUpdate": "31/08/2025",
-            "TradeDateEOD": null,
-            "AdjustmentRate": 118.9400,
-            "BrutoYield": 0.00,
-            "IfTraded": true,
-            "ShareTradingStatus": null,
-            "IsOfferingPrice": false,
-            "AdjustmentRateDesc": "Closing Price"
-             */
-            //@formatter:on
+
 
             SecurityPrice firstprice = feedData.getPrices().get(0);
             assertThat(firstprice.getDate(), is(LocalDate.of(2025, 9, 1)));
@@ -303,36 +239,7 @@ public class TASESecurityTest
             assertThat(firstlatestprice.getHigh(), is(Values.Quote.factorize(118.96)));
             assertThat(firstlatestprice.getLow(), is(Values.Quote.factorize(118.60)));
 
-            //@formatter:off
-            /*
-             * "TradeDate": "28/08/2025",
-            "Change": 0.09,
-            "BaseRate": 118.7800,
-            "OpenRate": 118.7000,
-            "CloseRate": 118.8900,
-            "HighRate": 118.9000,
-            "LowRate": 118.7000,
-            "MarketValue": 13143500,
-            "RegisteredCapital": 11055177366,
-            "TurnOverValueShekel": 417530707.0,
-            "OverallTurnOverUnits": 351193156,
-            "DealsNo": 135,
-            "Exe": "",
-            "AdjustmentCoefficient": null,
-            "ExeDesc": "",
-            "IANS": 12682986802.0,
-            "IndexAdjustedFreeFloat": 100.00,
-            "LastIANSUpdate": "31/07/2025",
-            "TradeDateEOD": null,
-            "AdjustmentRate": 118.8900,
-            "BrutoYield": 0.00,
-            "IfTraded": true,
-            "ShareTradingStatus": null,
-            "IsOfferingPrice": false,
-            "AdjustmentRateDesc": "Closing Price"
-             */
-                            
-            //@formatter:on
+
             SecurityPrice lastprice = feedData.getPrices().get(feedData.getPrices().size() - 1);
             assertThat(lastprice.getDate(), is(LocalDate.of(2025, 8, 28)));
             assertThat(lastprice.getValue(), is(Values.Quote.factorize(118.89)));
@@ -359,11 +266,10 @@ public class TASESecurityTest
         String mockedResponse = getSecurityBondHistory();
         assertTrue(mockedResponse.length() > 0);
 
-        SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
-        Optional<SecurityHistory> historyopt = Optional.of(history);
-
         TASESecurity feed = Mockito.spy(new TASESecurity());
 
+        SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
+        Optional<SecurityHistory> historyopt = Optional.of(history);
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
         try
@@ -408,10 +314,10 @@ public class TASESecurityTest
         String mockedResponse = getShareHistory();
         assertTrue(mockedResponse.length() > 0);
 
+        TASESecurity feed = Mockito.spy(new TASESecurity());
         SecurityHistory history = SecurityHistory.fromJson(mockedResponse);
         Optional<SecurityHistory> historyopt = Optional.of(history);
 
-        TASESecurity feed = Mockito.spy(new TASESecurity());
 
         Optional<QuoteFeedData> mockedFeed = feed.convertSecurityHistoryToQuoteFeedData(historyopt, security);
 
@@ -426,36 +332,7 @@ public class TASESecurityTest
             QuoteFeedData feedData = feedDataOpt.get();
             assertFalse("FeeData shoould contain prices", feedData.getPrices().isEmpty());
 
-            //@formatter:off
-            /*
-             * 
-            "TradeDate": "10/11/2024",
-            "Change": 0,
-            "BaseRate": 114.99,
-            "OpenRate": 114.99,
-            "CloseRate": 114.99,
-            "HighRate": 115.1,
-            "LowRate": 114.83,
-            "MarketValue": 24955967,
-            "RegisteredCapital": 21702727840,
-            "TurnOverValueShekel": 14761943,
-            "OverallTurnOverUnits": 12842819,
-            "DealsNo": 153,
-            "Exe": "",
-            "AdjustmentCoefficient": null,
-            "ExeDesc": "",
-            "IANS": 21702727840,
-            "IndexAdjustedFreeFloat": 100,
-            "LastIANSUpdate": "31/10/2024",
-            "TradeDateEOD": null,
-            "AdjustmentRate": 114.99,
-            "BrutoYield": 1.4,
-            "IfTraded": true,
-            "ShareTradingStatus": null,
-            "IsOfferingPrice": false,
-            "AdjustmentRateDesc": "Closing Price"
-             */
-            //@formatter:on
+
             SecurityPrice firstprice = feedData.getPrices().get(0);
             assertThat(firstprice.getDate(), is(LocalDate.of(2024, 11, 10)));
             assertThat(firstprice.getValue(), is(Values.Quote.factorize(114.99)));
@@ -472,7 +349,6 @@ public class TASESecurityTest
             assertThat(lastprice.getDate(), is(LocalDate.of(2024, 11, 5)));
             assertThat(lastprice.getValue(), is(Values.Quote.factorize(114.86)));
 
-            // Verify interaction
             verify(feed).getHistoricalQuotes(security, false);
         }
         catch (Exception e)

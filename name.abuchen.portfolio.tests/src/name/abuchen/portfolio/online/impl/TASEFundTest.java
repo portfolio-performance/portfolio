@@ -32,12 +32,17 @@ import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 public class TASEFundTest
 {
 
-
+    /**
+     * Load JSON response of a fund details request
+     */
     private String getFundDetails()
     {
         return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
     }
 
+    /**
+     * Load JSON response of a fund historical request
+     */
     private String getFundHistory()
     {
 
@@ -156,7 +161,7 @@ public class TASEFundTest
         security.setWkn("5127121");
         security.setCurrencyCode("ILA");
 
-        LocalDate from = LocalDate.of(2025, 7, 14);
+        LocalDate from = LocalDate.of(2025, 8, 17);
         LocalDate to = LocalDate.of(2025, 8, 25);
 
         String response = getFundHistory();
@@ -165,11 +170,7 @@ public class TASEFundTest
         assertTrue(response.contains("StartDate"));
 
         new FundHistory();
-        // Gson gson = GSONUtil.createGson();
-        // Gon gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new
-        // LocalDateTypeAdapter()).create();
-        // FundHistory mockedFundHistory = gson.fromJson(response,
-        // FundHistory.class);
+
         FundHistory mockedFundHistory = FundHistory.fromJson(response);
 
         try
@@ -184,31 +185,11 @@ public class TASEFundTest
             FundHistory fundHistory = fundHistoryOptional.get();
 
             assertTrue(fundHistory.getItems() != null);
-            assertThat(fundHistory.getItems().length, is(30));
+            assertThat(fundHistory.getItems().length, is(7));
 
             FundHistoryEntry[] entries = mockedFundHistory.getItems();
 
-          //@formatter:off
-            /*
-             *  "Total": 206,
-                "StartDate": "2024-11-03T00:00:00",
-                "EndDate": "2024-11-04T00:00:00"
-                "Table":
-                "FundId": null,
-                "TradeDate": "2025-08-25T00:00:00",
-                "LastUpdateDate": "0001-01-01T00:00:00",
-                "PurchasePrice": 146.88,
-                "SellPrice": 146.88,
-                "CreationPrice": null,
-                "DayYield": 0.04,
-                "ShowDayYield": true,
-                "Rate": 0,
-                "ManagmentFee": 0.25,
-                "TrusteeFee": 0.025,
-                "SuccessFee": null,
-                "AssetValue": 130.3
-             */
-            //@formatter:on
+
             FundHistoryEntry firstprice = entries[0];
 
             assertTrue(firstprice != null);
@@ -261,30 +242,9 @@ public class TASEFundTest
 
             QuoteFeedData fundQuoteFeedData  = fundQuoteFeedDataOptional.get();
 
-          //@formatter:off
-            /*
-             *  "Total": 206,
-                "StartDate": "2024-11-03T00:00:00",
-                "EndDate": "2024-11-04T00:00:00"
-                "Table":
-                "FundId": null,
-                "TradeDate": "2025-08-25T00:00:00",
-                "LastUpdateDate": "0001-01-01T00:00:00",
-                "PurchasePrice": 146.88,
-                "SellPrice": 146.88,
-                "CreationPrice": null,
-                "DayYield": 0.04,
-                "ShowDayYield": true,
-                "Rate": 0,
-                "ManagmentFee": 0.25,
-                "TrusteeFee": 0.025,
-                "SuccessFee": null,
-                "AssetValue": 130.3
-             */
-            //@formatter:on
 
             assertTrue(fundQuoteFeedData.getPrices() != null);
-            assertThat(fundQuoteFeedData.getPrices().size(), is(30));
+            assertThat(fundQuoteFeedData.getPrices().size(), is(7));
 
             List<SecurityPrice> entries = fundQuoteFeedData.getPrices();
 
@@ -344,7 +304,8 @@ public class TASEFundTest
         {
             TASEFund tlvFund = Mockito.spy(new TASEFund());
 
-            // No need to mock as we are testing the conditions for WKN
+            // No need to mock as we are testing the conditions for WKN in the
+            // function and will reject if needed
 
             Optional<FundHistory> fundFeedDataOptional = tlvFund.getPriceHistory(security, from, to, 1,
                             Language.ENGLISH);

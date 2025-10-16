@@ -22,6 +22,9 @@ import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType
 public class TASEEntitiesTest
 {
 
+    /**
+     * Load JSON response of TLV entities supported
+     */
     private String getEntitiesList()
 
     {
@@ -57,7 +60,7 @@ public class TASEEntitiesTest
             assertFalse(iListOptional.isEmpty());
             List<IndiceListing> iList = iListOptional.get();
 
-            assertThat(iList.size(), is(125));
+            assertThat(iList.size(), is(130));
 
             IndiceListing listing = iList.get(0);
 
@@ -68,7 +71,6 @@ public class TASEEntitiesTest
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             assertTrue(false);
         }
