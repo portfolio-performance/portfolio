@@ -30,6 +30,11 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.SecurityListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
+/**
+ * @apiNote - TASE API has a different entry for Securities and Funds First a
+ *          query by wkn is done on Entities list, and then, based on entity
+ *          type correct API used TASE Fund implements the Fund type
+ */
 public class TASESecurity extends TASEListing
 {
     
@@ -202,16 +207,6 @@ public class TASESecurity extends TASEListing
 
 
 
-    // private LocalDate asDate(String s)
-    // {
-    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    // // $NON-NLS-1$
-    //
-    // if ("\"N/A\"".equals(s)) //$NON-NLS-1$
-    // return null;
-    // String dt = (s.trim()).replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    // return LocalDate.parse(dt, formatter); // $NON-NLS-1$
-    // }
 
     private Optional<LatestSecurityPrice> convertSecurityListingToSecurityPrice(Optional<SecurityListing> listingopt,
                     Security security)

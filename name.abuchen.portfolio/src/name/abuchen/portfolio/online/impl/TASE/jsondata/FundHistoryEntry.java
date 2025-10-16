@@ -15,6 +15,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/**
+ * Representation of JSON Fund history entry returned by TASE API
+ */
 public class FundHistoryEntry
 {
 
@@ -24,16 +27,7 @@ public class FundHistoryEntry
     private String SellPrice;
     private String DateYield;
     private String Rate;
-    /*
-     * @formatter:off
-     * Fields returned in JSON but not used, may be used in future:
-     *   private LocalDateTime LastUpdateDate;
-     *   private float CreationPrice;
-     *   private float ManagmentFee;
-     *   private float TrusteeFee;
-     *   private float SuccessFee;
-     *   @formatter:On
-     */
+
      
     private String AssetValue;
 

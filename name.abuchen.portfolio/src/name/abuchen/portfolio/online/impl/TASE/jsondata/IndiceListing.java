@@ -4,6 +4,11 @@ import com.google.gson.Gson;
 
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
+/**
+ * Representation of JSON Indice Listing returned by TASE API To query a
+ * specific entity, need to look it up in the Indice Listing and then based on
+ * its type: Fund or Security use the appropriate query
+ */
 public class IndiceListing
 {
 

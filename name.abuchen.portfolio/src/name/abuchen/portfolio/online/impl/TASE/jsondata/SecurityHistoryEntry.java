@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.online.impl.TASE.jsondata;
 
+/**
+ * Representation of JSON Security history entry returned by TASE API
+ */
 public class SecurityHistoryEntry
 {
 

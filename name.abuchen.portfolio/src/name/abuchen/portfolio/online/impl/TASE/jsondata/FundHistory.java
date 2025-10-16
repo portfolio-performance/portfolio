@@ -20,6 +20,9 @@ import com.google.gson.JsonSerializer;
 
 import name.abuchen.portfolio.PortfolioLog;
 
+/**
+ * Representation of JSON Fund history returned by TASE API
+ */
 public class FundHistory
 {
 

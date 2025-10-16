@@ -15,6 +15,11 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
+/**
+ * Query of TASE Entities - TASE API has a different entry for Securities and
+ * Funds First a query by wkn is done on Entities list, and then, based on
+ * entity type correct API used
+ */
 public class TASEEntities
 {
     private final String URL = "api.tase.co.il"; //$NON-NLS-1$
@@ -22,15 +27,20 @@ public class TASEEntities
 
 
 
+    /*
+     * Return a List of all the Indices/Entities available on TLV
+     */
     public Optional<List<IndiceListing>> getAllListings(Language lang) throws IOException
     {
         return responsetoEntitiesList(rpcAllIndices(lang));
     }
 
     @VisibleForTesting
+    /*
+     * Internal implementation - visible for testing to allow mocking
+     */
     public String rpcAllIndices(Language lang) throws IOException
     {
-        // https://api.tase.co.il/api/content/searchentities?lang=1
         final int RETRY_TIMES = 5;
         int times_tried = 0;
         String response = null;
@@ -63,7 +73,9 @@ public class TASEEntities
     }
 
 
-
+    /*
+     * Convert JSON response to List
+     */
     private Optional<List<IndiceListing>> responsetoEntitiesList(String response)
     {
         Gson gson = new Gson();

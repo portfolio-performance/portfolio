@@ -37,6 +37,7 @@ public class TASESearchProviderTest
         return responseBody;
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void SearchProvidershouldLoadIndicesWhenCreated() throws NoSuchFieldException, IllegalAccessException
     {
@@ -127,7 +128,6 @@ public class TASESearchProviderTest
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

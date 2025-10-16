@@ -17,39 +17,10 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.IndiceListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 /**
-     * @api https://api.tase.co.il/api/content/searchentities?lang=1
-     * 
-     *  @formatter:off
-     *  @array 
-     *  [
-     *      {
-            "Id": "1397",
-            "Name": "ABRA",
-            "Smb": null,
-            "ISIN": null,
-            "Type": 5,
-            "SubType": "0",
-            "SubTypeDesc": "Company",
-            "SubId": "01101666",
-            "ETFType": null
-        },
-        {
-            "Id": "273011",
-            "Name": "NICE",
-            "Smb": "NICE",
-            "ISIN": "IL0002730112",
-            "Type": 1,
-            "SubType": "1",
-            "SubTypeDesc": "Shares",
-            "SubId": "000273",
-            "ETFType": null
-        },
-        
-        ]
-        
-    }
-     *  @formatter:on
-     */
+ * Implementation of Search Provider for TASE
+ * 
+ * @api https://api.tase.co.il/api/content/searchentities?lang=1
+ */
 public class TASESearchProvider implements SecuritySearchProvider
 {
 
@@ -73,7 +44,6 @@ public class TASESearchProvider implements SecuritySearchProvider
             String isin = (String) listing.getISIN();
             String type = String.valueOf(listing.getSubTypeDesc());
             
-            // TODO - fix
             var currencyCode = (String) "ILA"; //$NON-NLS-1$
             var exchange = "TASE"; //$NON-NLS-1$
 
@@ -204,8 +174,10 @@ public class TASESearchProvider implements SecuritySearchProvider
     public TASESearchProvider()
     {
         super();
-        // Since TASE API only has a search by ISIN, cache all the known indices
-        // upfront
+        /**
+         * TASE API has a search by ISIN only. To support other searches, cache
+         * all tlvEntities upfront so we can search on them
+         */
         this.tlvEntities = getFeedEntities();
 
     }
@@ -223,6 +195,7 @@ public class TASESearchProvider implements SecuritySearchProvider
     {
         List<ResultItem> answer = new ArrayList<>();
 
+        // Exit if the cached list of entities is empty
         if (this.tlvEntities == null || this.tlvEntities.isEmpty())
         {
             PortfolioLog.info("TLV Listing returned empty"); //$NON-NLS-1$
@@ -262,6 +235,13 @@ public class TASESearchProvider implements SecuritySearchProvider
         return answer;
     }
 
+    /**
+     * Funds and Securities are stored differently in TASE API. Return
+     * Currencytype based on Security type
+     * 
+     * @param security
+     * @return String
+     */
     private Optional<String> getCurrencyType(IndiceListing listing)
     {
         TaseType type = listing.getTaseType();
@@ -278,6 +258,10 @@ public class TASESearchProvider implements SecuritySearchProvider
     }
 
 
+    /*
+     * Gets all Entities from the TASE API, then filters the Mutual Funds and
+     * Securities. Not interested in disclosures, indices and companies
+     */
     private List<IndiceListing> getFeedEntities()
     {
         TASEQuoteFeed feed = new TASEQuoteFeed();

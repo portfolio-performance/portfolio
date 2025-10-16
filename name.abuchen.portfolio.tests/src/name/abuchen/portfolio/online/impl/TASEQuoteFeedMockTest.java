@@ -26,51 +26,11 @@ public class TASEQuoteFeedMockTest
 {
 
 
-
-    // Mutual Fund Example - 5127121
-    // https://maya.tase.co.il/en/funds/mutual-funds/5127121
-    private String getFundDetails()
-    {
-        return getHistoricalTaseQuotes("response_tase_fund_details01.txt");
-    }
-
-    // Government Bond Example - 01135912
-    // https://market.tase.co.il/en/market_data/security/1135912/major_data
-    private String getSecurityDetails()
-    {
-        return getHistoricalTaseQuotes("response_tase_security_bond_details01.txt");
-    }
-
-    private String getSecurityDetailsEnglish()
-    {
-        return getSecurityDetails();
-    }
-
-    private String getSecurityDetailsHebrew()
-    {
-        return getHistoricalTaseQuotes("response_tase_security_details03.txt");
-    }
-
     // Stock Example - NICE
     // https://market.tase.co.il/en/market_data/security/273011
     private String getSharesDetails()
     {
         return getHistoricalTaseQuotes("response_tase_security_details02.txt");
-    }
-
-    private String getFundHistory()
-    {
-        return getHistoricalTaseQuotes("response_tase_fund_history01.txt");
-    }
-
-    private String getShareHistory()
-    {
-        return "response_tase_share_history01.txt";
-    }
-
-    private String getSecurityHistory()
-    {
-        return getHistoricalTaseQuotes("response_tase_security_history01.txt");
     }
 
     private String getHistoricalTaseQuotes(String filename)

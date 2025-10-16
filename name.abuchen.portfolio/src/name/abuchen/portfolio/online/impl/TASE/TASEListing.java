@@ -15,6 +15,9 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
+/*
+ * Abstract Class for both TASEFund and TASESecurity
+ */
 public abstract class TASEListing
 {
 
@@ -47,7 +50,7 @@ public abstract class TASEListing
 
     protected LocalDate asDate(String s)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); //$NON-NLS-1$
         // $NON-NLS-1$
 
         if ("\"N/A\"".equals(s)) //$NON-NLS-1$

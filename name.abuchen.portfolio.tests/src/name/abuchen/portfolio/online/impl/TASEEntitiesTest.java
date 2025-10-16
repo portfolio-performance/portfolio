@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -60,7 +58,7 @@ public class TASEEntitiesTest
             assertFalse(iListOptional.isEmpty());
             List<IndiceListing> iList = iListOptional.get();
 
-            assertThat(iList.size(), is(130));
+            assertTrue(iList.size() == 130);
 
             IndiceListing listing = iList.get(0);
 

@@ -24,7 +24,12 @@ import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseSecurityType
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.TaseType;
 
 /*
- * @see Developer portal: https://datahubapi.tase.co.il/ List of indices -
+ * Implementation of QuoteFeed for Tel Aviv Stock Exchange
+ * @apiNote - TASE API has a different entry for Securities and Funds First a
+ * query by wkn is done on Entities list, and then, based on entity type correct
+ * API used TASE Fund implements the Fund type
+ * @apiNote - see Developer portal: https://datahubapi.tase.co.il/ List of
+ * indices -
  * https://datahubapi.tase.co.il/spec/8149ecc8-ca0f-4391-92bf-79f69587919d/
  * 4301d3e3-3dae-4844-bae4-6cf4d103bba8 Securities basic -
  * https://datahubapi.tase.co.il/spec/089150ca-f932-4a79-8eef-9e1dc0619e75/
@@ -43,7 +48,10 @@ public class TASEQuoteFeed implements QuoteFeed
     private List<IndiceListing> mappedEntities;
 
     
-    
+    /*
+     * Cache a list of Entities so that future queries can be looked up and type
+     * of Entity determined
+     */
     public TASEQuoteFeed()
     {
         this.TASESecurities = new TASESecurity();
@@ -81,8 +89,10 @@ public class TASEQuoteFeed implements QuoteFeed
         return "mayaapi.tase.co.il"; //$NON-NLS-1$
     }
 
-    // returns cached index of all Tel-Aviv Entities (stock, bonds, indexes,
-    // companies)
+    /*
+     * Returns cached index of all Tel-Aviv Entities (stock, bonds, indexes,
+     * companies) Use this list to look up Entity type
+     */
     public List<IndiceListing> getTaseEntities()
     {
         if (this.mappedEntities == null)
@@ -92,6 +102,11 @@ public class TASEQuoteFeed implements QuoteFeed
     }
 
 
+    /*
+     * Implementation for TASE getHistoricalQuotes Based on the securityType in
+     * cache list. Based on type, use either TASEFund or TASESecurity
+     * implementatoin
+     */
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
@@ -122,6 +137,11 @@ public class TASEQuoteFeed implements QuoteFeed
     }
 
 
+    /*
+     * Implementation for TASE getLatestQuote Based on the securityType in cache
+     * list. Based on type, use either TASEFund or TASESecurity implementatoin
+     */
+
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
@@ -149,7 +169,10 @@ public class TASEQuoteFeed implements QuoteFeed
         }
     }
 
-
+    /*
+     * Gets all Entities from the TASE API, then filters the Mutual Funds and
+     * Securities. Not interested in disclosures, indices and companies
+     */
     private void mapEntities() throws IOException
     {
         TASEEntities entities = new TASEEntities();
@@ -186,6 +209,12 @@ public class TASEQuoteFeed implements QuoteFeed
         }
     }
 
+    /**
+     * Find Security Type of a SecurityId
+     * 
+     * @param securityId
+     * @return TaseType
+     */
     private TaseType getSecurityType(String securityId)
     {
         if (!this.ismapped || this.mappedEntities == null)
@@ -203,7 +232,8 @@ public class TASEQuoteFeed implements QuoteFeed
 
 
     /**
-     * Calculate the first date to request historical quotes for.
+     * Calculate the first date to request historical quotes for. If empty,
+     * default to 1/1/00
      */
     public LocalDate caculateStart(Security security)
     {
@@ -220,7 +250,13 @@ public class TASEQuoteFeed implements QuoteFeed
     
 
 
-
+    /**
+     * Funds and Securities are stored differently in TASE API. Return
+     * Currencytype based on Security type
+     * 
+     * @param security
+     * @return String
+     */
     public Optional<String> getQuoteCurrency(Security security)
     {
 

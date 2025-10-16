@@ -33,18 +33,22 @@ import name.abuchen.portfolio.online.impl.TASE.jsondata.FundListing;
 import name.abuchen.portfolio.online.impl.TASE.utils.TASEHelper.Language;
 import name.abuchen.portfolio.util.WebAccess;
 
+/**
+ * @apiNote - TASE API has a different entry for Securities and Funds First a
+ *          query by wkn is done on Entities list, and then, based on entity
+ *          type correct API used TASE Fund implements the Fund type
+ */
 public class TASEFund extends TASEListing
 {
     public static final int TYPE = 4;
-    // private int period = 0;
     private final String URL = "mayaapi.tase.co.il"; //$NON-NLS-1$
     private final String PATH = "/api/fund/details"; //$NON-NLS-1$
     private final String CURRENCY_CODE = "ILS"; //$NON-NLS-1$
-    // private Type FundListingType = new TypeToken<FundListing>()
-    // {
-    // }.getType();
 
 
+    /*
+     * Get latest Quote for a security and return as LatestSecurityPrice
+     */
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
@@ -62,6 +66,9 @@ public class TASEFund extends TASEListing
 
     }
 
+    /*
+     * Get Historical Quotes for a security and return as QuoteFeedData
+     */
     public Optional<QuoteFeedData> getHistoricalQuotes(Security security, boolean collectRawData)
     {
         if (security.getWkn() == null || security.getWkn().isEmpty() || security.getWkn().isBlank())
@@ -129,7 +136,10 @@ public class TASEFund extends TASEListing
     }
 
 
-
+    /*
+     * Internal implementation - visible for Mocking testing
+     */
+    @VisibleForTesting
     public String rpcLatestQuoteFund(Security security) throws IOException
     {
         return rpcLatestQuoteFundWithLanguage(security, Language.ENGLISH);
@@ -141,6 +151,9 @@ public class TASEFund extends TASEListing
         return getPriceHistoryChunk(security, fromDate, toDate, page, lang);
     }
 
+    /*
+     * Actual Query to API - uses specific start and end dates
+     */
     public Optional<FundHistory> getPriceHistoryChunk(Security security, LocalDate fromDate, LocalDate toDate, int page,
                     Language lang)
     {
