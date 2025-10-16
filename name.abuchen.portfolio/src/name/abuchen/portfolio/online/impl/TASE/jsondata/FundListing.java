@@ -18,6 +18,7 @@ public class FundListing
     private String PurchasePrice;
     private String SellPrice;
     private String UnitValuePrice;
+    private String AssetAsOfDate;
     private LocalDateTime UnitValueValidDate;
 
 
