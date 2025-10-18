@@ -2,9 +2,7 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import jakarta.inject.Named;
 
@@ -19,9 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import com.github.difflib.DiffUtils;
-import com.github.difflib.UnifiedDiffUtils;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -56,26 +51,9 @@ public class CreateTextFromPDFHandler
             var extractedText = inputFile.getText();
             var pdfBoxVersion = inputFile.getPDFBoxVersion();
 
-            // check if the extracted text changed with the PDFBox version
-            inputFile.convertLegacyPDFtoText();
-            var legacyText = inputFile.getText();
-            var legacyPdfBoxVersion = inputFile.getPDFBoxVersion();
-            var isDifferent = !extractedText.equals(legacyText);
-
-            if (isDifferent)
-            {
-                var patch = DiffUtils.diff(legacyText, extractedText, null);
-                var unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(legacyPdfBoxVersion, pdfBoxVersion,
-                                Arrays.asList(legacyText.split("\n")), patch, 0);
-                PortfolioPlugin.info(
-                                inputFile.getName() + "\n\n" + unifiedDiff.stream().collect(Collectors.joining("\n")));
-            }
-
             StringBuilder textBuilder = new StringBuilder();
             textBuilder.append("```").append("\n");
-            textBuilder.append("PDFBox Version: ").append(pdfBoxVersion)
-                            .append(isDifferent ? " != " + legacyPdfBoxVersion : "") //
-                            .append("\n");
+            textBuilder.append("PDFBox Version: ").append(pdfBoxVersion).append("\n");
             textBuilder.append("Portfolio Performance Version: ")
                             .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
                             .append("\n");

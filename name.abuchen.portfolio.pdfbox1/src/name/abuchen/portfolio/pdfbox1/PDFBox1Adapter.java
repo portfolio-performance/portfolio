@@ -25,7 +25,7 @@ public class PDFBox1Adapter
             textStripper.setSortByPosition(true);
             return textStripper.getText(document);
         }
-        catch (CryptographyException e)
+        catch (RuntimeException | CryptographyException e)
         {
             throw new IOException(e);
         }
