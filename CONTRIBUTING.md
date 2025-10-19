@@ -6,7 +6,7 @@
   - [Development setup](#development-setup)
     - [Install Eclipse](#install-eclipse)
     - [Install Eclipse plug-ins](#install-eclipse-plug-ins)
-      - [Install from the simulatenous release update site](#install-from-the-simulatenous-release-update-site)
+      - [Install from the simultaneous release update site](#install-from-the-simultaneous-release-update-site)
     - [Configure Eclipse](#configure-eclipse)
   - [Project setup](#project-setup)
     - [Source code](#source-code)
@@ -75,7 +75,7 @@ Optionally, install via the Eclipse Marketplace (drag and drop the *Install* but
 * [Darkest Dark Theme with DevStyle](https://marketplace.eclipse.org/content/darkest-dark-theme-devstyle) (Programming and chilling in DarkMode :sunglasses:)
 
 
-#### Install from the simulatenous release update site
+#### Install from the simultaneous release update site
 
 `Menu` --> `Help` --> `Install New Software`
 
@@ -110,7 +110,7 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 
 ## Project setup
  
-For further disucssion, check out the thread in the [(German) Forum](https://forum.portfolio-performance.info/t/verbesserungen-im-source-code-in-github-einbringen/7063).
+For further discussion, check out the thread in the [(German) Forum](https://forum.portfolio-performance.info/t/verbesserungen-im-source-code-in-github-einbringen/7063).
 
 
 ### Source code
@@ -521,7 +521,7 @@ Via the application menu, users can create a test case file. The test file is th
 
 To test regular expression you can use [https://regex101.com/](https://regex101.com/).
 
-Beside general good practices for regular expresions, keep in mind:
+Beside general good practices for regular expressions, keep in mind:
 * all special characters in the PDF document (`äöüÄÖÜß` as well as e.g. circumflex or similar) should be matched by a `.` (dot) because the PDF to text conversion can create different results 
 * the special characters `$^{[(|)]}*+?\` in the PDF document are to be escaped
 * expression in `.match(" ... ")` is started with an anchor `^` and ended with `$`

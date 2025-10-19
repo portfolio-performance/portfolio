@@ -21,7 +21,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 /**
- * This is intended to be unit test for Trade (and by exension,
+ * This is intended to be unit test for Trade (and by extension,
  * TradeCollector) class, trying to enumerate various most common
  * scenarios in one place and have more or all exhaustive checks,
  * thus ensuring good coverage.
