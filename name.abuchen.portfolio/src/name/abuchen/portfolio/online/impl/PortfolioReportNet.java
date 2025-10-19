@@ -185,7 +185,7 @@ public class PortfolioReportNet
         @SuppressWarnings("nls")
         String html = new WebAccess(HOST, "/securities/uuid/" + onlineId)
                         .addUserAgent("PortfolioPerformance/" + version)
-                        .addHeader("X-Source", "Portfolio Peformance " + version)
+                        .addHeader("X-Source", "Portfolio Performance " + version)
                         .addHeader("X-Reason", "periodic update")
                         .addHeader("Content-Type", "application/json;chartset=UTF-8") //
                         .get();

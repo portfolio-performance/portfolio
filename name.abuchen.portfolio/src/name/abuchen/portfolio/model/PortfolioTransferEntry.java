@@ -190,7 +190,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         else if (t.equals(transactionTo))
             return transactionFrom;
         else
-            throw new UnsupportedOperationException("unable to get cross transction for transaction " + t); //$NON-NLS-1$
+            throw new UnsupportedOperationException("unable to get cross transaction for transaction " + t); //$NON-NLS-1$
     }
 
     @Override

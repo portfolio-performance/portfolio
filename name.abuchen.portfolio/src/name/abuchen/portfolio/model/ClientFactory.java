@@ -725,7 +725,7 @@ public class ClientFactory
                 // also on some other platforms (for example reported for Linux
                 // Mint, locks are not supported on SMB shares)
 
-                PortfolioLog.warning(MessageFormat.format("Failed to aquire lock {0} with message {1}", //$NON-NLS-1$
+                PortfolioLog.warning(MessageFormat.format("Failed to acquire lock {0} with message {1}", //$NON-NLS-1$
                                 file.getAbsolutePath(), e.getMessage()));
             }
 
