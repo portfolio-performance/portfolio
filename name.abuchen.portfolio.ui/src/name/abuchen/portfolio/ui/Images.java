@@ -115,6 +115,8 @@ public enum Images
 
     ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
     ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
+    
+    CALCULATOR("calculator.png"), //$NON-NLS-1$
 
     // 3rd party logos
 
