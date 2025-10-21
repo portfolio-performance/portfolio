@@ -329,54 +329,6 @@ public class IBFlexStatementExtractor implements Extractor
                     throw new IllegalArgumentException("unsupported type '" + type + "'");
             }
 
-            // @formatter:off
-            // If the account currency differs from transaction currency
-            // convert currency, if there is a matching security with the account currency
-            // @formatter:on
-            if ((AccountTransaction.Type.DIVIDENDS.equals(accountTransaction.getType())
-                            || AccountTransaction.Type.TAXES.equals(accountTransaction.getType()))
-                            && (this.accountCurrency != null && !this.accountCurrency.equals(amount.getCurrencyCode())))
-            {
-                // matching isin or wkn & base currency
-                boolean foundIsinBase = false;
-
-                // matching isin & transaction currency
-                boolean foundIsinTransaction = false;
-
-                // matching conid (wkn) & transaction currency
-                boolean foundWknTransaction = false;
-
-                for (Security s : allSecurities)
-                {
-                    // Find security with same isin or conid (wkn) and currency
-                    if (element.getAttribute("isin").length() > 0 && element.getAttribute("isin").equals(s.getIsin()))
-                    {
-                        if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
-                            foundIsinTransaction = true;
-                        else if (this.accountCurrency.equals(s.getCurrencyCode()))
-                            foundIsinBase = true;
-                    }
-                    else if (element.getAttribute("conid").length() > 0 && element.getAttribute("conid").equals(s.getWkn()))
-                    {
-                        if (amount.getCurrencyCode().equals(s.getCurrencyCode()))
-                            foundWknTransaction = true;
-                        else if (this.accountCurrency.equals(s.getCurrencyCode()))
-                            foundIsinBase = true;
-                    }
-                }
-
-                // If the transaction currency is not found but the base
-                // currency is found, and there is an exchange rate, convert the
-                // amount.
-                if ((!foundIsinTransaction || !foundWknTransaction) && foundIsinBase && element.getAttribute("fxRateToBase").length() > 0)
-                {
-                    BigDecimal fxRateToBase = asExchangeRate(element.getAttribute("fxRateToBase"));
-
-                    amount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount()).multiply(fxRateToBase)
-                                    .setScale(0, RoundingMode.HALF_UP).longValue());
-                }
-            }
-
             // Set the amount in the transaction
             setAmount(element, accountTransaction, amount);
 
@@ -572,14 +524,14 @@ public class IBFlexStatementExtractor implements Extractor
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount, false);
+                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
             }
             else
             {
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount, false);
+                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
             }
 
             // Set share quantity
@@ -589,12 +541,12 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Set fees
             Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
-            Unit feeUnit = createUnit(element, Unit.Type.FEE, fees);
+            Unit feeUnit = new Unit(Unit.Type.FEE, fees);
             portfolioTransaction.getPortfolioTransaction().addUnit(feeUnit);
 
             // Set taxes
             Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
-            Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes);
+            Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
             portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
 
             portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
@@ -712,101 +664,34 @@ public class IBFlexStatementExtractor implements Extractor
         };
 
         /**
-         * Creates a Unit based on the specified element, unit type, and monetary amount.
-         *
-         * @param element The element containing FX rate information.
-         * @param unitType The type of the Unit to be created.
-         * @param amount The original monetary amount.
-         * @return The created Unit.
-         */
-        private Unit createUnit(Element element, Unit.Type unitType, Money amount)
-        {
-            Unit unit;
-
-            // Check if the IB account currency is null or matches the amount
-            // currency
-            if (accountCurrency == null || accountCurrency.equals(amount.getCurrencyCode()))
-            {
-                unit = new Unit(unitType, amount);
-            }
-            else
-            {
-                BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(), accountCurrency);
-
-                // Calculate the inverse rate
-                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                // Convert the amount to the IB account currency using the
-                // inverse rate
-                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount())
-                                .divide(inverseRate, Values.MC).setScale(0, RoundingMode.HALF_UP).longValue());
-
-                // Create a Unit with FX amount, original amount, and FX rate
-                unit = new Unit(unitType, fxAmount, amount, exchangeRate);
-            }
-
-            return unit;
-        }
-
-        /**
-         * Sets the specified monetary amount on the given transaction, with an option to include in the portfolio transaction.
-         *
-         * @param element The XML element containing transaction details.
-         * @param transaction The transaction object to update with the amount.
-         * @param amount The monetary amount to set on the transaction.
-         */
-        private void setAmount(Element element, Transaction transaction, Money amount)
-        {
-            setAmount(element, transaction, amount, true);
-        }
-
-        /**
          * Sets the specified monetary amount on the given transaction, with an option to include in the portfolio transaction.
          *
          * @param element      The XML element containing transaction details.
          * @param transaction  The transaction object to update with the amount.
          * @param amount       The monetary amount to set on the transaction.
-         * @param addUnit      A flag indicating whether to add a Unit to the transaction.
          */
-        private void setAmount(Element element, Transaction transaction, Money amount, boolean addUnit)
+        private void setAmount(Element element, Transaction transaction, Money amount)
         {
-            if (accountCurrency != null && !accountCurrency.equals(amount.getCurrencyCode()))
+            transaction.setMonetaryAmount(amount);
+
+            if (transaction.getSecurity() != null
+                            && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
             {
-                BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(), accountCurrency);
+                // Transaction currency differs from security currency - create GROSS_VALUE unit
+                BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(),
+                                transaction.getSecurity().getCurrencyCode());
 
-                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount())
-                        .multiply(exchangeRate).setScale(0, RoundingMode.HALF_UP).longValue());
-
-                transaction.setMonetaryAmount(fxAmount);
-
-                if (addUnit)
+                // Some old testcases contain neither accountCurrency nor fx rates.
+                // Don't add a GROSS_VALUE in that case.
+                if (exchangeRate != null)
                 {
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, amount, exchangeRate);
+                    exchangeRate = ExchangeRate.inverse(exchangeRate);
+                    Money fxAmount = Money.of(transaction.getSecurity().getCurrencyCode(),
+                                    BigDecimal.valueOf(amount.getAmount()).divide(exchangeRate, Values.MC)
+                                                .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, exchangeRate);
                     transaction.addUnit(grossValue);
-                }
-            }
-            else
-            {
-                transaction.setMonetaryAmount(amount);
-
-                if (addUnit && transaction.getSecurity() != null && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
-                {
-                    // @formatter:off
-                    // If the transaction currency is different from the security currency (as stored in PP)
-                    // we need to supply the gross value in the security currency.
-                    // @formatter:on
-                    BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(), transaction.getSecurity().getCurrencyCode());
-
-                    if (exchangeRate != null) {
-                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                        Money fxAmount = Money.of(transaction.getSecurity().getCurrencyCode(),
-                                BigDecimal.valueOf(amount.getAmount()).divide(inverseRate, Values.MC)
-                                        .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                        transaction.addUnit(grossValue);
-                    }
                 }
             }
         }
