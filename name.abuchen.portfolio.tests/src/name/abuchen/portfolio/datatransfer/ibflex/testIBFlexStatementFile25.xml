@@ -1,0 +1,1232 @@
+<FlexQueryResponse queryName="PP" type="AF">
+    <FlexStatements count="1">
+        <FlexStatement accountId="U1234560" fromDate="20241010" toDate="20250911" period=""
+            whenGenerated="20250912;050533">
+            <AccountInformation accountId="U1234560" acctAlias="Account A" model=""
+                currency="GBP" name="John Doe" accountType="Individual"
+                customerType="Individual" accountCapabilities="Cash"
+                tradingPermissions="Stocks,Warrants,Forex" accountRepName="" accountRepPhone=""
+                dateOpened="20240626" dateFunded="20240726" dateClosed="" lastTradedDate="20241220"
+                street="REDACTED" street2="" city="REDACTED" state="GB"
+                country="United Kingdom" postalCode="REDACTED"
+                streetResidentialAddress="REDACTED" street2ResidentialAddress=""
+                cityResidentialAddress="REDACTED" stateResidentialAddress="GB"
+                countryResidentialAddress="United Kingdom" postalCodeResidentialAddress="REDACTED"
+                masterName="" ibEntity="IB-UK" primaryEmail="mail@example.org" />
+            <CashTransactions>
+                <CashTransaction accountId="U1234560" acctAlias="Account A" model=""
+                    currency="EUR" fxRateToBase="0.83697" assetCategory="STK" subCategory="ETF"
+                    symbol="EUNS"
+                    description="EUNS(IE00B4L5ZY03) CASH DIVIDEND EUR 1.351 PER SHARE (Mixed Income)"
+                    conid="78999745" securityID="IE00B4L5ZY03" securityIDType="ISIN" cusip=""
+                    isin="IE00B4L5ZY03" figi="BBG000Q0SCD9" listingExchange="IBIS2"
+                    underlyingConid="" underlyingSymbol="EUNS" underlyingSecurityID=""
+                    underlyingListingExchange="" issuer="" issuerCountryCode="IE" multiplier="1"
+                    strike="" expiry="" putCall="" principalAdjustFactor=""
+                    dateTime="20250129;202000" settleDate="20250129" availableForTradingDate=""
+                    amount="13.51" type="Dividends" tradeID="" code="" transactionID="REDACTED"
+                    reportDate="20250129" clientReference="" actionID="REDACTED"
+                    levelOfDetail="DETAIL" serialNumber="" deliveryType="" commodityType=""
+                    fineness="0.0" weight="0.0" />
+                <CashTransaction accountId="U1234560" acctAlias="Account A" model=""
+                    currency="EUR" fxRateToBase="0.83697" assetCategory="STK" subCategory="ETF"
+                    symbol="TEST"
+                    description="TEST(IE000000000) CASH DIVIDEND EUR 1.351 PER SHARE (Mixed Income)"
+                    conid="78999745" securityID="IE000000000" securityIDType="ISIN" cusip=""
+                    isin="IE000000000" figi="BBG000Q0SCD9" listingExchange="IBIS2"
+                    underlyingConid="" underlyingSymbol="TEST" underlyingSecurityID=""
+                    underlyingListingExchange="" issuer="" issuerCountryCode="IE" multiplier="1"
+                    strike="" expiry="" putCall="" principalAdjustFactor=""
+                    dateTime="20250129;202000" settleDate="20250129" availableForTradingDate=""
+                    amount="13.51" type="Dividends" tradeID="" code="" transactionID="REDACTED"
+                    reportDate="20250129" clientReference="" actionID="REDACTED"
+                    levelOfDetail="DETAIL" serialNumber="" deliveryType="" commodityType=""
+                    fineness="0.0" weight="0.0" />
+                <CashTransaction accountId="U1234560" acctAlias="Account A" model=""
+                    currency="USD" fxRateToBase="0.79672" assetCategory="STK" subCategory="ETF"
+                    symbol="VWRL"
+                    description="VWRL(IE00B3RBWM25) CASH DIVIDEND USD 0.446619 PER SHARE (Mixed Income)"
+                    conid="128831206" securityID="IE00B3RBWM25" securityIDType="ISIN" cusip=""
+                    isin="IE00B3RBWM25" figi="BBG004N6GFZ3" listingExchange="AEB" underlyingConid=""
+                    underlyingSymbol="VWRL" underlyingSecurityID="" underlyingListingExchange=""
+                    issuer="" issuerCountryCode="IE" multiplier="1" strike="" expiry="" putCall=""
+                    principalAdjustFactor="" dateTime="20241227;202000" settleDate="20241227"
+                    availableForTradingDate="" amount="4.46619" type="Dividends" tradeID="" code=""
+                    transactionID="REDACTED" reportDate="20241230" clientReference=""
+                    actionID="REDACTED" levelOfDetail="DETAIL" serialNumber="" deliveryType=""
+                    commodityType="" fineness="0.0" weight="0.0" />
+                <CashTransaction accountId="U1234560" acctAlias="Account A" model=""
+                    currency="GBP" assetCategory="STK" subCategory="ETF"
+                    symbol="TEST2"
+                    description="TEST2(IE0000000001) CASH DIVIDEND GBP 0.446619 PER SHARE (Mixed Income)"
+                    conid="128831206" securityID="IE0000000001" securityIDType="ISIN" cusip=""
+                    isin="IE0000000001" figi="BBG004N6GFZ3" listingExchange="AEB" underlyingConid=""
+                    underlyingSymbol="TEST2" underlyingSecurityID="" underlyingListingExchange=""
+                    issuer="" issuerCountryCode="IE" multiplier="1" strike="" expiry="" putCall=""
+                    principalAdjustFactor="" dateTime="20241227;202000" settleDate="20241227"
+                    availableForTradingDate="" amount="4.46619" type="Dividends" tradeID="" code=""
+                    transactionID="REDACTED" reportDate="20241230" clientReference=""
+                    actionID="REDACTED" levelOfDetail="DETAIL" serialNumber="" deliveryType=""
+                    commodityType="" fineness="0.0" weight="0.0" />
+            </CashTransactions>
+            <ConversionRates>
+                <ConversionRate reportDate="20241010" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83747" />
+                <ConversionRate reportDate="20241011" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83703" />
+                <ConversionRate reportDate="20241013" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83666" />
+                <ConversionRate reportDate="20241014" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83532" />
+                <ConversionRate reportDate="20241015" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83306" />
+                <ConversionRate reportDate="20241016" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8362" />
+                <ConversionRate reportDate="20241017" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83243" />
+                <ConversionRate reportDate="20241018" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83268" />
+                <ConversionRate reportDate="20241020" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83268" />
+                <ConversionRate reportDate="20241021" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83288" />
+                <ConversionRate reportDate="20241022" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83164" />
+                <ConversionRate reportDate="20241023" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83448" />
+                <ConversionRate reportDate="20241024" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83441" />
+                <ConversionRate reportDate="20241025" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83287" />
+                <ConversionRate reportDate="20241027" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83258" />
+                <ConversionRate reportDate="20241028" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83354" />
+                <ConversionRate reportDate="20241029" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83114" />
+                <ConversionRate reportDate="20241030" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83749" />
+                <ConversionRate reportDate="20241031" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84375" />
+                <ConversionRate reportDate="20241101" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83833" />
+                <ConversionRate reportDate="20241103" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83877" />
+                <ConversionRate reportDate="20241104" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83948" />
+                <ConversionRate reportDate="20241105" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83811" />
+                <ConversionRate reportDate="20241106" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83302" />
+                <ConversionRate reportDate="20241107" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83182" />
+                <ConversionRate reportDate="20241108" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82954" />
+                <ConversionRate reportDate="20241110" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82967" />
+                <ConversionRate reportDate="20241111" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82804" />
+                <ConversionRate reportDate="20241112" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83335" />
+                <ConversionRate reportDate="20241113" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83131" />
+                <ConversionRate reportDate="20241114" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83134" />
+                <ConversionRate reportDate="20241115" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83519" />
+                <ConversionRate reportDate="20241117" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8353" />
+                <ConversionRate reportDate="20241118" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83598" />
+                <ConversionRate reportDate="20241119" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83553" />
+                <ConversionRate reportDate="20241120" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8333" />
+                <ConversionRate reportDate="20241121" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83199" />
+                <ConversionRate reportDate="20241122" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83154" />
+                <ConversionRate reportDate="20241124" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82709" />
+                <ConversionRate reportDate="20241125" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8351" />
+                <ConversionRate reportDate="20241126" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83451" />
+                <ConversionRate reportDate="20241127" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83333" />
+                <ConversionRate reportDate="20241128" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83192" />
+                <ConversionRate reportDate="20241129" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83051" />
+                <ConversionRate reportDate="20241201" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82982" />
+                <ConversionRate reportDate="20241202" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82954" />
+                <ConversionRate reportDate="20241203" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82928" />
+                <ConversionRate reportDate="20241204" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82757" />
+                <ConversionRate reportDate="20241205" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82971" />
+                <ConversionRate reportDate="20241206" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82933" />
+                <ConversionRate reportDate="20241208" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82931" />
+                <ConversionRate reportDate="20241209" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82765" />
+                <ConversionRate reportDate="20241210" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82432" />
+                <ConversionRate reportDate="20241211" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82319" />
+                <ConversionRate reportDate="20241212" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82587" />
+                <ConversionRate reportDate="20241213" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8323" />
+                <ConversionRate reportDate="20241215" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83127" />
+                <ConversionRate reportDate="20241216" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82877" />
+                <ConversionRate reportDate="20241217" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82536" />
+                <ConversionRate reportDate="20241218" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82336" />
+                <ConversionRate reportDate="20241219" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8289" />
+                <ConversionRate reportDate="20241220" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8298" />
+                <ConversionRate reportDate="20241222" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83001" />
+                <ConversionRate reportDate="20241223" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83008" />
+                <ConversionRate reportDate="20241224" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8292" />
+                <ConversionRate reportDate="20241225" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82876" />
+                <ConversionRate reportDate="20241226" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83207" />
+                <ConversionRate reportDate="20241227" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82877" />
+                <ConversionRate reportDate="20241229" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82932" />
+                <ConversionRate reportDate="20241230" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82909" />
+                <ConversionRate reportDate="20241231" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82739" />
+                <ConversionRate reportDate="20250101" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82735" />
+                <ConversionRate reportDate="20250102" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82928" />
+                <ConversionRate reportDate="20250103" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82983" />
+                <ConversionRate reportDate="20250105" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82945" />
+                <ConversionRate reportDate="20250106" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82986" />
+                <ConversionRate reportDate="20250107" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82869" />
+                <ConversionRate reportDate="20250108" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83463" />
+                <ConversionRate reportDate="20250109" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83689" />
+                <ConversionRate reportDate="20250110" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83926" />
+                <ConversionRate reportDate="20250112" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83918" />
+                <ConversionRate reportDate="20250113" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83907" />
+                <ConversionRate reportDate="20250114" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84384" />
+                <ConversionRate reportDate="20250115" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84051" />
+                <ConversionRate reportDate="20250116" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84166" />
+                <ConversionRate reportDate="20250117" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84425" />
+                <ConversionRate reportDate="20250119" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84421" />
+                <ConversionRate reportDate="20250120" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84508" />
+                <ConversionRate reportDate="20250121" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84408" />
+                <ConversionRate reportDate="20250122" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84528" />
+                <ConversionRate reportDate="20250123" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84321" />
+                <ConversionRate reportDate="20250124" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84073" />
+                <ConversionRate reportDate="20250126" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8402" />
+                <ConversionRate reportDate="20250127" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83938" />
+                <ConversionRate reportDate="20250128" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83832" />
+                <ConversionRate reportDate="20250129" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83697" />
+                <ConversionRate reportDate="20250130" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83688" />
+                <ConversionRate reportDate="20250131" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8361" />
+                <ConversionRate reportDate="20250202" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83502" />
+                <ConversionRate reportDate="20250203" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83079" />
+                <ConversionRate reportDate="20250204" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83152" />
+                <ConversionRate reportDate="20250205" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83191" />
+                <ConversionRate reportDate="20250206" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83503" />
+                <ConversionRate reportDate="20250207" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83243" />
+                <ConversionRate reportDate="20250209" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83013" />
+                <ConversionRate reportDate="20250210" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83346" />
+                <ConversionRate reportDate="20250211" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83249" />
+                <ConversionRate reportDate="20250212" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83439" />
+                <ConversionRate reportDate="20250213" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83278" />
+                <ConversionRate reportDate="20250214" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83358" />
+                <ConversionRate reportDate="20250216" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83306" />
+                <ConversionRate reportDate="20250217" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8304" />
+                <ConversionRate reportDate="20250218" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82811" />
+                <ConversionRate reportDate="20250219" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82809" />
+                <ConversionRate reportDate="20250220" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82886" />
+                <ConversionRate reportDate="20250221" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82795" />
+                <ConversionRate reportDate="20250223" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82752" />
+                <ConversionRate reportDate="20250224" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82913" />
+                <ConversionRate reportDate="20250225" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83013" />
+                <ConversionRate reportDate="20250226" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82716" />
+                <ConversionRate reportDate="20250227" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82523" />
+                <ConversionRate reportDate="20250228" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82497" />
+                <ConversionRate reportDate="20250302" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82668" />
+                <ConversionRate reportDate="20250303" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.82574" />
+                <ConversionRate reportDate="20250304" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8305" />
+                <ConversionRate reportDate="20250305" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83662" />
+                <ConversionRate reportDate="20250306" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8372" />
+                <ConversionRate reportDate="20250307" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83844" />
+                <ConversionRate reportDate="20250309" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83941" />
+                <ConversionRate reportDate="20250310" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84135" />
+                <ConversionRate reportDate="20250311" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84316" />
+                <ConversionRate reportDate="20250312" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83985" />
+                <ConversionRate reportDate="20250313" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83792" />
+                <ConversionRate reportDate="20250314" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84107" />
+                <ConversionRate reportDate="20250316" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84118" />
+                <ConversionRate reportDate="20250317" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84075" />
+                <ConversionRate reportDate="20250318" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84175" />
+                <ConversionRate reportDate="20250319" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8384" />
+                <ConversionRate reportDate="20250320" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.837" />
+                <ConversionRate reportDate="20250321" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83729" />
+                <ConversionRate reportDate="20250323" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83837" />
+                <ConversionRate reportDate="20250324" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83578" />
+                <ConversionRate reportDate="20250325" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8337" />
+                <ConversionRate reportDate="20250326" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83435" />
+                <ConversionRate reportDate="20250327" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8342" />
+                <ConversionRate reportDate="20250328" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83699" />
+                <ConversionRate reportDate="20250330" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83668" />
+                <ConversionRate reportDate="20250331" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83725" />
+                <ConversionRate reportDate="20250401" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83511" />
+                <ConversionRate reportDate="20250402" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83464" />
+                <ConversionRate reportDate="20250403" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84359" />
+                <ConversionRate reportDate="20250404" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85021" />
+                <ConversionRate reportDate="20250406" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85437" />
+                <ConversionRate reportDate="20250407" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85713" />
+                <ConversionRate reportDate="20250408" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85842" />
+                <ConversionRate reportDate="20250409" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85399" />
+                <ConversionRate reportDate="20250410" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86354" />
+                <ConversionRate reportDate="20250411" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86829" />
+                <ConversionRate reportDate="20250413" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86505" />
+                <ConversionRate reportDate="20250414" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86051" />
+                <ConversionRate reportDate="20250415" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85263" />
+                <ConversionRate reportDate="20250416" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86092" />
+                <ConversionRate reportDate="20250417" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85659" />
+                <ConversionRate reportDate="20250418" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85682" />
+                <ConversionRate reportDate="20250420" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85845" />
+                <ConversionRate reportDate="20250421" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86046" />
+                <ConversionRate reportDate="20250422" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85672" />
+                <ConversionRate reportDate="20250423" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85368" />
+                <ConversionRate reportDate="20250424" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85382" />
+                <ConversionRate reportDate="20250425" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85367" />
+                <ConversionRate reportDate="20250427" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85421" />
+                <ConversionRate reportDate="20250428" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84964" />
+                <ConversionRate reportDate="20250429" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84908" />
+                <ConversionRate reportDate="20250430" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84981" />
+                <ConversionRate reportDate="20250501" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85033" />
+                <ConversionRate reportDate="20250502" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85148" />
+                <ConversionRate reportDate="20250504" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85237" />
+                <ConversionRate reportDate="20250505" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85096" />
+                <ConversionRate reportDate="20250506" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85048" />
+                <ConversionRate reportDate="20250507" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85035" />
+                <ConversionRate reportDate="20250508" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84768" />
+                <ConversionRate reportDate="20250509" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84545" />
+                <ConversionRate reportDate="20250511" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84382" />
+                <ConversionRate reportDate="20250512" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84146" />
+                <ConversionRate reportDate="20250513" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8406" />
+                <ConversionRate reportDate="20250514" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8426" />
+                <ConversionRate reportDate="20250515" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84076" />
+                <ConversionRate reportDate="20250516" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84071" />
+                <ConversionRate reportDate="20250518" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84218" />
+                <ConversionRate reportDate="20250519" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84148" />
+                <ConversionRate reportDate="20250520" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84253" />
+                <ConversionRate reportDate="20250521" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84433" />
+                <ConversionRate reportDate="20250522" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84066" />
+                <ConversionRate reportDate="20250523" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83943" />
+                <ConversionRate reportDate="20250525" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84026" />
+                <ConversionRate reportDate="20250526" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83958" />
+                <ConversionRate reportDate="20250527" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83872" />
+                <ConversionRate reportDate="20250528" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.83835" />
+                <ConversionRate reportDate="20250529" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84258" />
+                <ConversionRate reportDate="20250530" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84341" />
+                <ConversionRate reportDate="20250601" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84326" />
+                <ConversionRate reportDate="20250602" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84483" />
+                <ConversionRate reportDate="20250603" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84117" />
+                <ConversionRate reportDate="20250604" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84244" />
+                <ConversionRate reportDate="20250605" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84331" />
+                <ConversionRate reportDate="20250606" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84254" />
+                <ConversionRate reportDate="20250608" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84269" />
+                <ConversionRate reportDate="20250609" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84276" />
+                <ConversionRate reportDate="20250610" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84642" />
+                <ConversionRate reportDate="20250611" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.84803" />
+                <ConversionRate reportDate="20250612" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85102" />
+                <ConversionRate reportDate="20250613" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85112" />
+                <ConversionRate reportDate="20250615" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85006" />
+                <ConversionRate reportDate="20250616" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85159" />
+                <ConversionRate reportDate="20250617" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85491" />
+                <ConversionRate reportDate="20250618" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85552" />
+                <ConversionRate reportDate="20250619" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85366" />
+                <ConversionRate reportDate="20250620" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85667" />
+                <ConversionRate reportDate="20250622" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85472" />
+                <ConversionRate reportDate="20250623" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85609" />
+                <ConversionRate reportDate="20250624" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85269" />
+                <ConversionRate reportDate="20250625" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85332" />
+                <ConversionRate reportDate="20250626" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85239" />
+                <ConversionRate reportDate="20250627" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85426" />
+                <ConversionRate reportDate="20250629" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85515" />
+                <ConversionRate reportDate="20250630" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85831" />
+                <ConversionRate reportDate="20250701" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.85887" />
+                <ConversionRate reportDate="20250702" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86536" />
+                <ConversionRate reportDate="20250703" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86103" />
+                <ConversionRate reportDate="20250704" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86258" />
+                <ConversionRate reportDate="20250706" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86389" />
+                <ConversionRate reportDate="20250707" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86086" />
+                <ConversionRate reportDate="20250708" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86259" />
+                <ConversionRate reportDate="20250709" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86279" />
+                <ConversionRate reportDate="20250710" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86164" />
+                <ConversionRate reportDate="20250711" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86632" />
+                <ConversionRate reportDate="20250713" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86502" />
+                <ConversionRate reportDate="20250714" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86879" />
+                <ConversionRate reportDate="20250715" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86688" />
+                <ConversionRate reportDate="20250716" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86735" />
+                <ConversionRate reportDate="20250717" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86437" />
+                <ConversionRate reportDate="20250718" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86707" />
+                <ConversionRate reportDate="20250720" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86638" />
+                <ConversionRate reportDate="20250721" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86681" />
+                <ConversionRate reportDate="20250722" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86855" />
+                <ConversionRate reportDate="20250723" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86678" />
+                <ConversionRate reportDate="20250724" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86967" />
+                <ConversionRate reportDate="20250725" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87376" />
+                <ConversionRate reportDate="20250727" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87556" />
+                <ConversionRate reportDate="20250728" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86774" />
+                <ConversionRate reportDate="20250729" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86475" />
+                <ConversionRate reportDate="20250730" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86156" />
+                <ConversionRate reportDate="20250731" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86439" />
+                <ConversionRate reportDate="20250801" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87264" />
+                <ConversionRate reportDate="20250803" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.873" />
+                <ConversionRate reportDate="20250804" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87113" />
+                <ConversionRate reportDate="20250805" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87036" />
+                <ConversionRate reportDate="20250806" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.87295" />
+                <ConversionRate reportDate="20250807" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86765" />
+                <ConversionRate reportDate="20250808" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86547" />
+                <ConversionRate reportDate="20250810" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86613" />
+                <ConversionRate reportDate="20250811" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86477" />
+                <ConversionRate reportDate="20250812" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86474" />
+                <ConversionRate reportDate="20250813" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86218" />
+                <ConversionRate reportDate="20250814" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86089" />
+                <ConversionRate reportDate="20250815" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86357" />
+                <ConversionRate reportDate="20250817" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86416" />
+                <ConversionRate reportDate="20250818" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86352" />
+                <ConversionRate reportDate="20250819" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86322" />
+                <ConversionRate reportDate="20250820" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86582" />
+                <ConversionRate reportDate="20250821" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86526" />
+                <ConversionRate reportDate="20250822" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86644" />
+                <ConversionRate reportDate="20250824" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86717" />
+                <ConversionRate reportDate="20250825" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86361" />
+                <ConversionRate reportDate="20250826" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86369" />
+                <ConversionRate reportDate="20250827" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86219" />
+                <ConversionRate reportDate="20250828" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86454" />
+                <ConversionRate reportDate="20250829" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86535" />
+                <ConversionRate reportDate="20250831" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86656" />
+                <ConversionRate reportDate="20250901" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86464" />
+                <ConversionRate reportDate="20250902" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86913" />
+                <ConversionRate reportDate="20250903" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86731" />
+                <ConversionRate reportDate="20250904" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86712" />
+                <ConversionRate reportDate="20250905" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86745" />
+                <ConversionRate reportDate="20250907" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86747" />
+                <ConversionRate reportDate="20250908" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86847" />
+                <ConversionRate reportDate="20250909" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86562" />
+                <ConversionRate reportDate="20250910" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.8643" />
+                <ConversionRate reportDate="20250911" fromCurrency="EUR" toCurrency="GBP"
+                    rate="0.86452" />
+                <ConversionRate reportDate="20241010" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7657" />
+                <ConversionRate reportDate="20241011" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76534" />
+                <ConversionRate reportDate="20241013" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76526" />
+                <ConversionRate reportDate="20241014" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7657" />
+                <ConversionRate reportDate="20241015" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76487" />
+                <ConversionRate reportDate="20241016" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76981" />
+                <ConversionRate reportDate="20241017" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76854" />
+                <ConversionRate reportDate="20241018" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76623" />
+                <ConversionRate reportDate="20241020" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76655" />
+                <ConversionRate reportDate="20241021" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77013" />
+                <ConversionRate reportDate="20241022" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77013" />
+                <ConversionRate reportDate="20241023" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77392" />
+                <ConversionRate reportDate="20241024" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77063" />
+                <ConversionRate reportDate="20241025" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77148" />
+                <ConversionRate reportDate="20241027" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7708" />
+                <ConversionRate reportDate="20241028" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77091" />
+                <ConversionRate reportDate="20241029" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76826" />
+                <ConversionRate reportDate="20241030" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77146" />
+                <ConversionRate reportDate="20241031" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77526" />
+                <ConversionRate reportDate="20241101" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7738" />
+                <ConversionRate reportDate="20241103" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77089" />
+                <ConversionRate reportDate="20241104" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77175" />
+                <ConversionRate reportDate="20241105" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7668" />
+                <ConversionRate reportDate="20241106" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77644" />
+                <ConversionRate reportDate="20241107" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76999" />
+                <ConversionRate reportDate="20241108" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7739" />
+                <ConversionRate reportDate="20241110" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77459" />
+                <ConversionRate reportDate="20241111" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77709" />
+                <ConversionRate reportDate="20241112" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78444" />
+                <ConversionRate reportDate="20241113" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78694" />
+                <ConversionRate reportDate="20241114" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78947" />
+                <ConversionRate reportDate="20241115" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79239" />
+                <ConversionRate reportDate="20241117" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79239" />
+                <ConversionRate reportDate="20241118" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78874" />
+                <ConversionRate reportDate="20241119" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78852" />
+                <ConversionRate reportDate="20241120" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79034" />
+                <ConversionRate reportDate="20241121" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7943" />
+                <ConversionRate reportDate="20241122" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79797" />
+                <ConversionRate reportDate="20241124" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7939" />
+                <ConversionRate reportDate="20241125" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79563" />
+                <ConversionRate reportDate="20241126" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7956" />
+                <ConversionRate reportDate="20241127" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78864" />
+                <ConversionRate reportDate="20241128" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78817" />
+                <ConversionRate reportDate="20241129" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78514" />
+                <ConversionRate reportDate="20241201" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78515" />
+                <ConversionRate reportDate="20241202" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79018" />
+                <ConversionRate reportDate="20241203" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78908" />
+                <ConversionRate reportDate="20241204" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78736" />
+                <ConversionRate reportDate="20241205" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78366" />
+                <ConversionRate reportDate="20241206" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78475" />
+                <ConversionRate reportDate="20241208" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78525" />
+                <ConversionRate reportDate="20241209" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78426" />
+                <ConversionRate reportDate="20241210" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78302" />
+                <ConversionRate reportDate="20241211" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78426" />
+                <ConversionRate reportDate="20241212" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78903" />
+                <ConversionRate reportDate="20241213" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79242" />
+                <ConversionRate reportDate="20241215" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79269" />
+                <ConversionRate reportDate="20241216" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78842" />
+                <ConversionRate reportDate="20241217" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7867" />
+                <ConversionRate reportDate="20241218" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79533" />
+                <ConversionRate reportDate="20241219" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79987" />
+                <ConversionRate reportDate="20241220" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79562" />
+                <ConversionRate reportDate="20241222" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79564" />
+                <ConversionRate reportDate="20241223" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79765" />
+                <ConversionRate reportDate="20241224" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79704" />
+                <ConversionRate reportDate="20241225" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79646" />
+                <ConversionRate reportDate="20241226" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79831" />
+                <ConversionRate reportDate="20241227" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79502" />
+                <ConversionRate reportDate="20241229" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79532" />
+                <ConversionRate reportDate="20241230" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79672" />
+                <ConversionRate reportDate="20241231" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79914" />
+                <ConversionRate reportDate="20250101" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79887" />
+                <ConversionRate reportDate="20250102" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80771" />
+                <ConversionRate reportDate="20250103" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80499" />
+                <ConversionRate reportDate="20250105" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80506" />
+                <ConversionRate reportDate="20250106" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7987" />
+                <ConversionRate reportDate="20250107" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80144" />
+                <ConversionRate reportDate="20250108" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80886" />
+                <ConversionRate reportDate="20250109" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81254" />
+                <ConversionRate reportDate="20250110" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81915" />
+                <ConversionRate reportDate="20250112" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81967" />
+                <ConversionRate reportDate="20250113" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.82135" />
+                <ConversionRate reportDate="20250114" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81859" />
+                <ConversionRate reportDate="20250115" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81678" />
+                <ConversionRate reportDate="20250116" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81707" />
+                <ConversionRate reportDate="20250117" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.8219" />
+                <ConversionRate reportDate="20250119" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.8219" />
+                <ConversionRate reportDate="20250120" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81126" />
+                <ConversionRate reportDate="20250121" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80932" />
+                <ConversionRate reportDate="20250122" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.81198" />
+                <ConversionRate reportDate="20250123" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80957" />
+                <ConversionRate reportDate="20250124" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80116" />
+                <ConversionRate reportDate="20250126" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80189" />
+                <ConversionRate reportDate="20250127" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80003" />
+                <ConversionRate reportDate="20250128" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.8037" />
+                <ConversionRate reportDate="20250129" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80318" />
+                <ConversionRate reportDate="20250130" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80535" />
+                <ConversionRate reportDate="20250131" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80687" />
+                <ConversionRate reportDate="20250202" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.8137" />
+                <ConversionRate reportDate="20250203" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80321" />
+                <ConversionRate reportDate="20250204" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80117" />
+                <ConversionRate reportDate="20250205" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7997" />
+                <ConversionRate reportDate="20250206" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80423" />
+                <ConversionRate reportDate="20250207" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80607" />
+                <ConversionRate reportDate="20250209" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80661" />
+                <ConversionRate reportDate="20250210" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80861" />
+                <ConversionRate reportDate="20250211" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80344" />
+                <ConversionRate reportDate="20250212" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.80362" />
+                <ConversionRate reportDate="20250213" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79577" />
+                <ConversionRate reportDate="20250214" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79447" />
+                <ConversionRate reportDate="20250216" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79438" />
+                <ConversionRate reportDate="20250217" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79206" />
+                <ConversionRate reportDate="20250218" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79277" />
+                <ConversionRate reportDate="20250219" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79452" />
+                <ConversionRate reportDate="20250220" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78928" />
+                <ConversionRate reportDate="20250221" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79153" />
+                <ConversionRate reportDate="20250223" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78967" />
+                <ConversionRate reportDate="20250224" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79205" />
+                <ConversionRate reportDate="20250225" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78949" />
+                <ConversionRate reportDate="20250226" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78892" />
+                <ConversionRate reportDate="20250227" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79361" />
+                <ConversionRate reportDate="20250228" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.79507" />
+                <ConversionRate reportDate="20250302" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7945" />
+                <ConversionRate reportDate="20250303" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78731" />
+                <ConversionRate reportDate="20250304" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78154" />
+                <ConversionRate reportDate="20250305" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77546" />
+                <ConversionRate reportDate="20250306" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77628" />
+                <ConversionRate reportDate="20250307" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77391" />
+                <ConversionRate reportDate="20250309" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77492" />
+                <ConversionRate reportDate="20250310" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77652" />
+                <ConversionRate reportDate="20250311" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77218" />
+                <ConversionRate reportDate="20250312" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7714" />
+                <ConversionRate reportDate="20250313" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77213" />
+                <ConversionRate reportDate="20250314" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77311" />
+                <ConversionRate reportDate="20250316" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77325" />
+                <ConversionRate reportDate="20250317" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76975" />
+                <ConversionRate reportDate="20250318" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76914" />
+                <ConversionRate reportDate="20250319" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76899" />
+                <ConversionRate reportDate="20250320" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77118" />
+                <ConversionRate reportDate="20250321" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7742" />
+                <ConversionRate reportDate="20250323" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77523" />
+                <ConversionRate reportDate="20250324" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7738" />
+                <ConversionRate reportDate="20250325" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77253" />
+                <ConversionRate reportDate="20250326" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7759" />
+                <ConversionRate reportDate="20250327" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77228" />
+                <ConversionRate reportDate="20250328" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77287" />
+                <ConversionRate reportDate="20250330" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77319" />
+                <ConversionRate reportDate="20250331" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77414" />
+                <ConversionRate reportDate="20250401" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77383" />
+                <ConversionRate reportDate="20250402" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7688" />
+                <ConversionRate reportDate="20250403" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76331" />
+                <ConversionRate reportDate="20250404" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77552" />
+                <ConversionRate reportDate="20250406" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77982" />
+                <ConversionRate reportDate="20250407" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78589" />
+                <ConversionRate reportDate="20250408" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.78337" />
+                <ConversionRate reportDate="20250409" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77993" />
+                <ConversionRate reportDate="20250410" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.77101" />
+                <ConversionRate reportDate="20250411" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76431" />
+                <ConversionRate reportDate="20250413" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.76374" />
+                <ConversionRate reportDate="20250414" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75817" />
+                <ConversionRate reportDate="20250415" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75576" />
+                <ConversionRate reportDate="20250416" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75528" />
+                <ConversionRate reportDate="20250417" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75378" />
+                <ConversionRate reportDate="20250418" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75209" />
+                <ConversionRate reportDate="20250420" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75322" />
+                <ConversionRate reportDate="20250421" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74738" />
+                <ConversionRate reportDate="20250422" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75012" />
+                <ConversionRate reportDate="20250423" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75446" />
+                <ConversionRate reportDate="20250424" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74967" />
+                <ConversionRate reportDate="20250425" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75121" />
+                <ConversionRate reportDate="20250427" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75151" />
+                <ConversionRate reportDate="20250428" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74387" />
+                <ConversionRate reportDate="20250429" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7458" />
+                <ConversionRate reportDate="20250430" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75015" />
+                <ConversionRate reportDate="20250501" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75311" />
+                <ConversionRate reportDate="20250502" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75358" />
+                <ConversionRate reportDate="20250504" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75401" />
+                <ConversionRate reportDate="20250505" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75207" />
+                <ConversionRate reportDate="20250506" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.748" />
+                <ConversionRate reportDate="20250507" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75235" />
+                <ConversionRate reportDate="20250508" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75491" />
+                <ConversionRate reportDate="20250509" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75162" />
+                <ConversionRate reportDate="20250511" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75389" />
+                <ConversionRate reportDate="20250512" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75893" />
+                <ConversionRate reportDate="20250513" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75157" />
+                <ConversionRate reportDate="20250514" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75405" />
+                <ConversionRate reportDate="20250515" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75169" />
+                <ConversionRate reportDate="20250516" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7531" />
+                <ConversionRate reportDate="20250518" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75339" />
+                <ConversionRate reportDate="20250519" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74844" />
+                <ConversionRate reportDate="20250520" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74663" />
+                <ConversionRate reportDate="20250521" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74517" />
+                <ConversionRate reportDate="20250522" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7452" />
+                <ConversionRate reportDate="20250523" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73862" />
+                <ConversionRate reportDate="20250525" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7393" />
+                <ConversionRate reportDate="20250526" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73728" />
+                <ConversionRate reportDate="20250527" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74038" />
+                <ConversionRate reportDate="20250528" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7424" />
+                <ConversionRate reportDate="20250529" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74125" />
+                <ConversionRate reportDate="20250530" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74323" />
+                <ConversionRate reportDate="20250601" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74267" />
+                <ConversionRate reportDate="20250602" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73829" />
+                <ConversionRate reportDate="20250603" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73979" />
+                <ConversionRate reportDate="20250604" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73778" />
+                <ConversionRate reportDate="20250605" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73687" />
+                <ConversionRate reportDate="20250606" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73937" />
+                <ConversionRate reportDate="20250608" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73923" />
+                <ConversionRate reportDate="20250609" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73792" />
+                <ConversionRate reportDate="20250610" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74079" />
+                <ConversionRate reportDate="20250611" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73821" />
+                <ConversionRate reportDate="20250612" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73459" />
+                <ConversionRate reportDate="20250613" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7368" />
+                <ConversionRate reportDate="20250615" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73733" />
+                <ConversionRate reportDate="20250616" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73656" />
+                <ConversionRate reportDate="20250617" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74467" />
+                <ConversionRate reportDate="20250618" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7451" />
+                <ConversionRate reportDate="20250619" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74251" />
+                <ConversionRate reportDate="20250620" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74349" />
+                <ConversionRate reportDate="20250622" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74591" />
+                <ConversionRate reportDate="20250623" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73941" />
+                <ConversionRate reportDate="20250624" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73449" />
+                <ConversionRate reportDate="20250625" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73185" />
+                <ConversionRate reportDate="20250626" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.72848" />
+                <ConversionRate reportDate="20250627" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.72889" />
+                <ConversionRate reportDate="20250629" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.729" />
+                <ConversionRate reportDate="20250630" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.72814" />
+                <ConversionRate reportDate="20250701" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.72747" />
+                <ConversionRate reportDate="20250702" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73338" />
+                <ConversionRate reportDate="20250703" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73232" />
+                <ConversionRate reportDate="20250704" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73241" />
+                <ConversionRate reportDate="20250706" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73307" />
+                <ConversionRate reportDate="20250707" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73524" />
+                <ConversionRate reportDate="20250708" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73567" />
+                <ConversionRate reportDate="20250709" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73606" />
+                <ConversionRate reportDate="20250710" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7364" />
+                <ConversionRate reportDate="20250711" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74104" />
+                <ConversionRate reportDate="20250713" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74114" />
+                <ConversionRate reportDate="20250714" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7448" />
+                <ConversionRate reportDate="20250715" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74718" />
+                <ConversionRate reportDate="20250716" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74514" />
+                <ConversionRate reportDate="20250717" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74532" />
+                <ConversionRate reportDate="20250718" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7458" />
+                <ConversionRate reportDate="20250720" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74468" />
+                <ConversionRate reportDate="20250721" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7412" />
+                <ConversionRate reportDate="20250722" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73891" />
+                <ConversionRate reportDate="20250723" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73636" />
+                <ConversionRate reportDate="20250724" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74022" />
+                <ConversionRate reportDate="20250725" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74415" />
+                <ConversionRate reportDate="20250727" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74461" />
+                <ConversionRate reportDate="20250728" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74879" />
+                <ConversionRate reportDate="20250729" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74901" />
+                <ConversionRate reportDate="20250730" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75539" />
+                <ConversionRate reportDate="20250731" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75721" />
+                <ConversionRate reportDate="20250801" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75308" />
+                <ConversionRate reportDate="20250803" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75304" />
+                <ConversionRate reportDate="20250804" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75276" />
+                <ConversionRate reportDate="20250805" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.75193" />
+                <ConversionRate reportDate="20250806" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74867" />
+                <ConversionRate reportDate="20250807" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74376" />
+                <ConversionRate reportDate="20250808" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74341" />
+                <ConversionRate reportDate="20250810" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74372" />
+                <ConversionRate reportDate="20250811" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74449" />
+                <ConversionRate reportDate="20250812" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74074" />
+                <ConversionRate reportDate="20250813" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73657" />
+                <ConversionRate reportDate="20250814" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73911" />
+                <ConversionRate reportDate="20250815" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73788" />
+                <ConversionRate reportDate="20250817" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73776" />
+                <ConversionRate reportDate="20250818" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74053" />
+                <ConversionRate reportDate="20250819" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74119" />
+                <ConversionRate reportDate="20250820" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7432" />
+                <ConversionRate reportDate="20250821" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74553" />
+                <ConversionRate reportDate="20250822" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73925" />
+                <ConversionRate reportDate="20250824" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7397" />
+                <ConversionRate reportDate="20250825" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74325" />
+                <ConversionRate reportDate="20250826" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74193" />
+                <ConversionRate reportDate="20250827" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74081" />
+                <ConversionRate reportDate="20250828" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74002" />
+                <ConversionRate reportDate="20250829" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74049" />
+                <ConversionRate reportDate="20250831" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74089" />
+                <ConversionRate reportDate="20250901" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73829" />
+                <ConversionRate reportDate="20250902" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7466" />
+                <ConversionRate reportDate="20250903" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74376" />
+                <ConversionRate reportDate="20250904" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7443" />
+                <ConversionRate reportDate="20250905" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74022" />
+                <ConversionRate reportDate="20250907" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.74058" />
+                <ConversionRate reportDate="20250908" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73827" />
+                <ConversionRate reportDate="20250909" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73923" />
+                <ConversionRate reportDate="20250910" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.7391" />
+                <ConversionRate reportDate="20250911" fromCurrency="USD" toCurrency="GBP"
+                    rate="0.73673" />
+            </ConversionRates>
+        </FlexStatement>
+    </FlexStatements>
+</FlexQueryResponse>
