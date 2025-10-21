@@ -113,6 +113,9 @@ public class IBFlexStatementExtractor implements Extractor
                         .toFormatter(Locale.US);
     }
 
+    // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
+    private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
+
     /**
      * Constructs an IBFlexStatementExtractor with the given client.
      * Initializes the list of securities and exchange mappings.
@@ -225,6 +228,25 @@ public class IBFlexStatementExtractor implements Extractor
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
         private String accountCurrency = null;
+
+        /**
+         * Processes ConversionRate elements to build currency conversion rate
+         * mapping. Stores exchange rates from each currency to the account base
+         * currency.
+         */
+        private Consumer<Element> buildConversionRates = element -> {
+            String reportDate = element.getAttribute("reportDate");
+            String toCurrency = element.getAttribute("toCurrency");
+            String fromCurrency = element.getAttribute("fromCurrency");
+            String rateStr = element.getAttribute("rate");
+
+            if (!rateStr.equals("-1"))
+            {
+                BigDecimal rate = asExchangeRate(rateStr);
+                Pair<String, String> key = new Pair<>(reportDate, fromCurrency + "-" + toCurrency);
+                conversionRates.put(key, rate);
+            }
+        };
 
         /**
          * Builds account information based on the provided XML element. Extracts the currency
@@ -711,12 +733,10 @@ public class IBFlexStatementExtractor implements Extractor
             }
             else
             {
-                // Calculate the FX rate to the base currency
-                BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
-                                : asExchangeRate(element.getAttribute("fxRateToBase"));
+                BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(), accountCurrency);
 
                 // Calculate the inverse rate
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
                 // Convert the amount to the IB account currency using the
                 // inverse rate
@@ -724,7 +744,7 @@ public class IBFlexStatementExtractor implements Extractor
                                 .divide(inverseRate, Values.MC).setScale(0, RoundingMode.HALF_UP).longValue());
 
                 // Create a Unit with FX amount, original amount, and FX rate
-                unit = new Unit(unitType, fxAmount, amount, fxRateToBase);
+                unit = new Unit(unitType, fxAmount, amount, exchangeRate);
             }
 
             return unit;
@@ -743,28 +763,33 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Sets the specified monetary amount on the given transaction, with an option to include in the portfolio transaction.
+         * Sets the specified monetary amount on the given transaction, with an
+         * option to include in the portfolio transaction.
          *
-         * @param element      The XML element containing transaction details.
-         * @param transaction  The transaction object to update with the amount.
-         * @param amount       The monetary amount to set on the transaction.
-         * @param addUnit      A flag indicating whether to add a Unit to the transaction.
+         * @param element
+         *            The XML element containing transaction details.
+         * @param transaction
+         *            The transaction object to update with the amount.
+         * @param amount
+         *            The monetary amount to set on the transaction.
+         * @param addUnit
+         *            A flag indicating whether to add a Unit to the
+         *            transaction.
          */
         private void setAmount(Element element, Transaction transaction, Money amount, boolean addUnit)
         {
             if (accountCurrency != null && !accountCurrency.equals(amount.getCurrencyCode()))
             {
-                BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
-                                : asExchangeRate(element.getAttribute("fxRateToBase"));
+                BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(), accountCurrency);
 
-                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount())
-                                .multiply(fxRateToBase).setScale(0, RoundingMode.HALF_UP).longValue());
+                Money fxAmount = Money.of(accountCurrency, BigDecimal.valueOf(amount.getAmount()).multiply(exchangeRate)
+                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
                 transaction.setMonetaryAmount(fxAmount);
 
                 if (addUnit)
                 {
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, amount, fxRateToBase);
+                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, fxAmount, amount, exchangeRate);
                     transaction.addUnit(grossValue);
                 }
             }
@@ -772,28 +797,27 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 transaction.setMonetaryAmount(amount);
 
-                if (addUnit && transaction.getSecurity() != null && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
+                if (addUnit && transaction.getSecurity() != null
+                                && !transaction.getSecurity().getCurrencyCode().equals(amount.getCurrencyCode()))
                 {
                     // @formatter:off
                     // If the transaction currency is different from the security currency (as stored in PP)
                     // we need to supply the gross value in the security currency.
-                    //
-                    // We assume that the security currency is the same that IB
-                    // thinks of as base currency for this transaction (fxRateToBase).
                     // @formatter:on
-                    BigDecimal fxRateToBase = element.getAttribute("fxRateToBase").isEmpty() ? BigDecimal.ONE
-                                    : asExchangeRate(element.getAttribute("fxRateToBase"));
+                    BigDecimal exchangeRate = getExchangeRate(element, amount.getCurrencyCode(),
+                                    transaction.getSecurity().getCurrencyCode());
 
-                    BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+                    if (exchangeRate != null)
+                    {
+                        BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                    Money fxAmount = Money.of(transaction.getSecurity().getCurrencyCode(),
-                                    BigDecimal.valueOf(amount.getAmount()).divide(inverseRate, Values.MC)
-                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                        Money fxAmount = Money.of(transaction.getSecurity().getCurrencyCode(),
+                                        BigDecimal.valueOf(amount.getAmount()).divide(inverseRate, Values.MC)
+                                                        .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                    transaction.setMonetaryAmount(amount);
-
-                    Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
-                    transaction.addUnit(grossValue);
+                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                        transaction.addUnit(grossValue);
+                    }
                 }
             }
         }
@@ -884,6 +908,66 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
+         * Gets the exchange rate to go from fromCurrency to toCurrency.
+         *
+         * @param element
+         *            The XML element containing transaction details
+         * @param fromCurrency
+         *            The currency to convert from
+         * @param toCurrency
+         *            The currency to convert to
+         * @return The exchange rate, or null if it cannot be determined
+         */
+        private BigDecimal getExchangeRate(Element element, String fromCurrency, String toCurrency)
+        {
+            if (fromCurrency.equals(toCurrency))
+                return BigDecimal.ONE;
+
+            LocalDateTime dateTime = extractDate(element);
+            if (dateTime == null)
+                return null;
+
+            String dateStr = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+            // Attempt a direct lookup in the rates table.
+            Pair<String, String> key = new Pair<>(dateStr, fromCurrency + "-" + toCurrency);
+            BigDecimal rate = conversionRates.get(key);
+            if (rate != null)
+                return rate;
+
+            key = new Pair<>(dateStr, toCurrency + "-" + fromCurrency);
+            rate = conversionRates.get(key);
+            if (rate != null)
+                return ExchangeRate.inverse(rate);
+
+            // Fall back to using accountCurrency as an intermediate.
+            if (accountCurrency != null)
+            {
+                if (toCurrency.equals(accountCurrency) && element.hasAttribute("fxRateToBase"))
+                {
+                    // Avoid cross rate if possible by using fxRateToBase from
+                    // the
+                    // transaction element itself.
+                    return asExchangeRate(element.getAttribute("fxRateToBase"));
+                }
+
+                // Attempt to calculate cross rate via accountCurrency. No use
+                // in trying a different intermediate currency, it seems like
+                // toCurrency is only ever the account's base.
+                Pair<String, String> fromKey = new Pair<>(dateStr, fromCurrency + "-" + accountCurrency);
+                Pair<String, String> toKey = new Pair<>(dateStr, toCurrency + "-" + accountCurrency);
+
+                BigDecimal fromRate = conversionRates.get(fromKey);
+                BigDecimal toRate = conversionRates.get(toKey);
+
+                if (fromRate != null && toRate != null)
+                    return fromRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
+            }
+
+            return null;
+        }
+
+        /**
          * @formatter:off
          * Imports model objects from the document based on the specified type using the provided handling function.
          *
@@ -931,6 +1015,9 @@ public class IBFlexStatementExtractor implements Extractor
             if (document == null)
                 return;
 
+            // Process conversion rates first
+            importModelObjects("ConversionRate", buildConversionRates);
+
             // Import AccountInformation
             importModelObjects("AccountInformation", buildAccountInformation);
 
@@ -949,7 +1036,7 @@ public class IBFlexStatementExtractor implements Extractor
             // Process all SalesTaxes
             importModelObjects("SalesTax", buildSalesTaxTransaction);
 
-            // TODO: Process all FxTransactions and ConversionRates
+            // TODO: Process all FxTransactions
         }
 
         public void addError(Exception e)
