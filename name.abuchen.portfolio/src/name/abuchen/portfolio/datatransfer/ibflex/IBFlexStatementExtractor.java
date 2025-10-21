@@ -10,6 +10,10 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -83,6 +88,29 @@ public class IBFlexStatementExtractor implements Extractor
 
     // Map to store exchange mappings from Interactive Broker to Yahoo
     private Map<String, String> exchanges = new HashMap<>();
+
+    // dateTime attribute formats by tag:
+    //
+    // | Tag             | Format Pattern(s)                       |
+    // |-----------------|-----------------------------------------|
+    // | Trade           | YYYYMMDD;HHMMSS                         |
+    // | FxTransaction   | YYYYMMDD;HHMMSS                         |
+    // | CorporateAction | YYYY-MM-DD, HH:MM:SS OR YYYYMMDD;HHMMSS |
+    // | CashTransaction | YYYY-MM-DD OR YYYYMMDD[;HHMMSS]         |
+    private static final DateTimeFormatter[] DATE_TIME_FORMATTER = {
+                    createFormatter("yyyyMMdd[;HHmmss]"), //
+                    createFormatter("yyyy-MM-dd[, HH:mm:ss]"), //
+    };
+
+    private static DateTimeFormatter createFormatter(String pattern)
+    {
+        return new DateTimeFormatterBuilder()
+                        .appendPattern(pattern)
+                        .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                        .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                        .toFormatter(Locale.US);
+    }
 
     /**
      * Constructs an IBFlexStatementExtractor with the given client.
@@ -222,19 +250,7 @@ public class IBFlexStatementExtractor implements Extractor
         private Consumer<Element> buildAccountTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
 
-            // @formatter:off
-            // New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut
-            // Date from string [YYYYMMDD]
-            //
-            // Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
-            // Changed from dateTime to reportDate + Check for old Data-Formats,
-            // Quapla 14.2.20
-            // @formatter:on
-            String dateTime = !element.getAttribute("reportDate").isEmpty() ? element.getAttribute("reportDate")
-                            : element.getAttribute("dateTime");
-
-            dateTime = dateTime.length() == 15 ? dateTime.substring(0, 8) : dateTime;
-            accountTransaction.setDateTime(ExtractorUtils.asDate(dateTime));
+            accountTransaction.setDateTime(extractDate(element));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
@@ -787,36 +803,58 @@ public class IBFlexStatementExtractor implements Extractor
          * If possible, set "tradeDate" with "tradeTime" as the correct trading
          * date of the transaction.
          * <p/>
-         * If "tradeTime" is not present, then check if "tradeDate" and
-         * "dateTime" are the same date, then set "dateTime" as the trading day.
-         * 
+         * If "tradeDate" is not present, use "dateTime" if possible.
+         *
          * @return the extracted date or null if not available
          */
         private LocalDateTime extractDate(Element element)
         {
-            if (!element.hasAttribute("tradeDate"))
-                return null;
+            String dateTime = "";
 
-            if (element.hasAttribute("tradeTime"))
+            // Prefer tradeDate over dateTime for <Trade> tags.
+            if (element.hasAttribute("tradeDate"))
             {
-                return ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime"));
-            }
-            else if (element.hasAttribute("dateTime"))
-            {
-                if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
+                dateTime = element.getAttribute("tradeDate");
+
+                if (element.hasAttribute("tradeTime"))
                 {
-                    return ExtractorUtils.asDate(element.getAttribute("tradeDate"),
-                                    element.getAttribute("dateTime").substring(9, 15));
+                    dateTime += ";" + element.getAttribute("tradeTime");
                 }
-                else
+                else if (element.hasAttribute("dateTime")
+                                && dateTime.equals(element.getAttribute("dateTime").substring(0, 8)))
                 {
-                    return ExtractorUtils.asDate(element.getAttribute("tradeDate"));
+                    dateTime = element.getAttribute("dateTime");
                 }
             }
-            else
+
+            // Prefer reportDate over dateTime for <CashTransaction> tags.
+            if (dateTime.isEmpty() && element.hasAttribute("reportDate"))
             {
-                return ExtractorUtils.asDate(element.getAttribute("tradeDate"));
+                dateTime = element.getAttribute("reportDate");
             }
+
+            // All other tags.
+            if (dateTime.isEmpty() && element.hasAttribute("dateTime"))
+            {
+                dateTime = element.getAttribute("dateTime");
+            }
+
+            if (!dateTime.isEmpty())
+            {
+                for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
+                {
+                    try
+                    {
+                        return LocalDateTime.parse(dateTime, formatter);
+                    }
+                    catch (DateTimeParseException ignore)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            return null;
         }
         
         /**
