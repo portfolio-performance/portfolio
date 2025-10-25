@@ -18,7 +18,7 @@ import name.abuchen.portfolio.Messages;
 
     public TelAvivStockExchangeTradeCalendar()
     {
-        super("tlv", Messages.LabelTradeCalendarTLV, EnumSet.noneOf(DayOfWeek.class)); //$NON-NLS-1$
+        super("tlv", Messages.LabelTradeCalendarTASE, EnumSet.noneOf(DayOfWeek.class)); //$NON-NLS-1$
     }
 
     @Override

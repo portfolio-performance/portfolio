@@ -17,6 +17,7 @@ import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -24,6 +25,7 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
@@ -268,6 +270,28 @@ public class WebAccess
         executeWith(uri -> {
             HttpPost request = new HttpPost(uri);
             StringEntity userEntity = new StringEntity(body);
+            request.setEntity(userEntity);
+            return request;
+        });
+    }
+
+    public String postReturn(String body) throws IOException
+    {
+        return executeWith(uri -> {
+            HttpPost request = new HttpPost(uri);
+            StringEntity userEntity = new StringEntity(body);
+            request.setEntity(userEntity);
+            return request;
+        });
+
+    }
+
+    public String postUrlEncoding(List<NameValuePair> body) throws Exception
+    {
+        return executeWith(uri -> {
+            HttpPost request = new HttpPost(uri);
+            UrlEncodedFormEntity userEntity = new UrlEncodedFormEntity(body);
+            // httpPost.setEntity(new UrlEncodedFormEntity(formParams, ));
             request.setEntity(userEntity);
             return request;
         });
