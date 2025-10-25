@@ -30,6 +30,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -5417,6 +5418,35 @@ public class BaaderBankPDFExtractorTest
                         "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
                         "Periodenauszug15.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+
+    @Test
+    public void testPeriodenauszug16()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug16.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-06-12"), hasAmount("EUR", 1384.72), //
+                        hasSource("Periodenauszug16.txt"), hasNote("Ueberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-06-17"), hasAmount("EUR", 2000.00), //
+                        hasSource("Periodenauszug16.txt"), hasNote("Ueberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-06-30"), hasAmount("EUR", 55.40), //
+                        hasSource("Periodenauszug16.txt"), hasNote("Rechnungsabschluss"))));
     }
 
     @Test
