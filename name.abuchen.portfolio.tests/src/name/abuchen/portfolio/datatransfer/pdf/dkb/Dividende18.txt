@@ -1,0 +1,54 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 11111111111
+Kundennummer 222222222
+VVVVVV NNNN und WWWWWWW NNNN
+Abrechnungsnr. 77349248800
+Frau u.Herrn Datum 30.09.2025
+VVVVVV NNNN
+und WWWWWWW NNNN
+Strasse_am_Wald
+10195 Traderort
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+USD 18.000,00 UNITED STATES OF AMERICA US91282CFM82 (A3K92B)
+DL-BONDS 2022(27) S.AD-2027
+Zahlbarkeitstag 30.09.2025 Zinssatz p. a. 4,125 %
+Bestandsstichtag 29.09.2025 Laufzeit Zinsschein 183 Tag(e)
+Kupon per 30.09.2025 Herkunftsland USA
+Zinstermin Monat(e) März/30. September
+Devisenkurs EUR / USD 1,1800
+Devisenkursdatum 30.09.2025
+Zinsertrag 371,25 USD 314,62+ EUR
+Umrechnung in EUR 314,62 EUR
+Kapitalertragsteuerpflichtiger Ertrag 314,62 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 314,62 EUR
+Kapitalertragsteuer 25 % auf 314,62 EUR 78,66- EUR
+Solidaritätszuschlag 5,5 % auf 78,66 EUR 4,32- EUR
+Ausmachender Betrag 231,64+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 01.10.2025 zu Gunsten des Kontos 3333333333 (IBAN DE80 4444 0000 5555
+9308 66), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.10010102.0038965ER02
+
+Seite 2
+Depotnummer 11111111111
+Kundennummer 222222222
+Abrechnungsnr. 77349248800
+Datum 30.09.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 6.312,20 0,00 0,00 0,00 12.461,53
+Ertrag 0,00 0,00 0,00 0,00 314,62
+Nachher 6.312,20 0,00 0,00 0,00 12.776,15
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.10010102.0038966ER02

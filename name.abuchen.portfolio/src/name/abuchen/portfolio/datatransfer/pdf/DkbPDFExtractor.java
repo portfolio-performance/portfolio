@@ -423,10 +423,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Devisenkurs EUR / CHF 1,1959
                         // Ausschüttung 51,00 CHF 42,65+ EUR
+                        //
+                        // Devisenkurs EUR / USD 1,1800
+                        // Zinsertrag 371,25 USD 314,62+ EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
-                        .match("^(Aussch.ttung|Dividendengutschrift|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}") //
+                        .match("^(Aussch.ttung|Dividendengutschrift|Kurswert|Zinsertrag) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
