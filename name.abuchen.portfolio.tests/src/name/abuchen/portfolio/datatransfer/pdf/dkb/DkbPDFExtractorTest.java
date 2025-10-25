@@ -2279,7 +2279,7 @@ public class DkbPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-19T00:00"), hasShares(497), //
+                        hasDate("2023-12-19T00:00"), hasShares(497.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungsnr. 85345940130 | Monatliche Dividende"), //
                         hasAmount("EUR", 141.90), hasGrossValue("EUR", 192.24), //
@@ -2313,7 +2313,7 @@ public class DkbPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-19T00:00"), hasShares(497), //
+                        hasDate("2023-12-19T00:00"), hasShares(497.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungsnr. 85345940130 | Monatliche Dividende"), //
                         hasAmount("EUR", 141.90), hasGrossValue("EUR", 192.24), //
@@ -2325,6 +2325,72 @@ public class DkbPDFExtractorTest
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testDividende18()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US91282CFM82"), hasWkn("A3K92B"), hasTicker(null), //
+                        hasName("UNITED STATES OF AMERICA DL-BONDS 2022(27) S.AD-2027"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-10-01T00:00"), hasShares(180.00), //
+                        hasSource("Dividende18.txt"), //
+                        hasNote("Abrechnungsnr. 77349248800"), //
+                        hasAmount("EUR", 231.64), hasGrossValue("EUR", 314.62), //
+                        hasForexGrossValue("USD", 371.25), //
+                        hasTaxes("EUR", 78.66 + 4.32), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende18WithSecurityInEUR()
+    {
+        var security = new Security("UNITED STATES OF AMERICA DL-BONDS 2022(27) S.AD-2027", "EUR");
+        security.setIsin("US91282CFM82");
+        security.setWkn("A3K92B");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new DkbPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-10-01T00:00"), hasShares(180.00), //
+                        hasSource("Dividende18.txt"), //
+                        hasNote("Abrechnungsnr. 77349248800"), //
+                        hasAmount("EUR", 231.64), hasGrossValue("EUR", 314.62), //
+                        hasTaxes("EUR", 78.66 + 4.32), hasFees("EUR", 0.00))));
     }
 
     @Test
