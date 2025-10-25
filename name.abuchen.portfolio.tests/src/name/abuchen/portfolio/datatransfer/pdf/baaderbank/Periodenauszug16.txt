@@ -1,0 +1,46 @@
+﻿PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/1
+Berlin
+Abc Defghi 10.07.2025
+Zappelgasse 123
+Abc Defghi
+12345 Hamburg PF 04
+Stamm-Nr.: 1234567    Portfolio: 4
+Konto-Nr.: 1234567890
+IBAN: DE54 7003 3100 1234 5678 90
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: 123456789
+Referenz-Nr.: 123456789
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 123456
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 30.05.2025 11.384,72
+12.06.2025 Ueberweisung 12.06.2025 1.384,72 -
+14311070
+Vorgangs-Nr.: 14311070
+17.06.2025 Ueberweisung 17.06.2025 2.000,00 -
+14445795
+Vorgangs-Nr.: 14445795
+30.06.2025 Rechnungsabschluss 30.06.2025 55,40
+siehe Beleg
+Vorgangs-Nr.: 52025009
+Kontostand in EUR am 30.06.2025 8.055,40
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender), Martin Zoller • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK801-047.041
