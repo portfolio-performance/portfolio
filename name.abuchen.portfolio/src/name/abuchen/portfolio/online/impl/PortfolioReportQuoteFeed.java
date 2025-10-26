@@ -39,7 +39,18 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
 
     public static final String ID = "PORTFOLIO-REPORT"; //$NON-NLS-1$
 
+    /** The date on which Portfolio Report is not available anymore */
+    public static final LocalDate CUTOFF_DATE = LocalDate.of(2025, 11, 20);
+
     private final PageCache<ResponseData> cache = new PageCache<>();
+
+    private void checkCutoffDate() throws FeedConfigurationException
+    {
+        if (!LocalDate.now().isBefore(CUTOFF_DATE))
+        {
+            throw new FeedConfigurationException("Portfolio Report (portfolio-report.net) is no longer available"); //$NON-NLS-1$
+        }
+    }
 
     @Override
     public String getId()
@@ -62,6 +73,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
+        checkCutoffDate();
         List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
@@ -69,6 +81,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
+        checkCutoffDate();
         LocalDate start = null;
 
         if (!security.getPrices().isEmpty())
@@ -119,6 +132,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
+        checkCutoffDate();
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
@@ -140,7 +154,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
             WebAccess webaccess = new WebAccess("api.portfolio-report.net", //
                             "/securities/uuid/" + security.getOnlineId() + "/prices/" + security.getCurrencyCode())
                                             .addUserAgent("PortfolioPerformance/"
-                                                            + FrameworkUtil.getBundle(PortfolioReportNet.class)
+                                                            + FrameworkUtil.getBundle(PortfolioReportQuoteFeed.class)
                                                                             .getVersion().toString())
                                             .addParameter("from", start.toString());
 
