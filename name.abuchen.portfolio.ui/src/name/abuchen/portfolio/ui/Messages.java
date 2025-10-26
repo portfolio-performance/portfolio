@@ -720,7 +720,6 @@ public class Messages extends NLS
     public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
-    public static String LabelLinkedToPortfolioReport;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownChart;
     public static String LabelMaxDrawdownDuration;
