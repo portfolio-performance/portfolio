@@ -721,7 +721,6 @@ public class Messages extends NLS
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelLinkedToPortfolioReport;
-    public static String LabelLinkToPortfolioReportNet;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownChart;
     public static String LabelMaxDrawdownDuration;
@@ -1033,7 +1032,6 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
     public static String MsgErrorMissingQuandlCode;
-    public static String MsgErrorNoInvestmentVehicleFoundAtURL;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorPortfolioNotExist;

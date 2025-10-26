@@ -83,7 +83,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
-import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -365,7 +364,6 @@ public class StatementOfAssetsViewer
         ColumnEditingSupport.prepare(assets);
         CopyPasteSupport.enableFor(assets);
 
-        ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
 
         assets.addSelectionChangedListener(event -> {
