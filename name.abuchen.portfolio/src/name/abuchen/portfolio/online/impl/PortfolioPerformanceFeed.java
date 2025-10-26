@@ -322,7 +322,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
 
             var to = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond();
 
-            var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
+            var version = FrameworkUtil.getBundle(PortfolioPerformanceFeed.class).getVersion().toString();
 
             @SuppressWarnings("nls")
             WebAccess webaccess = new WebAccess(ENDPOINT, isSample ? PATH_PREFIX_SAMPLE + PATH_HISTORIC : PATH_HISTORIC) //

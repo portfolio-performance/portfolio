@@ -55,7 +55,6 @@ import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
 import name.abuchen.portfolio.ui.dialogs.PortfolioReportNotificationPopup;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
-import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PeriodicUpdatePricesJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.PriceUpdateConfig;
@@ -602,7 +601,6 @@ public class ClientInput
             job.schedule(job.getInterval().toMillis());
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(5000);
             new UpdateDividendsJob(getClient(), predicate).schedule(7000);
         }
     }

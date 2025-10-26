@@ -18,7 +18,6 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.selection.SelectionService;
@@ -98,7 +97,6 @@ public class UpdateQuotesHandler
             else
             {
                 new UpdatePricesJob(client, EnumSet.allOf(UpdatePricesJob.Target.class)).schedule();
-                new SyncOnlineSecuritiesJob(client).schedule(2000);
                 new UpdateDividendsJob(client).schedule(5000);
             }
         });
