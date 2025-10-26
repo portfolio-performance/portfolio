@@ -19,11 +19,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -50,8 +48,6 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
-import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -60,7 +56,6 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.DomainElement;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
@@ -151,12 +146,6 @@ public class NewDomainElementHandler
                     SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
                     return String.format("%s (%s)", item.getSymbol(), item.getName()); //$NON-NLS-1$
                 }
-
-                @Override
-                public Color getBackground(Object element)
-                {
-                    return element instanceof PortfolioReportNet.OnlineItem ? Colors.theme().warningBackground() : null;
-                }
             };
 
             ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
@@ -164,19 +153,8 @@ public class NewDomainElementHandler
             dialog.setTitle(Messages.SecurityMenuNewCryptocurrency);
             dialog.setMessage(Messages.SecurityMenuNewCryptocurrencyMessage);
             dialog.setMultiSelection(false);
-            dialog.setViewerComparator(new ViewerComparator()
-            {
-                @Override
-                public int category(Object element)
-                {
-                    return element instanceof PortfolioReportNet.OnlineItem ? 0 : 1;
-                }
-            });
 
             var allCryptos = new ArrayList<ResultItem>();
-
-            // add Portfolio Report cryptos
-            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class).getCoins());
 
             // add Coingecko unless the crypto already exists. Because the
             // symbol is not unique, we compare symbol and name

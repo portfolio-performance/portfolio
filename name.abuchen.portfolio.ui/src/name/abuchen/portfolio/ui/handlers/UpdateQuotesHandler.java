@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.selection.SelectionService;
@@ -72,7 +71,6 @@ public class UpdateQuotesHandler
             else
             {
                 new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
-                new SyncOnlineSecuritiesJob(client).schedule(2000);
                 new UpdateDividendsJob(client).schedule(5000);
             }
         });

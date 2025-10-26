@@ -53,7 +53,6 @@ import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
-import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.preferences.BackupMode;
@@ -597,7 +596,6 @@ public class ClientInput
             job.schedule(sixHours);
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(5000);
             new UpdateDividendsJob(getClient(), onlyActive).schedule(7000);
         }
     }

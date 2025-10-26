@@ -31,7 +31,7 @@ public class MyDividends24Uploader
         String response = new WebAccess("dividend-jsa-pp-bnp8.vercel.app", "/api/import/retrieve-depots") //$NON-NLS-1$//$NON-NLS-2$
                         .addHeader("Authorization", "Bearer: " + apiKey) //$NON-NLS-1$ //$NON-NLS-2$
                         .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
+                                        + FrameworkUtil.getBundle(MyDividends24Uploader.class).getVersion().toString())
                         .get();
 
         // Parses the response from the API endpoint into a JSONObject

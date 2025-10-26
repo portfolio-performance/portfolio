@@ -47,7 +47,7 @@ public class DivvyDiaryUploader
         String response = new WebAccess("api.divvydiary.com", "/session") //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("X-API-Key", apiKey) //$NON-NLS-1$
                         .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
+                                        + FrameworkUtil.getBundle(DivvyDiaryUploader.class).getVersion().toString())
                         .get();
 
         JSONObject session = (JSONObject) JSONValue.parse(response);
