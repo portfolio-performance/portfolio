@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -53,6 +54,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
+import name.abuchen.portfolio.online.impl.ManualQuoteFeed;
 import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceSearchProvider;
@@ -114,10 +116,21 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         }
     }
 
+    private static class DeactivateAction extends SimpleAction
+    {
+        public DeactivateAction(SecurityItem item)
+        {
+            super(Factory.getQuoteFeed(ManualQuoteFeed.class).getName(), a -> {
+                item.security.setFeed(QuoteFeed.MANUAL);
+                item.security.setLatestFeed(null);
+            });
+        }
+    }
+
     private static final class SecurityItem implements Adaptable
     {
         final Security security;
-        final List<Action> actions = new ArrayList<>();
+        final List<Action> actions = new CopyOnWriteArrayList<>();
 
         Action selectedAction;
 
@@ -159,6 +172,11 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 try
                 {
                     monitor.subTask(item.security.getName());
+
+                    // Add deactivate action for all instruments, including
+                    // exchange rates. This allows users to disable automatic
+                    // updates for any instrument.
+                    item.actions.add(new DeactivateAction(item));
 
                     // skip exchange rates and indices and well-known provider
                     var wellKnown = Set.of(EurostatHICPQuoteFeed.ID, CoinGeckoQuoteFeed.ID);
@@ -543,6 +561,9 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
 
                 for (Action action : item.actions)
                 {
+                    if (action instanceof LabelOnly)
+                        menuManager.add(new Separator());
+
                     SimpleAction menuItem = new SimpleAction(action.getText(), a -> {
                         item.selectedAction = action;
                         tableViewer.refresh(item);
@@ -560,6 +581,21 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                     tableViewer.refresh();
                 });
                 menuManager.add(noop);
+
+                // Find and select the DeactivateAction for this security
+                // The action will be executed when the dialog is confirmed
+                var deactivate = new SimpleAction(Factory.getQuoteFeed(ManualQuoteFeed.class).getName(), a -> {
+                    for (Object e : selection)
+                    {
+                        var securityItem = (SecurityItem) e;
+                        securityItem.selectedAction = securityItem.actions.stream()
+                                        .filter(DeactivateAction.class::isInstance).findFirst().orElse(null);
+                    }
+                    tableViewer.refresh();
+                });
+                menuManager.add(deactivate);
+
+                menuManager.add(new Separator());
 
                 addAvailableExchanges(tableViewer, menuManager, selection);
             }
