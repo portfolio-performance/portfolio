@@ -58,7 +58,7 @@ Optionally, install language packs for Eclipse:
  * By default, Eclipse uses the host operating system language (locale).
    To force the use of another language, use the **-nl** parameter:
    ```
-   eclipse.exe -nl de
+   eclipse -nl de
    ```
 
 
@@ -115,7 +115,7 @@ For further discussion, check out the thread in the [(German) Forum](https://for
 
 ### Source code
 
-To contribute to Portfolio Performacne, you create a fork, clone the repository, make and push changes to your repository, and then create a pull request.
+To contribute to Portfolio Performance, create a fork, clone the repository, make and push changes to your repository, and then create a pull request.
 
 * [Create your own fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
 * Within Eclipse, [clone your repository](https://www.vogella.com/tutorials/EclipseGit/article.html#exercise-clone-an-existing-repository). In the last step, choose to *import all existing Eclipse projects*.
@@ -202,7 +202,7 @@ For naming externalized labels:
 
 Images and logos used must be subject to [Creative Commons CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode).
 
-* We only use icon from [iconmonstr.com](https://iconmonstr.com).
+* We only use icons from [iconmonstr.com](https://iconmonstr.com).
 * If a color change icon is used, the passive state is gray and the active state is orange.
 * Please add all used images, logos and icons in the [Images](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java) file.
 
@@ -487,7 +487,7 @@ Please take a look at the formatting and structure in the other PDF importers! E
 Via the application menu, users can create a test case file. The test file is the extracted text from the PDF documents. Users then anonymize the text by replacing personal idenfiable information and account numbers with alternative text.
 
 * The test files should not be modified beyond the anonymization
-* All source code (including the test files) are stored in UTF-8 encoding
+* All source code (including the test files) is stored in UTF-8 encoding
 * Follow the naming convention for test files (type in the local language, two digit counter):
 	* `Buy01.txt, Sell01.txt` --> Purchase and sale (single settlements) (e.g. SecurityBuy01.txt or SecuritySale01.txt)
 	* `Dividend01.txt` --> Dividends (single statements)
