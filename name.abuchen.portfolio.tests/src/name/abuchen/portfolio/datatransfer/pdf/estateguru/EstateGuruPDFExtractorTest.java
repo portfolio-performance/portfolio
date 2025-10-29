@@ -9,6 +9,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,7 +27,6 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.EstateGuruPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class EstateGuruPDFExtractorTest
@@ -43,8 +44,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-07-25"), hasAmount("EUR", 300.00), //
@@ -72,8 +75,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2024-06-21"), hasAmount("EUR", 0.42), //
@@ -105,8 +110,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2024-09-28"), hasAmount("EUR", 0.42), //
@@ -154,8 +161,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(17L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(17));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-28"), hasAmount("EUR", 0.46), //
@@ -243,8 +252,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-10-05"), hasAmount("EUR", 0.24), //
@@ -272,8 +283,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(18L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(18));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-28"), hasAmount("EUR", 0.46), //
@@ -357,8 +370,10 @@ public class EstateGuruPDFExtractorTest
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(859L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(859));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-12-11"), hasAmount("EUR", 51.00), //

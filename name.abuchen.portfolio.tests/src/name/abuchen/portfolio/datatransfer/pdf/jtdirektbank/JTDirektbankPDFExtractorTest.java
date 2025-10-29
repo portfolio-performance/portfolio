@@ -10,6 +10,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestChar
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -23,12 +25,10 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.JTDirektbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class JTDirektbankPDFExtractorTest
@@ -36,20 +36,20 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-03-31"), hasAmount("EUR", 3000.00), //
@@ -59,19 +59,20 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2023-06-01"), hasAmount("EUR", 400.00), //
@@ -109,19 +110,20 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-12-18"), hasAmount("EUR", 900.00), //
@@ -135,25 +137,26 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(7L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorOrderCancellationUnsupported, //
                         interestCharge(hasDate("2023-05-03"), hasAmount("EUR", 13.44), //
-                        hasSource("Kontoauszug04.txt"), hasNote(null)))));
+                                        hasSource("Kontoauszug04.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-05-04"), hasAmount("EUR", 15200.00), //
@@ -183,19 +186,20 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(9));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-01-02"), hasAmount("EUR", 5000.00), //
@@ -237,18 +241,20 @@ public class JTDirektbankPDFExtractorTest
     @Test
     public void testKontoauszug06()
     {
-        JTDirektbankPDFExtractor extractor = new JTDirektbankPDFExtractor(new Client());
+        var extractor = new JTDirektbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(8L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(8));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-03-07"), hasAmount("EUR", 1650.00), //

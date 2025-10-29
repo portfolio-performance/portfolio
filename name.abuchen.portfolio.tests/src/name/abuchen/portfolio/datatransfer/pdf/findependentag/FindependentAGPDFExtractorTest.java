@@ -23,6 +23,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -35,7 +37,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -52,16 +53,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -83,16 +86,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -115,22 +120,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf02WithSecurityInCHF()
     {
-        Security security = new Security("iShares NASDAQ 100 ETF", "CHF");
+        var security = new Security("iShares NASDAQ 100 ETF", "CHF");
         security.setIsin("IE00B53SZB19");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -142,8 +149,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 800.19), hasGrossValue("CHF", 798.94), //
                         hasTaxes("CHF", 1.20), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -151,16 +158,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -183,22 +192,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf03WithSecurityInCHF()
     {
-        Security security = new Security("iShares MSCI USA ESG Screened ETF", "CHF");
+        var security = new Security("iShares MSCI USA ESG Screened ETF", "CHF");
         security.setIsin("IE00BFNM3G45");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -210,8 +221,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 912.74), hasGrossValue("CHF", 911.32), //
                         hasTaxes("CHF", 1.37), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -219,16 +230,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -250,16 +263,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -282,22 +297,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf05WithSecurityInCHF()
     {
-        Security security = new Security("iShares MSCI Europe ESG Screened ETF", "CHF");
+        var security = new Security("iShares MSCI Europe ESG Screened ETF", "CHF");
         security.setIsin("IE00BFNM3D14");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -309,8 +326,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 378.55), hasGrossValue("CHF", 377.93), //
                         hasTaxes("CHF", 0.57), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -318,16 +335,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -350,22 +369,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf06WithSecurityInCHF()
     {
-        Security security = new Security("iShares MSCI Japan ESG Screened ETF", "CHF");
+        var security = new Security("iShares MSCI Japan ESG Screened ETF", "CHF");
         security.setIsin("IE00BFNM3L97");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -377,8 +398,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 134.00), hasGrossValue("CHF", 133.75), //
                         hasTaxes("CHF", 0.20), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -386,16 +407,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -418,22 +441,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf07WithSecurityInCHF()
     {
-        Security security = new Security("iShares MSCI Emerging Markets ESG Screened ETF", "CHF");
+        var security = new Security("iShares MSCI Emerging Markets ESG Screened ETF", "CHF");
         security.setIsin("IE00BFNM3P36");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -445,8 +470,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 317.42), hasGrossValue("CHF", 316.89), //
                         hasTaxes("CHF", 0.48), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -454,16 +479,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf08()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -485,16 +512,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf09()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -516,16 +545,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf10()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -548,22 +579,24 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf10WithSecurityInCHF()
     {
-        Security security = new Security("iShares J.P. Morgan ESG USD EM Bond ETF", "CHF");
+        var security = new Security("iShares J.P. Morgan ESG USD EM Bond ETF", "CHF");
         security.setIsin("IE00BF553838");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(client);
+        var extractor = new FindependentAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -575,8 +608,8 @@ public class FindependentAGPDFExtractorTest
                         hasAmount("CHF", 265.27), hasGrossValue("CHF", 264.82), //
                         hasTaxes("CHF", 0.40), hasFees("CHF", 0.05), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -584,16 +617,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierKauf11()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -615,16 +650,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -646,16 +683,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -677,16 +716,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -708,17 +749,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testEinzahlung01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -730,17 +772,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testEinzahlung02()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -752,17 +795,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testEinzahlung03()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlung03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -774,17 +818,18 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testDepotgebuehren01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehren01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -796,39 +841,42 @@ public class FindependentAGPDFExtractorTest
     @Test
     public void testVerwaltungsgebuehren01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwaltungsgebuehren01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwaltungsgebuehren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-10-10"), hasAmount("CHF", 2.45), //
-                        hasSource("Verwaltungsgebuehren01.txt"), hasNote("Verwaltungsgebühren 01.10.2023 - 31.12.2023"))));
+                        hasSource("Verwaltungsgebuehren01.txt"),
+                        hasNote("Verwaltungsgebühren 01.10.2023 - 31.12.2023"))));
     }
 
     @Test
     public void testGebuehrenerstattung01()
     {
-        FindependentAGPDFExtractor extractor = new FindependentAGPDFExtractor(new Client());
+        var extractor = new FindependentAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehrenerstattung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehrenerstattung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 

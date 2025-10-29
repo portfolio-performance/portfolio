@@ -16,6 +16,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -42,17 +44,19 @@ public class KFintechPDFExtractorTest
     @Test
     public void testConsolidatedAccountStatement01()
     {
-        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+        var extractor = new KFintechPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(30L));
         assertThat(countBuySell(results), is(562L));
         assertThat(countAccountTransactions(results), is(94L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(686));
         new AssertImportActions().check(results, "INR");
 
@@ -307,17 +311,19 @@ public class KFintechPDFExtractorTest
     @Test
     public void testConsolidatedAccountStatement02()
     {
-        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+        var extractor = new KFintechPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
         assertThat(countBuySell(results), is(476L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(487));
         new AssertImportActions().check(results, "INR");
 
@@ -368,17 +374,19 @@ public class KFintechPDFExtractorTest
     @Test
     public void testConsolidatedAccountStatement03()
     {
-        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+        var extractor = new KFintechPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement03.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(10L));
         assertThat(countBuySell(results), is(764L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(774));
         new AssertImportActions().check(results, "INR");
 
