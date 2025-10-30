@@ -22,6 +22,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -34,7 +36,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -46,7 +47,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class LiechtensteinischeLandesbankAGPDFExtractorTest
@@ -54,16 +54,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -85,16 +87,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -116,16 +120,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -147,16 +153,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -179,23 +187,25 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf04WithSecurityInCHF()
     {
-        Security security = new Security("Shs Acciona SA Bearer", "CHF");
+        var security = new Security("Shs Acciona SA Bearer", "CHF");
         security.setIsin("ES0125220311");
         security.setWkn("978954");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -207,8 +217,8 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                         hasAmount("CHF", 46.90), hasGrossValue("CHF", 46.73), //
                         hasTaxes("CHF", 0.17), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -216,16 +226,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -248,23 +260,25 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01WithSecurityInCHF()
     {
-        Security security = new Security("Ant CANDRIAM SUSTAINABLE SICAV - Bond Euro Cap -I-", "CHF");
+        var security = new Security("Ant CANDRIAM SUSTAINABLE SICAV - Bond Euro Cap -I-", "CHF");
         security.setIsin("LU1313769793");
         security.setWkn("30270619");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -276,8 +290,8 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                         hasAmount("CHF", 55.10), hasGrossValue("CHF", 55.10), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -285,16 +299,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -316,16 +332,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -348,23 +366,25 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03WithSecurityInCHF()
     {
-        Security security = new Security("Ant CANDRIAM SUSTAINABLE SICAV - Bond Euro Cap -I-", "CHF");
+        var security = new Security("Ant CANDRIAM SUSTAINABLE SICAV - Bond Euro Cap -I-", "CHF");
         security.setIsin("LU1313769793");
         security.setWkn("30270619");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -376,8 +396,8 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                         hasAmount("CHF", 55.10), hasGrossValue("CHF", 55.10), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -385,16 +405,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -417,23 +439,25 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInCHF()
     {
-        Security security = new Security("Reg Shs Healthpeak Pptys Inc", "CHF");
+        var security = new Security("Reg Shs Healthpeak Pptys Inc", "CHF");
         security.setIsin("US42250P1030");
         security.setWkn("50880191");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -445,10 +469,10 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                         hasAmount("CHF", 5.65), hasGrossValue("CHF", 6.65), //
                         hasTaxes("CHF", (1.13 * 0.882477)), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -456,16 +480,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
@@ -488,23 +514,25 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testDividende02WithSecurityInCHF()
     {
-        Security security = new Security("Reg Shs Pearson PLC", "CHF");
+        var security = new Security("Reg Shs Pearson PLC", "CHF");
         security.setIsin("GB0006776081");
         security.setWkn("400018");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
@@ -516,10 +544,10 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
                         hasAmount("CHF", 1.39), hasGrossValue("CHF", 1.39), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("CHF");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -527,18 +555,20 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testKontoauzug01()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 456.60), //
@@ -548,16 +578,18 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     @Test
     public void testDepotauszug01()
     {
-        LiechtensteinischeLandesbankAGPDFExtractor extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
