@@ -70,7 +70,7 @@ Optionally, install via the Eclipse Marketplace (drag and drop the *Install* but
 * [Infinitest](https://marketplace.eclipse.org/content/infinitest)
 * [ResourceBundle Editor](https://marketplace.eclipse.org/content/resourcebundle-editor)
 * [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
-* [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
+* [SonarQube for IDE](https://marketplace.eclipse.org/content/sonarqube-ide)
 * [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
 * [Darkest Dark Theme with DevStyle](https://marketplace.eclipse.org/content/darkest-dark-theme-devstyle) (Programming and chilling in DarkMode :sunglasses:)
 
