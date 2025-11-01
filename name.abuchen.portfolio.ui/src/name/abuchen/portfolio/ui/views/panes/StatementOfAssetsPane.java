@@ -46,6 +46,8 @@ public class StatementOfAssetsPane implements InformationPanePage
 
     private StatementOfAssetsViewer viewer;
 
+    private DropDown configurationMenu;
+
     @Override
     public String getLabel()
     {
@@ -71,8 +73,11 @@ public class StatementOfAssetsPane implements InformationPanePage
                         a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(),
                                         genericAccount)));
 
-        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
-                        manager -> viewer.getColumnHelper().menuAboutToShow(manager)));
+        configurationMenu = new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> viewer.menuAboutToShow(manager));
+        configurationMenu.setEnabled(false); // disabled until the viewer has data to build the menu safely
+        toolBar.add(configurationMenu);
+        updateConfigurationMenuState();
     }
 
     @Override
@@ -129,6 +134,14 @@ public class StatementOfAssetsPane implements InformationPanePage
             }
 
         }
+
+        updateConfigurationMenuState();
+    }
+
+    private void updateConfigurationMenuState()
+    {
+        if (configurationMenu != null)
+            configurationMenu.setEnabled(genericAccount != null && viewer != null && viewer.hasModel());
     }
 
     @Override
