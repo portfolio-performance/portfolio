@@ -1078,6 +1078,11 @@ public class StatementOfAssetsViewer
         return assets;
     }
 
+    public boolean hasModel()
+    {
+        return model != null;
+    }
+
     public void showConfigMenu(Shell shell)
     {
         if (contextMenu == null)
