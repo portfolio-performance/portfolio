@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,18 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Trade implements Adaptable
 {
+    private static final class CollateralLot
+    {
+        private long shares;
+        private double amount;
+
+        private CollateralLot(long shares, double amount)
+        {
+            this.shares = shares;
+            this.amount = amount;
+        }
+    }
+
     private final Security security;
     private final Portfolio portfolio;
     private LocalDateTime start;
@@ -145,7 +159,10 @@ public class Trade implements Adaptable
         List<Double> values = new ArrayList<>();
 
         // need mutable variable within lambda below, using array workaround
-        double[] collateral = {0};
+        double[] totalCollateral = { 0 };
+        double[] remainingCollateral = { 0 };
+        Deque<CollateralLot> collateralLots = new ArrayDeque<>();
+
         transactions.stream().forEach(t -> {
             dates.add(t.getTransaction().getDateTime().toLocalDate());
 
@@ -154,14 +171,22 @@ public class Trade implements Adaptable
 
             if (t.getTransaction().getType().isPurchase() == isLong())
             {
-                collateral[0] += amount;
+                if (!isLong())
+                {
+                    collateralLots.addLast(new CollateralLot(t.getTransaction().getShares(), amount));
+                    totalCollateral[0] += amount;
+                    remainingCollateral[0] += amount;
+                }
                 amount = -amount;
             }
             else if (!isLong())
             {
+                double collateralReleased = releaseCollateral(collateralLots, t.getTransaction().getShares());
+                remainingCollateral[0] = Math.max(0, remainingCollateral[0] - collateralReleased);
+
                 // for short trade, for the closing transaction, we look
                 // how much collateral we should return
-                amount = collateral[0] - amount;
+                amount = collateralReleased - amount;
             }
 
             values.add(amount);
@@ -172,7 +197,7 @@ public class Trade implements Adaptable
             dates.add(LocalDate.now());
             double amount = exitValue.getAmount() / Values.Amount.divider();
             if (!isLong())
-                amount = collateral[0] - amount;
+                amount = remainingCollateral[0] - amount;
             values.add(amount);
         }
 
@@ -184,10 +209,45 @@ public class Trade implements Adaptable
             else
                 endDate = end.toLocalDate();
             dates.add(endDate);
-            values.add(collateral[0]);
+            values.add(totalCollateral[0]);
         }
 
         this.irr = IRR.calculate(dates, values);
+    }
+
+    private static double releaseCollateral(Deque<CollateralLot> lots, long sharesToCover)
+    {
+        double released = 0;
+        long remainingShares = sharesToCover;
+
+        while (remainingShares > 0 && !lots.isEmpty())
+        {
+            CollateralLot lot = lots.peekFirst();
+            if (lot == null)
+                break;
+
+            if (remainingShares >= lot.shares)
+            {
+                released += lot.amount;
+                remainingShares -= lot.shares;
+                lots.removeFirst();
+            }
+            else if (lot.shares > 0)
+            {
+                double fraction = (double) remainingShares / (double) lot.shares;
+                double partialAmount = lot.amount * fraction;
+                released += partialAmount;
+                lot.amount -= partialAmount;
+                lot.shares -= remainingShares;
+                remainingShares = 0;
+            }
+            else
+            {
+                lots.removeFirst();
+            }
+        }
+
+        return released;
     }
 
     public Security getSecurity()
@@ -385,6 +445,9 @@ public class Trade implements Adaptable
                         ? r.get().getMovingAverageCost().get()
                         : r.get().getMovingAverageCostWithoutTaxesAndFees().get();
         var totalShares = r.get().getSharesHeld().get();
+
+        if (totalShares <= 0)
+            return Money.of(totalCosts.getCurrencyCode(), 0);
 
         var cost = BigDecimal.valueOf(shares / (double) totalShares) //
                         .multiply(BigDecimal.valueOf(totalCosts.getAmount())) //
