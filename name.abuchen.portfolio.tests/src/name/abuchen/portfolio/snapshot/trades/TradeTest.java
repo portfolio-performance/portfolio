@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.snapshot.trades;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static name.abuchen.portfolio.junit.PortfolioBuilder.amountOf;
 import static name.abuchen.portfolio.junit.PortfolioBuilder.quoteOf;
 import static name.abuchen.portfolio.junit.PortfolioBuilder.sharesOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,10 +21,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 /**
- * This is intended to be unit test for Trade (and by extension,
- * TradeCollector) class, trying to enumerate various most common
- * scenarios in one place and have more or all exhaustive checks,
- * thus ensuring good coverage.
+ * This is intended to be unit test for Trade (and by extension, TradeCollector)
+ * class, trying to enumerate various most common scenarios in one place and
+ * have more or all exhaustive checks, thus ensuring good coverage.
  */
 @SuppressWarnings("nls")
 public class TradeTest
@@ -40,8 +39,7 @@ public class TradeTest
         port.addTo(client);
 
         Security securityLong = new SecurityBuilder().addTo(client);
-        port.buyPrice(securityLong, "2024-01-01", 5.0, 100.0)
-           .sellPrice(securityLong, "2024-12-31", 5.0, 180.0);
+        port.buyPrice(securityLong, "2024-01-01", 5.0, 100.0).sellPrice(securityLong, "2024-12-31", 5.0, 180.0);
 
         trades = collector.collect(securityLong);
         assertThat(trades.size(), is(1));
@@ -70,8 +68,7 @@ public class TradeTest
         port.addTo(client);
 
         Security securityLong = new SecurityBuilder().addPrice("2025-01-01", quoteOf(210)).addTo(client);
-        port.buyPrice(securityLong, "2024-01-01", 5.0, 100.0)
-           .sellPrice(securityLong, "2024-12-31", 3.0, 180.0);
+        port.buyPrice(securityLong, "2024-01-01", 5.0, 100.0).sellPrice(securityLong, "2024-12-31", 3.0, 180.0);
 
         trades = collector.collect(securityLong);
         assertThat(trades.size(), is(2));
@@ -111,8 +108,7 @@ public class TradeTest
         port.addTo(client);
 
         Security securityShort = new SecurityBuilder().addTo(client);
-        port.sellPrice(securityShort, "2024-01-01", 3.0, 20.0)
-             .buyPrice(securityShort, "2024-12-31", 3.0, 5.0);
+        port.sellPrice(securityShort, "2024-01-01", 3.0, 20.0).buyPrice(securityShort, "2024-12-31", 3.0, 5.0);
 
         trades = collector.collect(securityShort);
         assertThat(trades.size(), is(1));
@@ -131,6 +127,26 @@ public class TradeTest
     }
 
     @Test
+    public void testShortMovingAverageCostDoesNotDivideByZero() throws TradeCollectorException
+    {
+        Client client = new Client();
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+
+        var portfolio = new PortfolioBuilder();
+        portfolio.addTo(client);
+
+        Security securityShort = new SecurityBuilder().addTo(client);
+        portfolio.sellPrice(securityShort, "2024-01-01", 3.0, 20.0).buyPrice(securityShort, "2024-12-31", 3.0, 5.0);
+
+        List<Trade> trades = collector.collect(securityShort);
+        Trade trade = trades.get(0);
+
+        Money movingAverageEntryValue = trade.getEntryValueMovingAverage();
+
+        assertThat(movingAverageEntryValue, is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
     public void testLongMultipleBuys() throws TradeCollectorException
     {
         Client client = new Client();
@@ -141,10 +157,8 @@ public class TradeTest
         port.addTo(client);
 
         Security security = new SecurityBuilder().addPrice("2025-01-01", quoteOf(2)).addTo(client);
-        port.buyPrice(security, "2024-01-01", 12.0, 10.0)
-            .buyPrice(security, "2024-02-01", 5.0,  12.0)
-            .buyPrice(security, "2024-03-01", 3.0,  30.0)
-           .sellPrice(security, "2024-12-31", 18.0, 20.0);
+        port.buyPrice(security, "2024-01-01", 12.0, 10.0).buyPrice(security, "2024-02-01", 5.0, 12.0)
+                        .buyPrice(security, "2024-03-01", 3.0, 30.0).sellPrice(security, "2024-12-31", 18.0, 20.0);
 
         trades = collector.collect(security);
         assertThat(trades.size(), is(2));
@@ -156,7 +170,7 @@ public class TradeTest
         var entryAmount = 12 * 10 + 5 * 12 + 1 * 30;
         var exitAmount = 18 * 20;
         assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(exitAmount - entryAmount))));
-        assertEquals(trade1.getReturn(), (double)(exitAmount - entryAmount) / entryAmount, 0.00000001);
+        assertEquals(trade1.getReturn(), (double) (exitAmount - entryAmount) / entryAmount, 0.00000001);
         assertEquals(trade1.getIRR(), 0.76018, 0.0001);
 
         Trade trade2 = trades.get(1);
@@ -178,10 +192,9 @@ public class TradeTest
         port.addTo(client);
 
         Security securityShort = new SecurityBuilder().addTo(client);
-        port.sellPrice(securityShort, "2024-01-01", 2.0, 100.0)
-            .sellPrice(securityShort, "2024-02-01", 3.0, 120.0)
-            .sellPrice(securityShort, "2024-03-01", 2.0, 50.0)
-             .buyPrice(securityShort, "2024-12-31", 4.0, 20.0);
+        port.sellPrice(securityShort, "2024-01-01", 2.0, 100.0).sellPrice(securityShort, "2024-02-01", 3.0, 120.0)
+                        .sellPrice(securityShort, "2024-03-01", 2.0, 50.0)
+                        .buyPrice(securityShort, "2024-12-31", 4.0, 20.0);
 
         trades = collector.collect(securityShort);
         assertThat(trades.size(), is(2));
@@ -195,7 +208,7 @@ public class TradeTest
         assertThat(trade1.getEntryValue(), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount))));
         assertThat(trade1.getExitValue(), is(Money.of(CurrencyUnit.EUR, amountOf(exitAmount))));
         assertThat(trade1.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, amountOf(entryAmount - exitAmount))));
-        assertThat(trade1.getReturn(), is(1.0 - (double)exitAmount / entryAmount));
+        assertThat(trade1.getReturn(), is(1.0 - (double) exitAmount / entryAmount));
         assertEquals(0.8710, trade1.getIRR(), 0.0001);
 
         Trade trade2 = trades.get(1);
