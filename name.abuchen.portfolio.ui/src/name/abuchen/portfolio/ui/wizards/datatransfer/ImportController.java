@@ -3,16 +3,12 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Display;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.util.swt.ActiveShell;
-import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 
 public class ImportController
 {
@@ -55,13 +51,6 @@ public class ImportController
             // crypto currencies already have a working configuration)
 
             new UpdateQuotesJob(client, newSecurities).schedule();
-
-            // run async to allow the other dialog to close
-
-            Display.getDefault().asyncExec(() -> {
-                FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(ActiveShell.get(), client, newSecurities);
-                dialog.open();
-            });
         }
     }
 
@@ -85,7 +74,7 @@ public class ImportController
                 // apply security override
                 if (entry.getSecurityOverride() != null)
                     entry.getItem().setSecurity(entry.getSecurityOverride());
-                
+
                 entry.getItem().apply(action, page);
                 isDirty = true;
 

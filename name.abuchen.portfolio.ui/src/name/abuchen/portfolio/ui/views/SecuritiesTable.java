@@ -38,7 +38,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
@@ -100,7 +99,6 @@ import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
@@ -886,14 +884,6 @@ public final class SecuritiesTable implements ModificationListener
                             a -> new UpdateQuotesJob(getClient(),
                                             selection.toList().stream().map(Security.class::cast).toList())
                                                             .schedule()));
-
-            manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
-                            a -> Display.getDefault().asyncExec(() -> {
-                                FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(getShell(), getClient(),
-                                                selection.toList().stream().map(Security.class::cast).toList());
-                                dialog.open();
-                            })));
-
         }
 
         // if any retired security in selection, add "unretire/activate all"
