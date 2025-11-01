@@ -748,6 +748,8 @@ public class Messages extends NLS
     public static String LabelJSONDateFormatHint;
     public static String LabelJSONDateTimezone;
     public static String LabelJSONDateTimezoneHint;
+    public static String LabelJSONDateLocale;
+    public static String LabelJSONDateLocaleHint;
     public static String LabelJSONFactor;
     public static String LabelJSONFactorHint;
     public static String LabelJSONFile;

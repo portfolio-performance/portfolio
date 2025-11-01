@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +15,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -805,6 +808,126 @@ public class GenericJSONQuoteFeedTest
         long result = feed.extractIntegerValue(object);
 
         assertEquals(0, result);
+    }
+
+    @Test
+    public void testDateExtractionWithLocaleEnglish() throws IOException, URISyntaxException
+    {
+        // Pattern with English month/day names - should work with en_US locale
+        String jsonResponse = "{\"data\":[{\"date\":\"Wed Jun 03 2020 00:00:00 GMT+0000 (Coordinated Universal Time)\",\"close\":\"123.88\"}]}";
+
+        Security securityWithLocale = new Security();
+        securityWithLocale.setTickerSymbol("TEST");
+        securityWithLocale.setFeedURL(feedUrl);
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC, "$.data[*].date");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC, "$.data[*].close");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC,
+                        "EEE MMM dd yyyy HH:mm:ss 'GMT'Z (zzzz)");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC, "en_US");
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        QuoteFeedData data = feed.getHistoricalQuotes(securityWithLocale, false);
+
+        assertTrue(data.getErrors().isEmpty());
+        assertThat(data.getPrices().size(), is(1));
+
+        SecurityPrice price = data.getPrices().get(0);
+        assertEquals(LocalDate.of(2020, 6, 3), price.getDate());
+        assertEquals(Values.Quote.factorize(123.88), price.getValue());
+    }
+
+    @Test(expected = DateTimeParseException.class)
+    public void testDateExtractionWithLocaleGerman() throws IOException, URISyntaxException
+    {
+        // Pattern with English month/day names - should FAIL with de_DE locale
+        String jsonResponse = "{\"data\":[{\"date\":\"Wed Jun 03 2020 00:00:00 GMT+0000 (Coordinated Universal Time)\",\"close\":\"123.88\"}]}";
+
+        Security securityWithLocale = new Security();
+        securityWithLocale.setTickerSymbol("TEST");
+        securityWithLocale.setFeedURL(feedUrl);
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC, "$.data[*].date");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC, "$.data[*].close");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC,
+                        "EEE MMM dd yyyy HH:mm:ss 'GMT'Z (zzzz)");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC, "de_DE");
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        feed.getHistoricalQuotes(securityWithLocale, false);
+    }
+
+    @Test
+    public void testDateExtractionWithLocaleBCP47Format() throws IOException, URISyntaxException
+    {
+        // Test BCP 47 format locale (en-US instead of en_US)
+        String jsonResponse = "{\"data\":[{\"date\":\"Wed Jun 03 2020 00:00:00 GMT+0000 (Coordinated Universal Time)\",\"close\":\"123.88\"}]}";
+
+        Security securityWithLocale = new Security();
+        securityWithLocale.setTickerSymbol("TEST");
+        securityWithLocale.setFeedURL(feedUrl);
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC, "$.data[*].date");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC, "$.data[*].close");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC,
+                        "EEE MMM dd yyyy HH:mm:ss 'GMT'Z (zzzz)");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC, "en-US");
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        QuoteFeedData data = feed.getHistoricalQuotes(securityWithLocale, false);
+
+        assertTrue(data.getErrors().isEmpty());
+        assertThat(data.getPrices().size(), is(1));
+
+        SecurityPrice price = data.getPrices().get(0);
+        assertEquals(LocalDate.of(2020, 6, 3), price.getDate());
+        assertEquals(Values.Quote.factorize(123.88), price.getValue());
+    }
+
+    @Test
+    public void testDateExtractionWithGermanLocaleAndGermanDate() throws IOException, URISyntaxException
+    {
+        // Test German date format with German locale - should work
+        String jsonResponse = "{\"data\":[{\"date\":\"Mi. Juni 03 2020 00:00:00 GMT+0000\",\"close\":\"123.88\"}]}";
+
+        Security securityWithLocale = new Security();
+        securityWithLocale.setTickerSymbol("TEST");
+        securityWithLocale.setFeedURL(feedUrl);
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC, "$.data[*].date");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC, "$.data[*].close");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC, "EEE MMMM dd yyyy HH:mm:ss 'GMT'Z");
+        securityWithLocale.setPropertyValue(SecurityProperty.Type.FEED,
+                        GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_HISTORIC, "de_DE");
+
+        GenericJSONQuoteFeed feed = Mockito.spy(new GenericJSONQuoteFeed());
+        Mockito.doReturn(jsonResponse).when(feed).getJson(feedUrl);
+
+        QuoteFeedData data = feed.getHistoricalQuotes(securityWithLocale, false);
+
+        assertTrue(data.getErrors().isEmpty());
+        assertThat(data.getPrices().size(), is(1));
+
+        SecurityPrice price = data.getPrices().get(0);
+        assertEquals(LocalDate.of(2020, 6, 3), price.getDate());
+        assertEquals(Values.Quote.factorize(123.88), price.getValue());
     }
 
     private Object readJson(String json, Security security, String type)
