@@ -20,13 +20,13 @@
 ## Contributing Source Code
 
 * [Development setup](CONTRIBUTING.md#development-setup)
-* [Project setup](CONTRIBUTING.md#project-setup)
-* [Contribute code](CONTRIBUTING.md#contribute-code)
-* [Images, Logo & Colors](CONTRIBUTING.md#images-logo-and-color)
+* [Project setup](CONTRIBUTING.md#eclipse-ide-setup)
+* [Contributing code](CONTRIBUTING.md#contributing-code)
+* [Images and Icons](CONTRIBUTING.md#images-and-icons)
 * [Translations](CONTRIBUTING.md#translations)
-* [Interactive-Flex-Query importer](CONTRIBUTING.md#interactive-flex-query-importer)
-* [PDF importer](CONTRIBUTING.md#pdf-importer)
-* [Trade calendar](CONTRIBUTING.md#trade-calendar)
+* [Interactive Flex Query Importers](CONTRIBUTING.md#interactive-flex-query-importers)
+* [PDF Importers](CONTRIBUTING.md#pdf-importers)
+* [Trade Calendars](CONTRIBUTING.md#trade-calendars)
 
 
 ## License
