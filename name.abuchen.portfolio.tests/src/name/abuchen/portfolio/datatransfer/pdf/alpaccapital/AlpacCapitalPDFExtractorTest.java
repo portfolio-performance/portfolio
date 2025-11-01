@@ -17,6 +17,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -29,7 +31,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.AlpacCapitalPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -41,16 +42,18 @@ public class AlpacCapitalPDFExtractorTest
     @Test
     public void testSecurityBuy01()
     {
-        AlpacCapitalPDFExtractor extractor = new AlpacCapitalPDFExtractor(new Client());
+        var extractor = new AlpacCapitalPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "USD");
 
@@ -72,16 +75,18 @@ public class AlpacCapitalPDFExtractorTest
     @Test
     public void testSecurityBuy02()
     {
-        AlpacCapitalPDFExtractor extractor = new AlpacCapitalPDFExtractor(new Client());
+        var extractor = new AlpacCapitalPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(4L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "USD");
 
@@ -104,7 +109,6 @@ public class AlpacCapitalPDFExtractorTest
                         hasNote(null), //
                         hasAmount("USD", 513.94), hasGrossValue("USD", 512.94), //
                         hasTaxes("USD", 0.00), hasFees("USD", 1.00))));
-
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //

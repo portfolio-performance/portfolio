@@ -20,6 +20,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -32,7 +34,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -42,7 +43,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class GladbacherBankAGPDFExtractorTest
@@ -50,24 +50,26 @@ public class GladbacherBankAGPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());
+        var extractor = new GladbacherBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("US1713401024"), hasWkn("864371"), hasTicker(null), //
                         hasName("CHURCH & DWIGHT CO. INC. REGISTERED SHARES DL 1"), //
-                        hasCurrencyCode(CurrencyUnit.EUR))));
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -81,24 +83,26 @@ public class GladbacherBankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());
+        var extractor = new GladbacherBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("DE0007165631"), hasWkn("716563"), hasTicker(null), //
                         hasName("SARTORIUS AG VORZUGSAKTIEN O.ST. O.N."), //
-                        hasCurrencyCode(CurrencyUnit.EUR))));
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -112,24 +116,26 @@ public class GladbacherBankAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());
+        var extractor = new GladbacherBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("US5949181045"), hasWkn("870747"), hasTicker(null), //
                         hasName("MICROSOFT CORP. REGISTERED SHARES DL-,00000625"), //
-                        hasCurrencyCode(CurrencyUnit.EUR))));
+                        hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -143,18 +149,20 @@ public class GladbacherBankAGPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(new Client());
+        var extractor = new GladbacherBankAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -175,25 +183,27 @@ public class GladbacherBankAGPDFExtractorTest
     @Test
     public void testDividende02WithSecurityInEUR()
     {
-        Security security = new Security("AMETEK INC. REGISTERED SHARES DL -,01", CurrencyUnit.EUR);
+        var security = new Security("AMETEK INC. REGISTERED SHARES DL -,01", "EUR");
         security.setIsin("US0311001004");
         security.setWkn("908668");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        GladbacherBankAGPDFExtractor extractor = new GladbacherBankAGPDFExtractor(client);
+        var extractor = new GladbacherBankAGPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -203,10 +213,10 @@ public class GladbacherBankAGPDFExtractorTest
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
                         hasTaxes("EUR", 1.76 + 1.17 + 0.06), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }

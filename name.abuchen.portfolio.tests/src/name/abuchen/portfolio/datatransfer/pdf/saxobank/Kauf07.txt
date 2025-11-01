@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-19958475 - 19958475
+Bericht zu Trade-Details
+Berichtszeitraum: 05-Aug-2025 - 05-Aug-2025
+Generiert um: 31-Aug-2025 04:11:12 16:11:12 (W. Europe Standard Time)
+CH-19958475 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Aug-2025 - 05-Aug-2025
+Seite 1 von 3 Konten: Sparkonto 80000/138521 Generiert um: 31-Aug-2025
+Trade details, CHF
+Berichtszeitraum
+05-Aug-2025 bis 05-Aug-2025
+ETF
+Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Aug-2025 12:47:54
+ISIN IE00B4L5Y983 Valuta 07-Aug-2025
+Symbol SWDA:xswx Order-ID 5311230162
+Börsenbeschreibung TRADEWEB EUROPE LIMITED (TREU) Trade-ID 6358706941
+Hauptbörse SIX Swiss Exchange (ETFs) Gehandelter Wert -2.394,19 USD
+Handelsplatz Exchange Preis 119,7093 USD
+Ordertyp Marktorder Menge 20,00
+K/V Kauf Spread-Kosten 0,00 CHF
+Eröffnung/Schluss To-Open Gesamte Trading-Kosten -7,77 CHF
+Saxo is counterparty No
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Aktienbetrag 46403791990 05-Aug-2025 07-Aug-2025 -2.394,19 0,812366 -4,85 -1.944,96
+Schweizerische
+Stempelgebühr 46406604055 05-Aug-2025 07-Aug-2025 -3,59 0,812366 -0,01 -2,92
+Ausland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Aug-2025 - 05-Aug-2025
+Seite 2 von 3 Konten: Sparkonto 80000/138521 Generiert um: 31-Aug-2025
+Trade details, CHF
+Berichtszeitraum
+05-Aug-2025 bis 05-Aug-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Nettobetrag - - - - - -4,86 -1.947,88
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Aug-2025 - 05-Aug-2025
+Seite 3 von 3 Konten: Sparkonto 80000/138521 Generiert um: 31-Aug-2025

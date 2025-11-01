@@ -143,8 +143,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
-                                        // Nominale ISIN: USU5521TAE20 WKN: A2R99N Kurs 
-                                        // USD   538,64 4,00 % 89,400160785 
+                                        // Nominale ISIN: USU5521TAE20 WKN: A2R99N Kurs
+                                        // USD   538,64 4,00 % 89,400160785
                                         // MSCI Inc. %
                                         // DL-Notes 2019(19/29) Reg.S
                                         // @formatter:on
@@ -933,8 +933,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 06.07.2018 Lastschrift aktiv 06.07.2018 6,97 -
         // 22.08.2018 SEPA-Ueberweisung 22.08.2018 2.000,00 -
+        // 12.06.2025 Ueberweisung 12.06.2025 1.384,72 -
         // @formatter:on
-        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung|Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -946,7 +947,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|SEPA\\-Ueberweisung|Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));

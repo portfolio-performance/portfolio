@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -51,22 +50,29 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(?<![\\d]{4} )" //
+        final var type = new DocumentType("(?<![\\d]{4} )" //
                         + "(Wertpapier Abrechnung" //
                         + "|Wertpapierabrechnung)", //
-                        "Kontoauszug [\\d]+\\/[\\d]{4} .*");
+                        "Kontoauszug [\\d]+\\/[\\d]{4} .*", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Dr. FZIDpRpVG gPGhsD und Auftragsnummer 435080/83.00
+                                        // @formatter:on
+                                        .section("noteNumber").optional() //
+                                        .match("^.*(?<noteNumber>(Abrechnungsnr\\.|Auftragsnummer) .*)$") //
+                                        .assign((ctx, v) -> ctx.put("noteNumber", trim(v.get("noteNumber")))));
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
+        var firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -119,13 +125,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
-                                        // Auftrag vom 27.02.2021 01:31:42 Uhr
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "time") //
-                                                        .match("^Auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
-                                        // @formatter:off
                                         // Handelstag 05.05.2021 EUR 498,20-
                                         // Handelszeit 09:04
                                         // @formatter:on
@@ -135,19 +134,27 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Handelszeit (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
+                                        // Schlusstag 05.11.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
                                         // Schlusstag/-Zeit 14.10.2021 09:00:12 Auftraggeber XXXXXX XXXXXXX
+                                        // Schlusstag/-Zeit 21.04.2025 15:30:00 Auftraggeber QYmpiGRh FudoOOF
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
-                                        // Schlusstag 05.11.2021
+                                        // Auftrag vom 27.02.2021 01:31:42 Uhr
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+                                                        .attributes("date", "time") //
+                                                        .match("^Auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -193,11 +200,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .match("^Kurswert (?<gross>[\\.,\\d]+)\\- [\\w]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -232,12 +239,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*(?<note>(Abrechnungsnr\\.|Auftragsnummer) .*)$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
+
                         // @formatter:off
                         // Limit 189,40 EUR
                         // @formatter:on
                         .section("note").optional() //
-                        .match("(?<note>Limit .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .documentContext("noteNumber").optional()
+                        .match("^(?<note>Limit .*)$") //
+                        .assign((t, v) -> {
+                            if (t.getNote() == null || t.getNote().isEmpty())
+                                t.setNote(v.get("noteNumber"));
+
+                            t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
+                        })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -256,14 +270,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|" //
+        var type = new DocumentType("(Dividendengutschrift|" //
                         + "Aussch.ttung|" //
                         + "Kapitalr.ckzahlung)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Dividendengutschrift" //
+        var firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Aussch.ttung (f.r|Investmentfonds)" //
                         + "|Gutschrift)" //
                         + "( [^\\.,\\d]+.*)?$");
@@ -273,7 +287,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -438,7 +452,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                 t.setAmount(asAmount(v.get("amount")));
                                                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
-                                                                Money fxAmount = Money.of(asCurrencyCode(t.getSecurity().getCurrencyCode()), t.getMonetaryAmount().getAmount());
+                                                                var fxAmount = Money.of(asCurrencyCode(t.getSecurity().getCurrencyCode()), t.getMonetaryAmount().getAmount());
                                                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), fxAmount, BigDecimal.ONE));
 
                                                                 v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
@@ -452,14 +466,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]*(?<exchangeRate>[\\.,\\d]+)$") //
                                                         .match("^(Dividendengutschrift|Aussch.ttung|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -472,11 +486,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$") //
                                                         .match("^ausl.ndische Dividende [\\w]{3} (?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -491,11 +505,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
 
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -510,11 +524,11 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.put("fxCurrency", asCurrencyCode(v.get("termCurrency")));
 
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -571,7 +585,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " (" + v.get("note3") + " " + v.get("note2") + ")", " | "))))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             // If we have multiple entries in the document, with
                             // taxes and tax refunds, then the "negative" flag
@@ -594,19 +608,19 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale");
+        var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Vorabpauschale.*$");
+        var firstRelevantLine = new Block("^Vorabpauschale.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -671,7 +685,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -682,7 +696,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransactionFundsSavingsPlan()
     {
-        final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", //
+        final var type = new DocumentType("Halbjahresabrechnung Sparplan", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // DEKA-GLOBALCHAMPIONS DE000DK0ECU8 (DK0ECU)
@@ -704,16 +718,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
+        var firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -743,7 +757,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -771,13 +785,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         //              -34,50
         // 02.11.2021 Lastschrift
         // @formatter:on
-        Block depositRemovalBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
+        var depositRemovalBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
         depositRemovalBlock_Format01.setMaxSize(2);
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -851,7 +865,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -877,7 +891,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         //  1 3.11.2017 13.11.2017 Zahlungseingang              289,00+
         // . 1.TAN 00023613.06.2016 13.06.2016 Überweisung              161,00-
         // @formatter:on
-        Block depositRemovalBlock_Format02 = new Block("^.*\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var depositRemovalBlock_Format02 = new Block("^.*\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -909,7 +923,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -943,7 +957,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|sonstige Buchung" //
                                         + "|sonstige Entgelte" //
                                         + "|entgeltfreie Buchung)) " //
-                                        + "[\\s]+" //
+                                        + "[\\s]*" //
                                         + "(?<amount>[\\.,\\d]+)" //
                                         + "(?<type>[\\-|\\+]).*$") //
                         .assign((t, v) -> {
@@ -981,7 +995,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -989,13 +1003,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        Block depositRemovalBlock_Format03 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        var depositRemovalBlock_Format03 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         depositRemovalBlock_Format03.setMaxSize(3);
         type.addBlock(depositRemovalBlock_Format03);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1035,7 +1049,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                         + "|sonstige Buchung" //
                                                                         + "|sonstige Entgelte" //
                                                                         + "|entgeltfreie Buchung))$") //
-                                                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
+                                                        .match("^[\\s]*(?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
                                                         .assign((t, v) -> {
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
                                                             if ("-".equals(v.get("type")))
@@ -1108,7 +1122,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                         + "|sonstige Buchung" //
                                                                         + "|sonstige Entgelte" //
                                                                         + "|entgeltfreie Buchung))" //
-                                                                        + "[\\s]+ (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
+                                                                        + "[\\s]*(?<amount>[\\.,\\d]+)(?<type>[\\-|\\+]).*$") //
                                                         .assign((t, v) -> {
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
                                                             if ("-".equals(v.get("type")))
@@ -1144,7 +1158,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1165,7 +1179,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         // 22.06 22.06.15 Kartenzahlung -60,82
         // 23.06 23.06.15 Barumsatz 500,00
         // @formatter:on
-        Block depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
+        var depositRemovalBlock_Format04 = new Block("^.*[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} " //
                         + "(Lastschrift" //
                         + "|.berweisung online" //
                         + "|.berweisung" //
@@ -1195,7 +1209,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1262,7 +1276,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1277,7 +1291,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         // 27.12.2019 27.12.2019 Lastschrift
         // .                6,60-Lotto24 AG
         // @formatter:on
-        Block depositRemovalBlock_Format05 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var depositRemovalBlock_Format05 = new Block("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Lastschrift" //
                         + "|.berweisung online" //
                         + "|.berweisung" //
@@ -1306,7 +1320,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock_Format05.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1373,7 +1387,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1384,12 +1398,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block feesBlock = new Block("^Entgelte vom .*$", "^Abrechnung .*$");
+        var feesBlock = new Block("^Entgelte vom .*$", "^Abrechnung .*$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                             return accountTransaction;
                         })
@@ -1458,7 +1472,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1466,12 +1480,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        Block interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
+        var interestBlock = new Block("^Abrechnungszeitraum vom .*$", "^Abrechnung .*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -1527,7 +1541,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1535,13 +1549,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        Block taxReturnBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
+        var taxReturnBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
         taxReturnBlock_Format01.setMaxSize(3);
         type.addBlock(taxReturnBlock_Format01);
         taxReturnBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
@@ -1572,7 +1586,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addCreditcardStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Ihre Abrechnung vom ", //
+        final var type = new DocumentType("Ihre Abrechnung vom ", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Beleg BuchungVerwendungszweck EUR
@@ -1583,12 +1597,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\.,\\d]+([\\s])?([\\-|\\+])$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1659,12 +1673,12 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} .* [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+([\\s])?([\\-|\\+])$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                             return accountTransaction;
                         })
@@ -1703,16 +1717,16 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxReturnBlock(DocumentType type)
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
+        var firstRelevantLine = new Block("^(Wertpapier Abrechnung|Wertpapierabrechnung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
@@ -1977,7 +1991,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Handelszeit 09:04 Orderentgelt EUR 9,97 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* Orderentgelt[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .match("^.* Orderentgelt[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)[\\s]*\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -1986,42 +2000,49 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Orderentgelt$") //
-                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)[\\s]*\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börse Stuttgart Börsengebühr EUR 2,29-
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .match("^.* B.rsengeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)[\\s]*\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision 1,48- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .match("^Provision (?<fee>[\\.,\\d]+)[\\s]*\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Fremde Auslagen 6,12- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)[\\s]*\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Transaktionsentgelt Börse 0,60- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)[\\s]*\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Übertragungs-/Liefergebühr 0,12- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)[\\s]*\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision 2,5015 % vom Kurswert 1,25- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision [\\.,\\d]+([\\s])?% vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .match("^Provision [\\.,\\d]+([\\s])?% vom Kurswert (?<fee>[\\.,\\d]+)[\\s]*\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -2050,20 +2071,20 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .match("^Kundenbonifikation [\\.,\\d]+([\\s])?% vom (Ausgabeaufschlag|Kurswert) (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$") //
                         .match("^Ausgabeaufschlag pro Anteil (?<percentageFee>[\\.,\\d]+) %$") //
                         .assign((t, v) -> {
-                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                            BigDecimal amount = asBigDecimal(v.get("amount"));
-                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+                            var percentageFee = asBigDecimal(v.get("percentageFee"));
+                            var amount = asBigDecimal(v.get("amount"));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                             if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
                             {
                                 // @formatter:off
                                 // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
                                 // @formatter:on
-                                BigDecimal fxFee = amount.divide(percentageFee //
+                                var fxFee = amount.divide(percentageFee //
                                                 .divide(BigDecimal.valueOf(100)).add(BigDecimal.ONE), Values.MC)
                                                 .multiply(percentageFee, Values.MC);
 
-                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                                var fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                                 // @formatter:off
                                 // fee = fee - discount
@@ -2080,7 +2101,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Kurswert$") //
-                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .match("^(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)[\\s]*\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
