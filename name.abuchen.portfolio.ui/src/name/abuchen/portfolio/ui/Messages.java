@@ -902,6 +902,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsDerivedDataSeries;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
+    public static String LabelStatementOfAssetsTaxonomyNone;
     public static String LabelSubscriptionStatusUpdatedSuccessfully;
     public static String LabelSuffix_HICP;
     public static String LabelSuffix_PreTax;
