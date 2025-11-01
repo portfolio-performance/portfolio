@@ -124,7 +124,7 @@ public class OpenBookmarksHandler
 
         client.getSettings().getBookmarks().stream().filter(b -> !b.isSeparator()).forEach(bookmarks::add);
 
-        security.getCustomBookmarks().forEach(bookmarks::add);
+        security.getCustomBookmarks(client).forEach(bookmarks::add);
 
         BookmarkPopup<Bookmark> popup = new BookmarkPopup<>(shell, //
                         security.getName(), //

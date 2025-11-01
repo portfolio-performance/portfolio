@@ -796,13 +796,25 @@ public final class Security implements Attributable, InvestmentVehicle
      * 
      * @return list of URLs
      */
-    public Stream<Bookmark> getCustomBookmarks()
+    public Stream<Bookmark> getCustomBookmarks(Client client)
     {
         List<Bookmark> bookmarks = new ArrayList<>();
 
         // extract bookmarks from attributes
-
-        getAttributes().getAllValues().filter(v -> v instanceof Bookmark).forEach(v -> bookmarks.add((Bookmark) v));
+        var myAttributes = getAttributes();
+        client.getSettings().getAttributeTypes() //
+                        .filter(t -> t.getType() == Bookmark.class) //
+                        .forEachOrdered(attributeType -> {
+                            var bookmark = (Bookmark) myAttributes.get(attributeType);
+                            if (bookmark != null)
+                            {
+                                // use attribute type name as label unless the
+                                // user provided a custom label
+                                bookmarks.add(new Bookmark(bookmark.getPattern().equals(bookmark.getLabel())
+                                                ? attributeType.getName()
+                                                : bookmark.getLabel(), bookmark.getPattern()));
+                            }
+                        });
 
         // extract bookmarks from notes
 
