@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -14,7 +15,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class BookmarkMenu extends MenuManager
 {
@@ -40,6 +40,11 @@ public class BookmarkMenu extends MenuManager
 
     private void addDefaultPages()
     {
+        if (securities.size() > 15)
+        {
+            return;
+        }
+
         for (Bookmark bookmark : client.getSettings().getBookmarks())
         {
             if (bookmark.isSeparator())
@@ -48,19 +53,33 @@ public class BookmarkMenu extends MenuManager
             }
             else
             {
-                add(new MenuContribution(bookmark.getLabel(), () -> securities.stream().limit(10)
+                add(new MenuContribution(bookmark.getLabel(), () -> securities.stream()
                                 .forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s)))));
             }
         }
 
-        // display urls out of security notes only when single security is
-        // selected
+        add(new Separator());
         if (securities.size() == 1)
         {
-            add(new Separator());
-            securities.forEach(s -> s.getCustomBookmarks()
-                            .forEach(bm -> add(new SimpleAction(TextUtil.tooltip(bm.getLabel()),
-                                            a -> DesktopAPI.browse(bm.getPattern())))));
+            securities.forEach(s -> s.getCustomBookmarks(client).forEach(
+                            bm -> add(new MenuContribution(bm.getLabel(), () -> DesktopAPI.browse(bm.getPattern())))));
+        }
+        else
+        {
+            client.getSettings().getAttributeTypes().filter((t) -> t.getType() == Bookmark.class)
+                            .forEachOrdered((t) -> {
+                                var bookmarks = securities.stream().map(s -> (Bookmark) s.getAttributes().get(t))
+                                                .filter(Objects::nonNull).toList();
+                                if (!bookmarks.isEmpty())
+                                {
+                                    String name = (bookmarks.size() < securities.size())
+                                                    ? String.format("%1$s  \t(%2$s/%3$s)", //$NON-NLS-1$
+                                                                    t.getName(), bookmarks.size(), securities.size())
+                                                    : t.getName();
+                                    add(new MenuContribution(name, () -> bookmarks
+                                                    .forEach(bookmark -> DesktopAPI.browse(bookmark.getPattern()))));
+                                }
+                            });
         }
 
         add(new Separator());
@@ -70,8 +89,9 @@ public class BookmarkMenu extends MenuManager
 
         List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
         Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
-        templates.forEach(bookmark -> templatesMenu.add(new MenuContribution(bookmark.getLabel(), () -> securities
-                        .stream().limit(10).forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s))))));
+        templates.forEach(bookmark -> templatesMenu.add(new MenuContribution(bookmark.getLabel(),
+                        () -> securities.stream()
+                                        .forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s))))));
 
         add(new Separator());
         add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,

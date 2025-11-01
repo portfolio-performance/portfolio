@@ -50,7 +50,7 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(14));
+        assertThat(skipped, equalTo(13));
 
         Security target = source.deepCopy();
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
