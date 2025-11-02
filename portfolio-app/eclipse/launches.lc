@@ -4,14 +4,7 @@ eclipse configuration PortfolioPerformance {
         
     feature name.abuchen.portfolio.feature;
 	feature org.eclipse.e4.rcp;
-	feature org.eclipse.emf.ecore;
-	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
-	feature org.eclipse.ecf.core.ssl.feature;
-	feature org.eclipse.ecf.filetransfer.ssl.feature;
-	feature org.eclipse.ecf.core.feature;
-	feature org.eclipse.ecf.filetransfer.feature;
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
 	plugin org.apache.felix.scr;
@@ -48,14 +41,7 @@ abstract junit-plugin configuration TestBase {
 	
 	feature name.abuchen.portfolio.feature;
 	feature org.eclipse.e4.rcp;
-	feature org.eclipse.emf.ecore;
-	feature org.eclipse.emf.common;
 	feature org.eclipse.equinox.p2.core.feature;
-	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
-	feature org.eclipse.ecf.core.ssl.feature;
-	feature org.eclipse.ecf.filetransfer.ssl.feature;
-	feature org.eclipse.ecf.core.feature;
-	feature org.eclipse.ecf.filetransfer.feature;
 	feature org.eclipse.nebula.cwt.feature;
 	feature org.eclipse.nebula.widgets.cdatetime.feature;
 	plugin org.apache.felix.scr;

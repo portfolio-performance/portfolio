@@ -40,8 +40,6 @@
    <features>
       <feature id="name.abuchen.portfolio.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
-      <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.babel.nls_eclipse_de"/>
       <feature id="org.eclipse.babel.nls_eclipse_es"/>
@@ -60,11 +58,6 @@
       <feature id="org.eclipse.babel.nls_eclipse_tr"/>
       <feature id="org.eclipse.babel.nls_eclipse_vi"/>
       <feature id="org.eclipse.babel.nls_eclipse_ca"/>
-      <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
-      <feature id="org.eclipse.ecf.core.ssl.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
-      <feature id="org.eclipse.ecf.core.feature"/>
-      <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.nebula.cwt.feature"/>
       <feature id="org.eclipse.nebula.widgets.cdatetime.feature"/>
    </features>
