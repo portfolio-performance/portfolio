@@ -920,7 +920,7 @@ public final class CSVImporter
         Reader reader = new InputStreamReader(stream, encoding);
 
         CSVFormat strategy = CSVFormat.DEFAULT.builder().setDelimiter(delimiter).setQuote('"')
-                        .setRecordSeparator("\r\n").build(); //$NON-NLS-1$
+                        .setRecordSeparator("\r\n").get(); //$NON-NLS-1$
 
         try
         {
