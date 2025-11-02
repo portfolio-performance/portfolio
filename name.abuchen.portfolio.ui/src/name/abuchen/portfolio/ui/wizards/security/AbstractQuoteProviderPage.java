@@ -62,6 +62,7 @@ import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -432,6 +433,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }));
 
         labelDetailData = new Label(grpQuoteFeed, SWT.NONE);
+        labelDetailData.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().indent(0, 5).applyTo(labelDetailData);
 
         createDetailDataWidgets(null);
@@ -592,6 +594,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             labelJsonPathDate = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathDate.setText(Messages.LabelJSONPathToDate);
+            labelJsonPathDate.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
@@ -644,6 +647,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             labelJsonPathClose = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathClose.setText(Messages.LabelJSONPathToClose);
+            labelJsonPathClose.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
