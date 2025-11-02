@@ -67,7 +67,7 @@ import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class TradeDetailsView extends AbstractFinanceView
+public final class TradeDetailsView extends AbstractFinanceView
 {
     public static class Input
     {
@@ -283,6 +283,9 @@ public class TradeDetailsView extends AbstractFinanceView
     private static final String PREF_HIDE_TOTALS_TOP = TradeDetailsView.class.getSimpleName() + "@hideTotalsTop"; //$NON-NLS-1$
     private static final String PREF_HIDE_TOTALS_BOTTOM = TradeDetailsView.class.getSimpleName() + "@hideTotalsBottom"; //$NON-NLS-1$
 
+    private static final String PREF_TAXONOMY = TradeDetailsView.class.getSimpleName() + "-taxonomy"; //$NON-NLS-1$
+    private static final String PREF_TAXONOMY_NONE = "@none"; //$NON-NLS-1$
+
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     @Inject
@@ -351,7 +354,10 @@ public class TradeDetailsView extends AbstractFinanceView
     @PostConstruct
     private void loadTaxonomy() // NOSONAR
     {
-        String taxonomyId = getPreferenceStore().getString(this.getClass().getSimpleName() + "-taxonomy"); //$NON-NLS-1$
+        String taxonomyId = getPreferenceStore().getString(PREF_TAXONOMY);
+
+        if (PREF_TAXONOMY_NONE.equals(taxonomyId))
+            return;
 
         if (taxonomyId != null)
         {
@@ -401,24 +407,30 @@ public class TradeDetailsView extends AbstractFinanceView
         ));
 
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
-            // Taxonomy selection at the top
-            if (!getClient().getTaxonomies().isEmpty())
-            {
-                manager.add(new LabelOnly(Messages.LabelTaxonomies));
-                for (final Taxonomy t : getClient().getTaxonomies())
-                {
-                    Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
-                        taxonomy = t;
-                        getPreferenceStore().setValue(this.getClass().getSimpleName() + "-taxonomy", t.getId()); //$NON-NLS-1$
-                        update();
-                    });
-                    action.setChecked(t.equals(taxonomy));
-                    manager.add(action);
-                }
 
-                manager.add(new Separator());
-                manager.add(new LabelOnly(Messages.LabelColumns));
+            manager.add(new LabelOnly(Messages.LabelTaxonomies));
+
+            var noneAction = new SimpleAction(Messages.LabelUseNoTaxonomy, a -> {
+                taxonomy = null;
+                getPreferenceStore().setValue(PREF_TAXONOMY, PREF_TAXONOMY_NONE);
+                update();
+            });
+            noneAction.setChecked(taxonomy == null);
+            manager.add(noneAction);
+
+            for (final Taxonomy t : getClient().getTaxonomies())
+            {
+                Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+                    taxonomy = t;
+                    getPreferenceStore().setValue(PREF_TAXONOMY, t.getId());
+                    update();
+                });
+                action.setChecked(t.equals(taxonomy));
+                manager.add(action);
             }
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.LabelColumns));
 
             table.getShowHideColumnHelper().menuAboutToShow(manager);
 
