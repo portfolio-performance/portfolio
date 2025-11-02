@@ -505,7 +505,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textJsonDateFormat = disposeIf(textJsonDateFormat);
         labelJsonDateTimezone = disposeIf(labelJsonDateTimezone);
         textJsonDateTimezone = disposeIf(textJsonDateTimezone);
-        labelJsonDateLocale = disposeIf(labelJsonDateFormat);
+        labelJsonDateLocale = disposeIf(labelJsonDateLocale);
         textJsonDateLocale = disposeIf(textJsonDateLocale);
         labelJsonPathLow = disposeIf(labelJsonPathLow);
         textJsonPathLow = disposeIf(textJsonPathLow);
