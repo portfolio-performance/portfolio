@@ -255,8 +255,9 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             List<Object> dates = ctx.read(dateP);
             List<Object> close = ctx.read(closeP);
 
+            // Use the US locale as default as JSON API usually is in English
+            var locale = parseLocale(dateLocale).orElse(Locale.US);
             // Create DateTimeFormatter once if custom format is provided
-            var locale = parseLocale(dateLocale).orElse(Locale.getDefault());
             Optional<DateTimeFormatter> customFormatter = dateFormat
                             .map(pattern -> DateTimeFormatter.ofPattern(pattern, locale));
 
