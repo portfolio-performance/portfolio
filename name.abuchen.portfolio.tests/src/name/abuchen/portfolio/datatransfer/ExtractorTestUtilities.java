@@ -29,4 +29,9 @@ public class ExtractorTestUtilities
     {
         return items.stream().filter(SecurityItem.class::isInstance).count();
     }
+
+    public static long countItemsWithFailureMessage(List<Extractor.Item> items)
+    {
+        return items.stream().filter(Extractor.Item::isFailure).count();
+    }
 }

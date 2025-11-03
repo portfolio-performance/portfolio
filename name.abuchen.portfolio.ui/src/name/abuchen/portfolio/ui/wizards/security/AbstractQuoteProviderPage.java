@@ -62,6 +62,7 @@ import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -93,6 +94,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textJsonDateFormat;
     private Label labelJsonDateTimezone;
     private Text textJsonDateTimezone;
+    private Label labelJsonDateLocale;
+    private Text textJsonDateLocale;
     private Label labelJsonPathLow;
     private Text textJsonPathLow;
     private Label labelJsonPathHigh;
@@ -143,6 +146,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     protected abstract String getJSONDateFormatPropertyName();
 
     protected abstract String getJSONDateTimezonePropertyName();
+
+    protected abstract String getJSONDateLocalePropertyName();
 
     protected abstract String getJSONClosePropertyName();
 
@@ -248,6 +253,13 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             String dateTimezone = model.getFeedProperty(getJSONDateTimezonePropertyName());
             textJsonDateTimezone.setText(dateTimezone != null ? dateTimezone : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonDateLocale != null
+                        && !textJsonDateLocale.getText().equals(model.getFeedProperty(getJSONDateLocalePropertyName())))
+        {
+            String dateLocale = model.getFeedProperty(getJSONDateLocalePropertyName());
+            textJsonDateLocale.setText(dateLocale != null ? dateLocale : ""); //$NON-NLS-1$
         }
 
         if (textJsonPathLow != null
@@ -421,6 +433,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }));
 
         labelDetailData = new Label(grpQuoteFeed, SWT.NONE);
+        labelDetailData.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().indent(0, 5).applyTo(labelDetailData);
 
         createDetailDataWidgets(null);
@@ -494,6 +507,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textJsonDateFormat = disposeIf(textJsonDateFormat);
         labelJsonDateTimezone = disposeIf(labelJsonDateTimezone);
         textJsonDateTimezone = disposeIf(textJsonDateTimezone);
+        labelJsonDateLocale = disposeIf(labelJsonDateLocale);
+        textJsonDateLocale = disposeIf(textJsonDateLocale);
         labelJsonPathLow = disposeIf(labelJsonPathLow);
         textJsonPathLow = disposeIf(textJsonPathLow);
         labelJsonPathHigh = disposeIf(labelJsonPathHigh);
@@ -579,6 +594,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             labelJsonPathDate = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathDate.setText(Messages.LabelJSONPathToDate);
+            labelJsonPathDate.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
@@ -616,8 +632,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco.setMarginWidth(2);
             deco.show();
 
+            labelJsonDateLocale = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonDateLocale.setText(Messages.LabelJSONDateLocale);
+
+            textJsonDateLocale = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonDateLocale);
+            textJsonDateLocale.addModifyListener(e -> onJsonDateLocaleChanged());
+
+            deco = new ControlDecoration(textJsonDateLocale, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONDateLocaleHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
             labelJsonPathClose = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathClose.setText(Messages.LabelJSONPathToClose);
+            labelJsonPathClose.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
 
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
@@ -795,6 +825,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String dateTimezone = model.getFeedProperty(getJSONDateTimezonePropertyName());
             if (dateTimezone != null)
                 textJsonDateTimezone.setText(dateTimezone);
+
+            String dateLocale = model.getFeedProperty(getJSONDateLocalePropertyName());
+            if (dateLocale != null)
+                textJsonDateLocale.setText(dateLocale);
 
             String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
             if (lowPath != null)
@@ -987,6 +1021,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (dateTimezone != null)
                 textJsonDateTimezone.setText(dateTimezone);
 
+            String dateLocale = model.getFeedProperty(getJSONDateLocalePropertyName());
+            if (dateLocale != null)
+                textJsonDateLocale.setText(dateLocale);
+
             String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
             if (lowPath != null)
                 textJsonPathLow.setText(lowPath);
@@ -1156,6 +1194,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         String dateTimezone = textJsonDateTimezone.getText();
 
         model.setFeedProperty(getJSONDateTimezonePropertyName(), dateTimezone.isEmpty() ? null : dateTimezone);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonDateLocaleChanged()
+    {
+        String dateLocale = textJsonDateLocale.getText();
+
+        model.setFeedProperty(getJSONDateLocalePropertyName(), dateLocale.isEmpty() ? null : dateLocale);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);

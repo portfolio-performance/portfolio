@@ -40,7 +40,7 @@ public class AlphavantageQuoteFeedTest
     public void testGetLatestQuoteValid() throws IOException, QuoteFeedException
     {
 
-        // a sample response, aquired through the api
+        // a sample response, acquired through the api
         String response = "timestamp,open,high,low,close,volume\n"
                         + "2020-04-20 16:00:00,277.3800,277.5300,276.8550,276.8550,389622\n"
                         + "2020-04-20 15:59:00,277.2800,277.6599,277.1100,277.3700,243746\n"

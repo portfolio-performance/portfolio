@@ -336,7 +336,7 @@ public class ECBDataPortalQuoteFeed implements QuoteFeed
             {
                 // If there is only one datapoint per month, we set the date to
                 // the first date of the month.
-                // When converting interest rates to cummulated indices, the
+                // When converting interest rates to cumulated indices, the
                 // InterestRateToSecurityPricesConverter
                 // will then use this interest for every day of the month
                 dateString = dateString + MONTH_POSTFIX;

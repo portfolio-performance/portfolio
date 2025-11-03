@@ -13,4 +13,9 @@ public class FeedConfigurationException extends QuoteFeedException
     {
         super();
     }
+
+    public FeedConfigurationException(String message)
+    {
+        super(message);
+    }
 }

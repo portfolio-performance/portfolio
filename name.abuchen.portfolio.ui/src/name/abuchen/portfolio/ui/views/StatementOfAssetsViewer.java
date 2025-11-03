@@ -84,7 +84,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
-import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -124,6 +123,8 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
+    private static final String PREFERENCE_NONE = "@none"; //$NON-NLS-1$
+
     public static final class Model
     {
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
@@ -131,6 +132,7 @@ public class StatementOfAssetsViewer
 
         private final IPreferenceStore preferences;
 
+        private final Taxonomy taxonomy;
         private final ClientFilter clientFilter;
         private final Client filteredClient;
         private CurrencyConverter converter;
@@ -153,6 +155,8 @@ public class StatementOfAssetsViewer
             this.clientFilter = filter;
             this.filteredClient = filter.filter(client);
             this.converter = converter;
+
+            this.taxonomy = taxonomy;
 
             this.globalInterval = Interval.of(LocalDate.MIN, date);
 
@@ -225,8 +229,13 @@ public class StatementOfAssetsViewer
 
             for (AssetCategory cat : groupByTaxonomy.asList())
             {
+                var isUnassignedCategory = Objects.equals(Classification.UNASSIGNED_ID,
+                                cat.getClassification().getId());
+                var hideCategory = taxonomy == null && isUnassignedCategory;
+
                 Element category = new Element(groupByTaxonomy, cat, sortOrder);
-                answer.add(category);
+                if (!hideCategory)
+                    answer.add(category);
                 totalTop.addChild(category);
                 totalBottom.addChild(category);
                 sortOrder++;
@@ -340,7 +349,10 @@ public class StatementOfAssetsViewer
     {
         String taxonomyId = preference.getString(this.getClass().getSimpleName());
 
-        if (taxonomyId != null)
+        if (PREFERENCE_NONE.equals(taxonomyId))
+            return;
+
+        if (taxonomyId != null && !taxonomyId.isBlank())
         {
             for (Taxonomy t : client.getTaxonomies())
             {
@@ -367,7 +379,6 @@ public class StatementOfAssetsViewer
         ColumnEditingSupport.prepare(owner.getEditorActivationState(), assets);
         CopyPasteSupport.enableFor(assets);
 
-        ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
 
         assets.addSelectionChangedListener(event -> {
@@ -1080,6 +1091,11 @@ public class StatementOfAssetsViewer
         return assets;
     }
 
+    public boolean hasModel()
+    {
+        return model != null;
+    }
+
     public void showConfigMenu(Shell shell)
     {
         if (contextMenu == null)
@@ -1097,6 +1113,14 @@ public class StatementOfAssetsViewer
     public void menuAboutToShow(IMenuManager manager)
     {
         manager.add(new LabelOnly(Messages.LabelTaxonomies));
+
+        var noneAction = new SimpleAction(Messages.LabelUseNoTaxonomy, a -> {
+            taxonomy = null;
+            setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
+        });
+        noneAction.setChecked(taxonomy == null);
+        manager.add(noneAction);
+
         for (final Taxonomy t : client.getTaxonomies())
         {
             Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
@@ -1169,8 +1193,12 @@ public class StatementOfAssetsViewer
 
     private void widgetDisposed()
     {
+        var preferenceKey = this.getClass().getSimpleName();
+
         if (taxonomy != null)
-            preference.setValue(this.getClass().getSimpleName(), taxonomy.getId());
+            preference.setValue(preferenceKey, taxonomy.getId());
+        else
+            preference.setValue(preferenceKey, PREFERENCE_NONE);
 
         if (contextMenu != null)
             contextMenu.dispose();

@@ -37,6 +37,24 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.80.4" date="2025-11-01">
+      <description>
+          <ul>
+            <li>New: Added Binance USDS-M Futures as an online price feed.</li>
+            <li>New: Added an option to disable automatic price downloads in the “Search for suppliers of historical prices” dialog.</li>
+            <li>Improvement: The generic JSON importer can now be configured with a locale for parsing dates in a specific language.</li>
+            <li>Improvement: Migrated extended ECB feeds (e.g. Euribor and others) to the new ECB Data Portal endpoint.</li>
+            <li>Improvement: Improved PDF importers for Baader Bank, DKB, Bourse Direct, Raiffeisenbank Bankgruppe, Advanzia Bank, Saxo Bank, Sutor Bank, sbroker, Sparkasse, MERKUR PRIVATBANK, Scalable Capital, and Tradegate AG.</li>
+            <li>Fix: Improved handling of PDF parsing errors to prevent crashes.</li>
+            <li xml:lang="de">Neu: Kurslieferant für Binance USDS-M Futures hinzugefügt.</li>
+            <li xml:lang="de">Neu: Option hinzugefügt, um den automatischen Download von Kursen im Dialog zur Suche von Kurslieferanten zu deaktivieren.</li>
+            <li xml:lang="de">Verbesserung: Der generische JSON-Importer kann jetzt mit einem Datumsgebietsschema konfiguriert werden, um Datumswerte in einer bestimmten Sprache einzulesen.</li>
+            <li xml:lang="de">Verbesserung: Der ECB-Kurslieferant für erweiterte Werte wie Euribor wurde auf das neue ECB Data Portal umgestellt.</li>
+            <li xml:lang="de">Verbesserung: PDF-Importer für Baader Bank, DKB, Bourse Direct, Raiffeisenbank Bankgruppe, Advanzia Bank, Saxo Bank, Sutor Bank, sbroker, Sparkasse, MERKUR PRIVATBANK, Scalable Capital und Tradegate AG verbessert.</li>
+            <li xml:lang="de">Fehlerbehebung: Fehler beim Umwandeln von PDF-Dokumenten in Text werden nun besser behandelt.</li>
+          </ul>
+        </description>
+      </release>
     <release version="0.80.3" date="2025-10-04">
       <description>
         <ul>

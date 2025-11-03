@@ -748,6 +748,8 @@ public class Messages extends NLS
     public static String LabelJSONDateFormatHint;
     public static String LabelJSONDateTimezone;
     public static String LabelJSONDateTimezoneHint;
+    public static String LabelJSONDateLocale;
+    public static String LabelJSONDateLocaleHint;
     public static String LabelJSONFactor;
     public static String LabelJSONFactorHint;
     public static String LabelJSONFile;
@@ -766,8 +768,6 @@ public class Messages extends NLS
     public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
-    public static String LabelLinkedToPortfolioReport;
-    public static String LabelLinkToPortfolioReportNet;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownChart;
     public static String LabelMaxDrawdownDuration;
@@ -945,6 +945,7 @@ public class Messages extends NLS
     public static String LabelUpdatesAvailable;
     public static String LabelUseExistingSecurity;
     public static String LabelUseGrossValue;
+    public static String LabelUseNoTaxonomy;
     public static String LabelUser;
     public static String LabelUseSecurityCurrency;
     public static String LabelUsingDashboardDefaultReportingPeriod;
@@ -1100,7 +1101,6 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
     public static String MsgErrorMissingQuandlCode;
-    public static String MsgErrorNoInvestmentVehicleFoundAtURL;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorPortfolioNotExist;

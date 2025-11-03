@@ -208,6 +208,12 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateLocalePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_LOCALE_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
     protected String getJSONLowPathPropertyName()
     {
         return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_LATEST;

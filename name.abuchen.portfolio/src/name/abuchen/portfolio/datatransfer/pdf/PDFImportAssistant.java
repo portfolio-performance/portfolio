@@ -181,22 +181,30 @@ public class PDFImportAssistant
 
                 if (!extracted)
                 {
-                    inputFile.convertLegacyPDFtoText();
-                    for (Extractor extractor : extractors)
+                    try
                     {
-                        var items = extractor.extract(securityCache, inputFile, warnings);
-
-                        if (!items.isEmpty())
+                        inputFile.convertLegacyPDFtoText();
+                        for (Extractor extractor : extractors)
                         {
-                            extracted = true;
-                            itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
-                            break;
+                            var items = extractor.extract(securityCache, inputFile, warnings);
+
+                            if (!items.isEmpty())
+                            {
+                                extracted = true;
+                                itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
+                                break;
+                            }
+                        }
+
+                        if (extracted)
+                        {
+                            PortfolioLog.info("PDF successfully imported with PDFBox 1.8.x " + inputFile.getName()); //$NON-NLS-1$
                         }
                     }
-
-                    if (extracted)
+                    catch (IOException ignore)
                     {
-                        PortfolioLog.info("PDF successfully imported with PDFBox 1.8.x " + inputFile.getName()); //$NON-NLS-1$
+                        // ignore if the file cannot be read by PDFBox Version 1
+                        PortfolioLog.error(ignore);
                     }
                 }
 

@@ -326,7 +326,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     {
         LocalDate previousDate = transactionDate;
         LocalDate next;
-        if (interval < WEEKS_THRESHOLD) // monthly invervals
+        if (interval < WEEKS_THRESHOLD) // monthly intervals
         {
             // the transaction date might be edited (or moved to the next months
             // b/c of public holidays) -> determine the "normalized" date by

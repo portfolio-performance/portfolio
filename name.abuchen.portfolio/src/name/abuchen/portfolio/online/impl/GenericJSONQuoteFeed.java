@@ -17,6 +17,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     public static final String DATE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE"; //$NON-NLS-1$
     public static final String DATE_FORMAT_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE-FORMAT"; //$NON-NLS-1$
     public static final String DATE_TIMEZONE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE-TIMEZONE"; //$NON-NLS-1$
+    public static final String DATE_LOCALE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-DATE-LOCALE"; //$NON-NLS-1$
     public static final String CLOSE_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-CLOSE"; //$NON-NLS-1$
     public static final String HIGH_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-HIGH"; //$NON-NLS-1$
     public static final String LOW_PROPERTY_NAME_HISTORIC = "GENERIC-JSON-LOW"; //$NON-NLS-1$
@@ -61,6 +63,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     public static final String DATE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-LATEST"; //$NON-NLS-1$
     public static final String DATE_FORMAT_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-FORMAT-LATEST"; //$NON-NLS-1$
     public static final String DATE_TIMEZONE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-TIMEZONE-LATEST"; //$NON-NLS-1$
+    public static final String DATE_LOCALE_PROPERTY_NAME_LATEST = "GENERIC-JSON-DATE-LOCALE-LATEST"; //$NON-NLS-1$
     public static final String CLOSE_PROPERTY_NAME_LATEST = "GENERIC-JSON-CLOSE-LATEST"; //$NON-NLS-1$
     public static final String HIGH_PROPERTY_NAME_LATEST = "GENERIC-JSON-HIGH-LATEST"; //$NON-NLS-1$
     public static final String LOW_PROPERTY_NAME_LATEST = "GENERIC-JSON-LOW-LATEST"; //$NON-NLS-1$
@@ -91,7 +94,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     public String getLatestGroupingCriterion(Security security)
     {
         String latestFeed = security.getLatestFeed();
-        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? latestFeed : security.getFeedURL());
+        return getCriterionFrom(latestFeed != null && !latestFeed.isEmpty() ? security.getLatestFeedURL()
+                        : security.getFeedURL());
     }
 
     @Override
@@ -130,6 +134,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
                         isLatest ? DATE_FORMAT_PROPERTY_NAME_LATEST : DATE_FORMAT_PROPERTY_NAME_HISTORIC);
         Optional<String> dateTimezoneProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? DATE_TIMEZONE_PROPERTY_NAME_LATEST : DATE_TIMEZONE_PROPERTY_NAME_HISTORIC);
+        Optional<String> dateLocaleProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        isLatest ? DATE_LOCALE_PROPERTY_NAME_LATEST : DATE_LOCALE_PROPERTY_NAME_HISTORIC);
         Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
                         isLatest ? CLOSE_PROPERTY_NAME_LATEST : CLOSE_PROPERTY_NAME_HISTORIC);
         Optional<String> highProperty = security.getPropertyValue(SecurityProperty.Type.FEED,
@@ -190,8 +196,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
             if (json != null)
                 newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), data,
-                                dateFormatProperty, dateTimezoneProperty, lowProperty, highProperty, factorProperty,
-                                volumeProperty));
+                                dateFormatProperty, dateTimezoneProperty, dateLocaleProperty, lowProperty, highProperty,
+                                factorProperty, volumeProperty));
 
             if (newPricesByDate.size() > sizeBefore)
                 failedAttempts = 0;
@@ -233,8 +239,8 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     protected List<LatestSecurityPrice> parse(String url, String json, String datePath, String closePath,
                     QuoteFeedData data, Optional<String> dateFormat, Optional<String> dateTimezone,
-                    Optional<String> lowPath, Optional<String> highPath, Optional<String> factorString,
-                    Optional<String> volumePath)
+                    Optional<String> dateLocale, Optional<String> lowPath, Optional<String> highPath,
+                    Optional<String> factorString, Optional<String> volumePath)
     {
         try
         {
@@ -249,8 +255,11 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             List<Object> dates = ctx.read(dateP);
             List<Object> close = ctx.read(closeP);
 
+            // Use the US locale as default as JSON API usually is in English
+            var locale = parseLocale(dateLocale).orElse(Locale.US);
             // Create DateTimeFormatter once if custom format is provided
-            Optional<DateTimeFormatter> customFormatter = dateFormat.map(DateTimeFormatter::ofPattern);
+            Optional<DateTimeFormatter> customFormatter = dateFormat
+                            .map(pattern -> DateTimeFormatter.ofPattern(pattern, locale));
 
             Optional<List<Object>> high = Optional.empty();
             Optional<List<Object>> low = Optional.empty();
@@ -428,6 +437,29 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         else if (object instanceof LocalDate date)
             return applyOffset(date.atTime(LocalTime.MAX), offset).toLocalDate();
         return null;
+    }
+
+    private Optional<Locale> parseLocale(Optional<String> localeString)
+    {
+        if (!localeString.isPresent() || localeString.get().trim().isEmpty())
+            return Optional.empty();
+
+        try
+        {
+            var locale = localeString.get().trim();
+
+            // Convert underscore format to BCP 47 format (e.g., "en_US" ->
+            // "en-US"). This allows consistent handling via
+            // Locale.forLanguageTag()
+            var languageTag = locale.replace('_', '-');
+
+            return Optional.of(Locale.forLanguageTag(languageTag));
+        }
+        catch (Exception e)
+        {
+            // If parsing fails, return empty to fall back to default locale
+            return Optional.empty();
+        }
     }
 
     private LocalDate parseDate(String dateString, DateTimeFormatter formatter, ZoneOffset offset)

@@ -1747,7 +1747,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setVisible(false);
         recordColumns.addColumn(column);
 
-        // internal rate of erturn
+        // internal rate of return
         column = new Column("filter:izf", Messages.ColumnIRR_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ClientFilterColumnOptions(Messages.ColumnIRR + suffix,
                         new ClientFilterMenu(getClient(), getPreferenceStore())));

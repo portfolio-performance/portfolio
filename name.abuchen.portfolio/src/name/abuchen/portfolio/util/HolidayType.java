@@ -127,7 +127,7 @@ import name.abuchen.portfolio.util.HebrewCalendar.HebrewDate;
                   p=(h+l-7*m+114)%31
                   Easter Date=p+1     (date in Easter Month)
             Note: Integer truncation is already factored into the
-            calculations. Using higher percision variables will cause
+            calculations. Using higher precision variables will cause
             inaccurate calculations. 
             */
             // @formatter:on
