@@ -127,15 +127,19 @@ import name.abuchen.portfolio.util.TextUtil;
                                     }
                                 });
 
-                                return new TradeDetailsView.Input(interval, trades, errors, useSecurityCurrency());
+                                var cachedInput = new TradeDetailsView.Input(interval, trades, errors, useSecurityCurrency());
+                                cachedInput.setTableInput(TradeDetailsView.mapTradesToElements(trades));
+                                return cachedInput;
                             });
 
             // filter trades on the *cached* result (which includes all trades)
             // because widgets apply different filter on the result
 
-            return new TradeDetailsView.Input(input.getInterval(),
-                            input.getTrades().stream().filter(getFilter(interval)).collect(toMutableList()),
-                            input.getErrors(), input.useSecurityCurrency());
+            var filteredTrades = input.getTrades().stream().filter(getFilter(interval)).collect(toMutableList());
+            var filteredInput = new TradeDetailsView.Input(input.getInterval(), filteredTrades, input.getErrors(),
+                            input.useSecurityCurrency());
+            filteredInput.setTableInput(TradeDetailsView.mapTradesToElements(filteredTrades));
+            return filteredInput;
         };
     }
 
