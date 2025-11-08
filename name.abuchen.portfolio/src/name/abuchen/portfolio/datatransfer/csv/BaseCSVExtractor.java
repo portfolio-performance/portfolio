@@ -205,7 +205,8 @@ import name.abuchen.portfolio.money.Money;
 
         Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
         BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
-        Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
+        Money converted = Money.of(amount.getCurrencyCode(),
+                        grossAmountConverted.setScale(0, RoundingMode.HALF_UP).longValue());
 
         return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));
     }
@@ -220,8 +221,9 @@ import name.abuchen.portfolio.money.Money;
         if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
         {
             var grossValue = transaction.getGrossValue();
-            var forex = Money.of(transaction.getSecurity().getCurrencyCode(), Math
-                            .round(exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount())).doubleValue()));
+            var forex = Money.of(transaction.getSecurity().getCurrencyCode(),
+                            exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount()))
+                                    .setScale(0, RoundingMode.HALF_UP).longValue());
             exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
             transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
         }

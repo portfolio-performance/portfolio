@@ -70,7 +70,10 @@ public class CheckForexGrossValueAction implements ImportAction
         Money unitValue = grossValueUnit.get().getAmount();
         Money calculatedValue = transaction.getGrossValue();
 
-        if (!unitValue.equals(calculatedValue))
+        // Allow tolerance of ±2 (0.02 in currency) to account for rounding errors
+        // when Money values are limited to 2 decimal places. This addresses issue #5069.
+        long difference = Math.abs(unitValue.getAmount() - calculatedValue.getAmount());
+        if (difference > 2)
             return new Status(Status.Code.ERROR,
                             MessageFormat.format(Messages.MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch,
                                             Values.Money.format(unitValue), Values.Money.format(calculatedValue)));
