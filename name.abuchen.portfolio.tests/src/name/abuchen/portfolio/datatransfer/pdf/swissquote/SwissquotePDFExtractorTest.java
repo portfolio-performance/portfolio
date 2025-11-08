@@ -1788,6 +1788,73 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende13()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B5SSQT16"), hasWkn(null), hasTicker(null), //
+                        hasName("HSBC MSCI EMERGING MARKETS UCI"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-05-13T00:00"), hasShares(1000.00), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote("Referenz: 249975908"), //
+                        hasAmount("USD", 39.70), hasGrossValue("USD", 39.70), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende13WithSecurityInCHF()
+    {
+        var security = new Security("HSBC MSCI EMERGING MARKETS UCI", "CHF");
+        security.setIsin("IE00B5SSQT16");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2022-05-13T00:00"), hasShares(1000.00), //
+                        hasSource("Dividende13.txt"), //
+                        hasNote("Referenz: 249975908"), //
+                        hasAmount("USD", 39.70), hasGrossValue("USD", 39.70), //
+                        hasForexGrossValue("CHF", 39.81), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testZahlungsverkehr01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
