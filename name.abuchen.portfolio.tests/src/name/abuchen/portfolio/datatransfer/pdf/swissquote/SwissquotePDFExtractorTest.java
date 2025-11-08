@@ -27,8 +27,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -840,6 +840,41 @@ public class SwissquotePDFExtractorTest
                         hasNote("Referenz: 585697505"), //
                         hasAmount("USD", 7044.55), hasGrossValue("USD", 7050.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.45 + 5.00))));
+    }
+
+    @Test
+    public void testSecuritySell01()
+    {
+        var client = new Client();
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0183135976"), hasWkn(null), hasTicker(null), //
+                        hasName("Swisscanto Silver ETF-A CHF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-10-21T00:00"), hasShares(5.0721), //
+                        hasSource("Sell01.txt"), //
+                        hasNote("Ref.-Nr.: 533430837"), //
+                        hasAmount("CHF", 548.20), hasGrossValue("CHF", 548.60), //
+                        hasTaxes("CHF", 0.40), hasFees("CHF", 0.00))));
     }
 
     @Test
