@@ -644,6 +644,9 @@ public class ClientInput
 
         this.client = client;
 
+        // Reset remembered transaction date when loading a new portfolio file
+        name.abuchen.portfolio.ui.dialogs.transactions.PresetValues.resetLastTransactionDate();
+
         IEclipseContext c2 = EclipseContextFactory.create();
         c2.set(Client.class, client);
         this.exchangeRateProviderFacory = ContextInjectionFactory //
