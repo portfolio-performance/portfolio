@@ -199,15 +199,27 @@ import name.abuchen.portfolio.money.Money;
         if (grossAmount == null || grossAmount.longValue() == 0)
             return Optional.empty();
 
-        // if no exchange rate is available, not unit to create
         if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
-            return Optional.empty();
+        {
+            // if no exchange rate is available, try to calculate given the
+            // amount
 
-        Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
-        BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
-        Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
+            var forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
+            var converted = Money.of(amount.getCurrencyCode(), amount.getAmount());
+            var calcluatedRate = BigDecimal.valueOf((double)amount.getAmount() / forex.getAmount());
 
-        return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));
+            return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, calcluatedRate));
+        }
+        else
+        {
+            // create the unit out of given amount, currency, and exchange rate
+
+            Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
+            BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
+            Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
+
+            return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));
+        }
     }
 
     protected void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
