@@ -27,7 +27,7 @@ public class PresetValuesTest
     @Test
     public void testSetAndGetLastTransactionDate()
     {
-        LocalDate testDate = LocalDate.of(2024, 1, 15);
+        LocalDate testDate = LocalDate.now().minusMonths(3);
         PresetValues.setLastTransactionDate(testDate);
 
         LocalDate result = PresetValues.getLastTransactionDate();
@@ -57,7 +57,7 @@ public class PresetValuesTest
     @Test
     public void testResetClearsStoredDate()
     {
-        LocalDate testDate = LocalDate.of(2024, 1, 15);
+        LocalDate testDate = LocalDate.now().minusMonths(3);
         PresetValues.setLastTransactionDate(testDate);
 
         PresetValues.resetLastTransactionDate();
@@ -69,15 +69,15 @@ public class PresetValuesTest
     @Test
     public void testMultipleSetGetCycles()
     {
-        LocalDate date1 = LocalDate.of(2024, 1, 15);
+        LocalDate date1 = LocalDate.now().minusMonths(6);
         PresetValues.setLastTransactionDate(date1);
         assertThat(PresetValues.getLastTransactionDate(), is(date1));
 
-        LocalDate date2 = LocalDate.of(2024, 2, 20);
+        LocalDate date2 = LocalDate.now().minusMonths(3);
         PresetValues.setLastTransactionDate(date2);
         assertThat(PresetValues.getLastTransactionDate(), is(date2));
 
-        LocalDate date3 = LocalDate.of(2024, 3, 30);
+        LocalDate date3 = LocalDate.now().minusMonths(1);
         PresetValues.setLastTransactionDate(date3);
         assertThat(PresetValues.getLastTransactionDate(), is(date3));
     }
