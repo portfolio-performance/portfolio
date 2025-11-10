@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -17,6 +18,11 @@ public abstract class AbstractModel
     private ExchangeRateProviderFactory factory;
 
     public abstract String getHeading();
+
+    /**
+     * Returns the date of the transaction.
+     */
+    public abstract LocalDate getDate();
 
     /**
      * Creates or updates the underlying transaction.
