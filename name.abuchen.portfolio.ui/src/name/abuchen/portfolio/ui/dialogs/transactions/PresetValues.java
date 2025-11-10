@@ -36,7 +36,7 @@ public class PresetValues
      */
     public static LocalDate getLastTransactionDate()
     {
-        if (lastTransactionDate != null && lastTransactionDate.isAfter(LocalDate.now().minusYears(1)))
+        if (lastTransactionDate != null && !lastTransactionDate.isBefore(LocalDate.now().minusYears(1)))
             return lastTransactionDate;
         return LocalDate.now();
     }
