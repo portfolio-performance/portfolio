@@ -1151,8 +1151,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Inkassoprovision: -3,11 EUR
+                        // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Inkassoprovision: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // easybank Orderspesen: -9,95 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.*Orderspesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
