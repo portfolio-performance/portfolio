@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.tradegateag;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -24,8 +23,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,13 +37,9 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TradegateAGPDFExtractor;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
@@ -281,14 +276,7 @@ public class TradegateAGPDFExtractorTest
                         hasSource("Dividende02.txt"), //
                         hasNote("Order-/Ref.nr. 9876543"), //
                         hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
-                        hasTaxes("EUR", (2.74 + 0.15) / 1.11856), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", (2.74 + 0.15) / 1.11856), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -356,14 +344,7 @@ public class TradegateAGPDFExtractorTest
                         hasSource("Dividende03.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 2.81), hasGrossValue("EUR", 3.81), //
-                        hasTaxes("EUR", (0.95 + 0.05)), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", (0.95 + 0.05)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -464,14 +445,7 @@ public class TradegateAGPDFExtractorTest
                         hasSource("Dividende05.txt"), //
                         hasNote("Order-/Ref.nr. 35894402"), //
                         hasAmount("EUR", 1.87), hasGrossValue("EUR", 2.20), //
-                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.33), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -562,6 +536,34 @@ public class TradegateAGPDFExtractorTest
                         hasSource("Steuerausgleichsrechnung02.txt"), //
                         hasNote("Order-/Ref.nr. 9876543 | 07.11.2024 - 03.12.2024"), //
                         hasAmount("EUR", 0.44), hasGrossValue("EUR", 0.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerausgleichsrechnung03()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check tax Refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-11-03T00:00"), hasShares(0), //
+                        hasSource("Steuerausgleichsrechnung03.txt"), //
+                        hasNote("Order-/Ref.nr. 9876543 | 31.10.2025 - 03.11.2025"), //
+                        hasAmount("EUR", 0.18), hasGrossValue("EUR", 0.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
