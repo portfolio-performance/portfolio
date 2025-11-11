@@ -35,7 +35,7 @@ public class CSVExporter
 {
     /* package */ static final CSVFormat STRATEGY = CSVFormat.DEFAULT.builder() //
                     .setDelimiter(TextUtil.getListSeparatorChar()).setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
+                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).get();
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {

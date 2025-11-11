@@ -14,6 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
@@ -704,5 +705,41 @@ public class CSVAccountTransactionExtractorTest
                         hasGrossValue("EUR", 55.86), //
                         hasForexGrossValue("USD", 62.53), // 1.1194 * 55.86
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.14))));
+    }
+
+    @Test
+    public void testExchangeRateIsDerivedFromGrossValue()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("LU0419741177");
+        security.setCurrencyCode(CurrencyUnit.USD);
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
+                        "2015-09-15", "XX:XX", // Date + Time
+                        "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
+                        "1000", "EUR", // Amount + Currency
+                        "TRANSFER_OUT", // Type
+                        "", "", // Security name + Shares
+                        "Notiz", // Note
+                        "", "", // Taxes + Fee
+                        "", "", "", // account + account2nd + portfolio
+                        "1112", "USD", // Gross + Gross currency
+                        "" }), // Exchange rate
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR, "USD");
+
+        // check that gross value is created with given exchange rate
+        assertThat(results, hasItem(outboundCash( //
+                        hasDate("2015-09-15"), //
+                        hasAmount("EUR", 1000.00), //
+                        hasForexGrossValue("USD", 1112.00), hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
