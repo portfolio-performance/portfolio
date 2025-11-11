@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -272,6 +273,8 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                             t.addUnit(new Unit(Unit.Type.TAX, gross.subtract(amount)));
                         })
 
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -291,13 +294,9 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        var pdfTransaction = new Transaction<AccountTransaction>();
-
-        var firstRelevantLine = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}VIREMENT ESPECES.*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
+        var depositBlock = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}VIREMENT ESPECES.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
@@ -317,10 +316,32 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap(TransactionItem::new);
+                        .wrap(TransactionItem::new));
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
+        var feesBlock = new Block("^.*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}[\\s]{1,}DROITS DE GARDE.*$");
+        type.addBlock(feesBlock);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        //  06/07/2021  DROITS DE GARDE  DDG ETG 2T21  0,81
+                        // @formatter:on
+                        .section("date", "note", "amount") //
+                        .documentContext("currency") //
+                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}DROITS DE GARDE(?<note>.*)[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
