@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,7 +57,9 @@ public class TASEQuoteFeed implements QuoteFeed
         this.TASEFunds = new TASEFund();
         this.ismapped = false;
 
-
+/*
+ * Delay loading the complete list of entities until it is needed
+ @formatter:off
         try
         {
             this.mapEntities();
@@ -69,7 +70,11 @@ public class TASEQuoteFeed implements QuoteFeed
             PortfolioLog.error("Could not get Tel Aviv Stock Exchange Entities"); //$NON-NLS-1$
             this.ismapped = false;
         }
+@formatter:on
+*/
     }
+
+
 
     @Override
     public String getId()
@@ -95,6 +100,11 @@ public class TASEQuoteFeed implements QuoteFeed
      */
     public List<IndiceListing> getTaseEntities()
     {
+        if (!this.ismapped)
+        {
+            this.mapEntities();
+        }
+            
         if (this.mappedEntities == null)
             return Collections.emptyList();
         else
@@ -110,6 +120,10 @@ public class TASEQuoteFeed implements QuoteFeed
     @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
+        if (!this.ismapped)
+        {
+            this.mapEntities();
+        }
 
         Optional<QuoteFeedData> historicalprices = Optional.of(new QuoteFeedData());
 
@@ -148,6 +162,11 @@ public class TASEQuoteFeed implements QuoteFeed
         if ((security.getWkn() == null) || (security.getWkn().length() == 0))
             return Optional.empty();
 
+        if (!this.ismapped)
+        {
+            this.mapEntities();
+        }
+
         TaseType type = getSecurityType(security.getWkn());
         Optional<LatestSecurityPrice> priceOpt = Optional.empty();
 
@@ -173,39 +192,50 @@ public class TASEQuoteFeed implements QuoteFeed
      * Gets all Entities from the TASE API, then filters the Mutual Funds and
      * Securities. Not interested in disclosures, indices and companies
      */
-    private void mapEntities() throws IOException
+    private void mapEntities()
     {
-        TASEEntities entities = new TASEEntities();
-
-        Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
-
-        if (!mappedEntitiesOptional.isEmpty())
+        try
         {
-            this.mappedEntities = mappedEntitiesOptional.get();
-            
-            Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
+            TASEEntities entities = new TASEEntities();
 
-            while (entitiesIterator.hasNext())
+            Optional<List<IndiceListing>> mappedEntitiesOptional = entities.getAllListings(Language.ENGLISH);
+
+            if (mappedEntitiesOptional.isEmpty())
             {
-                IndiceListing listing = entitiesIterator.next();
+                PortfolioLog.error("Could not get Tel Aviv Stock Exchange Entities"); //$NON-NLS-1$
+                this.ismapped = false;
+            }
+            else
+            {
+                this.ismapped = true;
+                this.mappedEntities = mappedEntitiesOptional.get();
 
-                int type = listing.getType();
-                String subtype = listing.getSubType();
-                listing.setTaseType(TaseType.NONE);
+                Iterator<IndiceListing> entitiesIterator = this.mappedEntities.iterator();
 
-                if (type == TaseSecurityType.MUTUAL_FUND.getValue() && subtype == null) // $NON-NLS-1$
+                while (entitiesIterator.hasNext())
                 {
-                    listing.setTaseType(TaseType.FUND);
-                }
-                if (type == TaseSecurityType.SECURITY.getValue() && subtype != TaseSecuritySubType.WARRENTS.toString())
-                {
-                    listing.setTaseType(TaseType.SECURITY);
+                    IndiceListing listing = entitiesIterator.next();
+
+                    int type = listing.getType();
+                    String subtype = listing.getSubType();
+                    listing.setTaseType(TaseType.NONE);
+
+                    if (type == TaseSecurityType.MUTUAL_FUND.getValue() && subtype == null) // $NON-NLS-1$
+                    {
+                        listing.setTaseType(TaseType.FUND);
+                    }
+                    if (type == TaseSecurityType.SECURITY.getValue()
+                                    && subtype != TaseSecuritySubType.WARRENTS.toString())
+                    {
+                        listing.setTaseType(TaseType.SECURITY);
+                    }
                 }
             }
         }
-        else
+        catch (Exception e)
         {
-            PortfolioLog.error("Could not get TLV Stock Exchange Entities"); //$NON-NLS-1$
+            PortfolioLog.error("Could not get Tel Aviv Stock Exchange Entities"); //$NON-NLS-1$
+            this.ismapped = false;
         }
     }
 
@@ -259,6 +289,10 @@ public class TASEQuoteFeed implements QuoteFeed
      */
     public Optional<String> getQuoteCurrency(Security security)
     {
+        if (!this.ismapped)
+        {
+            this.mapEntities();
+        }
 
         TaseType type = getSecurityType(security.getWkn());
         if (type == TaseType.FUND)

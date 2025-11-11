@@ -167,6 +167,7 @@ public class TASESearchProvider implements SecuritySearchProvider
 
     private static final String NAME = "Tel Aviv Exchange"; //$NON-NLS-1$
     private List<IndiceListing> tlvEntities;
+    private Boolean ismapped;
 
     
 
@@ -178,7 +179,8 @@ public class TASESearchProvider implements SecuritySearchProvider
          * TASE API has a search by ISIN only. To support other searches, cache
          * all tlvEntities upfront so we can search on them
          */
-        this.tlvEntities = getFeedEntities();
+        // this.tlvEntities = getFeedEntities();
+        this.ismapped = false;
 
     }
 
@@ -195,6 +197,10 @@ public class TASESearchProvider implements SecuritySearchProvider
     {
         List<ResultItem> answer = new ArrayList<>();
 
+        if (!this.ismapped)
+        {
+            this.tlvEntities = this.getFeedEntities();
+        }
         // Exit if the cached list of entities is empty
         if (this.tlvEntities == null || this.tlvEntities.isEmpty())
         {

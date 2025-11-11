@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -39,7 +39,7 @@ public class TASESearchProviderTest
 
     @SuppressWarnings("unchecked")
     @Test
-    public void SearchProvidershouldLoadIndicesWhenCreated() throws NoSuchFieldException, IllegalAccessException
+    public void SearchProvidershouldNotLoadIndicesWhenCreated() throws NoSuchFieldException, IllegalAccessException
     {
         TASESearchProvider tase = new TASESearchProvider();
 
@@ -47,7 +47,7 @@ public class TASESearchProviderTest
         tlvEntitiesField.setAccessible(true);
 
         List<IndiceListing> a = (List<IndiceListing>) tlvEntitiesField.get(tase);
-        assertThat(a.size(), greaterThanOrEqualTo(0));
+        assertTrue(a == null);
 
     }
 
