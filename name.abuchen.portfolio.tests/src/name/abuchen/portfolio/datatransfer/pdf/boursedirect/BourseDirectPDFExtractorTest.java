@@ -2,10 +2,12 @@ package name.abuchen.portfolio.datatransfer.pdf.boursedirect;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -20,8 +22,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,6 +39,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BourseDirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class BourseDirectPDFExtractorTest
@@ -283,6 +286,53 @@ public class BourseDirectPDFExtractorTest
                         hasSource("ReleveDeCompte05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2977.53), hasGrossValue("EUR", 2986.04), //
+                        hasForexGrossValue("USD", 3564.00), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 8.50))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-03-16T19:45:03"), hasShares(20.00), //
+                        hasSource("ReleveDeCompte05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3178.78), hasGrossValue("EUR", 3187.29), //
+                        hasForexGrossValue("USD", 3804.20), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 8.50))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInEUR()
+    {
+        var security1 = new Security("BOOZ ALLEN CL.A", "EUR");
+        security1.setIsin("US0995021062");
+
+        var security2 = new Security("L3HARRIS TECHN.", "EUR");
+        security2.setIsin("US5024311095");
+
+        var client = new Client();
+        client.addSecurity(security1);
+        client.addSecurity(security2);
+
+        var extractor = new BourseDirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2021-03-16T19:50:11"), hasShares(45.00), //
+                        hasSource("ReleveDeCompte05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2977.53), hasGrossValue("EUR", 2986.04), //
                         hasTaxes("EUR", 0.01), hasFees("EUR", 8.50))));
 
         // check buy sell transaction
@@ -292,5 +342,61 @@ public class BourseDirectPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 3178.78), hasGrossValue("EUR", 3187.29), //
                         hasTaxes("EUR", 0.01), hasFees("EUR", 8.50))));
+    }
+
+    @Test
+    public void testReleveDeCompte06()
+    {
+        var extractor = new BourseDirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5024311095"), hasWkn(null), hasTicker(null), //
+                        hasName("L3HARRIS TECHN."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-30T00:00"), hasShares(20.00), //
+                        hasSource("ReleveDeCompte06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.55), hasGrossValue("EUR", 17.34), //
+                        hasTaxes("EUR", 7.79), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testReleveDeCompte07()
+    {
+        var extractor = new BourseDirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2021-07-06"), hasAmount("EUR", 0.81), //
+                        hasSource("ReleveDeCompte07.txt"), hasNote("DDG ETG 2T21"))));
     }
 }
