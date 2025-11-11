@@ -447,7 +447,7 @@ public class PerformanceIndex
     {
         CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
                         .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
-                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
+                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).get();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))

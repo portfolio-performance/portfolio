@@ -567,4 +567,28 @@
             "label": "Gestrichen Zeit"
         }
     ]
+},
+{
+    "label": "Targobank Banktransaktionen",
+    "delimiter": ";",
+    "encoding": "ISO-8859-1",
+    "isFirstLineHeader": false,
+    "skipLines": 0,
+    "target": "account-transaction",
+    "columns": [
+        {
+            "field": "date",
+            "format": "dd.MM.yyyy",
+            "label": "Datum"
+        },
+        {
+            "field": "note",
+            "label": "Verwendungszweck"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Wert"
+        }
+    ]
 }]

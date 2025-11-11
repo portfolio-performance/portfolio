@@ -52,4 +52,9 @@ public class FontDefinition implements IFontDefinitionOverridable
     public void setDescription(String description)
     {
     }
+
+    @Override
+    public void setEditable(Boolean editable)
+    {
+    }
 }

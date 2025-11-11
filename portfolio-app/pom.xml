@@ -16,6 +16,7 @@
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
 		<installer.skip>true</installer.skip>
+		<exesigner.skip>true</exesigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java,**/name/abuchen/portfolio/model/proto/**</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
@@ -475,6 +476,23 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-p2-publisher-plugin</artifactId>
 					<version>${tycho-version}</version>
+					<!-- Because we want to modify some files before they appear in the assembly repository,
+					     we first move some of the executions from the default phase into the compile phase
+					     to execute additional actions (sign executables) -->
+					<executions>
+						<execution>
+							<id>default-publish-osgi-ee</id>
+							<phase>compile</phase>
+						</execution>
+						<execution>
+							<id>default-publish-products</id>
+							<phase>compile</phase>
+						</execution>
+						<execution>
+							<id>default-attach-artifacts</id>
+							<phase>compile</phase>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -545,7 +563,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.2.0.4988</version>
+					<version>5.3.0.6276</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>

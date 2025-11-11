@@ -124,7 +124,7 @@ public class MovingAverageConvergenceDivergenceTest
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
         List<CSVRecord> records = CSVParser
                         .parse(this.getClass().getResourceAsStream("Indicator.GOOG.csv"), StandardCharsets.UTF_8,
-                                        CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())
+                                        CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).get())
                         .getRecords();
 
         Security prices = CsvTestDataLoader.loadSecurity(records, dateFormatter, DATE_HEADER, numberFormat,
