@@ -32,7 +32,7 @@ public class TASEEntities
      */
     public Optional<List<IndiceListing>> getAllListings(Language lang) throws IOException
     {
-        PortfolioLog.info("Getting all Listings from TLV");
+        // PortfolioLog.info("Getting all Listings from TLV");
         return responsetoEntitiesList(rpcAllIndices(lang));
     }
 

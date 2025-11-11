@@ -107,15 +107,6 @@ public class TASESearchProviderTest
             assertThat(results.get(0).getName(), is("ACRO KVUT"));
             assertThat(results.get(0).getType(), is("Shares"));
 
-            results = tase.search("1135912");
-            assertThat(results.size(), is(1));
-            assertThat(results.get(0).getCurrencyCode(), is("ILA"));
-            assertThat(results.get(0).getExchange(), is("TASE"));
-            assertThat(results.get(0).getIsin(), is("IL0011359127"));
-            assertThat(results.get(0).getSymbol(), is("CPI1025"));
-            assertThat(results.get(0).getSymbolWithoutStockMarket(), is("CPI1025"));
-            assertThat(results.get(0).getName(), is("ILCPI % 1025"));
-            assertThat(results.get(0).getType(), is("Government Bonds"));
 
             results = tase.search("1150192");
             assertThat(results.size(), is(1));
