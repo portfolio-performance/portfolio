@@ -92,12 +92,12 @@ public abstract class AbstractFinanceView
         if (!this.title.isDisposed())
         {
             String escaped = TextUtil.tooltip(title);
-            boolean isEqual = escaped.equals(this.title.getText());
 
             this.titleText = title;
             this.title.setText(escaped);
-            if (!isEqual)
-                this.title.getParent().layout(true);
+            this.title.setData(AdaptiveHeaderLayout.KEY_ORIGINAL_TITLE, escaped);
+            this.title.setToolTipText(null);
+            this.title.getParent().layout(true);
         }
     }
 
@@ -232,7 +232,9 @@ public abstract class AbstractFinanceView
         titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
-        title.setText(TextUtil.tooltip(titleText));
+        var escaped = TextUtil.tooltip(titleText);
+        title.setText(escaped);
+        title.setData(AdaptiveHeaderLayout.KEY_ORIGINAL_TITLE, escaped);
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
@@ -254,11 +256,8 @@ public abstract class AbstractFinanceView
         // add buttons only after (!) creation of tool bar to avoid flickering
         addButtons(actionToolBar);
 
-        // layout
-        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(header);
-        GridDataFactory.fillDefaults().applyTo(title);
-        GridDataFactory.fillDefaults().grab(true, false).align(SWT.END, SWT.CENTER).applyTo(wrapper);
-        GridDataFactory.fillDefaults().applyTo(tb2);
+        // use adaptive layout instead of grid layout
+        header.setLayout(new AdaptiveHeaderLayout());
 
         return header;
     }
@@ -335,7 +334,7 @@ public abstract class AbstractFinanceView
 
         context.dispose();
     }
-    
+
     public final EditorActivationState getEditorActivationState()
     {
         return editorActivationState;
@@ -345,7 +344,7 @@ public abstract class AbstractFinanceView
     {
         return top;
     }
-    
+
     public void setFocus()
     {
         getControl().setFocus();
