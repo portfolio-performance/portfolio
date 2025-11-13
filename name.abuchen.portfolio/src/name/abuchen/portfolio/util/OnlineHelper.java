@@ -18,4 +18,9 @@ public final class OnlineHelper
     {
         return "Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")";
     }
+
+    public static String getMayaTaseUserAgent()
+    {
+        return "Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")";
+    }
 }
