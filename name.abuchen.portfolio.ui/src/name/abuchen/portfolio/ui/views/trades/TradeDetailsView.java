@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.trades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCategory;
 import name.abuchen.portfolio.snapshot.trades.TradeCategory.TradeAssignment;
@@ -75,6 +77,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final List<Trade> trades;
         private final List<TradeCollectorException> errors;
         private final boolean useSecurityCurrency;
+        private List<TradeElement> tableInput;
 
         public Input(Interval interval, List<Trade> trades, List<TradeCollectorException> errors,
                         boolean useSecurityCurrency)
@@ -103,6 +106,16 @@ public final class TradeDetailsView extends AbstractFinanceView
         public boolean useSecurityCurrency()
         {
             return useSecurityCurrency;
+        }
+
+        public List<TradeElement> getTableInput()
+        {
+            return tableInput;
+        }
+
+        public void setTableInput(List<TradeElement> tableInput)
+        {
+            this.tableInput = tableInput;
         }
     }
 
@@ -240,7 +253,7 @@ public final class TradeDetailsView extends AbstractFinanceView
                 if (monitor != null && monitor.isCanceled())
                     return Status.CANCEL_STATUS;
 
-                List<?> finalTableInput;
+                List<TradeElement> finalTableInput;
                 if (jobTaxonomy != null)
                 {
                     TradesGroupedByTaxonomy groupedTrades = new TradesGroupedByTaxonomy(jobTaxonomy, trades,
@@ -249,8 +262,10 @@ public final class TradeDetailsView extends AbstractFinanceView
                 }
                 else
                 {
-                    finalTableInput = trades;
+                    finalTableInput = mapTradesToElements(trades);
                 }
+
+                data.setTableInput(finalTableInput);
 
                 List<TradeCollectorException> errors = data.getErrors();
 
@@ -261,7 +276,8 @@ public final class TradeDetailsView extends AbstractFinanceView
                 if (display == null || display.isDisposed())
                     return Status.CANCEL_STATUS;
 
-                display.asyncExec(() -> applyJobResult(this, finalTableInput, errors));
+                final var tableInput = finalTableInput;
+                display.asyncExec(() -> applyJobResult(this, tableInput, errors));
 
                 return Status.OK_STATUS;
             }
@@ -297,6 +313,7 @@ public final class TradeDetailsView extends AbstractFinanceView
     private TradesTableViewer table;
     private Taxonomy taxonomy;
     private Job currentUpdateJob;
+    private List<TradeElement> preselectedTableInput;
 
     @Override
     protected String getDefaultTitle()
@@ -331,6 +348,18 @@ public final class TradeDetailsView extends AbstractFinanceView
             this.input = input;
             this.usePreselectedTrades.setValue(true);
             this.useSecurityCurrency = input.useSecurityCurrency();
+            this.preselectedTableInput = input.getTableInput();
+            if (this.preselectedTableInput == null)
+            {
+                this.preselectedTableInput = mapTradesToElements(input.getTrades());
+                input.setTableInput(preselectedTableInput);
+            }
+        }
+        else
+        {
+            this.input = null;
+            this.preselectedTableInput = null;
+            this.usePreselectedTrades.setValue(false);
         }
     }
 
@@ -384,7 +413,8 @@ public final class TradeDetailsView extends AbstractFinanceView
         // only update the trades if it is *not* based on a pre-calculated set
         // of trades, for example when the user navigates from the dashboard to
         // the detailed trades
-        if (input == null || !input.getTrades().equals(table.getInput()))
+        if (input == null || usePreselectedTrades.isFalse()
+                        || !Objects.equals(preselectedTableInput, table.getInput()))
             update();
 
         if (!table.getTableViewer().getTable().isDisposed())
@@ -614,8 +644,9 @@ public final class TradeDetailsView extends AbstractFinanceView
         if (!selection.isEmpty() && selection.size() == 1)
         {
             Object element = selection.getFirstElement();
-            Trade trade = element instanceof Trade ? (Trade) element
-                            : element instanceof TradeElement ? ((TradeElement) element).getTrade() : null;
+            Trade trade = Adaptor.adapt(Trade.class, element);
+            if (trade == null && element instanceof TradeElement tradeElement)
+                trade = tradeElement.getTrade();
 
             if (trade != null)
                 new SecurityContextMenu(this).menuAboutToShow(manager, trade.getSecurity(), trade.getPortfolio());
@@ -655,8 +686,9 @@ public final class TradeDetailsView extends AbstractFinanceView
                 return;
 
             Object element = selection.getFirstElement();
-            Trade trade = element instanceof Trade ? (Trade) element
-                            : element instanceof TradeElement ? ((TradeElement) element).getTrade() : null;
+            Trade trade = Adaptor.adapt(Trade.class, element);
+            if (trade == null && element instanceof TradeElement tradeElement)
+                trade = tradeElement.getTrade();
 
             if (trade != null)
                 new SecurityContextMenu(TradeDetailsView.this).handleEditKey(e, trade.getSecurity());
@@ -687,7 +719,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         currentUpdateJob.schedule();
     }
 
-    private void applyJobResult(Job job, List<?> finalTableInput, List<TradeCollectorException> errors)
+    private void applyJobResult(Job job, List<TradeElement> finalTableInput, List<TradeCollectorException> errors)
     {
         if (currentUpdateJob != job)
             return;
@@ -704,6 +736,16 @@ public final class TradeDetailsView extends AbstractFinanceView
             return;
 
         table.setInput(finalTableInput);
+        if (usePreselectedTrades.isTrue())
+        {
+            preselectedTableInput = finalTableInput;
+            if (input != null)
+                input.setTableInput(finalTableInput);
+        }
+        else
+        {
+            preselectedTableInput = null;
+        }
         updateToolbarErrors(errors);
         control.setCursor(null);
         currentUpdateJob = null;
@@ -817,7 +859,9 @@ public final class TradeDetailsView extends AbstractFinanceView
             }
         });
 
-        return new Input(null, trades, errors, useSecCurrency);
+        var result = new Input(null, trades, errors, useSecCurrency);
+        result.setTableInput(mapTradesToElements(trades));
+        return result;
     }
 
     /**
@@ -826,6 +870,21 @@ public final class TradeDetailsView extends AbstractFinanceView
      * sortOrder to keep categories as headers - category gets sortOrder N, then
      * all its trades get sortOrder N+1 (same for all trades in that category).
      */
+    public static List<TradeElement> mapTradesToElements(List<Trade> trades)
+    {
+        var elements = new ArrayList<TradeElement>(trades.size());
+
+        // Use a constant sortOrder so that the viewer's comparator for the
+        // active column can determine the ordering. Assigning sequential
+        // sortOrders would short-circuit the comparator and make column-based
+        // sorting ineffective in the ungrouped view.
+        for (var trade : trades)
+        {
+            elements.add(new TradeElement(trade, 0, 1.0));
+        }
+        return elements;
+    }
+
     private List<TradeElement> flattenToElements(TradesGroupedByTaxonomy groupedTrades, boolean hideTotalsAtTheTop,
                     boolean hideTotalsAtTheBottom)
     {
