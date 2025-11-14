@@ -32,9 +32,16 @@ public class MoneyTrailDataSource
     {
         int depth = trail.getDepth();
 
+        // Apply DPI scaling for margins and spacing
+        int horizontalSpacing = SWTHelper.scalePixel(5);
+        int verticalSpacing = SWTHelper.scalePixel(5);
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-        GridLayoutFactory.swtDefaults().numColumns(depth + 3).applyTo(composite);
+        GridLayoutFactory.swtDefaults()
+                         .numColumns(depth + 3)
+                         .spacing(horizontalSpacing, verticalSpacing)
+                         .applyTo(composite);
 
         Label heading = new Label(composite, SWT.NONE);
         heading.setBackground(composite.getBackground());
@@ -76,18 +83,26 @@ public class MoneyTrailDataSource
 
         rowsToCreate[0]--;
 
+        // Apply DPI scaling for minimum column widths
+        int minDateWidth = SWTHelper.scalePixel(80);
+        int minLabelWidth = SWTHelper.scalePixel(200);
+        int minSharesWidth = SWTHelper.scalePixel(80);
+        int minValueWidth = SWTHelper.scalePixel(100);
+
         Label date = new Label(composite, SWT.NONE);
         date.setBackground(composite.getBackground());
+        GridDataFactory.fillDefaults().hint(minDateWidth, SWT.DEFAULT).applyTo(date);
         if (trail.getDate() != null)
             date.setText(Values.Date.format(trail.getDate()));
 
         Label label = new Label(composite, SWT.NONE);
         label.setBackground(composite.getBackground());
         label.setText(trail.getLabel());
+        GridDataFactory.fillDefaults().hint(minLabelWidth, SWT.DEFAULT).applyTo(label);
 
         Label shares = new Label(composite, SWT.RIGHT);
         shares.setBackground(composite.getBackground());
-        GridDataFactory.fillDefaults().applyTo(shares);
+        GridDataFactory.fillDefaults().hint(minSharesWidth, SWT.DEFAULT).applyTo(shares);
         if (trail.getShares() != null)
             shares.setText(Values.Share.format(trail.getShares()));
 
@@ -97,7 +112,7 @@ public class MoneyTrailDataSource
         {
             Label column = new Label(composite, SWT.RIGHT);
             column.setBackground(composite.getBackground());
-            GridDataFactory.fillDefaults().applyTo(column);
+            GridDataFactory.fillDefaults().hint(minValueWidth, SWT.DEFAULT).applyTo(column);
 
             if (index == level)
             {
