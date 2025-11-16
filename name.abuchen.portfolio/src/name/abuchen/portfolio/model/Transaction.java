@@ -197,6 +197,15 @@ public abstract class Transaction implements Annotated, Adaptable
         }
     }
 
+    /**
+     * Reference to the original transaction if {@link ClientFilter} has to
+     * manipulate the transaction in order to create the filter. For example, a
+     * cash transfer might be converted into a withdrawal if the target account
+     * is not part of the filter. It is marked transient becuase it must not be
+     * stored in the XML.
+     */
+    private transient Transaction originalTransaction; // NOSONAR
+
     private String uuid;
     private LocalDateTime date;
     private String currencyCode;
@@ -238,6 +247,16 @@ public abstract class Transaction implements Annotated, Adaptable
         this.security = security;
         this.shares = shares;
         this.note = note;
+    }
+
+    public Transaction getOriginalTransaction()
+    {
+        return originalTransaction;
+    }
+
+    public void setOriginalTransaction(Transaction originalTransaction)
+    {
+        this.originalTransaction = originalTransaction;
     }
 
     public String getUUID()
