@@ -147,6 +147,7 @@ public class PortfolioSnapshot
     public Money getValue()
     {
         return positions.stream() //
+                        .filter(p -> p.getShares() > 0) //
                         .map(SecurityPosition::calculateValue) //
                         .map(money -> money.with(converter.at(date))) //
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
