@@ -956,6 +956,39 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf11()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        // "Festpreisgeschäft" titled as "Zeichnung"
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security (bond)
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DB9WGP3"), hasWkn("DB9WGP"), hasTicker(null), //
+                        hasName("3% KUENDB. DB FESTZ. 28/32 25.08.32"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-19T00:00"), hasShares(1000.0 / 100), //
+                        hasSource("Kauf11.txt"), //
+                        hasNote("Belegnummer 1234567890 / 1234567"), //
+                        hasAmount("EUR", 1010.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());
