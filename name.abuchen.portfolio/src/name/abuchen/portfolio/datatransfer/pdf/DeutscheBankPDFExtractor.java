@@ -90,16 +90,42 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal [\\.,\\d]+$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* \\((?<currency>[A-Z]{3})\\) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 123 1234567 01 6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36 1/2
+                                        // WKN A0GLU5 Nominal USD 5.000,00
+                                        // ISIN US900123AY60 Kurs 100,06 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs .* %$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // WKN BASF11 Nominal ST 19
-                        // WKN 744850 Nominal 120
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^.* Nominal( ST)? (?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
+                        .oneOf( //
+                                        // @formatter:off
+                                        // WKN BASF11 Nominal ST 19
+                                        // WKN 744850 Nominal 120
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* Nominal( ST)? (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // WKN A0GLU5 Nominal USD 5.000,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* Nominal [A-Z]{3} (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            // workaround for
+                                                            // percentage-quoted
+                                                            // bonds
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share
+                                                                            .factorize(shares.doubleValue() / 100));
+                                                        }))
                         // @formatter:off
                         // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
                         // @formatter:on
@@ -616,7 +642,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
                         .match("^Anrechenbare ausl.ndische Quellensteuer (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
+
+                        // @formatter:off
+                        // Zinsen für 158 Zinstage USD 150,86
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Zinsen f.r \\d+ Zinstage (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)

@@ -23,8 +23,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -919,6 +919,40 @@ public class DeutscheBankPDFExtractorTest
                         hasNote("Belegnummer 1572848278 / 211210221"), //
                         hasAmount("EUR", 199.99), hasGrossValue("EUR", 188.74), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 11.25))));
+    }
+
+    @Test
+    public void testWertpapierKauf10()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security (bond)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US900123AY60"), hasWkn("A0GLU5"), hasTicker(null), //
+                        hasName("6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-21T16:37"), hasShares(5000.0 / 100), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456789"), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5003.00), //
+                        hasTaxes("USD", 150.86), // accrued interest
+                        hasFees("USD", 68.32 + 5.22 + 4.80))));
     }
 
     @Test
