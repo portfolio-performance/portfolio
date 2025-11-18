@@ -1111,16 +1111,16 @@ public class PostfinancePDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(73L));
+        assertThat(countAccountTransactions(results), is(76L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(73));
+        assertThat(results.size(), is(76));
         new AssertImportActions().check(results, "CHF");
 
         // check transaction
         // get transactions
         var iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
-        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(73L));
+        assertThat(results.stream().filter(i -> i instanceof TransactionItem).count(), is(76L));
 
         var item = iter.next();
 
@@ -1659,6 +1659,36 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(16.00))));
+        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
+        assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(26.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("TWINT Geld empfangen"));
 
