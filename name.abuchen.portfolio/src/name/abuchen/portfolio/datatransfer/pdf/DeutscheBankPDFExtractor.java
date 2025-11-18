@@ -43,7 +43,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("Abrechnung: (Kauf|Verkauf) von Wertpapieren");
+        var type = new DocumentType("Abrechnung: (Kauf|Verkauf|Zeichnung) von Wertpapieren");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
