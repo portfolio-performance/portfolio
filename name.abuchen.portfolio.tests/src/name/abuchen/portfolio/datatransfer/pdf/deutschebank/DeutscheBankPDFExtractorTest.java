@@ -2809,4 +2809,27 @@ public class DeutscheBankPDFExtractorTest
         // just a single (skipped) transaction
         assertThat(results.size(), is(1));
     }
+
+    @Test
+    public void testGiroKontoauszug09()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+
+        // just a single transaction
+        assertThat(results.size(), is(1));
+        assertThat(countAccountTransactions(results), is(1L));
+
+        // check transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2021-10-21"), hasShares(0), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Übertrag (Überweisung) von Max Mustermann"), //
+                        hasAmount("EUR", 1000), hasGrossValue("EUR", 1000), //
+                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+    }
 }

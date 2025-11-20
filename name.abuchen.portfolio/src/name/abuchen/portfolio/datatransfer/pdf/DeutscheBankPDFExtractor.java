@@ -445,6 +445,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         // Verwendungszweck/ Kundenreferenz
         // 1111111111111111 1220 INKL. SONDERZAHLUNG
         // @formatter:on
+        // ... and more
         var blockDepositRemoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "((SEPA )?" //
                         + "(Dauerauftrag" //
@@ -453,7 +454,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         + "|Echtzeit.berweisung) .*" //
                         + "|Bargeldauszahlung GAA" //
                         + "|Kartenzahlung" //
-                        + "|Verwendungszweck\\/ Kundenreferenz) " //
+                        + "|Verwendungszweck\\/ Kundenreferenz" //
+                        + "|.bertrag \\(.berweisung\\) von) " //
                         + "(\\-|\\+) [\\.,\\d]+$");
         type.addBlock(blockDepositRemoval);
         blockDepositRemoval.set(new Transaction<AccountTransaction>()
@@ -474,7 +476,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         + "|Echtzeit.berweisung) .*" //
                                         + "|Bargeldauszahlung GAA" //
                                         + "|Kartenzahlung" //
-                                        + "|Verwendungszweck\\/ Kundenreferenz) " //
+                                        + "|Verwendungszweck\\/ Kundenreferenz" //
+                                        + "|.bertrag \\(.berweisung\\) von) " //
                                         + "(?<sign>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
                         .match("^(?<note1>.*)$") //
                         .assign((t, v) -> {
