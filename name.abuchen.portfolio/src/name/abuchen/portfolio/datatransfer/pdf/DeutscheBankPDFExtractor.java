@@ -426,7 +426,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         .section("year") //
-                                        .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$")
+                                        .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\s*$")
                                         .assign(Map::putAll));
 
         this.addDocumentTyp(type);
