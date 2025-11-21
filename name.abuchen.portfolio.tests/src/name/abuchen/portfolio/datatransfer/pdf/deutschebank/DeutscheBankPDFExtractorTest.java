@@ -2791,4 +2791,22 @@ public class DeutscheBankPDFExtractorTest
                         "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug07.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
+
+    @Test
+    public void testGiroKontoauszug08()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        // A trailing whitespace in "Kontoauszug vom 19.09.2025 bis 02.10.2025 "
+        // caused a mismatch of the pattern meant to extract the year of the
+        // bank statement. It was anchored strictly to the end of the line.
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+
+        // just a single (skipped) transaction
+        assertThat(results.size(), is(1));
+    }
 }
