@@ -33,6 +33,14 @@ import name.abuchen.portfolio.model.TypedMap;
 
 /* package */ final class PDFParser
 {
+    /**
+     * This class handles the parsing of the individual types of documents as
+     * issued by a particular bank.
+     * <p>
+     * Keyword patterns for positive and negative matches will be provided
+     * through the constructors. Blocks of data to be parsed can be defined via
+     * calls to {@link #addBlock(Block) addBlock}.
+     */
     /* package */ static class DocumentType
     {
         private List<Pattern> mustInclude = new ArrayList<>();
@@ -183,6 +191,13 @@ import name.abuchen.portfolio.model.TypedMap;
             }
         }
     }
+
+    /**
+     * A Block defines a possibly-repeated region containing Sections of
+     * information to be parsed. The start of a Block will be denoted through a
+     * regular expression. The parser will search for occurrences of the Block
+     * line-by-line until the end of the document is reached.
+     */
 
     /* package */static class Block
     {
