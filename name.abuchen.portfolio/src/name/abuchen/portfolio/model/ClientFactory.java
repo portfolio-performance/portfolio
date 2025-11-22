@@ -943,6 +943,8 @@ public class ClientFactory
             case 66: // NOSONAR
                 removePortfolioReportSyncProperties(client);
                 fixLogoAttributeName(client);
+            case 67: // NOSONAR
+                removeSourceAttributeFromTaxonomy(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1782,6 +1784,19 @@ public class ClientFactory
             if (translatedAttribute.isPresent())
                 translatedAttribute.get().setName("Logo"); //$NON-NLS-1$
         }
+    }
+
+    private static void removeSourceAttributeFromTaxonomy(Client client)
+    {
+        // the 'source' attribute was used in the past to sync with etf-data.com
+        // (removed in June 2021) and eodhistoricaldata. Both sync do not work
+        // anymore. This cleans up any remaining values.
+
+        // the content used to be in the form of "<domain name>$<name of remote
+        // taxonomy>"
+
+        for (var t : client.getTaxonomies())
+            t.setSource(null);
     }
 
     private static synchronized XStream xstreamReader()
