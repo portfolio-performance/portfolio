@@ -20,14 +20,14 @@ public class ExtractedEntry
     private List<Status> status = new ArrayList<>();
 
     /**
-     * If non null, the security dependency tells which other extracted items
+     * If non-null, the security dependency tells which other extracted items
      * represents the security which this extracted items (typically a
      * transactions) requires.
      */
     private ExtractedEntry securityDependency;
 
     /**
-     * If non null, then the security dependency is overwritten by the given
+     * If non-null, then the security dependency is overwritten by the given
      * security.
      */
     private Security securityOverride;

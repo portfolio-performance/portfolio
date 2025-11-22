@@ -292,6 +292,14 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
+    /**
+     * Returns the net value of the transaction denoted in its
+     * {@link #getCurrencyCode() currency}. Possible taxes and fees will have
+     * already been deducted or added, respectively.
+     *
+     * @see #getMonetaryAmount
+     * @see #getGrossValue
+     */
     public long getAmount()
     {
         return amount;
@@ -303,6 +311,12 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
+    /**
+     * Returns the transaction net value. Possible taxes and fees will have
+     * already been deducted or added, respectively.
+     *
+     * @see #getGrossValue
+     */
     public Money getMonetaryAmount()
     {
         return Money.of(currencyCode, amount);
@@ -485,6 +499,12 @@ public abstract class Transaction implements Annotated, Adaptable
                         }));
     }
 
+    /**
+     * Returns the gross value of the transaction before taxes and fees have
+     * been added or deducted, respectively.
+     * <p>
+     * The net value can be obtained with {@link #getMonetaryAmount()}.
+     */
     public abstract Money getGrossValue();
 
     public static final <E extends Transaction> List<E> sortByDate(List<E> transactions)
