@@ -269,10 +269,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewStackedChartActualValue, Images.VIEW_STACKEDCHART_ACTUALVALUE, 6);
         toolBar.add(new Separator());
 
-        addReportingPeriodDropDown(toolBar);
         addSearchButton(toolBar);
-
         toolBar.add(new Separator());
+
+        addReportingPeriodDropDown(toolBar);
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         toolBar.add(clientFilterDropDown);
@@ -295,10 +295,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             {
                 final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
                 search.setMessage(Messages.LabelSearch);
-                search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = Pattern.quote(search.getText().trim());
+                    var filterText = search.getText().trim();
                     if (filterText.isEmpty())
                     {
                         model.setFilterPattern(null);
@@ -306,7 +305,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                     }
                     else
                     {
-                        Pattern p = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        var p = Pattern.compile(".*" + Pattern.quote(filterText) + ".*", //$NON-NLS-1$ //$NON-NLS-2$
+                                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
                         model.setFilterPattern(p);
                         model.fireTaxonomyModelChange(model.getVirtualRootNode());
                     }

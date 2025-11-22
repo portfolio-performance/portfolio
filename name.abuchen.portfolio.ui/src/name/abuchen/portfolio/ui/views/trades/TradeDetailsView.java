@@ -468,18 +468,17 @@ public final class TradeDetailsView extends AbstractFinanceView
             {
                 final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
                 search.setMessage(Messages.LabelSearch);
-                search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = Pattern.quote(search.getText().trim());
-                    if (filterText.length() == 0)
+                    String filterText = search.getText().trim();
+                    if (filterText.isEmpty())
                     {
                         filterPattern = null;
                         TradeDetailsView.this.update();
                     }
                     else
                     {
-                        filterPattern = Pattern.compile(".*" + filterText + ".*", //$NON-NLS-1$ //$NON-NLS-2$
+                        filterPattern = Pattern.compile(".*" + Pattern.quote(filterText) + ".*", //$NON-NLS-1$ //$NON-NLS-2$
                                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
                         TradeDetailsView.this.update();
                     }
