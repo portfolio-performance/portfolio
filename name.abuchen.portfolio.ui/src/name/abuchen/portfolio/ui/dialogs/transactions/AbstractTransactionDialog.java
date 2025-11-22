@@ -467,6 +467,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     protected void okPressed()
     {
         model.applyChanges();
+        PresetValues.setLastTransactionDate(model.getDate());
 
         hasAtLeastOneSuccessfulEdit = true;
 
@@ -479,6 +480,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         if (buttonId == SAVE_AND_NEW_ID)
         {
             model.applyChanges();
+            PresetValues.setLastTransactionDate(model.getDate());
             model.resetToNewTransaction();
 
             hasAtLeastOneSuccessfulEdit = true;

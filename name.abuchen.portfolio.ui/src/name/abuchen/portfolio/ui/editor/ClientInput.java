@@ -53,6 +53,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
 import name.abuchen.portfolio.ui.dialogs.PortfolioReportNotificationPopup;
+import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
@@ -643,6 +644,9 @@ public class ClientInput
             throw new IllegalArgumentException("client is already set"); //$NON-NLS-1$
 
         this.client = client;
+
+        // Reset remembered transaction date when loading a new portfolio file
+        PresetValues.resetLastTransactionDate();
 
         IEclipseContext c2 = EclipseContextFactory.create();
         c2.set(Client.class, client);
