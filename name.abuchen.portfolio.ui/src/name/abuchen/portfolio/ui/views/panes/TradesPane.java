@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
+import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
 
 public class TradesPane implements InformationPanePage
 {
@@ -79,7 +80,8 @@ public class TradesPane implements InformationPanePage
             try
             {
                 CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-                trades.setInput(new TradeCollector(client, converter).collect(source));
+                var collectedTrades = new TradeCollector(client, converter).collect(source);
+                trades.setInput(TradeDetailsView.mapTradesToElements(collectedTrades));
             }
             catch (TradeCollectorException e)
             {
