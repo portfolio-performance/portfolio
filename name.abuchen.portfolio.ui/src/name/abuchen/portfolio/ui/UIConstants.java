@@ -198,11 +198,10 @@ public interface UIConstants
          */
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
-        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
-
         /**
-         * Comma-separated list of experimental features that are enabled. Used
-         * instead of a single global ENABLE_EXPERIMENTAL_FEATURES flag.
+         * Comma-separated list of experimental features that are enabled.
+         * Individual features can be toggled via the Experiments preference
+         * page.
          */
         String EXPERIMENTS = "EXPERIMENTS"; //$NON-NLS-1$
 
