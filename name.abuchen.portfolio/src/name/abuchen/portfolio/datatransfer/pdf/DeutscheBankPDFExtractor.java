@@ -642,14 +642,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
                         .match("^Anrechenbare ausl.ndische Quellensteuer (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
-
-                        // @formatter:off
-                        // Zinsen für 158 Zinstage USD 150,86
-                        // @formatter:on
-                        .section("tax", "currency").optional() //
-                        .match("^Zinsen f.r \\d+ Zinstage (?<currency>[A-Z]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
