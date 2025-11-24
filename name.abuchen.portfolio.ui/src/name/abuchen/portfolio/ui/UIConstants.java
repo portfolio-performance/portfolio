@@ -198,20 +198,25 @@ public interface UIConstants
          */
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
-        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
-
         /**
-         * Comma-separated list of experimental features that are enabled. Used
-         * instead of a single global ENABLE_EXPERIMENTAL_FEATURES flag.
+         * @deprecated replaced by the flag experiments
+         */
+        @Deprecated(since = "2025")
+        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$ //NOSONAR
+        
+        /**
+         * Comma-separated list of experimental features that are enabled.
+         * Individual features can be toggled via the Experiments preference
+         * page.
          */
         String EXPERIMENTS = "EXPERIMENTS"; //$NON-NLS-1$
 
         /**
-         * Preference key used in 2023 to indicate whether the survey is active.
+         * @deprecated Preference key used in 2023 to indicate whether the survey is active.
          * Do not reuse!
          */
-        @Deprecated
-        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
+        @Deprecated(since = "2023")
+        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$ //NOSONAR
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
 

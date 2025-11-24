@@ -23,8 +23,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -919,6 +919,73 @@ public class DeutscheBankPDFExtractorTest
                         hasNote("Belegnummer 1572848278 / 211210221"), //
                         hasAmount("EUR", 199.99), hasGrossValue("EUR", 188.74), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 11.25))));
+    }
+
+    @Test
+    public void testWertpapierKauf10()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security (bond)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US900123AY60"), hasWkn("A0GLU5"), hasTicker(null), //
+                        hasName("6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-21T16:37"), hasShares(5000.0 / 100), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456789"), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5003.00), //
+                        hasTaxes("USD", 150.86), // accrued interest
+                        hasFees("USD", 68.32 + 5.22 + 4.80))));
+    }
+
+    @Test
+    public void testWertpapierKauf11()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        // "Festpreisgeschäft" titled as "Zeichnung"
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security (bond)
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DB9WGP3"), hasWkn("DB9WGP"), hasTicker(null), //
+                        hasName("3% KUENDB. DB FESTZ. 28/32 25.08.32"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-19T00:00"), hasShares(1000.0 / 100), //
+                        hasSource("Kauf11.txt"), //
+                        hasNote("Belegnummer 1234567890 / 1234567"), //
+                        hasAmount("EUR", 1010.00))));
     }
 
     @Test
@@ -2723,5 +2790,23 @@ public class DeutscheBankPDFExtractorTest
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
                         "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug07.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+
+    @Test
+    public void testGiroKontoauszug08()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        // A trailing whitespace in "Kontoauszug vom 19.09.2025 bis 02.10.2025 "
+        // caused a mismatch of the pattern meant to extract the year of the
+        // bank statement. It was anchored strictly to the end of the line.
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+
+        // just a single (skipped) transaction
+        assertThat(results.size(), is(1));
     }
 }

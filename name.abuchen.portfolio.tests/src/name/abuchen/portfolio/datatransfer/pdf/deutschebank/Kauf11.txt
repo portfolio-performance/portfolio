@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt
+60262 Frankfurt
+Max Mustermann
+Musterstr. 1 A Erika Musterfrau
+22222 Musterhausen Telefon 123 4567-1234
+24/7-Kundenservice (069) 910-10000
+21. August 2025
+Abrechnung: Zeichnung von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 1234567 01 3% KUENDB. DB FESTZ. 28/32 25.08.32 1/1
+WKN DB9WGP Nominal EUR 1.000,00
+ISIN DE000DB9WGP3 Kurs 101,00 %
+Verwahrart Girosammeldepot
+Geschäft Festpreisgeschäft
+Belegnummer 1234567890 / 1234567 Schlusstag 19.08.2025
+Ihre Referenz IPODB9WGP
+Auftragsart Festpreisgeschäft
+Überschreitung Ihrer persönlichen Risikoklasse/Produktgruppen-Risikoklasse. Produkt ist unangemessen, da Sie die
+Risiken des Finanzinstruments nicht beurteilen können.
+Diese Order wurde elektronisch übermittelt.
+Abrechnung Währung Betrag
+Kurswert EUR 1.010,00
+Belastung
+Buchung auf Kontonummer 1234567 00 mit Wertstellung 25.08.2025 EUR 1.010,00
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de
+TR00000001 20250821 502_000_

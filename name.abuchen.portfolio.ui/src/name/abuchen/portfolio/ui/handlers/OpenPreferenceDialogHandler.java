@@ -4,7 +4,6 @@ import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -65,7 +64,6 @@ public class OpenPreferenceDialogHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
                     @Optional @Named(UIConstants.Parameter.PAGE) String page, //
                     IThemeEngine themeEngine)
     {

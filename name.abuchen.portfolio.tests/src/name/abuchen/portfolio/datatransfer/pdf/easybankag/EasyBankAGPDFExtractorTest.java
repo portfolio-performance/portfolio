@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.easybankag;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -26,8 +25,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -1993,6 +1992,40 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf08()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0F5UH1"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-11-03T15:23:08"), hasShares(172.811), //
+                        hasSource("Verkauf08.txt"), //
+                        hasNote("Auftrags-Nr.: 90702744"), //
+                        hasAmount("EUR", 5499.08), hasGrossValue("EUR", 5668.20), //
+                        hasTaxes("EUR", 158.37), hasFees("EUR", 0.80 + 9.95))));
+
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
@@ -3205,14 +3238,7 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
-                        hasTaxes("EUR", 2.55), hasFees("EUR", 0.95), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 2.55), hasFees("EUR", 0.95))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -3287,14 +3313,7 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende21.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.11), hasGrossValue("EUR", 7.07), //
-                        hasTaxes("EUR", 1.94), hasFees("EUR", 0.02), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 1.94), hasFees("EUR", 0.02))));
     }
 
     @Test
@@ -3361,14 +3380,7 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.47), hasGrossValue("EUR", 7.58), //
-                        hasTaxes("EUR", 2.09), hasFees("EUR", 0.02), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 2.09), hasFees("EUR", 0.02))));
     }
 
     @Test
@@ -3435,14 +3447,7 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 46.60), hasGrossValue("EUR", 64.51), //
-                        hasTaxes("EUR", 17.75), hasFees("EUR", 0.16), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 17.75), hasFees("EUR", 0.16))));
     }
 
     @Test
@@ -3517,14 +3522,7 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 48.59), hasGrossValue("EUR", 67.27), //
-                        hasTaxes("EUR", 18.51), hasFees("EUR", 0.17), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 18.51), hasFees("EUR", 0.17))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -3602,14 +3600,7 @@ public class EasyBankAGPDFExtractorTest
                                         hasSource("DividendeStorno01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 7.38), hasGrossValue("EUR", 10.22), //
-                                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.03), //
-                                        check(tx -> {
-                                            var c = new CheckCurrenciesAction();
-                                            var account = new Account();
-                                            account.setCurrencyCode("EUR");
-                                            var s = c.process((AccountTransaction) tx, account);
-                                            assertThat(s, is(Status.OK_STATUS));
-                                        })))));
+                                        hasTaxes("EUR", 2.81), hasFees("EUR", 0.03)))));
     }
 
     @Test

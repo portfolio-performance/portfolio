@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
@@ -35,7 +34,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyJSONExporter;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.online.TaxonomySource;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -153,10 +151,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
 
-    @Inject
-    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES)
-    boolean enableExperimentalFeatures;
-
     @Override
     protected String getDefaultTitle()
     {
@@ -269,10 +263,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewStackedChartActualValue, Images.VIEW_STACKEDCHART_ACTUALVALUE, 6);
         toolBar.add(new Separator());
 
-        addReportingPeriodDropDown(toolBar);
         addSearchButton(toolBar);
-
         toolBar.add(new Separator());
+
+        addReportingPeriodDropDown(toolBar);
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         toolBar.add(clientFilterDropDown);
@@ -295,10 +289,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             {
                 final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
                 search.setMessage(Messages.LabelSearch);
-                search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = Pattern.quote(search.getText().trim());
+                    var filterText = search.getText().trim();
                     if (filterText.isEmpty())
                     {
                         model.setFilterPattern(null);
@@ -306,7 +299,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                     }
                     else
                     {
-                        Pattern p = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        var p = Pattern.compile(".*" + Pattern.quote(filterText) + ".*", //$NON-NLS-1$ //$NON-NLS-2$
+                                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
                         model.setFilterPattern(p);
                         model.fireTaxonomyModelChange(model.getVirtualRootNode());
                     }
@@ -361,28 +355,6 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        if (enableExperimentalFeatures)
-        {
-            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> { //$NON-NLS-1$
-
-                String source = taxonomy.getSource();
-
-                for (TaxonomySource ts : TaxonomySource.values())
-                {
-                    Action action = new SimpleAction(ts.getLabel(), a -> {
-                        if (ts.getIdentifier().equals(source))
-                            taxonomy.setSource(null);
-                        else
-                            taxonomy.setSource(ts.getIdentifier());
-
-                        model.getClient().touch();
-                    });
-                    action.setChecked(ts.getIdentifier().equals(source));
-                    manager.add(action);
-                }
-            }));
-        }
-
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }

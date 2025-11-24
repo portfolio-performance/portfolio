@@ -60,7 +60,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("(B.rsentransaktion|Transaktionsabrechnung): (Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)");
+        final var type = new DocumentType("(B.rsentransaktion|Transaktionsabrechnung): (Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -352,7 +352,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -431,7 +431,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addPaymentTransaction()
     {
-        var type = new DocumentType("Zahlungsverkehr");
+        final var type = new DocumentType("Zahlungsverkehr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -485,7 +485,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addAnnualFeesTransaction()
     {
-        var type = new DocumentType("Jahresgeb.hr");
+        final var type = new DocumentType("Jahresgeb.hr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -529,7 +529,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotFeesTransaction()
     {
-        var type = new DocumentType("Depotgeb.hr");
+        final var type = new DocumentType("Depotgeb.hr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -649,7 +649,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addFeesTransaction()
     {
-        var type = new DocumentType("Zinsabschluss");
+        final var type = new DocumentType("Zinsabschluss");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -936,7 +936,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("note", "amount", "date").optional() //
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
-                                        + "(?<note>(TWINT .*EMPFANGEN" //
+                                        + "(?<note>(TWINT .*EMPFANGEN( VOM)?" //
                                         + "|GIRO (AUSLAND|AUS ONLINE-SIC [\\-\\d]+|AUS KONTO)" //
                                         + "|GUTSCHRIFT VON FREMDBANK [\\-\\d]+" //
                                         + "|GUTSCHRIFT( .*(BANK|PING))?" //
