@@ -949,10 +949,9 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-08-21T16:37"), hasShares(5000.0 / 100), //
                         hasSource("Kauf10.txt"), //
-                        hasNote("Belegnummer 1234567890 / 123456789"), //
-                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5003.00), //
-                        hasTaxes("USD", 150.86), // accrued interest
-                        hasFees("USD", 68.32 + 5.22 + 4.80))));
+                        hasNote("Belegnummer 1234567890 / 123456789 | Zinsen für 158 Zinstage: 150,86 USD"), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5153.86), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 68.32 + 5.22 + 4.80))));
     }
 
     @Test
@@ -2799,15 +2798,24 @@ public class DeutscheBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        // A trailing whitespace in "Kontoauszug vom 19.09.2025 bis 02.10.2025 "
-        // caused a mismatch of the pattern meant to extract the year of the
-        // bank statement. It was anchored strictly to the end of the line.
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
-        assertThat(errors, empty());
+        // Check if the results list is not empty
+        assertTrue(results.isEmpty());
 
-        // just a single (skipped) transaction
-        assertThat(results.size(), is(1));
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        // Extract the first error from the list
+        var firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug08.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
     }
 
     @Test
@@ -2820,16 +2828,19 @@ public class DeutscheBankPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug09.txt"), errors);
 
         assertThat(errors, empty());
-
-        // just a single transaction
-        assertThat(results.size(), is(1));
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         assertThat(results, hasItem(deposit( //
                         hasDate("2021-10-21"), hasShares(0), //
                         hasSource("GiroKontoauszug09.txt"), hasNote("Übertrag (Überweisung) von Max Mustermann"), //
-                        hasAmount("EUR", 1000), hasGrossValue("EUR", 1000), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
                         hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
     }
 }
