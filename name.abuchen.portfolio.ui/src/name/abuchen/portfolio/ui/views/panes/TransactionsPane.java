@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -37,6 +39,7 @@ public class TransactionsPane implements InformationPanePage
 {
 
     @Inject
+    @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
 
     @Inject

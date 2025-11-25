@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 
 /**
  * A pair of transaction owner (account or portfolio) and a transaction.
@@ -35,6 +37,17 @@ public class TransactionPair<T extends Transaction> implements Adaptable
     {
         this.owner = Objects.requireNonNull(owner);
         this.transaction = Objects.requireNonNull(transaction);
+    }
+
+    @SuppressWarnings("unchecked")
+    public TransactionPair<T> unwrap()
+    {
+        return switch (this.owner)
+        {
+            case ReadOnlyAccount a -> new TransactionPair<>((TransactionOwner<T>) a.unwrap(), this.transaction);
+            case ReadOnlyPortfolio p -> new TransactionPair<>((TransactionOwner<T>) p.unwrap(), this.transaction);
+            default -> this;
+        };
     }
 
     public TransactionOwner<T> getOwner()
