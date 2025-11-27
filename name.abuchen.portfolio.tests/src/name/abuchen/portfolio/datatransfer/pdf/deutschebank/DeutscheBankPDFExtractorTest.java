@@ -545,6 +545,39 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testKupon01()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kupon01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2722190795"), hasWkn("A3511H"), hasTicker(null), //
+                        hasName("4% DEUTSCHE BAHN AG MTN.23 23.11. 43"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends (here: interest) transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-24T00:00"), hasShares(10.00), //
+                        hasSource("Kupon01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 33.46), hasGrossValue("EUR", 40.00), //
+                        hasTaxes("EUR", 6.20 + 0.34), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierKauf01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());

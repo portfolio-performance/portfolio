@@ -300,10 +300,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift)");
+        var type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)");
         this.addDocumentTyp(type);
 
-        var firstRelevantLine = new Block("^^(Dividendengutschrift|Ertragsgutschrift)$");
+        var firstRelevantLine = new Block("^^(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)$");
         type.addBlock(firstRelevantLine);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
