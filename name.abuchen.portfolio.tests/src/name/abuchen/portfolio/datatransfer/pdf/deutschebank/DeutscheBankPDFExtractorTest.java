@@ -2870,7 +2870,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(countIgnoredItems(results), is(3L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
