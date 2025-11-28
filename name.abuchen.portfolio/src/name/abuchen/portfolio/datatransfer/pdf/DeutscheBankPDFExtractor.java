@@ -541,7 +541,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                             if (type.getCurrentContext().getBoolean("skipTransaction"))
-                                return null;
+                                return new IgnoredItem(t);
 
                             // If we have multiple entries in the document,
                             // then the "skipTransaction" flag must be removed.

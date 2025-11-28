@@ -24,24 +24,21 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countIgnoredItems;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -1627,7 +1624,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(48L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(48));
+        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(results.size(), is(49));
         new AssertImportActions().check(results, "EUR");
 
         // check transaction
@@ -2752,22 +2750,14 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug05.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(results.size(), is(1));
     }
 
     @Test
@@ -2785,7 +2775,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(1));
+        assertThat(countIgnoredItems(results), is(2L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
@@ -2806,22 +2797,9 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug07.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countIgnoredItems(results), is(4L));
+        assertThat(results.size(), is(4));
     }
 
     @Test
@@ -2833,22 +2811,9 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug08.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(results.size(), is(1));
     }
 
     @Test
