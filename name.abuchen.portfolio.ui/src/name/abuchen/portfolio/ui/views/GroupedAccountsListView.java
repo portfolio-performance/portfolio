@@ -114,6 +114,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
     private void setInput()
     {
+        groupedAccountColumns.invalidateCache();
         groupedAccounts.setInput(items);
     }
 

@@ -885,6 +885,7 @@ public class TradesTableViewer
 
     public void setInput(List<?> items)
     {
+        this.support.invalidateCache();
         this.trades.setInput(items);
     }
 

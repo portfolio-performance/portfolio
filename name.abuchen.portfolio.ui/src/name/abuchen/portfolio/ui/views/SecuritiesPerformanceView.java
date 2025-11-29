@@ -1940,6 +1940,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         model = new Model(LazySecurityPerformanceSnapshot.create(filteredClient, converter, period));
 
+        recordColumns.invalidateCache();
         records.setInput(model.getRows());
         records.refresh();
     }

@@ -83,6 +83,7 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
     @Override
     public void notifyModelUpdated()
     {
+        planColumns.invalidateCache();
         plans.setInput(getClient().getPlans());
         plans.setSelection(plans.getSelection());
     }

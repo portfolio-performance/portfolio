@@ -1165,6 +1165,7 @@ public class StatementOfAssetsViewer
         {
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
+            support.invalidateCache();
             assets.setInput(model.getElements());
             assets.refresh();
         }

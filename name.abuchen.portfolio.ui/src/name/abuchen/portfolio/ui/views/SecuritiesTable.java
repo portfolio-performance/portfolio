@@ -715,18 +715,21 @@ public final class SecuritiesTable implements ModificationListener
 
     public void setInput(List<Security> securities)
     {
+        this.support.invalidateCache();
         this.securities.setInput(securities);
         this.watchlist = null;
     }
 
     public void setInput(Watchlist watchlist)
     {
+        this.support.invalidateCache();
         this.securities.setInput(watchlist.getSecurities());
         this.watchlist = watchlist;
     }
 
     public void refresh(Security security)
     {
+        this.support.invalidateCache();
         this.metricsCache.remove(security);
         this.securities.refresh(security, true);
     }
@@ -738,7 +741,10 @@ public final class SecuritiesTable implements ModificationListener
             securities.getControl().setRedraw(false);
 
             if (updateLabels)
+            {
                 metricsCache.clear();
+                support.invalidateCache();
+            }
             securities.refresh(updateLabels);
             securities.setSelection(securities.getSelection());
 
