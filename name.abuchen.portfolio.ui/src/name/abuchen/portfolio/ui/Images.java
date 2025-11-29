@@ -49,7 +49,7 @@ public enum Images
     // tool bar
 
     PLUS("plus.png"), //$NON-NLS-1$
-    CONFIG("config.png"), //$NON-NLS-1$
+    CONFIG("config.svg"), //$NON-NLS-1$
     EXPORT("export.png"), //$NON-NLS-1$
     SAVE("save.png"), //$NON-NLS-1$
     FILTER_ON("filter_on.png"), //$NON-NLS-1$
