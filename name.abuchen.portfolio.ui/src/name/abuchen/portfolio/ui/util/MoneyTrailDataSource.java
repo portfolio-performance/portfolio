@@ -32,9 +32,16 @@ public class MoneyTrailDataSource
     {
         int depth = trail.getDepth();
 
+        // Apply DPI scaling for margins and spacing
+        int horizontalSpacing = SWTHelper.scalePixel(5);
+        int verticalSpacing = SWTHelper.scalePixel(5);
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-        GridLayoutFactory.swtDefaults().numColumns(depth + 3).applyTo(composite);
+        GridLayoutFactory.swtDefaults()
+                         .numColumns(depth + 3)
+                         .spacing(horizontalSpacing, verticalSpacing)
+                         .applyTo(composite);
 
         Label heading = new Label(composite, SWT.NONE);
         heading.setBackground(composite.getBackground());
@@ -78,16 +85,18 @@ public class MoneyTrailDataSource
 
         Label date = new Label(composite, SWT.NONE);
         date.setBackground(composite.getBackground());
+        GridDataFactory.fillDefaults().applyTo(date);
         if (trail.getDate() != null)
             date.setText(Values.Date.format(trail.getDate()));
 
         Label label = new Label(composite, SWT.NONE);
         label.setBackground(composite.getBackground());
         label.setText(trail.getLabel());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
 
         Label shares = new Label(composite, SWT.RIGHT);
         shares.setBackground(composite.getBackground());
-        GridDataFactory.fillDefaults().applyTo(shares);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(shares);
         if (trail.getShares() != null)
             shares.setText(Values.Share.format(trail.getShares()));
 
@@ -97,7 +106,7 @@ public class MoneyTrailDataSource
         {
             Label column = new Label(composite, SWT.RIGHT);
             column.setBackground(composite.getBackground());
-            GridDataFactory.fillDefaults().applyTo(column);
+            GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).applyTo(column);
 
             if (index == level)
             {
