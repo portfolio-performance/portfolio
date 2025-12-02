@@ -2634,15 +2634,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 18
                                         // März SEPA-Lastschrift Sepa Direct Debit transfer to Vodafone West GmbH 7,33 € 800,96 €
                                         // 2025
-                                        //
-                                        // 03 
-                                        // Nov. Prämie Your Kindergeld bonus 0,01 € 410,69 €
-                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Kartentransaktion|SEPA\\-Lastschrift|Pr.mie) " //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Kartentransaktion|SEPA\\-Lastschrift) " //
                                                                         + "(?<note>.*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4})$") //
@@ -2686,6 +2682,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 03
                                         // mar Recompensa Your Saveback payment 2,69 € 1.970,43 €
                                         // 2025
+                                        //
+                                        // 03 
+                                        // Nov. Prämie Your Kindergeld bonus 0,01 € 410,69 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency") //
@@ -2694,7 +2694,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "(.berweisung Einzahlung akzeptiert:" //
                                                                         + "|.berweisung Incoming transfer from"
                                                                         + "|Transferencia Ingreso aceptado" //
-                                                                        + "|Pr.mie Your Saveback"
+                                                                        + "|Pr.mie Your Saveback" //
+                                                                        + "|Pr.mie Your Kindergeld bonus"
                                                                         + "|Recompensa Your Saveback payment)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //

@@ -3838,7 +3838,7 @@ public class TradeRepublicPDFExtractorTest
                                         hasSource("Kontoauszug35.txt"), hasNote(null)))));
 
         assertThat(results, hasItem(deposit(hasDate("2025-11-03"), hasAmount("EUR", 0.01),
-                        hasSource("Kontoauszug35.txt"), hasNote("Your Kindergeld bonus"))));
+                        hasSource("Kontoauszug35.txt"), hasNote(null))));
     }
 
     @Test
