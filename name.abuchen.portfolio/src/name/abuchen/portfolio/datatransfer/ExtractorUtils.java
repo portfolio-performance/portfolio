@@ -163,6 +163,7 @@ public class ExtractorUtils
 
                     // Date formatters with case-insensitive support for Belgiun
     private static final DateTimeFormatter[] DATE_FORMATTER_BELGIAN = { //
+                    createFormatter("d-MMM-yyyy", AdditionalLocales.BELGIAN), //
                     createFormatter("dd-MMM-yyyy", AdditionalLocales.BELGIAN) //
                     };
 
