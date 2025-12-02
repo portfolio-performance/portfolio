@@ -151,6 +151,11 @@ public class ExtractorUtils
                     createFormatter("dd/MM/yy", AdditionalLocales.MEXICO) //
                     };
 
+                    // Date formatters with case-insensitive support for Belgiun
+    private static final DateTimeFormatter[] DATE_FORMATTER_BELGIAN = { //
+                    createFormatter("dd-MMM-yyyy", AdditionalLocales.BELGIAN) //
+                    };
+
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
                     createFormatter("d LLLL yyyy", Locale.UK), //
@@ -178,7 +183,8 @@ public class ExtractorUtils
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
                     Locale.UK, DATE_FORMATTER_UK, //
                     AdditionalLocales.SPAIN, DATE_FORMATTER_SPAIN, //
-                    AdditionalLocales.MEXICO, DATE_FORMATTER_MEXICO);
+                    AdditionalLocales.MEXICO, DATE_FORMATTER_MEXICO, //
+                    AdditionalLocales.BELGIAN,DATE_FORMATTER_BELGIAN);
 
     // DateTime formatters with case-insensitive support for various locales
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
@@ -437,7 +443,7 @@ public class ExtractorUtils
                         : new Locale[] { //
                                         Locale.GERMANY, Locale.FRENCH, Locale.US, //
                                         Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK, //
-                                        AdditionalLocales.SPAIN, AdditionalLocales.MEXICO };
+                                        AdditionalLocales.SPAIN, AdditionalLocales.MEXICO, AdditionalLocales.BELGIAN };
 
         for (Locale l : locales)
         {
