@@ -681,6 +681,16 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^Aktienbetrag .* \\-(?<fee>[\\.,'\\d]+) \\-[\\.,'\\d]+$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Belgium Stock
+                        // 47351983134 05-sep-2025 09-sep-2025 -0,10 1,000000 0,00 -0,10
+                        // @formatter: on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find(".*Stock.*") //
+                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
