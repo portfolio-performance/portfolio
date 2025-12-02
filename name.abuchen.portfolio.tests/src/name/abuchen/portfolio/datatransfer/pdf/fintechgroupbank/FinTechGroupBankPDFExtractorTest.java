@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.fintechgroupbank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -61,7 +60,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -4322,12 +4320,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroKauf02.txt"), //
                         hasNote("Transaktion-Nr.: 3409315621"), //
                         hasAmount("EUR", 1138.15), hasGrossValue("EUR", 1126.29), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71 + 1.25), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.71 + 1.25))));
     }
 
     @Test
@@ -4404,12 +4397,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroKauf03.txt"), //
                         hasNote("Transaktion-Nr.: 3527408249"), //
                         hasAmount("EUR", 1172.56 + 0.87), hasGrossValue("EUR", 1159.52), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 4.70 + 3.31))));
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -5412,14 +5400,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende05.txt"), //
                         hasNote("Transaktion-Nr.: 0123456789 | Bruttothesaurierung 32,86 USD"), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.15), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5487,14 +5468,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende06.txt"), //
                         hasNote("Transaktion-Nr.: 6685264591 | Bruttothesaurierung 26,25 USD"), //
                         hasAmount("EUR", 0.28), hasGrossValue("EUR", 0.28), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5562,14 +5536,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende07.txt"), //
                         hasNote("Transaktion-Nr.: 6040257022 | Bruttothesaurierung 51,78 USD"), //
                         hasAmount("EUR", 10.65), hasGrossValue("EUR", 10.65), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5701,14 +5668,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende10.txt"), //
                         hasNote("Transaktion-Nr.: 3415691892"), //
                         hasAmount("EUR", 109.86), hasGrossValue("EUR", 151.53), //
-                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5744,6 +5704,74 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasNote(null), //
                                         hasAmount("EUR", 2484.43), hasGrossValue("EUR", 3016.20), //
                                         hasTaxes("EUR", 504.06 + 27.71), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende12()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92826C8394"), hasWkn("A0NC7B"), hasTicker(null), //
+                        hasName("VISA INC."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasShares(10.00), //
+                        hasSource("FlatExDegiroDividende12.txt"), //
+                        hasNote("Transaktion-Nr. : 4620331518"), //
+                        hasAmount("EUR", 4.31), hasGrossValue("EUR", 5.79), //
+                        hasForexGrossValue("USD", 6.70), //
+                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende12WithSecurityInEUR()
+    {
+        var security = new Security("VISA INC.", "EUR");
+        security.setIsin("US92826C8394");
+        security.setWkn("A0NC7B");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new FinTechGroupBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-01T00:00"), hasShares(10.00), //
+                        hasSource("FlatExDegiroDividende12.txt"), //
+                        hasNote("Transaktion-Nr. : 4620331518"), //
+                        hasAmount("EUR", 4.31), hasGrossValue("EUR", 5.79), //
+                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -7227,7 +7255,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:37")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
         assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 229"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(1737.50))));
@@ -7248,7 +7276,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-09T17:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(41)));
         assertThat(entry.getSource(), is("FlatExDeGiroSammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Transaktion-Nr.: 229"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(1796.12))));
