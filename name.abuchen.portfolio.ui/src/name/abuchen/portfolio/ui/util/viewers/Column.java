@@ -46,6 +46,16 @@ public class Column
     }
 
     /**
+     * Listener interface for columns that need notification when the cache
+     * should be invalidated.
+     */
+    @FunctionalInterface
+    public interface CacheInvalidationListener
+    {
+        void invalidateCache();
+    }
+
+    /**
      * Uniquely identifies a column to store/load a configuration
      */
     private String id;

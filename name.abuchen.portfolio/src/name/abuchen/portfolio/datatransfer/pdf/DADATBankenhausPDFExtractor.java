@@ -5,12 +5,12 @@ import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -35,6 +35,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
         addInterestAccountStatementTransaction();
         addFeesAccountStatementTransaction();
         addDepositRemovalAccountStatementTransaction();
+        addTransferAccountStatementTransaction();
         addTaxLossAdjustmentAccountStatementTransaction();
     }
 
@@ -46,19 +47,19 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Abrechnungsauskunft|Kauf Depot)");
+        var type = new DocumentType("(Abrechnungsauskunft|Kauf Depot)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Gesch.ftsart: Kauf|Buchungsbestätigung)$");
+        var firstRelevantLine = new Block("^(Gesch.ftsart: Kauf|Buchungsbestätigung)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -159,19 +160,19 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
+        var type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Abrechnung Ereignis$");
+        var firstRelevantLine = new Block("^Abrechnung Ereignis$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -225,11 +226,11 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}.\\d{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                         .match("^Ertrag: (?<gross>[\\.,\\d]+) [\\w]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -251,7 +252,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Neuer Saldo zu Ihren Gunsten
@@ -271,16 +272,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Kauf|Kauf aus Dauerauftrag|Verkauf) .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Kauf|Kauf aus Dauerauftrag|Verkauf) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -339,17 +340,17 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         .match("^(?i).* KURSWERT[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
                         .match("^.*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            var item = new BuySellEntryItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -363,7 +364,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Neuer Saldo zu Ihren Gunsten
@@ -384,16 +385,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} Ertrag .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} Ertrag .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -408,8 +409,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "isin", "name", "shares", "currency") //
                                                         .documentContext("year") //
                                                         .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$") //
-                                                        .match("^.* ZINSERTRAG[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$") //
+                                                        .match("^(?i).* ZINSERTRAG[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
@@ -426,9 +427,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "isin", "name", "shares", "currency") //
                                                         .documentContext("year") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$") //
-                                                        .match("^.* Zinsen\\/Dividenden[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Ertrag[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
+                                                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$") //
+                                                        .match("^(?i).* Zinsen\\/Dividenden[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
@@ -456,13 +457,13 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section
                                                         .attributes("fxGross", "termCurrency", "exchangeRate")
                                                         .match("^(?i).* ZINSERTRAG[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
-                                                        .match("^.*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
+                                                        .match("^(?i).*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -473,13 +474,13 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section
                                                         .attributes("fxGross", "termCurrency", "exchangeRate")
                                                         .match("^(?i).* Zinsen\\/Dividenden[\\s]{1,}(\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
-                                                        .match("^.*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
+                                                        .match("^(?i).*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -492,7 +493,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTaxesAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Neuer Saldo zu Ihren Gunsten
@@ -512,43 +513,62 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // 10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-76196684 09.11 5,18-
-                        // ISIN IE00BYX2JD69 ISHSIV-MSCI WLD.SRI U.EOA              68,80900 STK
-                        // Kurs                      0,000000  KEST                     -3,45 EUR
-                        // @formatter:on
-                        .section("date", "year", "isin", "name", "shares", "currency")
-                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$")
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$")
-                        .match("^.*KEST[\\s]{1,}\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
-                        .assign((t, v) -> {
-                            v.put("name", replaceMultipleBlanks(v.get("name")));
-                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
-                            t.setShares(asShares(v.get("shares")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-76196684 09.11 5,18-
+                                        // ISIN IE00BYX2JD69 ISHSIV-MSCI WLD.SRI U.EOA              68,80900 STK
+                                        // Kurs                      0,000000  KEST                     -3,45 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "year", "isin", "name", "shares", "currency") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$")
+                                                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$")
+                                                        .match("^(?i).*KEST[\\s]{1,}\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .assign((t, v) -> {
+                                                            v.put("name", replaceMultipleBlanks(v.get("name")));
+                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setShares(asShares(v.get("shares")));
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // 30.07 Steuern ausschüttungsgl. Erträge Depot    1234567890/20240729-12345678 29.07 28,45-
+                                        // ISIN IE33AB1CD551 Y(DR)-XDUI ABCDE 1F                 1.123,00000 STK
+                                        // Kurs                      0,000000  Kapitalertragsteuer     -31,05 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "year", "isin", "name", "shares", "currency") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4})[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$")
+                                                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+) STK$")
+                                                        .match("^(?i).*Kapitalertragsteuer[\\s]{1,}\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .assign((t, v) -> {
+                                                            v.put("name", replaceMultipleBlanks(v.get("name")));
+                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // 10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-76196684 09.11 5,18-
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{1,2}\\.[\\d]{1,2} (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
+                        .match("^(?i)[\\d]{1,2}\\.[\\d]{1,2} (Steuern aussch.ttungsgl. Ertr.ge|Steuerdividende)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$")
                         .assign((t, v) -> {
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -557,16 +577,19 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Kurs                      0,000000  KEST                     -1,51 USD
                         // DevKurs        1,123200/2.1.2020
+                        //
+                        // Kurs                      0,000000  Kapitalertragsteuer     -31,05 USD
+                        // DevKurs        1,091300/26.7.2024
                         // @formatter:on
                         .section("termCurrency", "exchangeRate").optional() //
-                        .match("^(?i).*KEST[\\s]{1,}\\-[\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
-                        .match("^.*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
+                        .match("^(?i).*(KEST|Kapitalertragsteuer)[\\s]{1,}\\-[\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
+                        .match("^(?i).*DevKurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)\\/.*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = t.getMonetaryAmount();
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = t.getMonetaryAmount();
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -576,7 +599,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxLossAdjustmentAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Neuer Saldo zu Ihren Gunsten
@@ -596,16 +619,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} KESt\\-Verlustausgleich .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} KESt\\-Verlustausgleich .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
@@ -621,8 +644,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "note", "isin", "name", "currency") //
                         .documentContext("year") //
-                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>KESt\\-Verlustausgleich)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>KESt\\-Verlustausgleich)[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+(\\-)?$") //
+                        .match("^(?i)ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                         .match("^(?i).*(KEST|Kapitalertragsteuer)[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             v.put("name", replaceMultipleBlanks(v.get("name")));
@@ -638,7 +661,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{1,2}\\.[\\d]{1,2} KESt\\-Verlustausgleich[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$") //
+                        .match("^(?i)[\\d]{1,2}\\.[\\d]{1,2} KESt\\-Verlustausgleich[\\s]{1,}Depot[\\s]{1,}[\\d]+\\/[\\d]{4}[\\d]+\\-[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -649,7 +672,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addInterestAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Alter Saldo per 20.09.2021 8,27-
@@ -669,16 +692,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} Abschluss .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} Abschluss .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -692,9 +715,9 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
-                                                        .find("^(?<note>Sollzinsen)$") //
-                                                        .match("^AB [\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2}[\\s]{1,}[\\.,\\d]+%[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
+                                                        .find("^(?i)(?<note>Sollzinsen)$") //
+                                                        .match("^(?i)AB [\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2}[\\s]{1,}[\\.,\\d]+%[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -708,8 +731,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
-                                                        .match("^(?<note>Sollzinsen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
+                                                        .match("^(?i)(?<note>Sollzinsen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -727,7 +750,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addFeesAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Alter Saldo per 20.09.2021 8,27-
@@ -747,16 +770,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Abschluss|Depotgeb.hrenabrechnung) .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} (Abschluss|Depotgeb.hrenabrechnung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -769,8 +792,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
-                                                        .match("^(?<note>Kontof.hrungsgeb.hr)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
+                                                        .match("^(?i)(?<note>Kontof.hrungsgeb.hr)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -784,8 +807,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
-                                                        .match("^(?<note>Spesen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
+                                                        .match("^(?i)(?<note>Spesen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -798,7 +821,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "year", "amount") //
                                                         .documentContext("currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Depotgeb.hrenabrechnung per [\\d]{1,2}\\.[\\d]{1,2}.[\\d]{4})[\\s]{1,}(?<year>[\\d]{4})[\\d]+[\\s]{1,}[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Depotgeb.hrenabrechnung per [\\d]{1,2}\\.[\\d]{1,2}.[\\d]{4})[\\s]{1,}(?<year>[\\d]{4})[\\d]+[\\s]{1,}[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -815,7 +838,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositRemovalAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Alter Saldo per 20.09.2021 8,27-
@@ -835,16 +858,16 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} .*$");
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -857,8 +880,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>(?!(Sollzins ab|Information gem.ß)).*) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
-                                                        .match("^(IBAN: .*|Transfer)$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>(?!(UMBUCHUNG|Sollzins ab|Information gem.ß)).*) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?i)(IBAN: .*|Transfer)$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -871,7 +894,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Werbebonus) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Werbebonus) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -885,8 +908,8 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .documentContext("year", "currency") //
-                                                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>(?!(Sollzins ab|Information gem.ß)).*) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
-                                                        .match("^(IBAN: .*|Transfer)$") //
+                                                        .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>(?!(UMBUCHUNG|Sollzins ab|Information gem.ß)).*) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^(?i)(IBAN: .*|Transfer)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Change from DEPOSIT to REMOVAL
@@ -904,6 +927,57 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         });
+    }
+
+    private void addTransferAccountStatementTransaction()
+    {
+        final var type = new DocumentType("KONTOAUSZUG", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Alter Saldo per 20.09.2021 8,27-
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Alter Saldo per [\\d]{1,2}\\.[\\d]{1,2}\\.(?<year>[\\d]{4}) .*$")
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year")))
+
+                                        // @formatter:off
+                                        // Neuer Saldo zu Ihren Gunsten
+                                        // Max Mustermann EUR 10,81-
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .find("Neuer Saldo zu Ihren (Gunsten|Lasten)")
+                                        .match("^.* (?<currency>[\\w]{3}) [\\.,\\d]+(\\-)?$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransferEntry>();
+
+        var firstRelevantLine = new Block("^[\\d]{1,2}\\.[\\d]{1,2} UMBUCHUNG.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransferEntry = new AccountTransferEntry();
+                            return accountTransferEntry;
+                        })
+
+                        // @formatter:off
+                        // 07.01 UMBUCHUNG   INTERNET AM 2025-01-03 03.01 20.000,00
+                        // 15.11 UMBUCHUNG   INTERNET AM 2021-11-15 15.11 2.500,00-
+                        // @formatter:on
+                        .section("date", "amount").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{1,2}\\.[\\d]{1,2}) UMBUCHUNG.* [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)(\\-)?$") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date") + "." + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(t -> new AccountTransferItem(t, true));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

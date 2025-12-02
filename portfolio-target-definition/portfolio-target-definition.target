@@ -24,6 +24,8 @@
 		<unit id="org.mockito.mockito-core.source" version="5.19.0"/>
 		<unit id="slf4j.api" version="2.0.17"/>
 		<unit id="slf4j.api.source" version="2.0.17"/>
+		<unit id="slf4j.nop" version="2.0.17"/>
+		<unit id="slf4j.nop.source" version="2.0.17"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/updates/release/3.2.0/"/>

@@ -88,6 +88,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
     private void setInput()
     {
+        portfolioColumns.invalidateCache();
         portfolios.setInput(isFiltered ? getClient().getActivePortfolios() : getClient().getPortfolios());
     }
 
