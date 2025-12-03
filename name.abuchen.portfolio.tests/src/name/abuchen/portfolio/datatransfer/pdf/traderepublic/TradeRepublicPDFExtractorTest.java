@@ -10638,6 +10638,33 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+    
+    @Test
+    public void testZinsabrechnung10()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-12-01T00:00"), //
+                        hasSource("Zinsabrechnung10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 28.88), hasGrossValue("EUR", 38.51), //
+                        hasTaxes("EUR", 9.63), hasFees("EUR", 0.00))));
+    }
 
     @Test
     public void testRapportDInterets02()
