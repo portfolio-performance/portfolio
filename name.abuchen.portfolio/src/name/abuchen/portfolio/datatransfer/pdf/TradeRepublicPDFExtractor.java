@@ -2683,7 +2683,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // mar Recompensa Your Saveback payment 2,69 € 1.970,43 €
                                         // 2025
                                         //
-                                        // 03 
+                                        // 03
                                         // Nov. Prämie Your Kindergeld bonus 0,01 € 410,69 €
                                         // 2025
                                         // @formatter:on
@@ -4873,6 +4873,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Pr.l.vements sociaux (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Zinsabschlagsteuer -9,63 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Zinsabschlagsteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off

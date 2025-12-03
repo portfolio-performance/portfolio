@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+flBEUCs wWGSVIhSY
+DATUM 01.12.2025
+PlMZKYooiYeYhPCATv 1
+VERRECHNUNGSKONTO 1234567890
+8796 tYLH
+ABRECHNUNG ZINSEN
+zum 30.11.2025
+ÜBERSICHT
+VERMÖGENSWERT EINKOMMENSART RATE DATUM GESAMT
+Cash Zinsen 2,00% 01.11.2025 - 30.11.2025 38,51 EUR
+Gesamt 38,51 EUR
+ABRECHNUNG - ZINSEN
+POSITION BETRAG
+Besteuerungsgrundlage 38,51 EUR
+Zinsabschlagsteuer -9,63 EUR
+Gesamt 28,88 EUR
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+AT123456789012345678 01.12.2025 28,88 EUR
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.at Sitz der Gesellschaft: Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Trade Republic Bank GmbH Andreas Torner
+1010 Wien, Österreich Brunnenstrasse 19-21 Gernot Mittendorfer
+FN 630983 t 10119 Berlin, Deutschland Christian Hecker
+AG Charlottenburg HRB 244347 B Thomas Pischke
+Erstellt am 2025 Dec 1 03:23:46 Seite 1 von 1
