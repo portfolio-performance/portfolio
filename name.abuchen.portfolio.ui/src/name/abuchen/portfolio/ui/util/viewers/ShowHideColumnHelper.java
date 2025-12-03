@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.Column.CacheInvalidationListener;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOwner
@@ -295,7 +296,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (labelProvider instanceof CellItemImageClickedListener listener)
                 setupImageClickedListener(col, listener);
 
-            if (labelProvider instanceof ParameterizedColumnLabelProvider parametrized)
+            if (labelProvider instanceof ParameterizedColumnLabelProvider<?> parametrized)
                 parametrized.setTableColumn(tableColumn);
 
             setCommonParameters(column, col, direction);
@@ -1061,6 +1062,15 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             manager.add(new Separator());
             manager.add(new SimpleAction(Messages.MenuHideColumn, a -> destroyColumn(widget)));
+        }
+    }
+
+    public void invalidateCache()
+    {
+        for (var c : columns)
+        {
+            if (c instanceof CacheInvalidationListener listener)
+                listener.invalidateCache();
         }
     }
 }

@@ -58,7 +58,7 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 
 `Menu` → `Help` → `Install New Software` → Select `Latest Eclipse Simultaneous Release`:
 - **M2E PDE Integration** (under General Purpose Tools)
-- **Eclipse e4 Tools Developer Resources** (under General Purpose Tools)
+- **Eclipse e4 Tools** (under General Purpose Tools)
 
 **Configure Eclipse**
 

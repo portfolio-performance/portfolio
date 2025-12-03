@@ -817,7 +817,10 @@ import name.abuchen.portfolio.util.TextUtil;
     public void nodeChange(TaxonomyNode node)
     {
         if (!nodeViewer.getTree().isDisposed())
+        {
+            support.invalidateCache();
             nodeViewer.refresh();
+        }
     }
 
     @Override

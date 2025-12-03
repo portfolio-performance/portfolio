@@ -685,6 +685,38 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy06()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4K48X80"), hasWkn(null), hasTicker("IMAE"), //
+                        hasName(null), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-05T13:16:09"), hasShares(1.00), //
+                        hasSource("Buy06.txt"), //
+                        hasNote("Order ID 6510309204 | Trade ID 4021824604"), //
+                        hasAmount("EUR", 87.40), hasGrossValue("EUR", 87.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.10))));
+
+    }
+
+    @Test
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());

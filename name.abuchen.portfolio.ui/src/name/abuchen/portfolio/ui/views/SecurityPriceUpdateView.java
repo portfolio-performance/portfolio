@@ -134,6 +134,7 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
             {
                 if (isNewRequest)
                 {
+                    columns.invalidateCache();
                     securities.setInput(status.getSecurities());
 
                     var dateTime = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();

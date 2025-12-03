@@ -95,6 +95,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
     private void resetInput()
     {
+        accountColumns.invalidateCache();
         accounts.setInput(isFiltered ? getClient().getActiveAccounts() : getClient().getAccounts());
     }
 

@@ -119,6 +119,16 @@ public class ExtractorUtils
                     createFormatter("LLLL dd, yyyy", Locale.US), //
                     };
 
+    // Date formatters with case-insensitive support for Italian (Italy)
+    private static final DateTimeFormatter[] DATE_FORMATTER_ITALY = {
+                    createFormatter("d MMM yyyy", Locale.ITALY),
+                    createFormatter("dd MMM yyyy", Locale.ITALY),
+                    createFormatter("d MMMM yyyy", Locale.ITALY),
+                    createFormatter("dd MMMM yyyy", Locale.ITALY),
+                    createFormatter("d/MM/yyyy", Locale.ITALY),
+                    createFormatter("dd/MM/yyyy", Locale.ITALY)
+            };
+
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
                     createFormatter("LLL d, yyyy", Locale.CANADA), //
@@ -153,6 +163,7 @@ public class ExtractorUtils
 
                     // Date formatters with case-insensitive support for Belgiun
     private static final DateTimeFormatter[] DATE_FORMATTER_BELGIAN = { //
+                    createFormatter("d-MMM-yyyy", AdditionalLocales.BELGIAN), //
                     createFormatter("dd-MMM-yyyy", AdditionalLocales.BELGIAN) //
                     };
 
@@ -178,6 +189,7 @@ public class ExtractorUtils
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
                     Locale.GERMANY, DATE_FORMATTER_GERMANY, //
                     Locale.FRENCH, DATE_FORMATTER_FRENCH, //
+                    Locale.ITALY, DATE_FORMATTER_ITALY, //
                     Locale.US, DATE_FORMATTER_US, //
                     Locale.CANADA, DATE_FORMATTER_CANADA, //
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
@@ -441,7 +453,7 @@ public class ExtractorUtils
 
         var locales = hints.length > 0 ? hints
                         : new Locale[] { //
-                                        Locale.GERMANY, Locale.FRENCH, Locale.US, //
+                                        Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.ITALY, //
                                         Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK, //
                                         AdditionalLocales.SPAIN, AdditionalLocales.MEXICO, AdditionalLocales.BELGIAN,
                                         AdditionalLocales.POLAND };

@@ -70,6 +70,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
 
     private static final String ATTRIBUTE_GROSS_TAXES_TREATMENT = "gross_taxes_treatment";
+    private static final String ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET = "gross_tax_base_before_lost_offset";
 
     public ComdirectPDFExtractor(Client client)
     {
@@ -1124,6 +1125,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Steuerliche Behandlung: Vorabpauschale .* (?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // I n v e st m e n t -A u s s c h ü tt un g                                                                                                              E  U   R                         2   .  1  3  1  ,  2   0
+                                        // T ei lf re is t e llu n g  (3 0 % )                                                                                                                E_  U_   R_  _  _  _  _  _  _   _  _  _  _  _  _   -_  6_  3_  9_  ,_  3_   6_
+                                        // S te u e r b e m e s s u n g s g r u n d la g e  v o r  V er l u s tv e r re c h n u n g                                                                 E  U   R                         1   .  4  9  1  ,  8   4
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currencyTaxBaseBeforeLossOffset", "grossTaxBaseBeforeLossOffset") //
+                                                        .match("^[\\s]*I[\\s]*n[\\s]*v[\\s]*e[\\s]*s[\\s]*t[\\s]*m[\\s]*e[\\s]*n[\\s]*t[\\s]*\\-[\\s]*A[\\s]*u[\\s]*s[\\s]*s[\\s]*c[\\s]*h[\\s]*.[\\s]*t[\\s]*t[\\s]*u[\\s]*n[\\s]*g[\\s]*[\\s]{1,}(?<currencyTaxBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})[\\-_\\s]{1,}(?<grossTaxBaseBeforeLossOffset>[\\.,\\d_\\s]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var grossTaxBaseBeforeLossOffset = Money.of(asCurrencyCode(stripBlanks(v.get("currencyTaxBaseBeforeLossOffset"))), asAmount(stripBlanks(v.get("grossTaxBaseBeforeLossOffset"))));
+
+                                                            v.getTransactionContext().put(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET, grossTaxBaseBeforeLossOffset);
+                                                        }))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               0,2 4
@@ -1146,26 +1162,23 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             // Combine deducted taxes with foreign withholding tax
                                                             var totalDeductedTaxes = deductedTaxes.add(foreignWithholdingTax);
 
-                                                            // Decide whether to use assessment basis or gross before taxes
-                                                            var useAssessmentBasis = !grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes);
+                                                            t.setMonetaryAmount(totalDeductedTaxes);
 
-                                                            if (useAssessmentBasis)
-                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(totalDeductedTaxes));
-                                                            else
-                                                                t.setMonetaryAmount(totalDeductedTaxes);
+                                                            // Check gross amount before loss offset
+                                                            // Override gross assessment basis if gross before loss offset is higher
+                                                            if (v.getTransactionContext().get(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET) != null)
+                                                            {
+                                                                var grossTaxBaseBeforeLostOffset = (Money) v.getTransactionContext().get(ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET);
 
-                                                            // Store gross tax treatment including foreign withholding tax (if same currency)
-                                                            var grossTreatmentBase = useAssessmentBasis ? grossAssessmentBasis : grossBeforeTaxes;
-                                                            if (foreignWithholdingTax.getCurrencyCode().equals(grossTreatmentBase.getCurrencyCode()))
-                                                            {
-                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossTreatmentBase.add(foreignWithholdingTax));
+                                                                if (grossTaxBaseBeforeLostOffset.isGreaterThan(grossAssessmentBasis))
+                                                                    grossAssessmentBasis = grossTaxBaseBeforeLostOffset;
                                                             }
+
+                                                            // Store gross amount
+                                                            if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
+                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossAssessmentBasis);
                                                             else
-                                                            {
-                                                                // Fallback: store base amount, keep foreign tax separately
-                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossTreatmentBase);
-                                                                v.getTransactionContext().put("ATTRIBUTE_FOREIGN_WITHHOLDING_TAX", foreignWithholdingTax);
-                                                            }
+                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
                                                         }),
                                         // @formatter:off
                                         //  Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               5,0 3

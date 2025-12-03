@@ -209,6 +209,7 @@ public final class TransactionsViewer implements ModificationListener
         // preserve selection when (updating with) new transactions
 
         ISelection selection = tableViewer.getSelection();
+        this.support.invalidateCache();
         this.tableViewer.setInput(transactions);
         this.tableViewer.setSelection(selection);
     }
