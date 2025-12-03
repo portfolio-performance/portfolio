@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.79.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Potwierdzenie zleceń wykonanych w dniu 03.09.2025
+Imię i nazwisko Konto Waluta rachunku Saldo Wartość konta Wartość OMI i Praw ułamkowych Depozyt zabezpieczający Wolne środki
+lleU VKxqzqIkp 72280041 EUR 5.08 1670.43 1665.35 0.00 5.08
+Wykonane zlecenia kupna OMI (2)
+Nr Numer zlecenia Symbol Nazwa System Typ Wolumen Data i czas Zlecenie otwarcia Cena Cena całkowita Klasa aktywów Waluta Kurs Koszty Prowizja Łączne koszty
+instrumentu wykonania transakcji jednostkowa kwotowania przewalutowania przewalutowania
+zlecenia instrumentu
+1 2004419557 FWIA.DE Invesco, UCITS, BATE 30.0000 03.09.2025 rynkowe 6.67500 200.25000 ETFs EUR 1.0000 0.10 0.00 0.10
+ACC, EUR 11:18:09
+2 2004420096 4GLD.DE Deutsche Boerse, XETA 1.0000 03.09.2025 rynkowe 97.71500 97.71500 ETC EUR 1.0000 0.00 0.00 0.00
+ACC, EUR 11:18:33
+XTB S.A. z siedzibą w Warszawie, ul. Prosta 67, 00-838 Warszawa,
+wpisana do rejestru przedsiębiorców w Sądzie Rejonowym dla m.st.
+XTB S.A.  +48 222 019 905 Warszawy w Warszawie, XIII Wydział Gospodarczy Krajowego
+Rejestru Sądowego, KRS 0000217580, NIP 527-24-43-955, REGON
+ul. Prosta 67  office@xtb.com 015803782. XTB S.A. działa na podstawie zezwolenia Komisji Nadzoru
+00-838 Warszawa  www.xtb.com Finansowego z dnia 8 listopada 2005 r.
+1/2
+Imię i nazwisko Konto Waluta rachunku Saldo Wartość konta Wartość OMI i Praw ułamkowych Depozyt zabezpieczający Wolne środki
+jGVW rFmWQeAka 51853656 EUR 5.08 1670.43 1665.35 0.00 5.08
+Wykonane zlecenia kupna Praw Ułamkowych (2)
+Nr Numer zlecenia Symbol, którego Nazwa System Typ Wolumen Data i czas Zlecenie otwarcia Cena Cena całkowita Klasa aktywów Waluta Kurs Koszty Prowizja Łączne koszty
+dot.prawo instrumentu, wykonania transakcji jednostkowa kwotowania przewalutowania przewalutowania
+ułamkowe którego zlecenia instrumentu
+dot.prawo
+ułamkowe
+1 2004419557 FWIA.DE Invesco, UCITS, XTB 0.2636 03.09.2025 rynkowe 6.67600 1.75979 Prawa ułamkowe EUR 1.0000 0.00 0.00 0.00
+ACC, EUR 11:18:08 dot. ETF
+2 2004420096 4GLD.DE Deutsche Boerse, XTB 0.0131 03.09.2025 rynkowe 97.71500 1.28007 Prawa ułamkowe EUR 1.0000 0.00 0.00 0.00
+ACC, EUR 11:18:32 dot. ETC
+XTB S.A. z siedzibą w Warszawie, ul. Prosta 67, 00-838 Warszawa,
+wpisana do rejestru przedsiębiorców w Sądzie Rejonowym dla m.st.
+XTB S.A.  +48 222 019 905 Warszawy w Warszawie, XIII Wydział Gospodarczy Krajowego
+Rejestru Sądowego, KRS 0000217580, NIP 527-24-43-955, REGON
+ul. Prosta 67  office@xtb.com 015803782. XTB S.A. działa na podstawie zezwolenia Komisji Nadzoru
+00-838 Warszawa  www.xtb.com Finansowego z dnia 8 listopada 2005 r.
+2/2

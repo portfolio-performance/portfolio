@@ -443,7 +443,8 @@ public class ExtractorUtils
                         : new Locale[] { //
                                         Locale.GERMANY, Locale.FRENCH, Locale.US, //
                                         Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK, //
-                                        AdditionalLocales.SPAIN, AdditionalLocales.MEXICO, AdditionalLocales.BELGIAN };
+                                        AdditionalLocales.SPAIN, AdditionalLocales.MEXICO, AdditionalLocales.BELGIAN,
+                                        AdditionalLocales.POLAND };
 
         for (Locale l : locales)
         {
