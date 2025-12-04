@@ -2185,7 +2185,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
-                                                        }))
+                                                        })
+                                        
+                                        
+
+                                        )
 
                         .wrap(TransactionItem::new));
 
@@ -2919,6 +2923,66 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        var depositRemovalBlock_Format04 = new Block("^[\\d]{2}\\s+[\\w]{3}.*$");
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.setMaxSize(3);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+
+                        // @formatter:off
+                        // 03 nov 
+                        // Transacción con tarjeta CAL MAJORAL 108,74 € 41.875,75 €
+                        // 2025
+                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note", "amount", //
+                                                                        "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<day>[\\d]{2})\\s+(?<month>[\\w]{3}).*$") //
+                                                        .match("^Transacci.n con tarjeta\\s+(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
+                                                                        + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc}).*$")
+                                                        .match("^(?<year>[\\d]{4}).*$")
+
+                                                        .assign((t, v) -> {
+
+                                                            var context = type.getCurrentContext();
+                                                            var amountAfter = Money.of(
+                                                                            asCurrencyCode(v.get("currencyAfter")),
+                                                                            asAmount(v.get("amountAfter")));
+
+                                                            var accountAmountTransactionHelper = context.getType(
+                                                                            AccountAmountTransactionHelper.class)
+                                                                            .orElseGet(AccountAmountTransactionHelper::new);
+                                                            var item = accountAmountTransactionHelper.findItem(
+                                                                            v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                var amountBefore = Money.of(item.get().currency,
+                                                                                item.get().amount);
+
+                                                                if (amountAfter.isGreaterThan(amountBefore))
+                                                                    t.setType(AccountTransaction.Type.DEPOSIT);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month")
+                                                                            + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        })
+                        ).wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;

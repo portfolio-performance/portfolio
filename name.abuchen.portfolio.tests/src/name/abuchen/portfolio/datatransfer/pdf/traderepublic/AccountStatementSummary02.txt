@@ -1,0 +1,237 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+RubVb NsqkG PaJBLE FECHA 01 nov 2025 - 30 nov 2025
+SVoyUu kJW de la jevPaD 190- SA 5 IBAN ES1234567891234567891234
+08004 Barcelona BIC TRBKESM2XXX
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta corriente 41.994,59 € 9.228,99 € 5.611,07 € 45.612,51 €
+TRANSACCIONES DE CUENTA
+FECHA TIPO DESCRIPCIÓN ENTRADA DE SALIDA DE BALANCE
+DINERO DINERO
+01 nov 
+Pago de intereses Interest payment 53,33 € 42.047,92 €
+2025
+02 nov 
+Transacción con tarjeta ALIEXPRESS.COM 23,53 € 42.024,39 €
+2025
+02 nov 
+Transacción con tarjeta PAYPAL *URBANSPORTS 19,90 € 42.004,49 €
+2025
+03 nov Transferencia por Sepa Direct Debit transfer to FUNDACION TIERRA DE HOMBRES 
+20,00 € 41.984,49 €
+2025 domiciliación bancaria ESPANA
+03 nov 
+Transacción con tarjeta CAL MAJORAL 108,74 € 41.875,75 €
+2025
+03 nov 
+Recompensa Your Saveback payment 10,12 € 41.885,87 €
+2025
+03 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 175,00 € 41.710,87 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 24.305555
+03 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 12,04 € 41.698,83 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 1.405555
+06 nov 
+Transacción con tarjeta PAYPAL *ITUNESAPPST APPLE 6,99 € 41.691,84 €
+2025
+07 nov 
+Transacción con tarjeta 3.OCIO 2025 13,90 € 41.677,94 €
+2025
+08 nov 
+Transacción con tarjeta PAYPAL *ITUNESAPPST APPLE 6,99 € 41.684,93 €
+2025
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 1 de 5
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+ENTRADA DE SALIDA DE 
+FECHA TIPO DESCRIPCIÓN BALANCE
+DINERO DINERO
+09 nov 
+Transacción con tarjeta NaaAjKIok 5,40 € 41.679,53 €
+2025
+10 nov 
+Transacción con tarjeta fGmBqR *GLOVO 40,02 € 41.639,51 €
+2025
+10 nov 
+Transacción con tarjeta BzkDmbeNF 5,80 € 41.633,71 €
+2025
+10 nov 
+Transacción con tarjeta kzAKTmCwC 11,70 € 41.622,01 €
+2025
+10 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 175,00 € 41.447,01 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 24.526979
+11 nov 
+Transacción con tarjeta Tesla Spain, S.L. 9,99 € 41.437,02 €
+2025
+11 nov 
+Transacción con tarjeta FARMACIA GUERRA 14,81 € 41.422,21 €
+2025
+11 nov 
+Transferencia Outgoing transfer for mOUnYE jtfJY ocDDU Paula 50,00 € 41.372,21 €
+2025
+12 nov 
+Transferencia Incoming transfer from ZlEEYf ktjeAKIvzg jTDaa, S.L. 25,00 € 41.397,21 €
+2025
+13 nov 
+Transacción con tarjeta Revolut**3808* 40,00 € 41.357,21 €
+2025
+13 nov 
+Rendimientos Cash Dividend for ISIN US0378331005 0,06 € 41.357,27 €
+2025
+13 nov 
+Transferencia Outgoing transfer for EGSkw yMPFc JCskJt 200,00 € 41.157,27 €
+2025
+14 nov Transferencia por 
+Sepa Direct Debit transfer to GC RE OCTOPUS ENERGY 75,40 € 41.081,87 €
+2025 domiciliación bancaria
+14 nov 
+Transferencia Incoming transfer from SANITAS SOCIEDAD ANONIMA DE SEGUROS 7,41 € 41.089,28 €
+2025
+16 nov 
+Transferencia Outgoing transfer for CfvorTyhKF 20,00 € 41.069,28 €
+2025
+17 nov 
+Transferencia Outgoing transfer for eJKWNw lAtohIu MyFjaK 800,00 € 40.269,28 €
+2025
+17 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 175,00 € 40.094,28 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 24.696584
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 2 de 5
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+ENTRADA DE SALIDA DE 
+FECHA TIPO DESCRIPCIÓN BALANCE
+DINERO DINERO
+18 nov 
+Transacción con tarjeta PAYPAL *PAGO 3 PLAZOS 491,33 € 39.602,95 €
+2025
+19 nov 
+Transferencia Incoming transfer from JcLgML VqPBzVXimm aYzrR, S.L. 25,00 € 39.627,95 €
+2025
+19 nov 
+Transferencia Outgoing transfer for Zgkzi 308,00 € 39.319,95 €
+2025
+19 nov 
+Transferencia Incoming transfer from qPjvZ HOBvGPy OMUlC 148,10 € 39.468,05 €
+2025
+20 nov 
+Transacción con tarjeta LAS MUNS SANTS 19,50 € 39.448,55 €
+2025
+20 nov BACKBLAZE INC, 7,27 $, exchange rate: 0,8638239, ECB rate: 
+Transacción con tarjeta 6,28 € 39.442,27 €
+2025 0,8633341967, markup: 0,05672233 %
+20 nov 
+Transferencia Outgoing transfer for ScGsn mdtcF FisxXv 100,00 € 39.342,27 €
+2025
+21 nov 
+Transacción con tarjeta Geox Respira S.L. 111,93 € 39.230,34 €
+2025
+21 nov 
+Transferencia Outgoing transfer for ubsDa ubsDa ubsDa 8,67 € 39.221,67 €
+2025
+22 nov 
+Transacción con tarjeta ubsDa GTLkv 38 200,00 € 39.021,67 €
+2025
+22 nov 
+Transacción con tarjeta NVwQH fzEqs 38 300,00 € 38.721,67 €
+2025
+22 nov 
+Transacción con tarjeta bLSYk svYwp 38 300,00 € 38.421,67 €
+2025
+22 nov 
+Transacción con tarjeta IHERB.COM 41,84 € 38.379,83 €
+2025
+22 nov 
+Transferencia Outgoing transfer for iAZuQs GZhCCJc 30,00 € 38.349,83 €
+2025
+23 nov 
+Transferencia Outgoing transfer for mQbIn VvprJ YNwARf 800,00 € 37.549,83 €
+2025
+24 nov 
+Transacción con tarjeta INVERSIONES AUTOLAVADO 1,00 € 37.548,83 €
+2025
+24 nov 
+Transacción con tarjeta INVERSIONES AUTOLAVADO 1,00 € 37.547,83 €
+2025
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 3 de 5
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+ENTRADA DE SALIDA DE 
+FECHA TIPO DESCRIPCIÓN BALANCE
+DINERO DINERO
+24 nov 
+Transacción con tarjeta INVERSIONES AUTOLAVADO 1,00 € 37.546,83 €
+2025
+24 nov 
+Transacción con tarjeta INVERSIONES AUTOLAVADO 1,00 € 37.545,83 €
+2025
+24 nov 
+Transacción con tarjeta CGQUJMldbNry JVmLgkgre 134,30 € 37.411,53 €
+2025
+24 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 175,00 € 37.236,53 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 25.007144
+25 nov 
+Transferencia Outgoing transfer for iRRzA bhykf MwYpwj 450,00 € 36.786,53 €
+2025
+26 nov 
+Transacción con tarjeta vCFEUjxrZUZ DNcnJ ZZjRxAd 32,00 € 36.754,53 €
+2025
+27 nov Transferencia por 
+Sepa Direct Debit transfer to aipuIbymis ?vXgOkb mYBPgCp? 20,00 € 36.734,53 €
+2025 domiciliación bancaria
+28 nov 
+Transacción con tarjeta WETACA 59,20 € 36.675,33 €
+2025
+28 nov 
+Transacción con tarjeta QsuL DjCFbZwS kZdRUH 15,80 € 36.659,53 €
+2025
+28 nov Incoming transfer from DjCFbZwS DjCFbZwS DjCFbZwS, S.L. 
+Transferencia 8.952,98 € 45.612,51 €
+2025 (ES1234567891234567891234)
+RESUMEN DEL BALANCE
+a 30 nov 2025
+CUENTAS COLECTIVAS SALDO
+Crédit Agricole 45.612,51 €
+NOTAS SOBRE EL EXTRACTO DE CUENTA
+Por favor, compruebe su extracto de cuenta, cualquier objeción deberá ser planteada inmediatamente. Tenga en cuenta que el saldo de 
+la cuenta indicado no tiene en cuenta la fecha de valor de las reservas o transacciones individuales, es decir, el importe indicado no se 
+corresponde necesariamente con el saldo de la cuenta relevante para el cálculo de los intereses. Se considerará que el extracto de 
+cuenta periódico ha sido aprobado si no se presentan objeciones en un plazo de 6 semanas. Para cumplir con el plazo, basta con 
+presentar una objeción a través de nuestro servicio de atención al cliente (chat). Todos los chats son objeto de revisiones independientes 
+por parte del departamento de auditoría interna. En relación con los contratos subyacentes, este extracto de cuenta se considera una 
+factura bajo la Ley alemana del IVA (UStG) de acuerdo con el número de cuenta indicado. Los saldos mantenidos en bancos custodios 
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 4 de 5
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+están protegidos hasta 100.000 € por el sistema de protección de depósitos del banco custodio. Las acciones de fondos del mercado 
+monetario cualificados (QMMF) están protegidas en el improbable caso de insolvencia de Trade Republic. Puede encontrar más 
+información sobre la protección de sus fondos en https://support.traderepublic.com.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 5 de 5
