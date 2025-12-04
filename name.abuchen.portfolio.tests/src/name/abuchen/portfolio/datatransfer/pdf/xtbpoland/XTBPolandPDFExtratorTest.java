@@ -76,9 +76,9 @@ public class XTBPolandPDFExtratorTest
                         hasShares(30), //
                         hasSource("Buy01.txt"), //
                         hasNote("Order Number: 2004419557"), //
-                        hasAmount("EUR", 6.67500) //
-        // hasTaxes("EUR", 0), //
-        // hasFees("EUR", 0.1) //
+                        hasAmount("EUR", 6.67500), //
+                        hasTaxes("EUR", 0), //
+                        hasFees("EUR", 0.1) //
                         
                         )));
 
