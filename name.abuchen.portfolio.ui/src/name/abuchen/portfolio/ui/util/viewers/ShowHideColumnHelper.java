@@ -613,25 +613,25 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (column.getGroupLabel() != null)
             {
                 managerToAdd = groups.computeIfAbsent(column.getGroupLabel(), l -> {
-                    MenuManager m = new MenuManager(l);
+                    MenuManager m = new MenuManager(TextUtil.tooltip(l));
                     manager.add(m);
                     return m;
                 });
                 if (column.hasHeading())
-                    managerToAdd.add(new LabelOnly(column.getHeading()));
+                    managerToAdd.add(new LabelOnly(TextUtil.tooltip(column.getHeading())));
             }
 
             if (column.hasOptions())
             {
                 List<Object> options = visible.getOrDefault(column, Collections.emptyList());
 
-                MenuManager subMenu = new MenuManager(column.getMenuLabel());
+                MenuManager subMenu = new MenuManager(TextUtil.tooltip(column.getMenuLabel()));
 
                 for (Object option : column.getOptions().getOptions())
                 {
                     boolean isVisible = options.contains(option);
                     String label = column.getOptions().getMenuLabel(option);
-                    addShowHideAction(subMenu, column, label, isVisible, option);
+                    addShowHideAction(subMenu, column, TextUtil.tooltip(label), isVisible, option);
 
                     if (isVisible)
                         options.remove(option);
@@ -640,7 +640,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 for (Object option : options)
                 {
                     String label = column.getOptions().getMenuLabel(option);
-                    addShowHideAction(subMenu, column, label, true, option);
+                    addShowHideAction(subMenu, column, TextUtil.tooltip(label), true, option);
                 }
 
                 if (column.getOptions().canCreateNewOptions())
@@ -650,7 +650,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             }
             else
             {
-                addShowHideAction(managerToAdd, column, column.getMenuLabel(), visible.containsKey(column), null);
+                addShowHideAction(managerToAdd, column, TextUtil.tooltip(column.getMenuLabel()), visible.containsKey(column), null);
             }
         }
 
