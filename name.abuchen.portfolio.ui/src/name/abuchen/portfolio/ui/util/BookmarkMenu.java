@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class BookmarkMenu extends MenuManager
 {
@@ -46,7 +47,7 @@ public class BookmarkMenu extends MenuManager
             }
             else
             {
-                add(new SimpleAction(bookmark.getLabel(), a -> securities.stream().limit(10)
+                add(new SimpleAction(TextUtil.tooltip(bookmark.getLabel()), a -> securities.stream().limit(10)
                                 .forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s)))));
             }
         }
@@ -57,7 +58,7 @@ public class BookmarkMenu extends MenuManager
         {
             add(new Separator());
             securities.forEach(s -> s.getCustomBookmarks().forEach(
-                            bm -> add(new SimpleAction(bm.getLabel(), a -> DesktopAPI.browse(bm.getPattern())))));
+                            bm -> add(new SimpleAction(TextUtil.tooltip(bm.getLabel()), a -> DesktopAPI.browse(bm.getPattern())))));
         }
 
         add(new Separator());
@@ -67,7 +68,7 @@ public class BookmarkMenu extends MenuManager
 
         List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
         Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
-        templates.forEach(bookmark -> templatesMenu.add(new SimpleAction(bookmark.getLabel(),
+        templates.forEach(bookmark -> templatesMenu.add(new SimpleAction(TextUtil.tooltip(bookmark.getLabel()),
                         a -> securities.stream().limit(10)
                                         .forEach(s -> DesktopAPI.browse(bookmark.constructURL(client, s))))));
 
