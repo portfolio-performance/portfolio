@@ -1,0 +1,54 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DZDGi
+uHVGmo jtIKWNEz
+vaFtwxwPuNWs 69
+1101 AdVXVzQC
+Wien, den 20.02.2020
+Wir haben für Sie am 20.02.2020 unten angeführtes Geschäft abgerechnet:
+Depot: 23417-309-662
+Geschäftsart: Kauf Auftrags-Nr.: 45286197 - 20.02.2020
+Zugang: Stk 25
+Titel: US7033951036 Patterson Companies Inc.
+Registered Shares DL -,01
+Kurs: 23,17 USD
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: New York
+Kurswert: -579,25 USD
+Fremde Spesen: -13,25 USD
+-592,50 USD
+Devisenkurs: 1,0745 (20.02.2020) -551,42 EUR
+Eigene Spesen: -14,00 EUR
+Devisenprovision: -1,35 EUR
+-566,77 EUR
+Devisenkurs: 1,0745 (20.02.2020) -608,99 USD
+Zu Lasten IBAN dJ89 5085 2651 8125 4376 Valuta 24.02.2020 -608,99 USD
+Handelsplatz: NASDAQ Stock Market
+Eingang vorbehalten
+Schlusstag/-zeit: 20.02.2020 16:54:59
+Kassatag: 24.02.2020
+Wertpapier-Risiko: 4_spekulativ
+Limit: 23,250000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank AG 1100 Wien Wiedner Gürtel 11 www.easybank.at Tel.: 05 70 05-500
+Handelsgericht Wien FN 150466z BIC: EASYATW1 easy@easybank.at
+GEODRU02 WGEWTGSDR15ABREP2020022106807P20_a/332
+Devisenkurs zum Anschaffungswert: 1,0745
+(20.02.2020)
+Steuerrelevanter Anschaffungswert für den Gesamtbestand: 539,09 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt Wien 1/23.
+Die easybank AG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihre easybank AG
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2020022106807P20_a/333
