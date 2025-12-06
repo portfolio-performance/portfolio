@@ -9968,6 +9968,39 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testPlanDeInvestion02()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PlanDeInvestion02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000716YHJ7"), hasWkn(null), hasTicker(null), //
+                        hasName("FTSE All-World USD (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-24T00:00"), hasShares(25.007144), //
+                        hasSource("PlanDeInvestion02.txt"), //
+                        hasNote("Plan de Invesión: 865f-4af2 | Ejecución: 98d3-987f"), //
+                        hasAmount("EUR", 175.00), hasGrossValue("EUR", 175.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFusion01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
