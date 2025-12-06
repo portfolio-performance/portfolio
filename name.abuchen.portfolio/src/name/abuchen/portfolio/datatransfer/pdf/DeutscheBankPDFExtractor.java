@@ -435,30 +435,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         final var type = new DocumentType("Kontoauszug vom", //
                         builder -> builder //
                                         .section("currency") //
-                                        .match("^.*[\\d]{4} [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{2} .*(?<currency>[A-Z]{3}) [\\-|\\+] [\\.,\\d]+$")
+                                        .match("^.*[\\d]{4} [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{2} .*(?<currency>[A-Z]{3}) [\\-|\\+] [\\.,\\d]+.*$")
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         .section("year") //
-                                        .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}[\\s]*$")
+                                        .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
                                         .assign(Map::putAll));
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // Formatting:
-        // Buchung | Valuta | Vorgang | Soll | Haben
-        //
-        // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
-        // Mustermann, Max
-        // IBAN DE1111110000111111
-        // BIC OSDDDE81XXX
-        //
-        // 07.12. 07.12. SEPA Überweisung von + 562,00
-        // Unser Sparverein
-        // Verwendungszweck/ Kundenreferenz
-        // 1111111111111111 1220 INKL. SONDERZAHLUNG
-        // @formatter:on
-        var blockDepositRemoval = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "((SEPA )?" //
                         + "(Dauerauftrag" //
                         + "|.berweisung" //
@@ -469,8 +455,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         + "|Verwendungszweck\\/ Kundenreferenz" //
                         + "|.bertrag \\(.berweisung\\) von) " //
                         + "(\\-|\\+) [\\.,\\d]+$");
-        type.addBlock(blockDepositRemoval);
-        blockDepositRemoval.set(new Transaction<AccountTransaction>()
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.setMaxSize(2);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
@@ -478,77 +465,154 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "note", "sign", "amount", "note1") //
-                        .documentContext("currency", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
-                                        + "(SEPA )?" //
-                                        + "(?<note>(Dauerauftrag" //
-                                        + "|.berweisung" //
-                                        + "|Lastschrifteinzug" //
-                                        + "|Echtzeit.berweisung) .*" //
-                                        + "|Bargeldauszahlung GAA" //
-                                        + "|Kartenzahlung" //
-                                        + "|Verwendungszweck\\/ Kundenreferenz" //
-                                        + "|.bertrag \\(.berweisung\\) von) " //
-                                        + "(?<sign>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
-                        .match("^(?<note1>.*)$") //
-                        .assign((t, v) -> {
-                            // Is sign --> "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(v.get("sign")))
-                                t.setType(AccountTransaction.Type.REMOVAL);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 15.10. 15.10. SEPA Überweisung von + 400,00
+                                        // 2025 2025 Dr. kQEbfBPDq ZgltrGG wBPgFcQwn
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "type", "amount", "note1") //
+                                                        .documentContext("currency", "year") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
+                                                                        + "(SEPA )?" //
+                                                                        + "(?<note>(Dauerauftrag" //
+                                                                        + "|.berweisung" //
+                                                                        + "|Lastschrifteinzug" //
+                                                                        + "|Echtzeit.berweisung) .*" //
+                                                                        + "|Bargeldauszahlung GAA" //
+                                                                        + "|Kartenzahlung" //
+                                                                        + "|Verwendungszweck\\/ Kundenreferenz" //
+                                                                        + "|.bertrag \\(.berweisung\\) von) " //
+                                                                        + "(?<type>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
+                                                        .match("^[\\d]{4} [\\d]{4} (?<note1>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                            // Formatting some notes
-                            if (!v.get("note1").startsWith("Verwendungszweck"))
-                                v.put("note", trim(v.get("note")) + " " + trim(v.get("note1")));
+                                                            // Formatting some notes
+                                                            if (!v.get("note1").startsWith("Verwendungszweck"))
+                                                                v.put("note", trim(v.get("note")) + " " + trim(v.get("note1")));
 
-                            if (v.get("note").startsWith("Lastschrifteinzug"))
-                                v.put("note", trim(v.get("note1")));
+                                                            if (v.get("note").startsWith("Lastschrifteinzug"))
+                                                                v.put("note", trim(v.get("note1")));
 
-                            if (v.get("note").startsWith("Verwendungszweck"))
-                                v.put("note", "");
+                                                            if (v.get("note").startsWith("Verwendungszweck"))
+                                                                v.put("note", "");
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
 
-                            // @formatter:off
-                            // If we have fees, then we skip the transaction
-                            //
-                            // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
-                            // Saldo der Abschlussposten
-                            // @formatter:on
-                                if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                    type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                            // @formatter:off
+                                                            // If we have fees, then we skip the transaction
+                                                            //
+                                                            // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+                                                            // Saldo der Abschlussposten
+                                                            // @formatter:on
+                                                                if ("Saldo der Abschlussposten".equals(v.get("note1")))
+                                                                    type.getCurrentContext().putBoolean("skipTransaction", true);
 
-                            // @formatter:off
-                            // If we have security transaction, then we skip the transaction
-                            //
-                            // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
-                            // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
-                            //
-                            // 16.08. 16.08. Verwendungszweck/ Kundenreferenz + 33,23
-                            // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
-                            // @formatter:on
-                            if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
-                                type.getCurrentContext().putBoolean("skipTransaction", true);
-                        })
+                                                            // @formatter:off
+                                                            // If we have security transaction, then we skip the transaction
+                                                            //
+                                                            // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
+                                                            // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
+                                                            //
+                                                            // 16.08. 16.08. Verwendungszweck/ Kundenreferenz + 33,23
+                                                            // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
+                                                            // @formatter:on
+                                                            if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
+                                                                type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                        }),
+                                        // @formatter:off
+                                        // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
+                                        // Mustermann, Max
+                                        // IBAN DE1111110000111111
+                                        // BIC OSDDDE81XXX
+                                        //
+                                        // 07.12. 07.12. SEPA Überweisung von + 562,00
+                                        // Unser Sparverein
+                                        // Verwendungszweck/ Kundenreferenz
+                                        // 1111111111111111 1220 INKL. SONDERZAHLUNG
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "type", "amount", "note1") //
+                                                        .documentContext("currency", "year") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
+                                                                        + "(SEPA )?" //
+                                                                        + "(?<note>(Dauerauftrag" //
+                                                                        + "|.berweisung" //
+                                                                        + "|Lastschrifteinzug" //
+                                                                        + "|Echtzeit.berweisung) .*" //
+                                                                        + "|Bargeldauszahlung GAA" //
+                                                                        + "|Kartenzahlung" //
+                                                                        + "|Verwendungszweck\\/ Kundenreferenz" //
+                                                                        + "|.bertrag \\(.berweisung\\) von) " //
+                                                                        + "(?<type>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
+                                                        .match("^(?<note1>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                        .wrap(t -> {
-                            var item = new TransactionItem(t);
+                                                            // Formatting some notes
+                                                            if (!v.get("note1").startsWith("Verwendungszweck"))
+                                                                v.put("note", trim(v.get("note")) + " " + trim(v.get("note1")));
 
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                                            if (v.get("note").startsWith("Lastschrifteinzug"))
+                                                                v.put("note", trim(v.get("note1")));
 
-                            if (type.getCurrentContext().getBoolean("skipTransaction"))
-                                return null;
+                                                            if (v.get("note").startsWith("Verwendungszweck"))
+                                                                v.put("note", "");
 
-                            // If we have multiple entries in the document,
-                            // then the "skipTransaction" flag must be removed.
-                            type.getCurrentContext().remove("skipTransaction");
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
 
-                            return item;
-                        }));
+                                                            // @formatter:off
+                                                            // If we have fees, then we skip the transaction
+                                                            //
+                                                            // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
+                                                            // Saldo der Abschlussposten
+                                                            // @formatter:on
+                                                                if ("Saldo der Abschlussposten".equals(v.get("note1")))
+                                                                    type.getCurrentContext().putBoolean("skipTransaction", true);
+
+                                                            // @formatter:off
+                                                            // If we have security transaction, then we skip the transaction
+                                                            //
+                                                            // 01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
+                                                            // 2023 2023 WERTPAPIER-KAUF STK/NOM: 35
+                                                            //
+                                                            // 16.08. 16.08. Verwendungszweck/ Kundenreferenz + 33,23
+                                                            // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
+                                                            // @formatter:on
+                                                            if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
+                                                                type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                        }))
+
+                    .wrap(t -> {
+                        var item = new TransactionItem(t);
+
+                        if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                        if (type.getCurrentContext().getBoolean("skipTransaction"))
+                            return null;
+
+                        // If we have multiple entries in the document,
+                        // then the "skipTransaction" flag must be removed.
+                        type.getCurrentContext().remove("skipTransaction");
+
+                        return item;
+                    }));
 
         // @formatter:off
         // Formatting:
