@@ -1,0 +1,63 @@
+
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Bank AG 
+Filiale 
+Ludwigsburg 
+Myliusstraße 16 
+Herrn 71638 Ludwigsburg
+Dr. bybBxdZBK EFVtildVe Frau zkNTLz GJGFMxDIU 
+OZvjVBcUvpvnDL 7/15 Telefon (10548) 134-227
+A-8592 jjzx 
+jnmWBTvfXV 24h-Kundenservice (069) 910-10000
+31. Oktober 2025
+Kontoauszug vom 01.10.2025 bis 31.10.2025 
+Kontoinhaber: Dr. DOgkZHBWp BZNpAXsMp
+Auszug Seite von IBAN Alter Saldo per 30.09.2025
+10 1 2 DE94 2681 6259 4281 8764 02 EUR + 0,04
+Buchung Valuta Vorgang Soll Haben
+15.10. 15.10. SEPA Überweisung von + 400,00
+2025 2025 Dr. kQEbfBPDq ZgltrGG wBPgFcQwn 
+Verwendungszweck/ Kundenreferenz 
+maxblue Sparplan 02 
+000000009802
+RINP Dauerauftrag
+15.10. 15.10. SEPA Überweisung von + 600,00
+2025 2025 Dr. ICcCbCKba zlKgUWI NwzaZJPVb 
+Verwendungszweck/ Kundenreferenz 
+Geldanlage
+21.10. 22.10. Verwendungszweck/ Kundenreferenz - 200,00
+2025 2025 WERTPAPIER-KAUF STK/NOM: 0,828
+XTR.II EUROZONE INF.-LINKED BD.INH.ANT.1C ON 
+BELEGNR: 1576100295
+21.10. 22.10. Verwendungszweck/ Kundenreferenz - 300,00
+2025 2025 WERTPAPIER-KAUF STK/NOM: 1,3359 
+XTR.II EUROZONE GOV.BD.INH.-ANT.1C ON 
+BELEGNR: 1576104302
+0000000003 / 06500900 / 20251101
+  
+  
+Auszug Seite von IBAN
+10 2 2 DE94 8417 2892 4338 6708 02
+Buchung Valuta Vorgang Soll Haben
+21.10. 22.10. Verwendungszweck/ Kundenreferenz - 500,01
+2025 2025 WERTPAPIER-KAUF STK/NOM: 4,1734 
+X(IE)-MSCI WORLD 1C FUNDS
+BELEGNR: 1594246242
+Filialnummer Kontonummer Neuer Saldo
+123 1234567 02 EUR + 0,03
+BIC (SWIFT)
+DEUTDEDB660
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt 
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1) 
+ möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert 
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen 
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 06500900 / 20251101

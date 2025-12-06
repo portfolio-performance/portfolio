@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.deutschebank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -125,14 +124,7 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
-                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -531,14 +523,40 @@ public class DeutscheBankPDFExtractorTest
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 102.40), hasGrossValue("EUR", 137.53), //
-                        hasTaxes("EUR", 20.63 + 13.75 + 0.75), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 20.63 + 13.75 + 0.75), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende10()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000DWS0TS9"), hasWkn("DWS0TS"), hasTicker(null), //
+                        hasName("FOS STRATEGIE-FONDS NR.1 INHABER-ANTEILE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-05T00:00"), hasShares(10.00), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 381.03), hasGrossValue("EUR", 500.00), //
+                        hasTaxes("EUR", 103.91 + 5.71 + 9.35), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2779,12 +2797,9 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        // check dividends transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2023-08-14"), hasShares(0), //
-                        hasSource("GiroKontoauszug06.txt"), hasNote("Überweisung an 2023 2023 Max Mustermann"), //
-                        hasAmount("EUR", 1000), hasGrossValue("EUR", 1000), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-08-14"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug06.txt"), hasNote("Überweisung an Max Mustermann"))));
 
     }
 
@@ -2834,11 +2849,35 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
-        // check transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2021-10-21"), hasShares(0), //
-                        hasSource("GiroKontoauszug09.txt"), hasNote("Übertrag (Überweisung) von Max Mustermann"), //
-                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0.00))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-10-21"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug09.txt"), hasNote("Übertrag (Überweisung) von Max Mustermann"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug10()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 400.00), //
+                        hasSource("GiroKontoauszug10.txt"), hasNote("Überweisung von Dr. kQEbfBPDq ZgltrGG wBPgFcQwn"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 600.00), //
+                        hasSource("GiroKontoauszug10.txt"), hasNote("Überweisung von Dr. ICcCbCKba zlKgUWI NwzaZJPVb"))));
     }
 }
