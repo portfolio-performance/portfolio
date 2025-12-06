@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+qKAFE sXjpt jWQXlN PÁGINA 1 de 1
+oijIQG KGI de la mTmOtL 559- jY 5 FECHA 24.11.2025
+91281 rHtKJwjPP EJECUCIÓN 98d3-987f
+PLAN DE INVERSIÓN 865f-4af2
+CUENTA DE VALORES 4395182165
+LIQUIDACIÓN DE VALORES DEL PLAN DE INVERSIÓN
+DESCRIPCIÓN
+Ejecución del plan de inversión el día 24.11.2025 en Lang und Schwarz Exchange.
+La contrapartida de la transacción es Lang & Schwarz TradeCenter AG & Co. KG.
+POSICIÓN CANTIDAD COTIZACIÓN PROMEDIO IMPORTE
+FTSE All-World USD (Acc) 25,007144 6,998 EUR 175,00 EUR
+ISIN: IE000716YHJ7
+TOTAL 175,00 EUR
+RESERVA
+CUENTA DE EFECTIVO FECHA VALOR IMPORTE
+ES1234567891234567891234 2025-11-26 -175,00 EUR
+FTSE All-World USD (Acc) en custodia no colectiva segura
+Este documento se ha creado automáticamente y por lo tanto no necesita firma.
+Si no se indica IVA, se trata de un servicio libre de IVA según § 4 núm. 8 UStG.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
