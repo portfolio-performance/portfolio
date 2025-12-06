@@ -2186,9 +2186,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
                                                         })
-                                        
-                                        
-
                                         )
 
                         .wrap(TransactionItem::new));
@@ -2300,6 +2297,36 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
+                                        // 03 nov Transferencia por Sepa Direct Debit transfer to FUNDACION TIERRA DE HOMBRES
+                                        // 20,00 € 41.984,49 €
+                                        // 2025 domiciliación bancaria ESPANA
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transferencia por .* transfer to (?<note>.*)$") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+                                                            var amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            var accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            var item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                var amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
                                         // 26 Dez. BACKBLAZE INC, 5,34 $, exchange rate: 0,9625468, ECB rate:
                                         // Kartentransaktion 5,14 € 5.969,04 €
                                         // 2024 0,962000962, markup: 0,05673986 %
@@ -2385,6 +2412,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 17 Feb.
                                         // SEPA-Lastschrift Sepa Direct Debit transfer to Stadt Wohnort 187,96 € 1.550,54 €
                                         // 2025
+                                        //
+                                        // 02 nov
+                                        // Transacción con tarjeta ALIEXPRESS.COM 23,53 € 42.024,39 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
@@ -2393,7 +2424,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|con tarjeta" //
                                                                         + "|Virement" //
                                                                         + "|Parrainage" //
-                                                                        + "|SEPA\\-Lastschrift) " //
+                                                                        + "|SEPA\\-Lastschrift"
+                                                                        + "|Transacci.n con tarjeta) " //
                                                                         + "(?<note>(?!(Einzahlung|Ingreso|Paiement)).*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
@@ -2687,7 +2719,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // mar Recompensa Your Saveback payment 2,69 € 1.970,43 €
                                         // 2025
                                         //
-                                        // 03 
+                                        // 03
                                         // Nov. Prämie Your Kindergeld bonus 0,01 € 410,69 €
                                         // 2025
                                         // @formatter:on
@@ -2923,66 +2955,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-
-        var depositRemovalBlock_Format04 = new Block("^[\\d]{2}\\s+[\\w]{3}.*$");
-        type.addBlock(depositRemovalBlock_Format04);
-        depositRemovalBlock_Format04.setMaxSize(3);
-        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
-                            return accountTransaction;
-                        })
-
-                        .optionalOneOf( //
-
-                        // @formatter:off
-                        // 03 nov 
-                        // Transacción con tarjeta CAL MAJORAL 108,74 € 41.875,75 €
-                        // 2025
-                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("day", "month", "year", "note", "amount", //
-                                                                        "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<day>[\\d]{2})\\s+(?<month>[\\w]{3}).*$") //
-                                                        .match("^Transacci.n con tarjeta\\s+(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
-                                                                        + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc}).*$")
-                                                        .match("^(?<year>[\\d]{4}).*$")
-
-                                                        .assign((t, v) -> {
-
-                                                            var context = type.getCurrentContext();
-                                                            var amountAfter = Money.of(
-                                                                            asCurrencyCode(v.get("currencyAfter")),
-                                                                            asAmount(v.get("amountAfter")));
-
-                                                            var accountAmountTransactionHelper = context.getType(
-                                                                            AccountAmountTransactionHelper.class)
-                                                                            .orElseGet(AccountAmountTransactionHelper::new);
-                                                            var item = accountAmountTransactionHelper.findItem(
-                                                                            v.getStartLineNumber(), amountAfter);
-
-                                                            if (item.isPresent())
-                                                            {
-                                                                var amountBefore = Money.of(item.get().currency,
-                                                                                item.get().amount);
-
-                                                                if (amountAfter.isGreaterThan(amountBefore))
-                                                                    t.setType(AccountTransaction.Type.DEPOSIT);
-                                                            }
-
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month")
-                                                                            + " " + v.get("year")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setNote(trim(v.get("note")));
-                                                        })
-                        ).wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;

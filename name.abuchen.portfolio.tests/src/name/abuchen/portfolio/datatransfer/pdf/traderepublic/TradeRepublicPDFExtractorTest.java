@@ -4935,6 +4935,63 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testAccountStatementSummary02()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatementSummary02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2025-11-01"), hasAmount("EUR", 53.33), //
+                                        hasSource("AccountStatementSummary02.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-02"), hasAmount("EUR", 23.53), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("ALIEXPRESS.COM"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-02"), hasAmount("EUR", 19.90), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("PAYPAL *URBANSPORTS"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-03"), hasAmount("EUR", 20.00), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("FUNDACION TIERRA DE HOMBRES"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-03"), hasAmount("EUR", 108.74), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("CAL MAJORAL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-11-03"), hasAmount("EUR", 10.12), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-06"), hasAmount("EUR", 6.99), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("PAYPAL *ITUNESAPPST APPLE"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-07"), hasAmount("EUR", 13.90), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("3.OCIO 2025"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-11-08"), hasAmount("EUR", 6.99), //
+                        hasSource("AccountStatementSummary02.txt"), hasNote("PAYPAL *ITUNESAPPST APPLE"))));
+    }
+
+    @Test
     public void testTransaccionesDeCuenta09()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
