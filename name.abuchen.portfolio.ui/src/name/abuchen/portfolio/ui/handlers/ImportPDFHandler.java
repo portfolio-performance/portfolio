@@ -29,6 +29,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -177,7 +178,7 @@ public class ImportPDFHandler
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
 
-            shell.getDisplay().asyncExec(() -> {
+            Display.getDefault().asyncExec(() -> {
                 ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
                 if (account != null)
                     wizard.setTarget(account);
