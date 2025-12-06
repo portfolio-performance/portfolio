@@ -1681,6 +1681,40 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf35()
+    {
+        var extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf35.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7033951036"), hasWkn(null), hasTicker(null), //
+                        hasName("Patterson Companies Inc. Registered Shares DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-02-20T16:54:59"), hasShares(25.00), //
+                        hasSource("Kauf35.txt"), //
+                        hasNote("Auftrags-Nr.: 45286197 | Limit: 23,250000"), //
+                        hasAmount("USD", 608.99), hasGrossValue("USD", 581.45), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 13.25 + ((14.00 + 1.35) / 1.0745)))));
+    }
+
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
