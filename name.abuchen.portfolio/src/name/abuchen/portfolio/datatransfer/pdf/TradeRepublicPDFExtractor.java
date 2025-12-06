@@ -2185,7 +2185,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
-                                                        }))
+                                                        })
+                                        )
 
                         .wrap(TransactionItem::new));
 
@@ -2296,6 +2297,36 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
+                                        // 03 nov Transferencia por Sepa Direct Debit transfer to FUNDACION TIERRA DE HOMBRES
+                                        // 20,00 € 41.984,49 €
+                                        // 2025 domiciliación bancaria ESPANA
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transferencia por .* transfer to (?<note>.*)$") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+                                                            var amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            var accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            var item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                var amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
                                         // 26 Dez. BACKBLAZE INC, 5,34 $, exchange rate: 0,9625468, ECB rate:
                                         // Kartentransaktion 5,14 € 5.969,04 €
                                         // 2024 0,962000962, markup: 0,05673986 %
@@ -2381,6 +2412,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 17 Feb.
                                         // SEPA-Lastschrift Sepa Direct Debit transfer to Stadt Wohnort 187,96 € 1.550,54 €
                                         // 2025
+                                        //
+                                        // 02 nov
+                                        // Transacción con tarjeta ALIEXPRESS.COM 23,53 € 42.024,39 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
@@ -2389,7 +2424,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|con tarjeta" //
                                                                         + "|Virement" //
                                                                         + "|Parrainage" //
-                                                                        + "|SEPA\\-Lastschrift) " //
+                                                                        + "|SEPA\\-Lastschrift"
+                                                                        + "|Transacci.n con tarjeta) " //
                                                                         + "(?<note>(?!(Einzahlung|Ingreso|Paiement)).*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
