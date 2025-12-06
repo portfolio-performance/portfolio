@@ -2555,14 +2555,7 @@ public class DkbPDFExtractorTest
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungsnr. 85345940130 | Monatliche Dividende"), //
                         hasAmount("EUR", 141.90), hasGrossValue("EUR", 192.24), //
-                        hasTaxes("EUR", 28.84 + (2 * 9.40) + (2 * 0.51) + (2 * 0.84)), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 28.84 + (2 * 9.40) + (2 * 0.51) + (2 * 0.84)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5153,6 +5146,29 @@ public class DkbPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-08-04"), hasAmount("EUR", 4.99), //
                         hasSource("GiroKontoauszug33.txt"), hasNote("Kartenzahlung"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug34()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug34.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-11-06"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug34.txt"), hasNote("Echtzeitüberweisung"))));
     }
 
     @Test
