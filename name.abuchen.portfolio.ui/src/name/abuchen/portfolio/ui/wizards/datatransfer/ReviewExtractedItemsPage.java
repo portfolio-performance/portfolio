@@ -1035,6 +1035,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
                 allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
             }
+            else if (entry.getItem().isIgnored())
+            {
+                entry.addStatus(new ImportAction.Status(Code.WARNING, "Ignored")); // TODO: translate message
+            }
             else
             {
                 for (ImportAction action : actions)
