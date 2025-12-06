@@ -1012,7 +1012,6 @@ public class DeutscheBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        // "Festpreisgeschäft" titled as "Zeichnung"
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
 
         assertThat(errors, empty());
@@ -1035,7 +1034,8 @@ public class DeutscheBankPDFExtractorTest
                         hasDate("2025-08-19T00:00"), hasShares(1000.0 / 100), //
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
-                        hasAmount("EUR", 1010.00))));
+                        hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
