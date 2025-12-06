@@ -677,9 +677,9 @@ public class IBFlexStatementExtractorTest
 
         assertThat(errors, empty());
         assertThat(securityItems.size(), is(8));
-        assertThat(buySellTransactions.size(), is(9));
+        assertThat(buySellTransactions.size(), is(8));
         assertThat(accountTransactions.size(), is(3));
-        assertThat(results.size(), is(20));
+        assertThat(results.size(), is(19));
         new AssertImportActions().check(results, CurrencyUnit.EUR, CurrencyUnit.USD);
 
         // check security
@@ -805,64 +805,8 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
-        // check 3th buy sell (Amount = 0,00) transaction
+        // check 3rd buy sell transaction
         entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertNull(entry.getSource());
-        assertThat(entry.getNote(), is("Trade-ID: 1908991474"));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(0.00))));
-
-        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
-
-        // check cancellation (Storno) 3rd buy sell transaction
-        BuySellEntry cancellation = (BuySellEntry) results.stream() //
-                        .filter(BuySellEntryItem.class::isInstance) //
-                        .filter(item -> item.getFailureMessage() != null) //
-                        .findFirst().orElseThrow(IllegalArgumentException::new) //
-                        .getSubject();
-
-        assertThat(cancellation, is(not(nullValue())));
-
-        assertThat(cancellation.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(cancellation.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-        assertThat(cancellation, is(not(nullValue())));
-
-        assertThat(cancellation.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
-        assertThat(cancellation.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertNull(cancellation.getSource());
-        assertThat(cancellation.getNote(), is("Trade-ID: 1908991474"));
-
-        assertThat(cancellation.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(cancellation.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(cancellation.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(cancellation.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(cancellation.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(0.00))));
-
-        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
-
-        // check 4th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -886,8 +830,8 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
-        // check 5th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
+        // check 4th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(3).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -912,8 +856,8 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
-        // check 6th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
+        // check 5th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(4).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -935,8 +879,8 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(81.97))));
 
-        // check 7th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
+        // check 6th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(5).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -958,8 +902,8 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(11.50))));
 
-        // check 8th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
+        // check 7th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(6).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -981,8 +925,8 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(41.899))));
 
-        // check 9th buy sell transaction
-        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(8).findFirst()
+        // check 8th buy sell transaction
+        entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).skip(7).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -3366,5 +3310,58 @@ public class IBFlexStatementExtractorTest
                         hasSecurity(hasTicker("TEST2")), //
                         hasAmount("GBP", 4.47), hasForexGrossValue("EUR", 5.39), //
                         hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatement26() throws IOException
+    {
+        // Test option expiration handling: both OTM (worthless) and ITM (assigned) expirations
+        // These are represented as zero-value BookTrade transactions that close the option position
+        var extractor = new IBFlexStatementExtractor(new Client());
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile26.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        // check 1st buy sell transaction (OTM option expiration - notes="Ep")
+        BuySellEntryItem item = results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .map(BuySellEntryItem.class::cast) //
+                        .findFirst() //
+                        .orElseThrow();
+
+        assertThat(item.getFailureMessage(), is(nullValue()));
+
+        var buySellEntry = (BuySellEntry) item.getSubject();
+        var transaction = buySellEntry.getPortfolioTransaction();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getCurrencyCode(), is("USD"));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", 0)));
+
+        // check 2nd buy sell transaction (ITM option expiration - notes="A")
+        item = results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .map(BuySellEntryItem.class::cast) //
+                        .skip(1) //
+                        .findFirst() //
+                        .orElseThrow();
+
+        assertThat(item.getFailureMessage(), is(nullValue()));
+
+        buySellEntry = (BuySellEntry) item.getSubject();
+        transaction = buySellEntry.getPortfolioTransaction();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getCurrencyCode(), is("USD"));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", 0)));
     }
 }
