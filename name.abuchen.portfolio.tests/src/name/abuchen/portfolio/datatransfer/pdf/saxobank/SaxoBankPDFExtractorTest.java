@@ -735,7 +735,7 @@ public class SaxoBankPDFExtractorTest
 
         assertThat(results, hasItem(purchase( //
                         hasDate("2025-12-05T12:33:36"), //
-                        // hasShares(), //
+                        hasShares(13), //
                         hasSource("Buy07.txt"), //
                         hasNote("Order-ID 5349985997 | Trade-ID 6504011106"), //
                         hasAmount("CHF", 978.77), //
