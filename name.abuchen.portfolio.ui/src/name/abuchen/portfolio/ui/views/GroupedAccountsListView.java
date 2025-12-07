@@ -223,7 +223,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                                             groupedAccounts.setExpandedState(newItem, true);
                                             // select the newly created account
                                             groupedAccounts.setSelection(new StructuredSelection(newItem));
-
                                         })))));
     }
 
@@ -474,10 +473,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         String message = MessageFormat.format(Messages.MenuReportingPeriodDeleteConfirm, filterItem.getLabel());
         if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.MenuReportingPeriodDelete,
                         message))
-        {
             items.remove(filterItem);
-            groupedAccounts.refresh();
-        }
     }
 
     private void deleteElementInFilter(Object element, ClientFilterMenu.Item filterItem)
@@ -488,7 +484,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
             // important step: update UUIDs because this is basic
             // information in settings
             filterItem.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
-            groupedAccounts.refresh();
         }
     }
 
@@ -534,7 +529,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                 // important step: update UUIDs because this is
                 // basic information in settings
                 selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
-                groupedAccounts.refresh();
             }
         }
     }
