@@ -72,6 +72,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -507,6 +508,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
+        dialog.setViewerComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(getClient().getPortfolios());

@@ -37,6 +37,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.util.TextUtil;
 
 public final class ClientFilterMenu implements IMenuListener
@@ -228,6 +229,7 @@ public final class ClientFilterMenu implements IMenuListener
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
         dialog.setPropertyLabel(Messages.ColumnName);
+        dialog.setViewerComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(client.getPortfolios());
