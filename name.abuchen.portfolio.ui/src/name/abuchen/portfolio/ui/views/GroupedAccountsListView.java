@@ -194,6 +194,12 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        groupedAccounts.refresh();
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         storeChangedFilter();
