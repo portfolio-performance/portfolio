@@ -22,6 +22,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -228,6 +230,31 @@ public final class ClientFilterMenu implements IMenuListener
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
         dialog.setPropertyLabel(Messages.ColumnName);
+        dialog.setViewerComparator(new ViewerComparator()
+        {
+            @Override
+            public int compare(Viewer viewer, Object o1, Object o2)
+            {
+                if (o1 == null && o2 == null)
+                    return 0;
+                else if (o1 == null)
+                    return -1;
+                else if (o2 == null)
+                    return 1;
+
+                String s1 = labelProvider.getText(o1);
+                String s2 = labelProvider.getText(o2);
+
+                if (s1 == null && s2 == null)
+                    return 0;
+                else if (s1 == null)
+                    return -1;
+                else if (s2 == null)
+                    return 1;
+
+                return TextUtil.compare(s1, s2);
+            }
+        });
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(client.getPortfolios());

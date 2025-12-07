@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class DataSeriesSelectionDialog extends Dialog
 {
@@ -302,7 +303,7 @@ public class DataSeriesSelectionDialog extends Dialog
         TreeViewerColumn column = new TreeViewerColumn(treeViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        treeViewer.setLabelProvider(new LabelProvider()
+        LabelProvider labelProvider = new LabelProvider()
         {
             @Override
             public Image getImage(Object element)
@@ -334,12 +335,37 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 return ((Node) element).label;
             }
-        });
+        };
+
+        treeViewer.setLabelProvider(labelProvider);
         treeViewer.setContentProvider(new NodeContentProvider());
         treeViewer.addFilter(elementFilter);
         treeViewer.setInput(elements);
-        treeViewer.setComparator(new ViewerComparator());
+        treeViewer.setComparator(new ViewerComparator()
+        {
+            @Override
+            public int compare(Viewer viewer, Object o1, Object o2)
+            {
+                if (o1 == null && o2 == null)
+                    return 0;
+                else if (o1 == null)
+                    return -1;
+                else if (o2 == null)
+                    return 1;
 
+                String s1 = labelProvider.getText(o1);
+                String s2 = labelProvider.getText(o2);
+
+                if (s1 == null && s2 == null)
+                    return 0;
+                else if (s1 == null)
+                    return -1;
+                else if (s2 == null)
+                    return 1;
+
+                return TextUtil.compare(s1, s2);
+            }
+        });
         hookListener();
 
         if (isTreeExpanded)

@@ -28,6 +28,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
@@ -81,6 +83,7 @@ import name.abuchen.portfolio.ui.views.panes.GroupedAccountBalancePane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.PortfolioHoldingsPane;
 import name.abuchen.portfolio.ui.views.panes.StatementOfAssetsPane;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class GroupedAccountsListView extends AbstractFinanceView implements ModificationListener
 {
@@ -506,6 +509,31 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
+        dialog.setViewerComparator(new ViewerComparator()
+        {
+            @Override
+            public int compare(Viewer viewer, Object o1, Object o2)
+            {
+                if (o1 == null && o2 == null)
+                    return 0;
+                else if (o1 == null)
+                    return -1;
+                else if (o2 == null)
+                    return 1;
+
+                String s1 = labelProvider.getText(o1);
+                String s2 = labelProvider.getText(o2);
+
+                if (s1 == null && s2 == null)
+                    return 0;
+                else if (s1 == null)
+                    return -1;
+                else if (s2 == null)
+                    return 1;
+
+                return TextUtil.compare(s1, s2);
+            }
+        });
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(getClient().getPortfolios());
