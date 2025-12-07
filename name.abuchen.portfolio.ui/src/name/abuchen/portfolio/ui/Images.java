@@ -38,8 +38,8 @@ public enum Images
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$
-    GROUPEDACCOUNTS("groupedaccounts.png"), //$NON-NLS-1$
-    GROUPEDACCOUNTS_ON("groupedaccounts_on.png"), //$NON-NLS-1$
+    GROUPEDACCOUNTS("groupedaccounts.svg"), //$NON-NLS-1$
+    GROUPEDACCOUNTS_ON("groupedaccounts_on.svg"), //$NON-NLS-1$
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
@@ -49,13 +49,13 @@ public enum Images
     // tool bar
 
     PLUS("plus.png"), //$NON-NLS-1$
-    CONFIG("config.png"), //$NON-NLS-1$
-    EXPORT("export.png"), //$NON-NLS-1$
+    CONFIG("config.svg"), //$NON-NLS-1$
+    EXPORT("export.svg"), //$NON-NLS-1$
     SAVE("save.png"), //$NON-NLS-1$
-    FILTER_ON("filter_on.png"), //$NON-NLS-1$
-    FILTER_OFF("filter_off.png"), //$NON-NLS-1$
-    CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
-    CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
+    FILTER_ON("filter_on.svg"), //$NON-NLS-1$
+    FILTER_OFF("filter_off.svg"), //$NON-NLS-1$
+    CALENDAR_ON("calendar_on.svg"), //$NON-NLS-1$
+    CALENDAR_OFF("calendar_off.svg"), //$NON-NLS-1$
     CLOCK("clock.png"), //$NON-NLS-1$
     MEASUREMENT_ON("measurement_on.png"), //$NON-NLS-1$
     MEASUREMENT_OFF("measurement_off.png"), //$NON-NLS-1$

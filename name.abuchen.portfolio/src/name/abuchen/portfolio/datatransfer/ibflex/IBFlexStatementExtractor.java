@@ -151,14 +151,68 @@ public class IBFlexStatementExtractor implements Extractor
      */
     private void initializeExchangeMappings()
     {
-        exchanges.put("EBS", "SW");
-        exchanges.put("LSE", "L"); // London Stock Exchange
-        exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
-        exchanges.put("TSE", "TO"); // TSX Venture
-        exchanges.put("IBIS", "DE"); // XETRA
-        exchanges.put("TGATE", "DE"); // TradeGate
-        exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
-        exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
+        // --- US & Major Markets – No Suffix ---
+        // AMEX, ARCA, BATS, NASDAQ, NYSE
+
+        // --- Canada ---
+        exchanges.put("TSE", "TO");      // Toronto Stock Exchange
+        exchanges.put("VENTURE", "V");   // TSX Venture Exchange
+
+        // --- United Kingdom & Ireland ---
+        exchanges.put("LSE", "L");       // London Stock Exchange
+        exchanges.put("LSEIOB1", "IL");  // LSE International Order Book
+        exchanges.put("ISED", "IR");     // Euronext Dublin (Irish Stock Exchange)
+
+        // --- Europe: Euronext Group ---
+        exchanges.put("AEB", "AS");      // Euronext Amsterdam
+        exchanges.put("ENEXT.BE", "BR"); // Euronext Brussels
+        exchanges.put("BVL", "LS");      // Euronext Lisbon
+        exchanges.put("SBF", "PA");      // Euronext Paris
+        exchanges.put("BVME", "MI");     // Borsa Italiana (Milan)
+
+        // --- Europe: DACH (Germany, Austria, Switzerland) ---
+        exchanges.put("IBIS", "DE");     // XETRA (Germany)
+        exchanges.put("TGATE", "DE");    // TradeGate (Germany)
+        exchanges.put("FWB", "F");       // Frankfurt Stock Exchange
+        exchanges.put("SWB", "SG");      // Stuttgart Stock Exchange
+        exchanges.put("EBS", "SW");      // SIX Swiss Exchange
+        exchanges.put("SWX", "SW");      // SIX Swiss Exchange
+        exchanges.put("VSE", "VI");      // Vienna Stock Exchange
+
+        // --- Europe: Nordic & Baltic ---
+        exchanges.put("SFB", "ST");      // Nasdaq Stockholm
+        exchanges.put("OSE", "OL");      // Oslo Stock Exchange
+        exchanges.put("OMXNO", "OL");    // Nasdaq OMX Nordic (Usually maps to Oslo for Eq)
+        exchanges.put("CPH", "CO");      // Nasdaq Copenhagen
+        exchanges.put("HEX", "HE");      // Nasdaq Helsinki
+        exchanges.put("N.RIGA", "RG");   // Nasdaq Riga
+        exchanges.put("N.TALLINN", "TL");// Nasdaq Tallinn
+        exchanges.put("N.VILNIUS", "VS");// Nasdaq Vilnius
+
+        // --- Europe: Other ---
+        exchanges.put("BM", "MC");       // Bolsas y Mercados Españoles (Madrid)
+        exchanges.put("WSE", "WA");      // Warsaw Stock Exchange
+        exchanges.put("PRA", "PR");      // Prague Stock Exchange
+        exchanges.put("BUX", "BD");      // Budapest Stock Exchange
+
+        // --- Asia: Greater China & Connect Programs ---
+        exchanges.put("SEHK", "HK");     // Hong Kong Stock Exchange
+        exchanges.put("SEHKNTL", "SS");  // Shanghai-HK Connect (Maps to Shanghai)
+        exchanges.put("SEHKSTAR", "SS"); // Shanghai STAR Market (Maps to Shanghai)
+        exchanges.put("SEHKSZSE", "SZ"); // Shenzhen-HK Connect (Maps to Shenzhen)
+        exchanges.put("CHINEXT", "SZ");  // ChiNext (Maps to Shenzhen)
+        exchanges.put("TWSE", "TW");     // Taiwan Stock Exchange
+
+        // --- Asia: Other ---
+        exchanges.put("TSEJ", "T");      // Tokyo Stock Exchange
+        exchanges.put("SGX", "SI");      // Singapore Exchange
+        exchanges.put("NSE", "NS");      // National Stock Exchange of India
+
+        // --- Rest of World ---
+        exchanges.put("ASX", "AX");      // Australian Securities Exchange
+        exchanges.put("MEXI", "MX");     // Mexican Stock Exchange
+        exchanges.put("BOVESPA", "SA");  // B3 (Brazil)
+        exchanges.put("JSE", "JO");      // Johannesburg Stock Exchange (South Africa)
     }
 
     /**

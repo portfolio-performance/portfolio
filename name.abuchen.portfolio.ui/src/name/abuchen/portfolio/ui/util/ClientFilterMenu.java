@@ -37,6 +37,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class ClientFilterMenu implements IMenuListener
 {
@@ -148,7 +149,7 @@ public final class ClientFilterMenu implements IMenuListener
     public void menuAboutToShow(IMenuManager manager)
     {
         defaultItems.forEach(item -> {
-            Action action = new SimpleAction(item.label, a -> {
+            Action action = new SimpleAction(TextUtil.tooltip(item.label), a -> {
                 selectedItem = item;
                 listeners.forEach(l -> l.accept(item.filter));
             });
@@ -158,7 +159,7 @@ public final class ClientFilterMenu implements IMenuListener
 
         manager.add(new Separator());
         customItems.forEach(item -> {
-            Action action = new SimpleAction(item.label, a -> {
+            Action action = new SimpleAction(TextUtil.tooltip(item.label), a -> {
                 selectedItem = item;
                 listeners.forEach(l -> l.accept(item.filter));
             });

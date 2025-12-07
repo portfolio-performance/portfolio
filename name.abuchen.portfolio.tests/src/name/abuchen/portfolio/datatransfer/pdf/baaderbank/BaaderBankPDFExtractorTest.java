@@ -1805,6 +1805,7 @@ public class BaaderBankPDFExtractorTest
                         hasDate("2022-10-06T16:34:27"), hasShares(5.3864), //
                         hasSource("Kauf37.txt"), //
                         hasNote("Vorgangs-Nr.: 868490405 | Stückzinsen für 145 Tag(e): 8,86 EUR"), //
+                        hasAmount("EUR", 500.14), hasGrossValue("EUR", 500.14), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
