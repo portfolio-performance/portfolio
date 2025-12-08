@@ -733,16 +733,18 @@ public class SaxoBankPDFExtractorTest
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(2));
 
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
+                        hasName(null), //
+                        hasCurrencyCode("CHF"))));
+
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-12-05T12:33:36"), //
-                        hasShares(13), //
+                        hasDate("2025-12-05T12:33:36"), hasShares(13.00), //
                         hasSource("Buy07.txt"), //
                         hasNote("Order-ID 5349985997 | Trade-ID 6504011106"), //
-                        hasAmount("CHF", 978.77), //
-                        hasGrossValue("CHF", 978.04), //
-                        hasTaxes("CHF", 0.73), //
-                        hasFees("CHF", 0.0))));
-
+                        hasAmount("CHF", 978.77), hasGrossValue("CHF", 978.04), //
+                        hasTaxes("CHF", 0.73), hasFees("CHF", 0.00))));
     }
 
     @Test

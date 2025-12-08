@@ -109,7 +109,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Berichtszeitraum
@@ -126,8 +126,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "tickerSymbol", "currency") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
-
-                                                        .match("^Hauptb.rse .*Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
