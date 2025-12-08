@@ -1,0 +1,50 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-20672455 - 20672455
+Bericht zu Trade-Details
+Berichtszeitraum: 05-Dez-2025 - 05-Dez-2025
+Generiert um: 07-Dez-2025 04:46:15 16:46:15 (W. Europe Standard Time)
+CH-20672455 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Berichtszeitraum
+Währung: CHF 05-Dez-2025 - 05-Dez-2025
+Seite 1 von 3 Konten: AI Rente 80000/191919 Generiert um: 07-Dez-2025
+Trade details, CHF
+Berichtszeitraum
+05-Dez-2025 bis 05-Dez-2025
+ETF
+iShares Swiss Domestic Government Bnd 3-7
+Instrument Handelszeit 05-Dez-2025 12:33:36
+(CH) ETF
+ISIN CH0016999846 Valuta 09-Dez-2025
+Symbol CSBGC7:xswx Order-ID 5349985997
+Börsenbeschreibung SIX SWISS EXCHANGE (XSWX) Trade-ID 6504011106
+SIX Swiss Exchange ETFs on Bonds of the
+Hauptbörse Gehandelter Wert -978,04 CHF
+Swiss Conf
+Handelsplatz Exchange Preis 75,234 CHF
+Ordertyp Marktorder Menge 13,00
+K/V Kauf Spread-Kosten 0,00 CHF
+Eröffnung/Schluss To-Open Gesamte Trading-Kosten -0,73 CHF
+Saxo is counterparty No
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Berichtszeitraum
+Währung: CHF 05-Dez-2025 - 05-Dez-2025
+Seite 2 von 3 Konten: AI Rente 80000/191919 Generiert um: 07-Dez-2025
+Trade details, CHF
+Berichtszeitraum
+05-Dez-2025 bis 05-Dez-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Aktienbetrag 50117497820 05-Dez-2025 09-Dez-2025 -978,04 1,000000 0,00 -978,04
+Schweizerische
+Stempelgebühr 50119476243 05-Dez-2025 09-Dez-2025 -0,73 1,000000 0,00 -0,73
+Inland
+Nettobetrag - - - - - 0,00 -978,77
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-20672455 Berichtszeitraum
+Währung: CHF 05-Dez-2025 - 05-Dez-2025
+Seite 3 von 3 Konten: AI Rente 80000/191919 Generiert um: 07-Dez-2025
