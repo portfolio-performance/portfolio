@@ -113,8 +113,6 @@ public class IBFlexStatementExtractor implements Extractor
                         .toFormatter(Locale.US);
     }
 
-    // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
-    private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
 
     /**
      * Constructs an IBFlexStatementExtractor with the given client.
@@ -217,13 +215,14 @@ public class IBFlexStatementExtractor implements Extractor
 
     /**
      * Imports an Interactive Broker Activity Statement from an XML file.
+     * Returns one result per FlexStatement (i.e., per account) in the file.
      *
      * @param f The input stream of the XML file.
-     * @return The result of the extraction process.
+     * @return The list of extraction results, one per account.
      */
-    /* package */ IBFlexStatementExtractorResult importActivityStatement(InputStream f)
+    /* package */ List<IBFlexStatementExtractorResult> importActivityStatement(InputStream f)
     {
-        IBFlexStatementExtractorResult result = new IBFlexStatementExtractorResult();
+        List<IBFlexStatementExtractorResult> results = new ArrayList<>();
 
         try (InputStream fileInputStream = f)
         {
@@ -237,22 +236,35 @@ public class IBFlexStatementExtractor implements Extractor
 
             doc.getDocumentElement().normalize();
 
-            // Parse the document and populate the result
-            result.parseDocument(doc);
+            // Process each FlexStatement separately (one per account)
+            NodeList statements = doc.getElementsByTagName("FlexStatement");
+            for (int i = 0; i < statements.getLength(); i++)
+            {
+                Node node = statements.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE)
+                {
+                    var result = new IBFlexStatementExtractorResult();
+                    result.parseStatement((Element) node);
+                    results.add(result);
+                }
+            }
         }
         catch (ParserConfigurationException | SAXException | IOException e)
         {
-            // Handle exceptions and add errors to the result
+            // Handle exceptions and add errors to a new result
+            var result = new IBFlexStatementExtractorResult();
             result.addError(e);
+            results.add(result);
         }
 
-        return result;
+        return results;
     }
 
     /**
      * @formatter:off
      * The IBFlexStatementExtractorResult class represents the result of importing
-     * an Interactive Broker Activity Statement from an XML file.
+     * a single FlexStatement (i.e., one account) from an Interactive Broker
+     * Activity Statement XML file.
      *
      * Information on the different asset categories
      * --------------------------------------------
@@ -278,10 +290,13 @@ public class IBFlexStatementExtractor implements Extractor
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
         private static final String ASSETKEY_WARRANTS = "WAR";
 
-        private Document document;
+        private Element statement;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
         private String accountCurrency = null;
+
+        // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
+        private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
 
         /**
          * Processes ConversionRate elements to build currency conversion rate
@@ -905,7 +920,7 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * @formatter:off
-         * Imports model objects from the document based on the specified type using the provided handling function.
+         * Imports model objects from the statement based on the specified type using the provided handling function.
          *
          * Supported types:
          * - AccountInformation
@@ -920,7 +935,7 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private void importModelObjects(String type, Consumer<Element> handleNodeFunction)
         {
-            NodeList nList = document.getElementsByTagName(type);
+            NodeList nList = statement.getElementsByTagName(type);
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
                 Node nNode = nList.item(temp);
@@ -940,15 +955,15 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Parses the given XML document and processes various model objects.
+         * Parses a single FlexStatement element and processes its model objects.
          *
-         * @param doc The XML document to parse.
+         * @param statementElement The FlexStatement XML element to parse.
          */
-        public void parseDocument(Document doc)
+        public void parseStatement(Element statementElement)
         {
-            this.document = doc;
+            this.statement = statementElement;
 
-            if (document == null)
+            if (statement == null)
                 return;
 
             // Process conversion rates first
@@ -1132,9 +1147,13 @@ public class IBFlexStatementExtractor implements Extractor
     {
         try (FileInputStream in = new FileInputStream(inputFile.getFile()))
         {
-            IBFlexStatementExtractorResult result = importActivityStatement(in);
-            errors.addAll(result.getErrors());
-            return result.getResults();
+            List<Item> items = new ArrayList<>();
+            for (var result : importActivityStatement(in))
+            {
+                errors.addAll(result.getErrors());
+                items.addAll(result.getResults());
+            }
+            return items;
         }
         catch (IOException e)
         {
