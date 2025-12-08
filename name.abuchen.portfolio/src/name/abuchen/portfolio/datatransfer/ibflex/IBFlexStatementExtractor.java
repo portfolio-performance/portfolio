@@ -124,7 +124,7 @@ public class IBFlexStatementExtractor implements Extractor
      */
     public IBFlexStatementExtractor(Client client)
     {
-        this.client = new Client();
+        this.client = client;
         allSecurities.addAll(client.getSecurities());
 
         initializeExchangeMappings();
