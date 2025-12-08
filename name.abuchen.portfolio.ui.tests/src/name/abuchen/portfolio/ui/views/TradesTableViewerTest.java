@@ -5,12 +5,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.swt.SWT;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.AccountBuilder;
@@ -28,12 +33,15 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCategory;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.snapshot.trades.TradesGroupedByTaxonomy;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.trades.TradeElement;
+import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
 
 @SuppressWarnings("nls")
 public class TradesTableViewerTest
@@ -66,8 +74,7 @@ public class TradesTableViewerTest
         double expected = trade.getReturn();
 
         assertThat(expected, closeTo(0.1, 0.0000001));
-        assertThat(TradesTableViewer.getReturnValue(element), closeTo(expected, 0.0000001));
-        assertThat(TradesTableViewer.getReturnValue(trade), closeTo(expected, 0.0000001));
+        assertThat(element.getTrade().getReturn(), closeTo(expected, 0.0000001));
     }
 
     @Test
@@ -201,7 +208,7 @@ public class TradesTableViewerTest
         Column column = new NameColumn(client);
         column.getEditingSupport().addListener(new TouchClientListener(client));
 
-        column.getEditingSupport().setValue(trade, "Renamed Security");
+        column.getEditingSupport().setValue(new TradeElement(trade, 0, 1.0), "Renamed Security");
 
         assertThat(security.getName(), is("Renamed Security"));
         assertThat(client.getSecurities().get(0).getName(), is("Renamed Security"));
@@ -248,5 +255,140 @@ public class TradesTableViewerTest
         // triggered
         assertThat(security.getName(), is("Renamed Security"));
         assertThat(refreshCalled.get(), is(true));
+    }
+
+    @Test
+    public void mapTradesToElementsAssignsNeutralSortOrder() throws TradeCollectorException
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2020-02-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2020-01-01", Values.Amount.factorize(20000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2020-01-01", Values.Share.factorize(50), Values.Amount.factorize(5000)) //
+                        .sell(security, "2020-02-01", Values.Share.factorize(50), Values.Amount.factorize(5500)) //
+                        .buy(security, "2020-03-01", Values.Share.factorize(25), Values.Amount.factorize(2500)) //
+                        .sell(security, "2020-04-01", Values.Share.factorize(25), Values.Amount.factorize(2600)) //
+                        .addTo(client);
+
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+        List<Trade> trades = collector.collect(security);
+
+        List<TradeElement> elements = TradeDetailsView.mapTradesToElements(trades);
+
+        assertThat(elements.size(), is(trades.size()));
+        assertTrue(elements.stream().allMatch(TradeElement::isTrade));
+        assertTrue(elements.stream().mapToInt(TradeElement::getSortOrder).allMatch(order -> order == 0));
+        assertTrue(elements.stream().allMatch(element -> Double.compare(element.getWeight(), 1.0) == 0));
+    }
+
+    @Test
+    public void tradeElementComparatorUsesSortOrderBeforeDelegating() throws Exception
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2020-02-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2020-01-01", Values.Amount.factorize(20000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2020-01-01", Values.Share.factorize(100), Values.Amount.factorize(10000)) //
+                        .sell(security, "2020-02-01", Values.Share.factorize(100), Values.Amount.factorize(11000)) //
+                        .addTo(client);
+
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+        Trade trade = collector.collect(security).get(0);
+
+        TradeElement first = new TradeElement(trade, 0, 1.0);
+        TradeElement second = new TradeElement(trade, 1, 1.0);
+
+        Comparator<Object> wrapped = (o1, o2) -> {
+            throw new AssertionError("Comparator should not delegate when sort order differs");
+        };
+
+        setSortDirection(SWT.UP);
+        try
+        {
+            TradesTableViewer.TradeElementComparator comparator = new TradesTableViewer.TradeElementComparator(wrapped);
+            assertThat(comparator.compare(first, second), is(-1));
+        }
+        finally
+        {
+            clearSortingContext();
+        }
+    }
+
+    @Test
+    public void tradeElementComparatorDelegatesWhenSortOrderMatches() throws Exception
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2020-01-01", Values.Quote.factorize(100)) //
+                        .addPrice("2020-02-01", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2020-01-01", Values.Amount.factorize(20000)) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .buy(security, "2020-01-01", Values.Share.factorize(100), Values.Amount.factorize(10000)) //
+                        .sell(security, "2020-02-01", Values.Share.factorize(100), Values.Amount.factorize(11000)) //
+                        .addTo(client);
+
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+        List<Trade> trades = collector.collect(security);
+
+        TradeElement first = new TradeElement(trades.get(0), 0, 1.0);
+        TradeElement second = new TradeElement(trades.get(0), 0, 1.0);
+
+        List<TradeElement> compared = new ArrayList<>();
+        Comparator<Object> wrapped = (o1, o2) -> {
+            compared.add((TradeElement) o1);
+            compared.add((TradeElement) o2);
+            return Double.compare(((TradeElement) o1).getTrade().getReturn(),
+                            ((TradeElement) o2).getTrade().getReturn());
+        };
+
+        setSortDirection(SWT.UP);
+        try
+        {
+            TradesTableViewer.TradeElementComparator comparator = new TradesTableViewer.TradeElementComparator(wrapped);
+            assertThat(comparator.compare(first, second), is(0));
+        }
+        finally
+        {
+            clearSortingContext();
+        }
+
+        assertThat(compared.size(), is(2));
+        assertTrue(compared.stream().allMatch(element -> element.getSortOrder() == 0));
+    }
+
+    private static void setSortDirection(int direction) throws Exception
+    {
+        Method method = ColumnViewerSorter.SortingContext.class.getDeclaredMethod("setSortDirection", int.class);
+        method.setAccessible(true);
+        method.invoke(null, direction);
+    }
+
+    private static void clearSortingContext() throws Exception
+    {
+        Method method = ColumnViewerSorter.SortingContext.class.getDeclaredMethod("clear");
+        method.setAccessible(true);
+        method.invoke(null);
     }
 }
