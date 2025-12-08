@@ -3315,7 +3315,7 @@ public class IBFlexStatementExtractorTest
 
         var euns = new Security("EUNS", "EUR");
         euns.setTickerSymbol("EUNS");
-        client.addSecurity(vwrl);
+        client.addSecurity(euns);
 
         var test = new Security("TEST", "GBP");
         test.setTickerSymbol("TEST");
@@ -3334,7 +3334,7 @@ public class IBFlexStatementExtractorTest
 
         var results = extractor.extract(Collections.singletonList(tempFile), errors);
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(4L));
+        assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         new AssertImportActions().check(results, CurrencyUnit.USD, CurrencyUnit.EUR, "GBP");
