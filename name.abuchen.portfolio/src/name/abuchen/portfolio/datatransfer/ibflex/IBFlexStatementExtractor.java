@@ -44,10 +44,12 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -294,6 +296,8 @@ public class IBFlexStatementExtractor implements Extractor
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
         private String accountCurrency = null;
+        private Map<String, Account> accounts = new HashMap<>();
+        private Portfolio portfolio = null;
 
         // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
         private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
@@ -319,12 +323,11 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * Builds account information based on the provided XML element. Extracts the currency
-         * attribute from the element, converts it to a currency code, and sets the corresponding
-         * currency unit for the IB account if valid. The resulting information is not returned,
-         * as the primary purpose is to update the 'accountCurrency' field.
+         * and acctAlias attributes from the element. The currency is converted to a currency
+         * code and sets the corresponding currency unit for the IB account if valid. The
+         * acctAlias is matched against client account names to find the corresponding account.
          *
          * @param element The XML element containing account information.
-         * @return Always returns null, as the focus is on updating the currency information.
          */
         private Consumer<Element> buildAccountInformation = element -> {
             String currency = asCurrencyCode(element.getAttribute("currency"));
@@ -333,6 +336,29 @@ public class IBFlexStatementExtractor implements Extractor
                 CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
                 if (currencyUnit != null)
                     accountCurrency = currency;
+            }
+
+            String acctAlias = element.getAttribute("acctAlias");
+            String acctID = element.getAttribute("accountId");
+
+            portfolio = client.getPortfolios().stream()
+                            .filter(p -> p.getName() != null
+                                            && (p.getName().equals(acctAlias) || p.getName().equals(acctID)))
+                            .findFirst() //
+                            .orElse(null);
+
+            if (portfolio != null && portfolio.getReferenceAccount() != null)
+            {
+                Account reference = portfolio.getReferenceAccount();
+
+                // Always add the reference account as a candidate.
+                accounts.put(reference.getCurrencyCode(), reference);
+
+                // Work around the fact that we can't have multiple
+                // reference accounts at the moment by checking for accounts
+                // with the same prefix as the reference account.
+                client.getAccounts().stream().filter(a -> a.getName().startsWith(reference.getName()))
+                                .forEach(a -> accounts.putIfAbsent(a.getCurrencyCode(), a));
             }
         };
 
@@ -421,7 +447,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                results.add(new TransactionItem(accountTransaction));
+                addItem(accountTransaction);
         };
 
         /**
@@ -501,11 +527,11 @@ public class IBFlexStatementExtractor implements Extractor
 
             // set note
             cashTransaction.setNote(extractNote(element));
-            
-            results.add(new AccountTransferItem(cashTransaction, true));
-            
+
+            addItem(cashTransaction);
+
             // check fees
-            
+
             Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), //
                             asAmount(element.getAttribute("ibCommission")));
             if (!fees.isZero())
@@ -518,7 +544,7 @@ public class IBFlexStatementExtractor implements Extractor
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
                                                 : Messages.LabelTransferAccount));
 
-                results.add(new TransactionItem(feesTransaction));
+                addItem(feesTransaction);
             }
             
             // check taxes
@@ -535,7 +561,7 @@ public class IBFlexStatementExtractor implements Extractor
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
                                                 : Messages.LabelTransferAccount));
 
-                results.add(new TransactionItem(taxesTransaction));
+                addItem(taxesTransaction);
             }
         };
 
@@ -630,7 +656,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             ExtractorUtils.fixGrossValueBuySell().accept(portfolioTransaction);
 
-            BuySellEntryItem item = new BuySellEntryItem(portfolioTransaction);
+            BuySellEntryItem item = addItem(portfolioTransaction);
 
             if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
@@ -640,8 +666,6 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
             }
-            
-            results.add(item);
         };
 
         /**
@@ -670,8 +694,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                results.add(new BuySellEntryItem(portfolioTransaction));
-
+                addItem(portfolioTransaction);
             }
             else
             {
@@ -694,7 +717,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                results.add(new TransactionItem(portfolioTransaction));
+                addItem(portfolioTransaction);
             }
         };
 
@@ -731,7 +754,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                results.add(new TransactionItem(accountTransaction));
+                addItem(accountTransaction);
         };
 
         /**
@@ -990,6 +1013,54 @@ public class IBFlexStatementExtractor implements Extractor
             // TODO: Process all FxTransactions
         }
 
+        /**
+         * Adds an AccountTransaction result and sets an account if possible.
+         */
+        private TransactionItem addItem(AccountTransaction transaction)
+        { 
+            TransactionItem item = new TransactionItem(transaction);
+            item.setAccountPrimary(accounts.get(transaction.getCurrencyCode()));
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds a PortfolioTransaction result and sets a portfolio if possible.
+         */
+        private TransactionItem addItem(PortfolioTransaction transaction)
+        {
+            TransactionItem item = new TransactionItem(transaction);
+            item.setPortfolioPrimary(portfolio);
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds a BuySellEntry result and sets both account and portfolio if
+         * possible.
+         */
+        private BuySellEntryItem addItem(BuySellEntry entry)
+        {
+            BuySellEntryItem item = new BuySellEntryItem(entry);
+            item.setAccountPrimary(accounts.get(entry.getAccountTransaction().getCurrencyCode()));
+            item.setPortfolioPrimary(portfolio);
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds an AccountTransferEntry result and sets both primary and
+         * secondary account if possible.
+         */
+        private AccountTransferItem addItem(AccountTransferEntry entry)
+        {
+            AccountTransferItem item = new AccountTransferItem(entry, true);
+            item.setAccountPrimary(accounts.get(entry.getSourceTransaction().getCurrencyCode()));
+            item.setAccountSecondary(accounts.get(entry.getTargetTransaction().getCurrencyCode()));
+            results.add(item);
+            return item;
+        }
+
         public void addError(Exception e)
         {
             errors.add(e);
@@ -1102,8 +1173,7 @@ public class IBFlexStatementExtractor implements Extractor
             allSecurities.add(security);
 
             // Add to result
-            SecurityItem item = new SecurityItem(security);
-            results.add(item);
+            results.add(new SecurityItem(security));
 
             return security;
         }

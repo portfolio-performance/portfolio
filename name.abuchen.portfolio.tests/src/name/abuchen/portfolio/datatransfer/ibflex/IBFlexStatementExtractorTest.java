@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.ibflex;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAccount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -9,12 +10,15 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGros
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasPortfolio;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecondaryAccount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -22,6 +26,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -48,9 +53,11 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -1640,7 +1647,21 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testIBFlexStatementFile10() throws IOException
     {
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        var client = new Client();
+
+        var acct = new Account("Reference");
+        acct.setCurrencyCode("EUR");
+        client.addAccount(acct);
+
+        var usd = new Account("Reference USD");
+        usd.setCurrencyCode(CurrencyUnit.USD);
+        client.addAccount(usd);
+
+        var port = new Portfolio("UXXXXXXX");
+        port.setReferenceAccount(acct);
+        client.addPortfolio(port);
+
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile10.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1699,16 +1720,18 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check 1st account transfer
-        assertThat(results, hasItem(outboundCash( //
-                        hasDate("2022-12-21T18:06:05"), //
-                        hasNote("Trade-ID: 116815511 | Transaction-ID: 415452010"), //
-                        hasAmount("EUR", 133), hasGrossValue("EUR", 133), //
-                        hasForexGrossValue("USD", 140.9268), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0))));
-
-        assertThat(results, hasItem(inboundCash( //
-                        hasDate("2022-12-21T18:06:05"), //
-                        hasAmount("USD", 140.9268))));
+        assertThat(results, hasItem(allOf(//
+                        hasAccount(acct), //
+                        hasSecondaryAccount(usd), //
+                        outboundCash( //
+                                        hasDate("2022-12-21T18:06:05"), //
+                                        hasNote("Trade-ID: 116815511 | Transaction-ID: 415452010"), //
+                                        hasAmount("EUR", 133), hasGrossValue("EUR", 133), //
+                                        hasForexGrossValue("USD", 140.9268), //
+                                        hasTaxes("EUR", 0), hasFees("EUR", 0)),
+                        inboundCash( //
+                                        hasDate("2022-12-21T18:06:05"), //
+                                        hasAmount("USD", 140.9268)))));
     }
 
     @Test
@@ -3366,5 +3389,96 @@ public class IBFlexStatementExtractorTest
                         hasSecurity(hasTicker("TEST2")), //
                         hasAmount("GBP", 4.47), hasForexGrossValue("EUR", 5.39), //
                         hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile26() throws IOException
+    {
+        var client = new Client();
+
+        var euns = new Security("EUNS", "EUR");
+        euns.setTickerSymbol("EUNS");
+        client.addSecurity(euns);
+
+        var net = new Security("Cloudflare", "USD");
+        net.setTickerSymbol("NET");
+        client.addSecurity(net);
+
+        var govs = new Security("GOVS", "EUR");
+        govs.setTickerSymbol("GOVS");
+        client.addSecurity(govs);
+
+        var referenceAcctA = new Account("A");
+        referenceAcctA.setCurrencyCode("USD");
+        client.addAccount(referenceAcctA);
+
+        var eurAcctA = new Account("A EUR");
+        eurAcctA.setCurrencyCode("EUR");
+        client.addAccount(eurAcctA);
+
+        var referenceAcctB = new Account("B");
+        referenceAcctB.setCurrencyCode("EUR");
+        client.addAccount(referenceAcctB);
+
+        // Match on accountId.
+        var portA = new Portfolio("U1234567");
+        portA.setReferenceAccount(referenceAcctA);
+        client.addPortfolio(portA);
+
+        // Match on acctAlias.
+        var portB = new Portfolio("B");
+        portB.setReferenceAccount(referenceAcctB);
+        client.addPortfolio(portB);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile26.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(3L));
+        new AssertImportActions().check(results, CurrencyUnit.USD, CurrencyUnit.EUR, "GBP");
+
+        // NET sale, portfolio A.
+        assertThat(results, hasItem(allOf( //
+                        hasPortfolio(portA),// 
+                        hasAccount(referenceAcctA),
+                        sale( //
+                                        hasDate("2025-09-12T09:44:50"), hasShares(1), //
+                                        hasSecurity(hasTicker("NET")), //
+                                        hasAmount("USD", 223.80), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 1.00)))));
+
+        // EUNS dividend, account A.
+        assertThat(results, hasItem(allOf(//
+                        hasAccount(eurAcctA), //
+                        dividend( //
+                                        hasDate("2025-07-30"), hasShares(10), //
+                                        hasSecurity(hasTicker("EUNS")), //
+                                        hasAmount("EUR", 13.90), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // EUNS dividend, portfolio B, reference account.
+        assertThat(results, hasItem(allOf( //
+                        hasAccount(referenceAcctB), //
+                        dividend( //
+                                        hasDate("2025-07-30"), hasShares(1), //
+                                        hasSecurity(hasTicker("EUNS")), //
+                                        hasAmount("EUR", 1.39), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // GOVS dividend, account B.
+        assertThat(results, hasItem(allOf( //
+                        hasAccount(referenceAcctB), //
+                        dividend( //
+                                        hasDate("2025-08-19"), hasShares(100), //
+                                        hasSecurity(hasTicker("GOVS")), //
+                                        hasAmount("EUR", 62.05), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
