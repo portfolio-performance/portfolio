@@ -2107,8 +2107,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 18 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 300,00 € 52.441,43 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "type", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) (SEPA Echtzeit.berweisung|.berweisung) (?<type>(Einzahlung|Incoming|PayOut|Outgoing)) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .attributes("date", "note", "type", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) (SEPA Echtzeit.berweisung|.berweisung) (?<note>(?<type>(Einzahlung|Incoming|PayOut|Outgoing)) .*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Is type is "PayOut" change from DEPOSIT to REMOVAL
@@ -2120,6 +2120,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 24 Sep 2024 Transfer Deposit accepted: DE12345678901234567890 to DE12345678901234567890 €100.00 €103.00
@@ -2481,7 +2482,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "amount", "currency", "year") //
+                                                        .attributes("date", "note", "amount", "currency", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^((.berweisung" //
                                                                         + "|Pr.mie" //
@@ -2490,7 +2491,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Recomendaci.n" //
                                                                         + "|Virement"
                                                                         + "|Bonifico) )?" //
-                                                                        + "(Einzahlung akzeptiert:" //
+                                                                        + "(?<note>(Einzahlung akzeptiert:" //
                                                                         + "|Accepted PayIn:" //
                                                                         + "|Ingreso aceptado:" //
                                                                         + "|Paiement accept.:" //
@@ -2498,12 +2499,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Your Saveback payment" //
                                                                         + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
-                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                                        + " .*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 02 Okt.
@@ -2534,7 +2536,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2020 Überweisung Accepted PayIn:DE74500400480142038900 to DE30110101008889827581 4.000,00 € 4.000,00 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "year", "amount", "currency") //
+                                                        .attributes("date", "year", "note", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^(?<year>[\\d]{4}) " //
                                                                         + "(.berweisung" //
@@ -2543,7 +2545,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Recompensa" //
                                                                         + "|Recomendaci.n" //
                                                                         + "|Virement) " //
-                                                                        + "(Einzahlung akzeptiert:" //
+                                                                        + "(?<note>(Einzahlung akzeptiert:" //
                                                                         + "|Accepted PayIn:" //
                                                                         + "|Ingreso aceptado:" //
                                                                         + "|Paiement accept.:" //
@@ -2551,11 +2553,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Your Saveback payment" //
                                                                         + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
-                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                                        + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 01 août
@@ -2601,11 +2604,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "year") //
+                                                        .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^(PayOut to transit" //
                                                                         + "|(SEPA Echtzeit.berweisung |.berweisung |Transferencia )?Outgoing transfer for" //
-                                                                        + "|SEPA\\-Lastschrift).* " //
+                                                                        + "|SEPA\\-Lastschrift)(?<note>.*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
@@ -2615,6 +2618,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 20 Mai
@@ -2627,13 +2631,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2024 Überweisung Outgoing transfer for Vorname Nachname 22.000,00 € 15.825,42 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "year", "amount", "currency") //
+                                                        .attributes("date", "year", "note", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^(?<year>[\\d]{4}) " //
                                                                         + "(.berweisung" //
                                                                         + "|Transferencia) " //
-                                                                        + "(PayOut to transit" //
-                                                                        + "|Outgoing transfer for.*) " //
+                                                                        + "(?<note>(PayOut to transit" //
+                                                                        + "|Outgoing transfer for.*)) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "[\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
@@ -2642,6 +2646,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }))
 
                         .wrap(t -> {
@@ -2724,36 +2729,37 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(.berweisung Einzahlung akzeptiert:" //
-                                                                        + "|.berweisung Incoming transfer from"
-                                                                        + "|Transferencia Ingreso aceptado" //
-                                                                        + "|Pr.mie Your Saveback" //
-                                                                        + "|Pr.mie Your Kindergeld bonus"
-                                                                        + "|Recompensa Your Saveback payment)" //
-                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                                        + "(.berweisung|Transferencia|Pr.mie|Recompensa) (?<note>(Einzahlung akzeptiert:" //
+                                                                        + "|Incoming transfer from"
+                                                                        + "|Ingreso aceptado" //
+                                                                        + "|Your Saveback" //
+                                                                        + "|Your Kindergeld bonus)" //
+                                                                        + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 02
                                         // Aug. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 9.205,89 €2024
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(SEPA Echtzeit.berweisung|.berweisung) Einzahlung akzeptiert:.* " //
+                                                                        + "(SEPA Echtzeit.berweisung|.berweisung) (?<note>Einzahlung akzeptiert:.*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 20
@@ -2762,10 +2768,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 889,77 € 964,18 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .attributes("day", "month", "note0", "year", "note1", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (SEPA Echtzeit.berweisung|.berweisung) Einzahlung akzeptiert: .*") //
-                                                        .match("^(?<year>[\\d]{4}) .*$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (SEPA Echtzeit.berweisung|.berweisung) (?<note0>Einzahlung akzeptiert: .*)") //
+                                                        .match("^(?<year>[\\d]{4}) (?<note1>.*)$") //
                                                         .match("(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             var context = type.getCurrentContext();
@@ -2785,6 +2791,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note0") + v.get("note1"));
                                                         }),
                                         // @formatter:off
                                         // 14
@@ -2800,10 +2807,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(SEPA Echtzeit.berweisung|.berweisung|Transferencia) (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(SEPA Echtzeit.berweisung|.berweisung|Transferencia) (?<note>(PayOut to transit|Outgoing transfer for).*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
@@ -2812,16 +2819,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 30
                                         // Dez. SEPA Echtzeitüberweisung Outgoing transfer for Vorname Nachname 3.000,00 € 7.342,91 €2024
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(SEPA Echtzeit.berweisung|.berweisung) (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(SEPA Echtzeit.berweisung|.berweisung) (?<note>(PayOut to transit|Outgoing transfer for).*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
@@ -2829,6 +2837,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 24
@@ -2836,6 +2845,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Jan. Outgoing transfer for Möbel Heidenreich GmbH 359,37 € 188,25 €
                                         // Echtzeitüberweisung
                                         // 2025
+
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency") //
@@ -2853,6 +2863,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 28 
+                                        // Incoming transfer from Vorname Nachname 
+                                        // Nov. Überweisung 2.000,00 € 9.066,90 €
+                                        // (DE00000000000000000000)
+                                        // 2025
+                                        //
+                                        // 21 
+                                        // Crypto one percent bonus compensation for orderId: 0a000a0a-
+                                        // Nov. Belohnung 58,36 € 6.235,94 €
+                                        // a000-000a-a000-00a000a0a0a0
+                                        // 2025
+                                        //
+                                        // 26 
+                                        // Crypto one percent bonus compensation for orderId: 
+                                        // Nov. Belohnung 93,99 € 6.329.93 €
+                                        // 0a00000a-a000-000a-a000-00a000a0a0a0
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]*$") //
+                                                        .match("^(?<note0>(Incoming transfer from|Crypto one percent bonus compensation for orderId:) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung|Belohnung) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^(?<note1>.*)$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note0") + v.get("note1"));
                                                         }),
                                         // @formatter:off
                                         // 08
@@ -2940,18 +2985,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 2025
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
-                                                        .match("^(Einzahlung akzeptiert).*$") //
+                                                        .match("^(?<note0>(Einzahlung akzeptiert).*)$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
                                                                         + "(.berweisung) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .match("^.*$") //
+                                                        .match("^(?<note1>.*)$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note0") + v.get("note1"));
                                                         }))
 
                         .wrap(t -> {
