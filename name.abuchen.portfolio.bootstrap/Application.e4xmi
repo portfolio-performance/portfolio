@@ -120,7 +120,7 @@
           <children xsi:type="menu:DynamicMenuContribution" xmi:id="_WatchlistMenuContribution" elementId="name.abuchen.portfolio.ui.menu.online.watchlist.contribution" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.WatchlistPriceUpdateMenuContribution"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/logos/divvydiary.svg" command="_ZWCyUL3OEeqoTtTaIzseTQ">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_cLemQAxoEe6sSLPjYVyvlw" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.DivvyDiaryAPIKeyConfiguredExpression"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_HPofkNoBEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToMyDividends24" label="%menu.online.mydividends24.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/mydividends24.de-logo.png" command="_61mn0NoAEe2p9IMNrIn2tQ">
