@@ -199,7 +199,10 @@ public class AboutDialog extends Dialog
                     protected IStatus run(IProgressMonitor monitor)
                     {
                         String infoText = buildInfoText();
-                        Display.getDefault().asyncExec(() -> installationDetails.setText(infoText));
+                        Display.getDefault().asyncExec(() -> {
+                            if (!installationDetails.isDisposed())
+                                installationDetails.setText(infoText);
+                        });
                         return Status.OK_STATUS;
                     }
                 }.schedule();
