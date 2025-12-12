@@ -315,6 +315,12 @@ public class InvestmentPlanModel extends AbstractModel
         return start;
     }
 
+    @Override
+    public LocalDate getDate()
+    {
+        return start;
+    }
+
     public void setStart(LocalDate start)
     {
         firePropertyChange(Properties.start.name(), this.start, this.start = start); // NOSONAR
