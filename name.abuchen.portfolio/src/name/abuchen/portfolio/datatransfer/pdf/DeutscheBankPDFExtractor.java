@@ -432,13 +432,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Kontoauszug vom", //
+        final var type = new DocumentType("Kontoauszug", //
                         builder -> builder //
                                         .section("currency") //
                                         .match("^.*[\\d]{4} [\\d]{4} [\\d]{4} [\\d]{4} [\\d]{2} .*(?<currency>[A-Z]{3}) [\\-|\\+] [\\.,\\d]+.*$")
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-                                        .section("year") //
+                                        .section("year").optional() //
                                         .match("^Kontoauszug vom [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$")
                                         .assign(Map::putAll));
 
@@ -471,8 +471,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // 2025 2025 Dr. kQEbfBPDq ZgltrGG wBPgFcQwn
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "note", "type", "amount", "note1") //
-                                                        .documentContext("currency", "year") //
+                                                        .attributes("date", "note", "type", "amount", "year", "note1") //
+                                                        .documentContext("currency") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                                                         + "(SEPA )?" //
                                                                         + "(?<note>(Dauerauftrag" //
@@ -484,7 +484,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Verwendungszweck\\/ Kundenreferenz" //
                                                                         + "|.bertrag \\(.berweisung\\) von) " //
                                                                         + "(?<type>(\\-|\\+)) (?<amount>[\\.,\\d]+)$")
-                                                        .match("^[\\d]{4} [\\d]{4} (?<note1>.*)$") //
+                                                        .match("^[\\d]{4} (?<year>[\\d]{4}) (Buchung )?(?<note1>.*)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Is type --> "-" change from DEPOSIT to REMOVAL
@@ -501,6 +501,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                                                             if (v.get("note").startsWith("Verwendungszweck"))
                                                                 v.put("note", "");
+
+                                                            if (v.get("note1").contains("Steuererstattung"))
+                                                            {
+                                                                // @formatter:off
+                                                                // Change from DEPOSIT to TAX_REFUND
+                                                                // @formatter:on
+                                                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                                                                v.put("note", "Steuererstattung");
+                                                            }
 
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -570,6 +580,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                                                             if (v.get("note").startsWith("Verwendungszweck"))
                                                                 v.put("note", "");
+
+                                                            if (v.get("note1").contains("Steuererstattung"))
+                                                            {
+                                                                // @formatter:off
+                                                                // Change from DEPOSIT to TAX_REFUND
+                                                                // @formatter:on
+                                                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                                                                v.put("note", "Steuererstattung");
+                                                            }
 
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
