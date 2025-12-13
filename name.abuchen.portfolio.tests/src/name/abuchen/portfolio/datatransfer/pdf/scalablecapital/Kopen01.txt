@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Duitsland 
+vhwjGsMFZ loQjogMo Nik XLPWWs
+VasOs 
+HwzdLxdB 514 Datum 07.05.2025
+3769YO KNzQuaOs Pagina 1 / 1
+Nederland 
+Transactiebevestiging 
+voor beleggingsplanorder 
+Type LIMIT Order-ID SCALcbFSrNzHRn3 
+Uitvoering 07.05.2025 11:28:30 Exchange-ID 347993001 
+Handelsplatform EIX Land van bewaring Luxemburg
+Effectenrekening 0820484497 Soort bewaring Niet-collectieve bewaring
+Order 
+Type Effect Hoeveelheid Prijs Bedrag
+Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
+XS2875106242
+Belastingen op financiële transacties 0.00 EUR
+Totaal 5.00 EUR
+Het bedrag wordt verrekend via de verrekeningsrekening DE11111111111111111111 (Waarde: 09.05.2025). 
+Controleer de informatie op juistheid en meld eventuele problemen onmiddellijk aan ons.
+Gebruik hiervoor het menu-itemOndersteuning in je persoonlijke account. 
+Scalable Capital GmbH HRB 217778 Management: Raad van toezicht: Pagina 
+Seitzstraße 8e Registratierechtbank: Erik Podzuweit, Florian Prucker Patrick Olson (Voorzitter) 
+80538 München Arrondissementsrechtbank München Martin Krebs, Dirk Franzmeyer, Dirk
+BTW-nummer: DE300434774 Urmoneit 1 / 1
