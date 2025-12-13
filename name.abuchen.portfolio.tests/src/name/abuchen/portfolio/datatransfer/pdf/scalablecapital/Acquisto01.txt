@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 Monaco di Baviera • Germania 
+rrFXEQ attE
+rXqSfdXsWMEq NNXo 3 
+24236 FQRuS Data 25.08.2025
+kMjUaq Pagina 1 / 1
+Nota contrattuale 
+per l'ordine del piano di accumulo 
+Tipo LIMIT ID ordine tRFkKlxFUnG7LmN
+Esecuzione 25.08.2025 11:07:44 ID di scambio 078221047
+Sede di negoziazione EIX Paese di custodia Lussemburgo
+Conto deposito titoli 9096333290 Tipo di custodia Custodia non collettiva
+Tipo Titolo Quantità Prezzo Importo
+Acquisto SPDR MSCI All Country World Investable Market (Acc) 1.071122 unità 233.40 EUR 250.00 EUR
+IE00B3YLTY66
+Addebito 250.00 EUR
+L'importo sarà regolato tramite il conto Scalable DE98120700700750885501 (valore: 27.08.2025) 
+Verifica l'esattezza delle informazioni e contattaci immediatamente in caso di dubbi.
+Per farlo, vai alla voce Supporto nell'area clienti. 
+Scalable Capital GmbH HRB 217778 Consiglio di amministrazione: Consiglio di vigilanza: Pagina 
+Seitzstraße 8e Registro delle imprese: Tribunale Florian Prucker, Martin Krebs, Patrick Olson (Presidente) 
+80538 München distrettuale di Monaco di Baviera Dirk Franzmeyer 
+Numéro de TVA : DE300434774 1 / 1

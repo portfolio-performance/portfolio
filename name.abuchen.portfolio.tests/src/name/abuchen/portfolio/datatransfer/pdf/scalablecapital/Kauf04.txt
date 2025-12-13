@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+Max Mustermann
+Musterstraße 37a 
+11111 Musterstadt Datum 09.12.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Auftrag im Rahmen der Vermögensverwaltung 
+Typ LIMIT Order SCW2pFcgwaYpF84pLa3f
+Ausführung 09.12.2025 13:00:49 Geschäft ARGF6576420251209E
+Ausführungsplatz OTC Lagerland Luxemburg
+Depot 1111111111 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf iShares EUR Corp Bond 1-5yr (Dist) 0,242 Stk. 108,225 EUR 26,19 EUR
+IE00B4L60045
+Belastung 26,19 EUR
+Der Betrag wird mit dem Verrechnungskonto 1111111111111111111111 (Valuta: 11.12.2025) verrechnet. 
+Dies ist ein Over-the-Counter-Geschäft, bei dem Finanzprodukte außerhalb einer regulierten Börse gehandelt werden. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1
