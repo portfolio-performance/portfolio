@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster
+Depotnummer
+ 9193874968
+ Kundennummer 0333801865
+GgLtcNK KaKWxv
+ Auftragsnummer 210741/20.00
+BsGscIE IcEsTa Datum 11.12.2025
+Tannholzstr. 2 Rechnungsnummer W07700-0000535645/25
+42469 SEixHjCMWqMRtD Umsatzsteuer-ID DE288411485   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 200 DEUTSCHE POST AG                   DE0005552004 (555200)
+NAMENS-AKTIEN O.N.                 
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 11.12.2025 16:14:10 KcoZutzKyufI nDe OUNmdWDm qkPCFD
+Ausführungskurs 46,87 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 9.374,00- EUR
+Provision 0,1900 % vom Kurswert 17,81- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ausmachender Betrag 9.391,91- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 15.12.2025 zu Lasten des Kontos 3282155 (IBAN DE05 7206 9274 0003 2821 55),
+BLZ 72069274 (BIC GENODEF1ZUS).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7700.12111732.0001276OR07    
