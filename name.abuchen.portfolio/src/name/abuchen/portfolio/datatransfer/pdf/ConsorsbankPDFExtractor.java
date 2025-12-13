@@ -490,11 +490,35 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Netto (zugunsten|zulasten) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Netto( in [A-Z]{3})? (zugunsten|zulasten) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^Netto in [A-Z]{3} (zugunsten|zulasten) .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // 67,74 EUR
+                                        // Netto in EUR
+                                        // 78,68 USD
+                                        // Netto in USD zugunsten IBAN qx55 4648 3025 8585 7395 06
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Netto in [A-Z]{3}") //
+                                                        .match("^(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
+                                                        .match("^Netto in [A-Z]{3} (zugunsten|zulasten) .*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -594,6 +618,23 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                                                             var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                                             var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Brutto in USD 105,68 USD
+                                        // Devisenkurs 1,161500 USD / EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "exchangeRate", "termCurrency", "baseCurrency") //
+                                                        .match("^Brutto in [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3}) \\/ (?<baseCurrency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),

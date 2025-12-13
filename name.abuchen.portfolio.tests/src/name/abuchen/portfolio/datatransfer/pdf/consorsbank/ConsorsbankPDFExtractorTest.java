@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.consorsbank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -4016,14 +4015,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende19.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 44.78), hasGrossValue("EUR", 60.15), //
-                        hasTaxes("EUR", 9.02 + 6.02 + 0.33), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 9.02 + 6.02 + 0.33), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4157,14 +4149,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende22.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 56.33), hasGrossValue("EUR", 56.33), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4232,14 +4217,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende23.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.44), hasGrossValue("EUR", 1.94), //
-                        hasTaxes("EUR", 0.29 + 0.19 + 0.01 + 0.01), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.29 + 0.19 + 0.01 + 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4307,14 +4285,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende24.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 10.38), hasGrossValue("EUR", 12.22), //
-                        hasTaxes("EUR", 1.84), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 1.84), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4382,14 +4353,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende25.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 41.99), hasGrossValue("EUR", 41.99), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4457,14 +4421,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende26.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 70.84), hasGrossValue("EUR", 96.21), //
-                        hasTaxes("EUR", 24.05 + 1.32), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 24.05 + 1.32), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4532,14 +4489,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende27.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 69.68), hasGrossValue("EUR", 69.68), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4607,14 +4557,7 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende28.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 9.75), hasGrossValue("EUR", 11.47), //
-                        hasTaxes("EUR", 1.72), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 1.72), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4682,14 +4625,75 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Dividende29.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.81), hasGrossValue("EUR", 2.13), //
-                        hasTaxes("EUR", 0.32), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.32), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende30()
+    {
+        var extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende30.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7427181091"), hasWkn("852062"), hasTicker(null), //
+                        hasName("PROCTER & GAMBLE CO., THE Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-17T00:00"), hasShares(100.00), //
+                        hasSource("Dividende30.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 78.68), hasGrossValue("USD", 105.68), //
+                        hasTaxes("USD", 27.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende30WithSecurityInEUR()
+    {
+        var security = new Security("PROCTER & GAMBLE CO., THE Registered Shares o.N.", "EUR");
+        security.setIsin("US7427181091");
+        security.setWkn("852062");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende30.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-17T00:00"), hasShares(100.00), //
+                        hasSource("Dividende30.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 78.68), hasGrossValue("USD", 105.68), //
+                        hasForexGrossValue("EUR", 90.99), //
+                        hasTaxes("USD", 27.00), hasFees("USD", 0.00))));
     }
 
     @Test
