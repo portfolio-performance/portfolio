@@ -5,6 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+
     public static String AttributesAcquisitionFeeColumn;
     public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
@@ -221,8 +222,8 @@ public class Messages extends NLS
     public static String LabelTradeCalendarLSE;
     public static String LabelTradeCalendarMICEXRTS;
     public static String LabelTradeCalendarNYSE;
-    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarSix;
+    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarTARGET2;
     public static String LabelTradeCalendarTLV;
     public static String LabelTradeCalendarTSX;
@@ -257,7 +258,6 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
-    public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
@@ -298,6 +298,7 @@ public class Messages extends NLS
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
+    public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorTransactionTypeNotSupported;
     public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;
@@ -335,9 +336,9 @@ public class Messages extends NLS
     public static String OAuthOngoingAuthentication;
     public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
+    public static String PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
-    public static String PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;
