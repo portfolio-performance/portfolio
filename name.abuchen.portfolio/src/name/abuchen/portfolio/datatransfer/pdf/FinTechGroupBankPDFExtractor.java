@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.getTickerSymbolForCrypto;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
@@ -12,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -607,20 +606,43 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // Kurs : 114,4700 USD Kurswert : 528,10 EUR
-                        // Devisenkurs : 1,083790 Provision : 5,90 EUR
-                        .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional() //
-                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[A-Z]{3})$") //
-                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> {
-                            var rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Kurs : 114,4700 USD Kurswert : 528,10 EUR
+                                        // Devisenkurs : 1,083790 Provision : 5,90 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "gross", "baseCurrency", "exchangeRate") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[A-Z]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[A-Z]{3})$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Kurs          : 47,8000 USD             Kurswert      :             956,00 USD
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Valuta        : 02.12.2020            **Einbeh. Steuer:               0,84 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "exchangeRate", "termCurrency") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[A-Z]{3})$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)([:\\s]+)? [\\.,\\d]+[\\s]{1,}(?<termCurrency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // If the total amount is negative and the market value
@@ -2479,7 +2501,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             var item = new TransactionItem(t);
 
-                            item.setFailureMessage(Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex);
+                            item.setFailureMessage(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
 
                             return item;
                         });
@@ -3551,15 +3573,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
-        // @formatter:off
-        // If the currency of the provision tax differs from the amount, it will
-        // be converted and reset.
-        //
-        // Example:
-        // **Einbeh. Steuer:           0,84 EUR
-        // Endbetrag     :             955,98 USD
-        // @formatter:on
-
         transaction //
 
                         // @formatter:off
@@ -3581,22 +3594,21 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
 
-                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-
-                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-
-                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
-                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
-                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
                                 }
 
-                                checkAndSetTax(tax, t, type.getCurrentContext());
+                                processTaxEntries(t, v, type);
                             }
                         })
 
@@ -3607,22 +3619,21 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<currency>[A-Z]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
 
-                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-
-                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-
-                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
-                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
-                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
                                 }
 
-                                checkAndSetTax(tax, t, type.getCurrentContext());
+                                processTaxEntries(t, v, type);
                             }
                         })
 
@@ -3632,22 +3643,21 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "tax").optional() //
                         .match("^.* \\*\\*\\*Einbeh\\. SichSt([:\\s]+)? (?<currency>[A-Z]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                             {
-                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
 
-                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-
-                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-
-                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
-                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
-                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
                                 }
 
-                                checkAndSetTax(tax, t, type.getCurrentContext());
+                                processTaxEntries(t, v, type);
                             }
                         })
 
@@ -3657,8 +3667,22 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* \\*Einbeh\\. Steuer([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
+
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
+                                {
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
+                                }
+
                                 processTaxEntries(t, v, type);
+                            }
                         })
 
                         // @formatter:off
@@ -3667,8 +3691,22 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^\\*Einbeh\\. Steuer([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
+
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
+                                {
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
+                                }
+
                                 processTaxEntries(t, v, type);
+                            }
                         })
 
                         // @formatter:off
@@ -3677,8 +3715,22 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^.* Einbeh\\. Steuer\\*([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var transactionCurrency = (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                                ? tx.getCurrencyCode()
+                                                : ((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode();
+
+                                if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
+                                {
+                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    return;
+                                }
+
                                 processTaxEntries(t, v, type);
+                            }
                         })
 
                         // @formatter:off
@@ -3715,11 +3767,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        // @formatter:off
-        // If the currency of the provision fee differs from the amount, it will
-        // be converted and reset.
-        // @formatter:on
-
         transaction //
 
                         // @formatter:off
@@ -3730,14 +3777,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Provision([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
-                            {
-                                var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-
-                                if (t instanceof name.abuchen.portfolio.model.Transaction tx)
-                                    checkAndSetFee(fee, tx, type.getCurrentContext());
-                                else if (t instanceof BuySellEntry buysell)
-                                    checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
-                            }
+                                processFeeEntries(t, v, type);
                         })
 
                         // @formatter:off
@@ -3747,14 +3787,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Provision([:\\s]+)? (?<currency>[A-Z]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
-                            {
-                                var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
-
-                                if (t instanceof name.abuchen.portfolio.model.Transaction tx)
-                                    checkAndSetFee(fee, tx, type.getCurrentContext());
-                                else if (t instanceof BuySellEntry buysell)
-                                    checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
-                            }
+                                processFeeEntries(t, v, type);
                         })
 
                         // @formatter:off

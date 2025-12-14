@@ -335,9 +335,9 @@ public class Messages extends NLS
     public static String OAuthOngoingAuthentication;
     public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
+    public static String PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
-    public static String PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;

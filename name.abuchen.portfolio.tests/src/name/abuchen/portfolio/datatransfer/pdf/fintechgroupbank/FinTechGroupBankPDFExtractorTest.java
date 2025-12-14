@@ -5775,6 +5775,42 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroDividende13()
+    {
+        // Gross Value is wrong, because we missing fx rate for the german taxes 2,99 EUR
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8326964058"), hasWkn("633835"), hasTicker(null), //
+                        hasName("J.M. SMUCKER CO."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction has failure message because of missing
+        // exchange rate for EUR taxes
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex, //
+                        dividend( //
+                                        hasDate("2025-12-01T00:00"), hasShares(30.00), //
+                                        hasSource("FlatExDegiroDividende13.txt"), //
+                                        hasNote("Transaktion-Nr. : 6155515228"), //
+                                        hasAmount("USD", 24.57), hasGrossValue("USD", 29.52), // Wrong gross value, is 33.00 USD
+                                        hasTaxes("USD", 4.95), hasFees("USD", 0.00))))); // Missing 2.99 EUR tax conversion
+    }
+
+    @Test
     public void testFlatExDegiroDividendeStorno01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -7589,7 +7625,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation.getFailureMessage(),
-                        is(Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex));
+                        is(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2023-03-23T00:00")));
