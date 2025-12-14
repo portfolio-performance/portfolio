@@ -6418,6 +6418,251 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testDividende37()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US94106L1098"), hasWkn("893579"), hasTicker(null), //
+                        hasName("W a s t e M a n a g e m e n t I n c . R e g i s t e r e d S h a r e s D L - , 0 1"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 3.23), hasGrossValue("EUR", 3.23), //
+                        hasForexGrossValue("USD", 3.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende37WithSecurityInEUR()
+    {
+        var security = new Security("W a s t e M a n a g e m e n t I n c . R e g i s t e r e d S h a r e s D L - , 0 1", "EUR");
+        security.setIsin("US94106L1098");
+        security.setWkn("893579");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 3.23), hasGrossValue("EUR", 3.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende37()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US94106L1098"), hasWkn("893579"), hasTicker(null), //
+                        hasName("WASTE MANAGEMENT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("SteuerbehandlungVonDividende37.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.48), hasGrossValue("EUR", 0.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende37MitSteuerbehandlungVonDividende37()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende37.txt", "SteuerbehandlungVonDividende37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US94106L1098"), hasWkn("893579"), hasTicker(null), //
+                        hasName("W a s t e M a n a g e m e n t I n c . R e g i s t e r e d S h a r e s D L - , 0 1"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt; SteuerbehandlungVonDividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 2.74), hasGrossValue("EUR", 3.22), //
+                        hasForexGrossValue("USD", 3.77), //
+                        hasTaxes("EUR", 0.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende37MitSteuerbehandlungVonDividende37WithSecurityInEUR()
+    {
+        var security = new Security("W a s t e M a n a g e m e n t I n c . R e g i s t e r e d S h a r e s D L - , 0 1", "EUR");
+        security.setIsin("US94106L1098");
+        security.setWkn("893579");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende37.txt", "SteuerbehandlungVonDividende37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt; SteuerbehandlungVonDividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 2.74), hasGrossValue("EUR", 3.22), //
+                        hasTaxes("EUR", 0.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende37MitSteuerbehandlungVonDividende37_SourceFilesReversed()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt", "Dividende37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US94106L1098"), hasWkn("893579"), hasTicker(null), //
+                        hasName("WASTE MANAGEMENT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt; SteuerbehandlungVonDividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 2.74), hasGrossValue("EUR", 3.22), //
+                        hasTaxes("EUR", 0.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende37MitSteuerbehandlungVonDividende37WithSecurityInEUR_SourceFilesReversed()
+    {
+        var security = new Security("WASTE MANAGEMENT", "EUR");
+        security.setIsin("US94106L1098");
+        security.setWkn("893579");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende37.txt", "Dividende37.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-09-30T00:00"), hasShares(4.564), //
+                        hasSource("Dividende37.txt; SteuerbehandlungVonDividende37.txt"), //
+                        hasNote("Ref.-Nr.: 2SIMFYBBRBI005MQ | Quartalsdividende"), //
+                        hasAmount("EUR", 2.74), hasGrossValue("EUR", 3.22), //
+                        hasTaxes("EUR", 0.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSteuerbehandlungVonEinloesung01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
