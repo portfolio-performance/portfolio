@@ -66,6 +66,8 @@ public interface Extractor
 
         private String failureMessage;
 
+        private String skipReason;
+
         private boolean investmentPlanItem = false;
 
         public abstract Annotated getSubject();
@@ -101,6 +103,21 @@ public interface Extractor
         public boolean isFailure()
         {
             return failureMessage != null;
+        }
+
+        public void setSkipReason(String reason)
+        {
+            skipReason = reason;
+        }
+
+        public String getSkipReason()
+        {
+            return skipReason;
+        }
+
+        public boolean isSkipped()
+        {
+            return skipReason != null;
         }
 
         public String getSource()
@@ -170,11 +187,6 @@ public interface Extractor
         public void setInvestmentPlanItem(boolean flag)
         {
             investmentPlanItem = flag;
-        }
-
-        public boolean isSkipped()
-        {
-            return this instanceof SkippedItem;
         }
 
         @SuppressWarnings("nls")
@@ -678,71 +690,6 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security, price);
-        }
-    }
-
-    static class SkippedItem extends Item
-    {
-        private Transaction transaction;
-
-        public SkippedItem(Transaction t)
-        {
-            transaction = t;
-        }
-
-        @Override
-        public Annotated getSubject()
-        {
-            return transaction;
-        }
-
-        @Override
-        public Security getSecurity()
-        {
-            return transaction.getSecurity();
-        }
-
-        @Override
-        public void setSecurity(Security security)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getTypeInformation()
-        {
-            if (transaction instanceof AccountTransaction at)
-                return at.getType().toString();
-            else if (transaction instanceof PortfolioTransaction pt)
-                return pt.getType().toString();
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LocalDateTime getDate()
-        {
-            return transaction.getDateTime();
-        }
-
-        @Override
-        public Money getAmount()
-        {
-            return transaction.getMonetaryAmount();
-        }
-
-        @Override
-        public void setNote(String note)
-        {
-            transaction.setNote(note);
-        }
-
-        @Override
-        public Status apply(ImportAction action, Context context)
-        {
-            return new Status(Status.Code.ERROR, "Skipped"); // TODO: better
-                                                             // message?
-                                                             // Translate?
         }
     }
 

@@ -24,9 +24,9 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1640,7 +1640,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(48L));
+        assertThat(countAccountTransactions(results), is(49L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(1L));
@@ -1650,7 +1650,7 @@ public class DeutscheBankPDFExtractorTest
         // check transaction
         // get transactions
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(48L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(49L));
 
         var item = iter.next();
 
@@ -2121,18 +2121,16 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
 
-        // item = iter.next();
-        //
-        // // assert transaction
-        // transaction = (AccountTransaction) item.getSubject();
-        // assertThat(transaction.getType(),
-        // is(AccountTransaction.Type.REMOVAL));
-        // assertThat(transaction.getDateTime(),
-        // is(LocalDateTime.parse("2020-12-31T00:00")));
-        // assertThat(transaction.getMonetaryAmount(),
-        // is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        // assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        // assertThat(transaction.getNote(), is(""));
+        item = iter.next();
+
+        // assert skipped transaction
+        assertThat(item.getSkipReason(), is("Redundant"));
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
+        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(transaction.getNote(), is(""));
 
         item = iter.next();
 
@@ -2772,7 +2770,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(1L));
@@ -2791,7 +2789,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(2L));
@@ -2867,7 +2865,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransactions(results), is(5L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(countSkippedItems(results), is(3L));
