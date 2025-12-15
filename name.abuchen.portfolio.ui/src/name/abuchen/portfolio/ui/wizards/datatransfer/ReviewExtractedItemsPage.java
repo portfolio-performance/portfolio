@@ -1037,7 +1037,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
             else if (entry.getItem().isSkipped())
             {
-                entry.addStatus(new ImportAction.Status(Code.WARNING, "Skipped")); // TODO: translate message
+                entry.addStatus(new ImportAction.Status(Code.WARNING, entry.getItem().getSkipReason()));
             }
             else
             {
