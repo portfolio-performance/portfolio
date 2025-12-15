@@ -80,7 +80,7 @@ public class AssertImportActions
                 continue;
 
             // do not further check items which are meant to be ignored
-            if (item.isIgnored())
+            if (item.isSkipped())
                 continue;
 
             for (ImportAction action : actions)

@@ -172,9 +172,9 @@ public interface Extractor
             investmentPlanItem = flag;
         }
 
-        public boolean isIgnored()
+        public boolean isSkipped()
         {
-            return this instanceof IgnoredItem;
+            return this instanceof SkippedItem;
         }
 
         @SuppressWarnings("nls")
@@ -681,11 +681,11 @@ public interface Extractor
         }
     }
 
-    static class IgnoredItem extends Item
+    static class SkippedItem extends Item
     {
         private Transaction transaction;
 
-        public IgnoredItem(Transaction t)
+        public SkippedItem(Transaction t)
         {
             transaction = t;
         }
@@ -740,7 +740,7 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            return new Status(Status.Code.ERROR, "Ignored"); // TODO: better
+            return new Status(Status.Code.ERROR, "Skipped"); // TODO: better
                                                              // message?
                                                              // Translate?
         }

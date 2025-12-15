@@ -24,7 +24,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countIgnoredItems;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -1643,7 +1643,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(48L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(49));
         new AssertImportActions().check(results, "EUR");
 
@@ -2775,7 +2775,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
     }
 
@@ -2794,7 +2794,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countIgnoredItems(results), is(2L));
+        assertThat(countSkippedItems(results), is(2L));
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
@@ -2814,7 +2814,7 @@ public class DeutscheBankPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countIgnoredItems(results), is(4L));
+        assertThat(countSkippedItems(results), is(4L));
         assertThat(results.size(), is(4));
     }
 
@@ -2828,7 +2828,7 @@ public class DeutscheBankPDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(countIgnoredItems(results), is(1L));
+        assertThat(countSkippedItems(results), is(1L));
         assertThat(results.size(), is(1));
     }
 
@@ -2870,7 +2870,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countIgnoredItems(results), is(3L));
+        assertThat(countSkippedItems(results), is(3L));
         assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 

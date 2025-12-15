@@ -35,8 +35,8 @@ public class ExtractorTestUtilities
         return items.stream().filter(Extractor.Item::isFailure).count();
     }
 
-    public static long countIgnoredItems(List<Extractor.Item> items)
+    public static long countSkippedItems(List<Extractor.Item> items)
     {
-        return items.stream().filter(Extractor.IgnoredItem.class::isInstance).count();
+        return items.stream().filter(Extractor.SkippedItem.class::isInstance).count();
     }
 }
