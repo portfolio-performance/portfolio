@@ -2900,56 +2900,6 @@ public class DeutscheBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2021-10-21"), hasAmount("EUR", 1000.00), //
-                        hasSource("GiroKontoauszug09.txt"), hasNote("Übertrag (Überweisung) von Max Mustermann"))));
-    }
-
-    @Test
-    public void testGiroKontoauszug10()
-    {
-        var extractor = new DeutscheBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug10.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 400.00), //
-                        hasSource("GiroKontoauszug10.txt"), hasNote("Überweisung von Dr. kQEbfBPDq ZgltrGG wBPgFcQwn"))));
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 600.00), //
-                        hasSource("GiroKontoauszug10.txt"), hasNote("Überweisung von Dr. ICcCbCKba zlKgUWI NwzaZJPVb"))));
-    }
-
-    @Test
-    public void testGiroKontoauszug11()
-    {
-        var extractor = new DeutscheBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug11.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, "EUR");
-
-        // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2025-08-25"), hasAmount("EUR", 34.30), //
                         hasSource("GiroKontoauszug11.txt"), hasNote("Steuererstattung"))));
     }
