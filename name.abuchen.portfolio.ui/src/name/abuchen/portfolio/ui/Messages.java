@@ -110,6 +110,7 @@ public class Messages extends NLS
     public static String ColumnActualValue;
     public static String ColumnActualValueBaseCurrency;
     public static String ColumnAmount;
+    public static String ColumnAverage;
     public static String ColumnAutoGenerate;
     public static String ColumnBalance;
     public static String ColumnBalance_Description;
@@ -893,6 +894,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelSharpeRatio;
+    public static String LabelShowAverage;
     public static String LabelShowHeadline;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
