@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 
-import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Line;
@@ -23,6 +22,11 @@ import name.abuchen.portfolio.util.TextUtil;
 public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
+    /*
+     * The number of month in a quarter. While most people will know this, I
+     * prefer named variables over the occurrence of magic numbers in the code.
+     */
+    private static final int MONTHS_IN_QUARTER = 3;
 
     @Override
     public String getLabel()
@@ -34,6 +38,7 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
     public void addConfigActions(IMenuManager manager)
     {
         addReverseColumnAction(manager);
+        addAverageColumnAction(manager);
         addSumColumnAction(manager);
     }
 
@@ -43,6 +48,11 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
         createVehicleColumn(records, layout, true);
 
         createQuarterColumns(records, layout);
+
+        if (showAverageColumn)
+        {
+            createAveragePerQuarterColumn(records, layout);
+        }
 
         createSumColumn(records, layout, false);
 
@@ -58,38 +68,28 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
 
     private void createQuarterColumns(TableViewer records, TableColumnLayout layout)
     {
-        LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
+        var date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
 
-        int nMonths = model.getNoOfMonths();
+        var nMonths = model.getNoOfMonths();
+        var nQuarters = getNoOfQuarters();
 
-        /*
-         * The number of month in a quarter. While most people will know this, I
-         * prefer named variables over the occurrence of magic numbers in the
-         * code.
-         */
-        int monthInQuarter = 3;
+        var quarterBeginIndex = 0;
+        var quarterEndIndex = Math.min(MONTHS_IN_QUARTER, nMonths);
 
-        // How many quarters we are about to display. We show every started
-        // quarter, hence the Math.ceil
-        int nQuarters = (int) Math.ceil((double) nMonths / (double) monthInQuarter);
-
-        int quarterBeginIndex = 0;
-        int quarterEndIndex = Math.min(monthInQuarter, nMonths);
-
-        for (int quarter = 0; quarter < nQuarters; quarter++)
+        for (var quarter = 0; quarter < nQuarters; quarter++)
         {
             // the fifth total quarter is the first quarter in the corresponding
             // year
-            int quarterWithinYear = (quarter % 4) + 1;
+            var quarterWithinYear = (quarter % 4) + 1;
 
             // The caption looks like "Q<quarter within the year> <year>"
-            String columnCaption = String.format("Q%d %s", quarterWithinYear, formatter.format(date)); //$NON-NLS-1$
+            var columnCaption = String.format("Q%d %s", quarterWithinYear, formatter.format(date)); //$NON-NLS-1$
 
             createQuarterColumn(records, layout, quarterBeginIndex, quarterEndIndex, columnCaption);
 
             // Starting from here, we make sure to step into the next quarter
-            quarterBeginIndex = Math.min(quarterBeginIndex + monthInQuarter, nMonths);
-            quarterEndIndex = Math.min(quarterEndIndex + monthInQuarter, nMonths);
+            quarterBeginIndex = Math.min(quarterBeginIndex + MONTHS_IN_QUARTER, nMonths);
+            quarterEndIndex = Math.min(quarterEndIndex + MONTHS_IN_QUARTER, nMonths);
 
             // every four quarters we need to switch to the next year
             if (quarterWithinYear == 4)
@@ -115,35 +115,35 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
                     int quarterEndIndex, String columnCaption)
     {
         ToLongFunction<PaymentsViewModel.Line> valueFunction = line -> {
-            long value = 0;
-            for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
+            var value = 0L;
+            for (var i = quarterBeginIndex; i < quarterEndIndex; i++)
                 value += line.getValue(i);
             return value;
         };
 
-        TableViewerColumn column = new TableViewerColumn(records, SWT.RIGHT);
+        var column = new TableViewerColumn(records, SWT.RIGHT);
         column.getColumn().setText(columnCaption);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                Line line = (PaymentsViewModel.Line) element;
-                long value = valueFunction.applyAsLong(line);
+                var line = (PaymentsViewModel.Line) element;
+                var value = valueFunction.applyAsLong(line);
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(value) : Values.Amount.format(value);
             }
 
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                var vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((PaymentsViewModel.Line) element).getVehicle();
+                var vehicle = ((PaymentsViewModel.Line) element).getVehicle();
                 return vehicle != null || ((PaymentsViewModel.Line) element).getConsolidatedRetired() ? null : boldFont;
             }
         });
@@ -152,6 +152,46 @@ public class PaymentsPerQuarterMatrixTab extends PaymentsMatrixTab
                         .attachTo(records, column);
 
         layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
+    }
+
+    private int getNoOfQuarters()
+    {
+        var nMonths = model.getNoOfMonths();
+
+        // How many quarters we are about to display. We show every started
+        // quarter, hence the Math.ceil
+        return (int) Math.ceil((double) nMonths / (double) MONTHS_IN_QUARTER);
+    }
+
+    protected void createAveragePerQuarterColumn(TableViewer records, TableColumnLayout layout)
+    {
+        var column = new TableViewerColumn(records, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnAverage);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                var line = (Line) element;
+                var average = PaymentsAverageCalculator.calculateAveragePerQuarter(line.getSum(), line.getNoOfMonths());
+                return Values.Amount.formatNonZero(average);
+            }
+
+            @Override
+            public Font getFont(Object element)
+            {
+                var line = (Line) element;
+                return line.getConsolidatedRetired() ? null : boldFont;
+            }
+        });
+
+        createSorter((l1, l2) -> {
+            var avg1 = PaymentsAverageCalculator.calculateAveragePerQuarter(l1.getSum(), l1.getNoOfMonths());
+            var avg2 = PaymentsAverageCalculator.calculateAveragePerQuarter(l2.getSum(), l2.getNoOfMonths());
+            return Long.compare(avg1, avg2);
+        }).attachTo(records, column);
+
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
 }
