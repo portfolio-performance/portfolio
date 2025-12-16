@@ -189,11 +189,6 @@ public interface Extractor
             investmentPlanItem = flag;
         }
 
-        public boolean isIgnored()
-        {
-            return this instanceof IgnoredItem;
-        }
-
         @SuppressWarnings("nls")
         @Override
         public String toString()
@@ -695,71 +690,6 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security, price);
-        }
-    }
-
-    static class IgnoredItem extends Item
-    {
-        private Transaction transaction;
-
-        public IgnoredItem(Transaction t)
-        {
-            transaction = t;
-        }
-
-        @Override
-        public Annotated getSubject()
-        {
-            return transaction;
-        }
-
-        @Override
-        public Security getSecurity()
-        {
-            return transaction.getSecurity();
-        }
-
-        @Override
-        public void setSecurity(Security security)
-        {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getTypeInformation()
-        {
-            if (transaction instanceof AccountTransaction at)
-                return at.getType().toString();
-            else if (transaction instanceof PortfolioTransaction pt)
-                return pt.getType().toString();
-            else
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LocalDateTime getDate()
-        {
-            return transaction.getDateTime();
-        }
-
-        @Override
-        public Money getAmount()
-        {
-            return transaction.getMonetaryAmount();
-        }
-
-        @Override
-        public void setNote(String note)
-        {
-            transaction.setNote(note);
-        }
-
-        @Override
-        public Status apply(ImportAction action, Context context)
-        {
-            return new Status(Status.Code.ERROR, "Ignored"); // TODO: better
-                                                             // message?
-                                                             // Translate?
         }
     }
 
