@@ -9,16 +9,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -63,15 +62,15 @@ public class AboutDialog extends Dialog
     @Override
     protected Control createDialogArea(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        var container = new Composite(parent, SWT.NONE);
         container.setBackground(Colors.WHITE);
         GridDataFactory.fillDefaults().grab(true, true).hint(700, 500).applyTo(container);
         GridLayoutFactory.fillDefaults().spacing(5, 5).margins(5, 5).applyTo(container);
 
-        Control aboutText = createAboutText(container);
+        var aboutText = createAboutText(container);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(aboutText);
 
-        CTabFolder folder = new CTabFolder(container, SWT.BORDER);
+        var folder = new CTabFolder(container, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(folder);
 
         makeSoftwareTab(folder);
@@ -99,7 +98,7 @@ public class AboutDialog extends Dialog
 
     private Control createAboutText(Composite parent)
     {
-        String aboutText = MessageFormat.format(Messages.AboutText,
+        var aboutText = MessageFormat.format(Messages.AboutText,
                         PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
                         DateTimeFormatter.ofPattern("MMMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
                         System.getProperty("osgi.os"), //$NON-NLS-1$
@@ -107,12 +106,12 @@ public class AboutDialog extends Dialog
                         System.getProperty("java.vm.version"), //$NON-NLS-1$
                         System.getProperty("java.vm.vendor")); //$NON-NLS-1$
 
-        Composite area = new Composite(parent, SWT.NONE);
+        var area = new Composite(parent, SWT.NONE);
 
         area.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         getShell().setText(Messages.LabelAbout);
 
-        Label imageLabel = new Label(area, SWT.NONE);
+        var imageLabel = new Label(area, SWT.NONE);
         imageLabel.setBackground(area.getBackground());
         imageLabel.setImage(Images.LOGO_128.image());
 
@@ -122,7 +121,7 @@ public class AboutDialog extends Dialog
 
         Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
-        StyledText aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        var aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         aboutTextBox.setText(aboutText);
         aboutTextBox.setStyleRanges(styles.toArray(new StyleRange[0]));
 
@@ -139,53 +138,53 @@ public class AboutDialog extends Dialog
 
     private void makeSoftwareTab(CTabFolder folder)
     {
-        String componentsText = read("about.software.txt"); //$NON-NLS-1$
+        var componentsText = read("about.software.txt"); //$NON-NLS-1$
         constructTab(folder, "Software", componentsText); //$NON-NLS-1$
     }
 
     private void makeCodeContributorsTab(CTabFolder folder)
     {
-        String developers = generateDeveloperListText(read("about.contributors.txt")); //$NON-NLS-1$
-        String text = MessageFormat.format(Messages.AboutTextDeveloped, developers);
+        var developers = generateDeveloperListText(read("about.contributors.txt")); //$NON-NLS-1$
+        var text = MessageFormat.format(Messages.AboutTextDeveloped, developers);
 
         constructTab(folder, "Code Contributors", text); //$NON-NLS-1$
     }
 
     private void makeTranslatorsTab(CTabFolder folder)
     {
-        String translatorsText = read("about.translations.txt"); //$NON-NLS-1$
+        var translatorsText = read("about.translations.txt"); //$NON-NLS-1$
         constructTab(folder, "Translators", translatorsText); //$NON-NLS-1$
     }
 
     private void makeHelpWritersTab(CTabFolder folder)
     {
-        String helpWritersText = read("about.writers.txt"); //$NON-NLS-1$
+        var helpWritersText = read("about.writers.txt"); //$NON-NLS-1$
         constructTab(folder, "Writers", helpWritersText); //$NON-NLS-1$
     }
 
     private void constructTab(CTabFolder folder, String label, String text)
     {
         List<StyleRange> styles = new ArrayList<>();
-        String body = addMarkdownLikeHyperlinks(text, styles);
+        var body = addMarkdownLikeHyperlinks(text, styles);
 
-        StyledText textBox = new StyledText(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
+        var textBox = new StyledText(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
         textBox.setMargins(5, 5, 5, 5);
         textBox.setText(body);
         textBox.setStyleRanges(styles.toArray(new StyleRange[0]));
 
         textBox.addListener(SWT.MouseDown, e -> openBrowser(e, textBox));
 
-        CTabItem item = new CTabItem(folder, SWT.NONE);
+        var item = new CTabItem(folder, SWT.NONE);
         item.setText(label);
         item.setControl(textBox);
     }
 
     private void makeInstallationDetailsTab(CTabFolder folder)
     {
-        Text installationDetails = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
+        var installationDetails = new Text(folder, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.V_SCROLL);
         installationDetails.setText(""); //$NON-NLS-1$
 
-        CTabItem item = new CTabItem(folder, SWT.NONE);
+        var item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.LabelInstallationDetails);
         item.setControl(installationDetails);
 
@@ -198,7 +197,7 @@ public class AboutDialog extends Dialog
                     @Override
                     protected IStatus run(IProgressMonitor monitor)
                     {
-                        String infoText = buildInfoText();
+                        var infoText = buildInfoText();
                         Display.getDefault().asyncExec(() -> {
                             if (!installationDetails.isDisposed())
                                 installationDetails.setText(infoText);
@@ -212,23 +211,23 @@ public class AboutDialog extends Dialog
 
     private String addMarkdownLikeHyperlinks(String aboutText, List<StyleRange> styles)
     {
-        Pattern pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher(aboutText);
+        var pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
+        var matcher = pattern.matcher(aboutText);
 
-        StringBuilder answer = new StringBuilder(aboutText.length());
-        int pointer = 0;
+        var answer = new StringBuilder(aboutText.length());
+        var pointer = 0;
 
         while (matcher.find())
         {
-            int start = matcher.start();
-            int end = matcher.end();
+            var start = matcher.start();
+            var end = matcher.end();
 
             answer.append(aboutText.substring(pointer, start));
 
-            String text = matcher.group("text"); //$NON-NLS-1$
-            String link = matcher.group("link"); //$NON-NLS-1$
+            var text = matcher.group("text"); //$NON-NLS-1$
+            var link = matcher.group("link"); //$NON-NLS-1$
 
-            StyleRange styleRange = new StyleRange();
+            var styleRange = new StyleRange();
             styleRange.underline = true;
             styleRange.underlineStyle = SWT.UNDERLINE_LINK;
             styleRange.underlineColor = Colors.theme().hyperlink();
@@ -251,16 +250,16 @@ public class AboutDialog extends Dialog
 
     private void addBoldFirstLine(String aboutText, List<StyleRange> ranges)
     {
-        StyleRange styleRange = new StyleRange();
+        var styleRange = new StyleRange();
         styleRange.fontStyle = SWT.BOLD;
         styleRange.start = 0;
         styleRange.length = aboutText.indexOf('\n');
         ranges.add(styleRange);
     }
 
-    private String generateDeveloperListText(String developers)
+    String generateDeveloperListText(String developers)
     {
-        StringBuilder text = new StringBuilder();
+        var text = new StringBuilder();
 
         developers.lines().forEach(line -> {
             if (!text.isEmpty())
@@ -273,11 +272,11 @@ public class AboutDialog extends Dialog
 
     private void openBrowser(Event event, StyledText textBox)
     {
-        int offset = textBox.getOffsetAtPoint(new Point(event.x, event.y));
+        var offset = textBox.getOffsetAtPoint(new Point(event.x, event.y));
         if (offset == -1)
             return;
 
-        StyleRange style = textBox.getStyleRangeAtOffset(offset);
+        var style = textBox.getStyleRangeAtOffset(offset);
         if (style != null && style.data != null)
             DesktopAPI.browse(String.valueOf(style.data));
     }
@@ -285,7 +284,7 @@ public class AboutDialog extends Dialog
     @SuppressWarnings("nls")
     private String buildInfoText()
     {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
 
         builder.append("Generated at " + LocalDateTime.now());
         builder.append("\n\nSystem Properties:\n\n");
@@ -296,13 +295,11 @@ public class AboutDialog extends Dialog
 
         builder.append("\n\nOSGi Bundles:\n\n");
 
-        Bundle[] bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
+        var bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
         Arrays.sort(bundles, (r, l) -> r.getSymbolicName().compareTo(l.getSymbolicName()));
 
-        for (int ii = 0; ii < bundles.length; ii++)
+        for (Bundle b : bundles)
         {
-            Bundle b = bundles[ii];
-
             builder.append(b.getSymbolicName() + " (" + b.getVersion().toString() + ")");
 
             addSignerInfo(builder, b);
@@ -319,19 +316,19 @@ public class AboutDialog extends Dialog
     @SuppressWarnings("nls")
     private void addSignerInfo(StringBuilder builder, Bundle b)
     {
-        Map<X509Certificate, List<X509Certificate>> certificates = b.getSignerCertificates(Bundle.SIGNERS_ALL);
+        var certificates = b.getSignerCertificates(Bundle.SIGNERS_ALL);
         if (certificates.isEmpty())
             return;
 
         builder.append(" [signed by ");
 
-        boolean isFirstCertificate = true;
+        var isFirstCertificate = true;
 
         for (X509Certificate cert : certificates.keySet())
         {
             try
             {
-                LdapName ldapDN = new LdapName(cert.getSubjectX500Principal().getName());
+                var ldapDN = new LdapName(cert.getSubjectX500Principal().getName());
                 for (Rdn rdn : ldapDN.getRdns())
                 {
                     if ("CN".equals(rdn.getType()))
@@ -354,7 +351,7 @@ public class AboutDialog extends Dialog
 
     private String read(String name)
     {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(name), StandardCharsets.UTF_8.name()))
+        try (var scanner = new Scanner(getClass().getResourceAsStream(name), StandardCharsets.UTF_8.name()))
         {
             return scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
         }
