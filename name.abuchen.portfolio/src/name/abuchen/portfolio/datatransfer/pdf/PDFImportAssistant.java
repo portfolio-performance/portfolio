@@ -62,6 +62,7 @@ public class PDFImportAssistant
         extractors.add(new CrowdestorPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
+        extractors.add(new DebitumPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DekaBankPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
