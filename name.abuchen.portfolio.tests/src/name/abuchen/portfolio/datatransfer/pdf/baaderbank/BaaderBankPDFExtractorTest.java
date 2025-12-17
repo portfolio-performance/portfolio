@@ -4779,6 +4779,72 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende27()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US30231G1022"), hasWkn("852549"), hasTicker(null), //
+                        hasName("Exxon Mobil Corp."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote("Vorgangs-Nr.: 16224553"), //
+                        hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
+                        hasForexGrossValue("USD", 3.09), //
+                        hasTaxes("EUR", 0.27 + 0.02 + 0.01 + 0.39), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende27WithSecurityInEUR()
+    {
+        var security = new Security("Exxon Mobil Corp.", "EUR");
+        security.setIsin("US30231G1022");
+        security.setWkn("852549");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote("Vorgangs-Nr.: 16224553"), //
+                        hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
+                        hasTaxes("EUR", 0.27 + 0.02 + 0.01 + 0.39), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         var extractor = new BaaderBankPDFExtractor(new Client());
