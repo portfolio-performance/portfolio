@@ -872,6 +872,39 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf21()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2800678224"), hasWkn(null), hasTicker(null), //
+                        hasName("Aug. 2029"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-15T12:28"), hasShares(0.0421), //
+                        hasSource("Kauf21.txt"), //
+                        hasNote("Auftrag: 31cf-3652 | Ausführung: 0720-8c9c | Stückzinsen 0,11 EUR"), //
+                        hasAmount("EUR", 4.27), hasGrossValue("EUR", 4.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSecurityBuy01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
@@ -10758,7 +10791,7 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
-    
+
     @Test
     public void testZinsabrechnung10()
     {
