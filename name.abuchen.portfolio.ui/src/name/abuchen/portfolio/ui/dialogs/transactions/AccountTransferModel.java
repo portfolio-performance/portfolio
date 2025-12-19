@@ -257,6 +257,7 @@ public class AccountTransferModel extends AbstractModel
             setExchangeRate(BigDecimal.ONE);
     }
 
+    @Override
     public LocalDate getDate()
     {
         return date;

@@ -421,6 +421,7 @@ public class AccountTransactionModel extends AbstractModel
         setShares(p != null ? p.getShares() : 0);
     }
 
+    @Override
     public LocalDate getDate()
     {
         return date;

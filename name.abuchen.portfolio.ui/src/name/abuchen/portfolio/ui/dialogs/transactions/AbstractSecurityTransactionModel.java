@@ -351,6 +351,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         }
     }
 
+    @Override
     public LocalDate getDate()
     {
         return date;
