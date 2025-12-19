@@ -1,43 +1,50 @@
 package name.abuchen.portfolio.model;
 
-@Deprecated
+@Deprecated(since = "2019")
 /* package */class ConsumerPriceIndex
 {
     private int year;
     private int month;
     private int index;
 
+    @Deprecated(since = "2019")
     public int getYear()
     {
         return year;
     }
 
+    @Deprecated(since = "2019")
     public void setYear(int year)
     {
         this.year = year;
     }
 
+    @Deprecated(since = "2019")
     public int getMonth()
     {
         return month;
     }
 
+    @Deprecated(since = "2019")
     public void setMonth(int month)
     {
         this.month = month;
     }
 
+    @Deprecated(since = "2019")
     public int getIndex()
     {
         return index;
     }
 
+    @Deprecated(since = "2019")
     public void setIndex(int index)
     {
         this.index = index;
     }
 
     @Override
+    @Deprecated(since = "2019")
     public int hashCode()
     {
         final int prime = 31;
@@ -49,6 +56,7 @@ package name.abuchen.portfolio.model;
     }
 
     @Override
+    @Deprecated(since = "2019")
     public boolean equals(Object obj)
     {
         if (this == obj)

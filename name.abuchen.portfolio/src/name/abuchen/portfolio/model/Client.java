@@ -55,7 +55,8 @@ public class Client
     private List<Watchlist> watchlists;
 
     // keep typo -> xstream deserialization
-    @Deprecated
+    @SuppressWarnings("deprecation")
+    @Deprecated(since = "2019")
     /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
@@ -76,7 +77,8 @@ public class Client
     @Deprecated
     private String industryTaxonomyId;
 
-    @Deprecated
+    @SuppressWarnings("deprecation")
+    @Deprecated(since = "2013")
     private Category rootCategory;
 
     private transient SecretKey secret; // NOSONAR
