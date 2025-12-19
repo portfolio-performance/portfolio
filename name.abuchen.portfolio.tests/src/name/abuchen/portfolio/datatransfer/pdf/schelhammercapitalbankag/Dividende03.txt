@@ -1,0 +1,70 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Schelhammer Capital Bank AG,
+Brandhofg. 24, 8010 Graz
+E-Mail: service@dieplattform.at
+Telefon 0316 80 72 1
+Abrechnung Ereignis
+94296914-13.12.2024
+Depot-Nr.: 602991606
+Mag. wpfoxMYVX PUhhBcmvH           
+29/382
+Firma
+Mag. SuiACyzun ZYPanmWhO
+Blumengasse 9
+3952 zEuo                                                                                                                                                                                       
+Wir haben für Sie am 13.12.2024 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+123 Stk
+Titel: AT0000722640  K E P L E R  V o r s orge Mixfonds (T)       
+MITEIGENTUMSANTEILE - THESAURIEREND
+Fondsgesellschaft: KEPLER-FONDS KAG
+Ertrag: 1,9029 EUR 
+Verwahrart: SVK
+Positionsdaten: Loco: Wien                               
+Zinsen/Dividenden: 234,06 EUR 
+Kapitalertragsteuer: -214,29 EUR 
+Auslands-KESt: -19,77 EUR 
+Zu Gunsten IBAN AT48 2048 5050 9000 9796 0,-- EUR 
+Valuta 16.12.2024
+Extag: 16.12.2024
+Auslands-KESt pro Fondsanteil 0,1607 EUR für Neubestand
+KESt pro Fondsanteil 1,7422 EUR für Neubestand
+(davon 0,9384 EUR Substanzgewinn-KESt)
+KESt auf inl. Dividende pro Fondsanteil (verlusttopfrelevant): 0,00 EUR
+KESt auf intransparente Grundstücksgesellschaften (verlusttopfrelevant): 0,00 EUR
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 123 Stk
+Anschaffungskurswert: 19.541,01 EUR
+ausschüttungsgleicher Ertrag: 1.331,47 EUR
+Anschaffungswertreduzierender Betrag: 358,24 EUR
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 123 Stk
+steuerlicher Anschaffungswert: 20.514,24 EUR
+ausschüttungsgleicher Ertrag: 872,50 EUR
+Anschaffungswertreduzierender Betrag: 234,06 EUR
+13.12.2024 Seite 1 --- Seite 2 folgt
+Irrtum vorbehalten! Dieser Beleg wird von der Bank nicht unterschrieben!
+DVR 0060011 ,HG WIEN ,FN58248i
+26433 Doknr.: BSG0-045-0000017325
+Schelhammer Capital Bank AG,
+Brandhofg. 24, 8010 Graz
+E-Mail: service@dieplattform.at
+Telefon 0316 80 72 1
+Abrechnung Ereignis
+73433887-13.12.2024
+Depot-Nr.: 694329901
+Mag. cSKRlPBlp venheZfdX           
+29/382
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 123 Stk
+steuerlicher Anschaffungswert: 21.152,68 EUR
+13.12.2024 Seite 2
+Irrtum vorbehalten! Dieser Beleg wird von der Bank nicht unterschrieben!
+DVR 0060011 ,HG WIEN ,FN58248i
+26434 Doknr.: BSG0-045-0000017325

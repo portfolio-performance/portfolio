@@ -165,15 +165,27 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                                                         .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4})[\\s]*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Zu Gunsten IBAN AT18 8415 8694 0263 7385 38,59 EUR
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Zu Gunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN AT18 8415 8694 0263 7385 38,59 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN AT48 2048 5050 9000 9796 0,-- EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Zu Gunsten IBAN .* (?<amount>[\\-\\.,\\d]+) (?<currency>[\\w]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Auftragsnummer: 330401346 Kontonummer: 1234567.031
@@ -197,6 +209,13 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Kapitalertrags(s)?teuer: \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Auslands-KESt: -19,77 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Auslands\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
