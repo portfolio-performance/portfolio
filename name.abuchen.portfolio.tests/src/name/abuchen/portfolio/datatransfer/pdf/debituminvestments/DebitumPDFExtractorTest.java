@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DebitumInvestmentsPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
@@ -48,6 +49,7 @@ public class DebitumPDFExtractorTest
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
 
         assertThat(results, hasItem(deposit(hasDate("2025-11-30"), hasAmount("EUR", 4170.00),
                         hasSource("AccountStatement01.txt"), hasNote(null))));
@@ -80,6 +82,7 @@ public class DebitumPDFExtractorTest
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
         assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest( //
