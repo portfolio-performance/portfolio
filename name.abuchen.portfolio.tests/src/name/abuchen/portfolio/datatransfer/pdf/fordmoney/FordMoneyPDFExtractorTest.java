@@ -3,10 +3,12 @@ package name.abuchen.portfolio.datatransfer.pdf.fordmoney;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -43,49 +45,26 @@ public class FordMoneyPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(countAccountTransactions(results), is(3L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(6));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2024-10-04"), //
-                        hasAmount("EUR", 1000.00), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote(null))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-04"), hasAmount("EUR", 1000.00),
+                        hasSource("Kontoauszug01.txt"), hasNote("Gutschrift"))));
 
-        assertThat(results, hasItem(removal( //
-                        hasDate("2024-10-25"), //
-                        hasAmount("EUR", 2000.00), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote(null))));
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-10-25"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote("Überweisung"))));
 
+        // assert transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2024-10-31"), //
-                        hasAmount("EUR", 85.61), //
                         hasSource("Kontoauszug01.txt"), //
-                        hasNote("Abschluss"))));
-
-        assertThat(results, hasItem(interest( //
-                        hasDate("2024-10-31"), //
-                        hasAmount("EUR", 62.73), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote("Abschluss"))));
-
-        assertThat(results, hasItem(interestCharge( //
-                        hasDate("2024-10-31"), //
-                        hasAmount("EUR", 37.09), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote("Kapitalertragssteuer"))));
-
-        assertThat(results, hasItem(interestCharge( //
-                        hasDate("2024-10-31"), //
-                        hasAmount("EUR", 2.03), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote("Solidaritätszuschlag"))));
-
+                        hasNote("30.09.2024 bis 31.10.2024"), //
+                        hasAmount("EUR", 109.22), hasGrossValue("EUR", 148.34), //
+                        hasTaxes("EUR", 37.09 + 2.03), hasFees("EUR", 0.00))));
     }
-
 }
-
