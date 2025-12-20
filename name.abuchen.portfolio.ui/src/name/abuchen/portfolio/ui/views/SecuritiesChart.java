@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ChartColorWheel;
+import name.abuchen.portfolio.ui.util.chart.ChartUtil;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
@@ -445,7 +446,7 @@ public class SecuritiesChart
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
-        chart = new TimelineChart(container);
+        chart = new TimelineChart(container, this);
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
@@ -909,7 +910,7 @@ public class SecuritiesChart
         return Arrays.stream(securities).map(Named::getName).collect(Collectors.joining(", ")); //$NON-NLS-1$
     }
 
-    private void updateChart()
+    public void updateChart()
     {
         boolean isSingleSecurityMode = securities.length == 1;
 
@@ -1076,11 +1077,11 @@ public class SecuritiesChart
                 configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID, enableArea,
                                 !isSingleSecurityMode);
 
-                chart.adjustRange();
+                adjustRange();
 
                 addChartMarkerForeground(chartInterval, security, chartConfigPainting);
 
-                chart.adjustRange();
+                adjustRange();
 
                 IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
                 IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
@@ -1996,4 +1997,20 @@ public class SecuritiesChart
                 font.dispose();
         }
     }
+
+    private void adjustRange()
+    {
+        try
+        {
+            chart.setRedraw(false);
+
+            chart.getAxisSet().adjustRange();
+            ChartUtil.addYMargins(chart, 0.08);
+        }
+        finally
+        {
+            chart.setRedraw(true);
+        }
+    }
+
 }

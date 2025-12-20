@@ -31,6 +31,7 @@ import org.eclipse.swtchart.internal.PlotArea;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
+import name.abuchen.portfolio.ui.views.SecuritiesChart;
 
 public class TimelineChart extends Chart // NOSONAR
 {
@@ -80,6 +81,8 @@ public class TimelineChart extends Chart // NOSONAR
     private ChartToolsManager chartTools;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
+
+    private SecuritiesChart securitiesChart;
 
     @SuppressWarnings("restriction")
     public TimelineChart(Composite parent)
@@ -152,6 +155,12 @@ public class TimelineChart extends Chart // NOSONAR
         getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
+    }
+
+    public TimelineChart(Composite parent, SecuritiesChart securitiesChart)
+    {
+        this(parent);
+        this.securitiesChart = securitiesChart;
     }
 
     public void addMarkerLine(LocalDate date, Color color, String label)
@@ -372,6 +381,9 @@ public class TimelineChart extends Chart // NOSONAR
         {
             setRedraw(true);
         }
+
+        if (securitiesChart != null)
+            securitiesChart.updateChart();
     }
 
     @Override
