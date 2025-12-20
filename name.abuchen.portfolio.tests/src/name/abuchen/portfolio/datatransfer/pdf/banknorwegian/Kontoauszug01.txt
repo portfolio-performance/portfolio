@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: linux | x86_64 | 21.0.9+10 | Arch Linux
+-----------------------------------------
+Oslo, 19.12.2025
+Bank Norwegian, en filial av 
+NOBA Bank Group AB (publ)
+Postboks 110
+1325 Lysaker, NORWAY
+Org.Nr: 916 573 154
+JLZAmER HHGqDQ uIkBEtrxk
+GaYaDww Str. 3
+62076 JOqy
+Germany
+Kontoauszug - NOXXX
+Währung: Euro (EUR)
+Buchungsda Valutadatu Beschreibung Zahlungseinga Zahlungsausga
+tum m ng ng
+03.11.2025 03.11.2025 Zahlung an 2.000,00
+DEXXX 
+18633010 Übertrag Girokonto
+17.06.2025 17.06.2025 Zahlung an 2.000,00
+DEXXX 
+17557781 Übertrag Tagesgeld
+12.05.2025 12.05.2025 Zahlung an 1.000,00
+DEXXX 
+17290216 Übertrag Tagesgeld
+31.12.2024 01.01.2025 Interest 24,40
+10.12.2024 10.12.2024 Bezahlung von 12.000,00
+DEXXX
+Bank Norwegian, en filial av NOBA Bank Group AB (publ)
+Postboks 110, 1325 Lysaker, Norge
+Telefon 0800 7 238470
+E-Mail post@banknorwegian.de
+Webseite banknorwegian.de
