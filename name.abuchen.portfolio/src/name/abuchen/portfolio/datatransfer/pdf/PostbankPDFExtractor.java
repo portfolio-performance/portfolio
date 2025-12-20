@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -29,7 +28,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\([\\d]{2},[\\d]{2} %\\).*");
+        var pJointAccount = Pattern.compile("Anteilige Berechnungsgrundlage .* \\([\\d]{2},[\\d]{2} %\\).*");
 
         for (String line : lines)
         {
@@ -61,7 +60,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
+        var type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
                         + "(Kauf" //
                         + "|Kauf von Wertpapieren" //
                         + "|Verkauf" //
@@ -70,16 +69,16 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         + "|R.cknahme Investmentfonds)", jointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
+        var firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -102,7 +101,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Handels-/Ausführungsplatz"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -118,7 +117,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}).*$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -127,12 +126,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("notation", "shares") //
-                                                        .match("^(?<notation>(St.ck|[\\w]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
+                                                        .match("^(?<notation>(St.ck|[A-Z]{3})) (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
                                                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                                                             {
-                                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                                var shares = asBigDecimal(v.get("shares"));
                                                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                             }
                                                             else
@@ -186,7 +185,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$") //
+                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -196,7 +195,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -208,14 +207,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kurswert 1.289,64 EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
-                        .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? [\\w]{3}$") //
+                        .match("^Devisenkurs \\((?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
+                        .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? [A-Z]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -260,7 +259,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift" //
+        var type = new DocumentType("(Dividendengutschrift" //
                         + "|Aussch.ttung Investmentfonds" //
                         + "|Gutschrift von Investmentertr.gen" //
                         + "|Ertragsgutschrift" //
@@ -268,16 +267,16 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         + "|Kupongutschrift)", jointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
+        var firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -301,7 +300,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .find("St.ck WKN ISIN") //
                                                         .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("(?<name>.*)") //
-                                                        .match("^(Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .match("^(Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Stück 12 JOHNSON & JOHNSON SHARES US4781601046 (853260)
@@ -312,7 +311,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("(?<name1>.*)") //
-                                                        .match("^.* (Aussch.ttung|Dividende|Ertrag)[\\s]{1,}pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^.* (Aussch.ttung|Dividende|Ertrag)[\\s]{1,}pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -325,7 +324,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "isin", "wkn", "name1") //
-                                                        .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("(?<name1>.*)") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
@@ -339,7 +338,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "wkn", "isin", "name") //
-                                                        .match("^[\\.,\\d]+ (?<currency>[\\w]{3}) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^[\\.,\\d]+ (?<currency>[A-Z]{3}) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -366,12 +365,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\w]{3} (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
+                                                        .match("^[A-Z]{3} (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -379,12 +378,12 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(?<shares>[\\.,\\d]+) [\\w]{3} [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
+                                                        .match("^(?<shares>[\\.,\\d]+) [A-Z]{3} [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
@@ -453,14 +452,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$") //
-                                                        .match("^(Dividendengutschrift|Aussch.ttung|Zinsertrag) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}.*$") //
+                                                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^(Dividendengutschrift|Aussch.ttung|Zinsertrag) (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+)\\+ [A-Z]{3}.*$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -470,14 +469,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross") //
-                                                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
-                                                        .match("^Umrechnungskurs (?<termCurrency>[\\w]{3}) zu (?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Umrechnungskurs (?<termCurrency>[A-Z]{3}) zu (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -513,7 +512,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -527,19 +526,19 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale");
+        var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
+        var firstRelevantLine = new Block("^Postbank(?! \\- ).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -554,7 +553,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .find("St.ck WKN ISIN")
                         .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("(?<name>.*)") //
-                        .match("^Vorabpauschale Jahreswert .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .match("^Vorabpauschale Jahreswert .* [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -577,7 +576,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Belastung mit Wert 02.01.2024 26,41 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -588,32 +587,46 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        var currencyAndYear = "^[\\d]{3} (?<year>[\\d]{4}) [\\d] [\\d]+ [A-Z]{2}(?:[\\s]?[0-9]){18,20} (?<baseCurrency>[\\w]{3}) ([\\-|\\+])? [\\.,\\d]+$";
+        final var type = new DocumentType("Kontoauszug", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // 001 2019 1 3 DE00 0000 0000 0000 0000 00 EUR  0,00
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^.*[A-Za-z]{2}(?:[\\s]?[0-9]){18,20} (?<currency>[A-Z]{3}) ([\\-|\\+])? [\\.,\\d]+$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
-        final DocumentType type = new DocumentType("Kontoauszug", new Block(currencyAndYear)
-                        .asRange(section -> section.attributes("baseCurrency", "year").match(currencyAndYear)));
+                                        // @formatter:off
+                                        // Kontoauszug: Postbank Anlagekonto vom 24.07.2019 bis 07.10.2019
+                                        // Kontoauszug vom 01.08.2025 bis 29.08.2025
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Kontoauszug.* bis .*(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+
         this.addDocumentTyp(type);
 
         // @formatter:off
         // 01.08./01.08. D Gut SEPA + 2,70
-        // 01.08./01.08. Gutschr.SEPA + 600,00
+        // 01.08./01.08. Gutschr.SEPA + 600,000
+        // 01.08. 01.08. SEPA Überweisung von + 1.100,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.\\/[\\d]{2}\\.[\\d]{2}\\. (D Gut SEPA|Gutschr\\.SEPA) \\+ [\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (SEPA .berweisung|D Gut SEPA|Gutschr\\.SEPA).* \\+ [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
+                            var t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DEPOSIT);
                             return t;
                         })
 
                         .section("date", "note", "amount").optional() //
-                        .documentRange("baseCurrency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)\\/[\\d]{2}\\.[\\d]{2}\\. (?<note>(D Gut SEPA|Gutschr\\.SEPA)) \\+ (?<amount>[\\.,\\d]+)$") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>(SEPA .berweisung|D Gut SEPA|Gutschr\\.SEPA)).* \\+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
                             // Formatting some notes
@@ -635,23 +648,24 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 06.08./07.08. SEPA Überw. Einzel - 250,00
+        // 01.08. 01.08. SEPA Lastschrifteinzug von - 8,00
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.\\/[\\d]{2}\\.[\\d]{2}\\. SEPA Überw\\. Einzel \\- [\\.,\\d]+$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. SEPA (.berw\\. Einzel|Lastschrifteinzug|.berweisung).* \\- [\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
+                            var t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.REMOVAL);
                             return t;
                         })
 
                         .section("date", "note", "amount").optional() //
-                        .documentRange("baseCurrency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)\\/[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA Überw\\. Einzel) \\- (?<amount>[\\.,\\d]+)$") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA (.berw\\. Einzel|Lastschrifteinzug|.berweisung)).* \\- (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
                             // Formatting some notes
@@ -676,28 +690,28 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // 15,0000000 % Ausländische Quellensteuer - 6,03 USD - 5,54 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^[\\.,\\d]+([\\s]+)?% Ausl.ndische Quellensteuer \\- [\\.,\\d]+ [\\w]{3} \\- (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^[\\.,\\d]+([\\s]+)?% Ausl.ndische Quellensteuer \\- [\\.,\\d]+ [A-Z]{3} \\- (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer pro Stück 0,0144878 EUR 0,29 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [A-Z]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
 
                         // @formatter:off
@@ -705,7 +719,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 24,51% auf 0,71 EUR 0,17- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -717,8 +731,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25 % auf 50,51 EUR 12,63- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[A-Z]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -739,7 +753,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer (KESt) - 78,13 USD - 71,46 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer \\(KESt\\).* \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer \\(KESt\\).* \\- (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -747,7 +761,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -759,8 +773,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,5 % auf 12,63 EUR 0,69- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[A-Z]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -781,7 +795,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag auf KESt - 4,30 USD - 3,93 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag auf KESt.* \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag auf KESt.* \\- (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -789,7 +803,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -801,8 +815,8 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[A-Z]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% auf [\\.,\\d]+ [A-Z]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -823,7 +837,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer auf KESt - 4,30 USD - 3,93 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer auf KESt.* \\- (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer auf KESt.* \\- (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -835,49 +849,49 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Provision 39,95- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Provision EUR 39,95
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
+                        .match("^Provision (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // XETRA-Kosten EUR 0,60
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^XETRA\\-Kosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
+                        .match("^XETRA\\-Kosten (?<currency>[A-Z]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Abwicklungskosten Börse 0,04- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Abwicklungskosten B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Abwicklungskosten B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Transaktionsentgelt Börse 11,82- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Transaktionsentgelt B.rse (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Übertragungs-/Liefergebühr 0,65- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^.bertragungs\\-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Fremde Auslagen 16,86- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -887,23 +901,23 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("percentageFee", "currency", "amount", "discountCurrency", "discount").optional() //
                         .match("^Ausgabeaufschlag (?<percentageFee>[\\.,\\d]+) %$") //
-                        .match("^Kurswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .match("^Preisnachlass (?<discountCurrency>[\\w]{3}) \\-(?<discount>[\\.,\\d]+)$") //
+                        .match("^Kurswert (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Preisnachlass (?<discountCurrency>[A-Z]{3}) \\-(?<discount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                            BigDecimal amount = asBigDecimal(v.get("amount"));
-                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+                            var percentageFee = asBigDecimal(v.get("percentageFee"));
+                            var amount = asBigDecimal(v.get("amount"));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                             if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
                             {
                                 // @formatter:off
                                 // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
                                 // @formatter:on
-                                BigDecimal fxFee = amount.divide(percentageFee //
+                                var fxFee = amount.divide(percentageFee //
                                                 .divide(BigDecimal.valueOf(100)).add(BigDecimal.ONE), Values.MC)
                                                 .multiply(percentageFee, Values.MC);
 
-                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                                var fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                                 // @formatter:off
                                 // fee = fee - discount

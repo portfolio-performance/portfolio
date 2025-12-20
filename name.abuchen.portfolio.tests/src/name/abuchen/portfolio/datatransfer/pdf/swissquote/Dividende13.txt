@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 6984888 - TRADING
+IBAN: CH9208781000172628700
+RCFsqkn und-QbSY GwcyGsYEi egwURbjeSA
+YgBElJeoNu 7
+CH-4710 AeBrJdQy CQ wFZyLD
+Gland, 16.05.2022
+Dividende Unsere Referenz: 249975908 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+HSBC MSCI EMERGING MARKETS UCI ISIN: IE00B5SSQT16 1'000
+NKN: 13305825
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 238498733
+Ausführungsdatum 21.04.2022
+Valutadatum 13.05.2022
+Anzahl 1'000
+Dividende 0.0397 USD
+Betrag USD 39.70
+Total USD 39.70
+Wechselkurs USD / CHF : 1.00266
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Formular ohne Unterschrift SE&O.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt
+
+Vielen Dank für die Hilfe.
+Ich stelle meine Hilfe gerne auch als Tester zur Verfügung, programmieren kann ich leider nicht. 
+
+Viele Grüße
+Andreas

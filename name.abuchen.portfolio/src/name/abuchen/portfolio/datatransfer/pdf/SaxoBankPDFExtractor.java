@@ -70,6 +70,28 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Is type --> "Verkauf" change from BUY to SELL
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type") //
+                                                        .match("^K\\/V (?<type>(Kauf|Buy|Verkauf)) Menge (\\-)?[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            if ("Verkauf".equals(v.get("type"))) //
+                                                                t.setType(PortfolioTransaction.Type.SELL);
+                                                        }),
+                                        // @formatter:off
+                                        // Is type --> "-" change from BUY to SELL
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type") //
+                                                        .match("^.*(Quantity|Menge)(?<type>([\\s|\\-]{1,}))[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            if ("-".equals(trim(v.get("type"))))
+                                                                t.setType(PortfolioTransaction.Type.SELL);
+                                                        }))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Instrument Republic of France 3.75% 25 May 2056, EUR Trade time 20-Jun-2025 08:45:38
@@ -109,7 +131,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Berichtszeitraum
@@ -126,7 +148,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "tickerSymbol", "currency") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9\\._-]{1,10}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Hauptb.rse .* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^.* Gehandelter Wert (\\-)?[\\.,'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Instrument Virtus Infracap US Preferred Stock ETF Trade time 09-Apr-2025 19:47:57
@@ -165,14 +187,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Er.ffnung\\/Schluss To-Open Menge (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^Er.ffnung\\/Schluss To-Open Menge (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // K/V Kauf Menge 49,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^K\\/V Kauf Menge (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^K\\/V (Kauf|Verkauf) Menge (\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Order Type Limit Order Quantity 10.000,00
@@ -180,7 +202,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*Quantity (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^.*Quantity (?<shares>[\\.,\\d]+)$") //
                                                         .find("Bond Traded Value") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
@@ -193,10 +215,11 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // B/S Buy Quantity 49,00
                                         // Order Type Limit Order Quantity 49,00
                                         // Ordertyp Marktorder Menge 306.00
+                                        // Ordertyp Marktorder Menge -15,00
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*(Quantity|Menge) (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^.*(Quantity|Menge) (\\-)?(?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -215,11 +238,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // Nettobetrag - - - - - 0,00 -3.057,58
                                         // Net Amount - - - - - 0,00 -981,98
                                         // Nettobetrag - - - - - -39.83 -15'972.49
+                                        // Nettobetrag - - - - - 0,00 1.130,17
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,'\\d]+ \\-(?<amount>[\\.,'\\d]+)$") //
+                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,'\\d]+ (\\-)?(?<amount>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -242,8 +266,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
                                                         .match("^ID (?<baseCurrency>[A-Z]{3}) [A-Z]{3} (?<termCurrency>[A-Z]{3})$") //
-                                                        .match("^(Aktienbetrag|Share Amount) .* (?<exchangeRate>[\\.,'\\d]+) \\-[\\.,'\\d]+ \\-[\\.,'\\d]+$") //
-                                                        .match("^(Nettobetrag|Net Amount) .* \\-[\\s]*[\\.,'\\d]+ \\-(?<gross>[\\.,'\\d]+)$") //
+                                                        .match("^(Aktienbetrag|Share Amount) .* (?<exchangeRate>[\\.,'\\d]+) (\\-)?[\\.,'\\d]+ (\\-)?[\\.,'\\d]+$") //
+                                                        .match("^(Nettobetrag|Net Amount) .* (\\-)?[\\s]*[\\.,'\\d]+ (\\-)?(?<gross>[\\.,'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -369,14 +393,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*Eligible quantity (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^.*Eligible quantity (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Event Bardividende Geeignete Menge 75
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.*Geeignete Menge (?<shares>[\\.,'\\d]+)$") //
+                                                        .match("^.*Geeignete Menge (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
@@ -681,6 +705,16 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^Aktienbetrag .* \\-(?<fee>[\\.,'\\d]+) \\-[\\.,'\\d]+$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Belgium Stock
+                        // 47351983134 05-sep-2025 09-sep-2025 -0,10 1,000000 0,00 -0,10
+                        // @formatter: on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .find(".*Stock.*") //
+                        .match("^[\\d]+ [\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} \\-(?<fee>[\\.,'\\d]+) [\\.,'\\d]+ [\\.,'\\d]+ \\-[\\.,'\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

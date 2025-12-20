@@ -42,7 +42,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addBuySellCryptoTransaction();
-        addSettlementTransaction();
         addDividendeTransaction();
         addPaymentTransaction();
         addAnnualFeesTransaction();
@@ -61,12 +60,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("B.rsentransaktion: (Kauf|Verkauf)");
+        final var type = new DocumentType("(B.rsentransaktion|Transaktionsabrechnung): (Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^B.rsentransaktion: (Kauf|Verkauf) .*$");
+        var firstRelevantLine = new Block("^(Sie werden betreut|TRANSAKTIONSBELEG).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -79,73 +78,188 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rücknahme" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$") //
+                        .match("^(B.rsentransaktion|Transaktionsabrechnung): (?<type>(Kauf|Verkauf|Zeichnung|Fondssparplan|R.cknahme)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")))
+                            if ("Verkauf".equals(v.get("type")) || "Rücknahme".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
-                        // 60 47.29 EUR 2'837.40
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
-                        .match("^[\\.'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Position Anteile Währung Kurs
+                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                        // ISIN LU0188802960
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "currency") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [A-Z]{3} [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Position Anteile Währung Kurs
+                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                        // ISIN LU0188802960
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "currency") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // UNILEVER DUTCH CERT ISIN: NL0000009355 Amsterdam Euronext
+                                        // 60 47.29 EUR 2'837.40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
+                                                        .match("^[\\.'\\d\\s]+ [\\.,'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Position Stückzahl Währung Kurs
+                                        // UBS ETF - SXI Real Estate Funds 14.000 CHF 10.0834
+                                        // ISIN CH0105994401
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 60 47.29 EUR 2'837.40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.'\\d\\s]+) [\\.,'\\d\\s]+ [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Position Anteile Währung Kurs
+                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^.* [A-Z]{3} (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Position Anteile Währung Kurs
+                                        // PF - Global Fund A 1.216 CHF 162.830
+                                        //
+                                        // Position Stückzahl Währung Kurs
+                                        // UBS ETF - SXI Real Estate Funds 14.000 CHF 10.0834
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Position (Anteile|St.ckzahl) W.hrung Kurs.*") //
+                                                        .match("^.* (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
+                                        // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
+                                        // @formatter:on
+                                        section -> section.attributes("date") //
+                                                        .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // E-Vermögensverwaltung Datum: 20.12.2021
+                                        // Selfservice Fonds Datum: 31.07.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(E\\-Verm.gensverwaltung|Selfservice Fonds) Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Bestand Datum: 18.06.2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Bestand Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
+                                        // Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Der Totalbetrag von[\\s]{1,}(?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zu Ihren Lasten EUR 2'850.24
+                                        // Zu Ihren Gunsten CHF 7'467.50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 55 49.76 EUR 2'736.80
+                                        // Wechselkurs 1.08279
+                                        // Zu Ihren Lasten CHF 2'968.50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "fxGross", "exchangeRate", "termCurrency") //
+                                                        .match("^[\\.'\\d\\s]+ [\\.'\\d\\s]+ (?<baseCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Wechselkurs (?<exchangeRate>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Zu Ihren (Lasten|Gunsten) (?<termCurrency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Kurswert in Handelswährung JPY 34 019.00
+                                        // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Kurswert in Handelsw.hrung [A-Z]{3} (?<fxGross>[\\.'\\d\\s]+).*$") //
+                                                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
-                        // 60 47.29 EUR 2'837.40
+                        // Auftrag 10111111
+                        // Depot 71-342453-0 Auftrag 19888922
                         // @formatter:on
-                        .section("shares") //
-                        .match("^(?<shares>[\\.'\\d\\s]+) [\\.,'\\d\\s]+ [A-Z]{3} [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // Gemäss Ihrem Kaufauftrag vom 25.09.2018 haben wir folgende Transaktionen vorgenommen:
-                        // Gemäss Ihrem Verkaufsauftrag vom 20.09.2018 haben wirfolgende Transaktionen vorgenommen:
-                        // @formatter:on
-                        .section("date") //
-                        .match("^.* (Kaufauftrag|Verkaufsauftrag) vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // Zu Ihren Lasten EUR 2'850.24
-                        // Zu Ihren Gunsten CHF 7'467.50
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-
-                        // @formatter:off
-                        // 55 49.76 EUR 2'736.80
-                        // Wechselkurs 1.08279
-                        // Zu Ihren Lasten CHF 2'968.50
-                        // @formatter:on
-                        .section("baseCurrency", "fxGross", "exchangeRate", "termCurrency").optional() //
-                        .match("^[\\.'\\d\\s]+ [\\.'\\d\\s]+ (?<baseCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d\\s]+).*$") //
-                        .match("^Wechselkurs (?<exchangeRate>[\\.'\\d\\s]+).*$") //
-                        .match("^Zu Ihren (Lasten|Gunsten) (?<termCurrency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> {
-                            var rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
-
-                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
-
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                        .section("note").optional() //
+                        .match("^.*(?<note>Auftrag .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         // @formatter:off
                         // Börsentransaktion: Kauf Unsere Referenz: 153557048
                         // @formatter:on
                         .section("note").optional() //
                         .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -236,121 +350,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addSettlementTransaction()
-    {
-        var type = new DocumentType("Transaktionsabrechnung: (Zeichnung|Fondssparplan)");
-        this.addDocumentTyp(type);
-
-        var pdfTransaction = new Transaction<BuySellEntry>();
-
-        var firstRelevantLine = new Block("^Transaktionsabrechnung: (Zeichnung|Fondssparplan) Seite: .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> {
-                            var portfolioTransaction = new BuySellEntry();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            return portfolioTransaction;
-                        })
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Position Anteile Währung Kurs
-                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
-                                        // ISIN LU0188802960
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("isin", "name", "currency") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^(?<name>.*) [A-Z]{3} [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        // @formatter:off
-                                        // Position Anteile Währung Kurs
-                                        // PF - Global Fund A 1.216 CHF 162.830
-                                        // ISIN CH0014933193
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "currency") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^(?<name>.*) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}) [\\.'\\d\\s]+.*$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Position Anteile Währung Kurs
-                                        // Pictet - Japan Index - I JPY 1.441 JPY 23 608.200
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^.* [A-Z]{3} (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
-                                        // @formatter:off
-                                        // Position Anteile Währung Kurs
-                                        // PF - Global Fund A 1.216 CHF 162.830
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .find("Position Anteile W.hrung Kurs.*") //
-                                                        .match("^.* (?<shares>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
-
-                        // @formatter:off
-                        // E-Vermögensverwaltung Datum: 20.12.2021
-                        // Selfservice Fonds Datum: 31.07.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(E\\-Verm.gensverwaltung|Selfservice Fonds) Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet.
-                        // Der Totalbetrag von  CHF 200.00 wurde Ihrem Konto  CH81 0900 1234 8952 2587 6 mit Valuta  02.08.2023 belastet.
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Der Totalbetrag von[\\s]{1,}(?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-
-                        // @formatter:off
-                        // Kurswert in Handelswährung JPY 34 019.00
-                        // Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91
-                        // @formatter:on
-                        .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^Kurswert in Handelsw.hrung [A-Z]{3} (?<fxGross>[\\.'\\d\\s]+).*$") //
-                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.'\\d\\s]+) [A-Z]{3} [\\.'\\d\\s]+.*$") //
-                        .assign((t, v) -> {
-                            var rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
-
-                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
-                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
-
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
-
-                        // @formatter:off
-                        // Auftrag 10111111
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^(?<note>Auftrag .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
-
-                        .wrap(BuySellEntryItem::new);
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
-    }
-
     private void addDividendeTransaction()
     {
-        var type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -429,7 +431,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addPaymentTransaction()
     {
-        var type = new DocumentType("Zahlungsverkehr");
+        final var type = new DocumentType("Zahlungsverkehr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -483,7 +485,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addAnnualFeesTransaction()
     {
-        var type = new DocumentType("Jahresgeb.hr");
+        final var type = new DocumentType("Jahresgeb.hr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -527,7 +529,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotFeesTransaction()
     {
-        var type = new DocumentType("Depotgeb.hr");
+        final var type = new DocumentType("Depotgeb.hr");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -647,7 +649,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addFeesTransaction()
     {
-        var type = new DocumentType("Zinsabschluss");
+        final var type = new DocumentType("Zinsabschluss");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -934,7 +936,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .section("note", "amount", "date").optional() //
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
-                                        + "(?<note>(TWINT .*EMPFANGEN" //
+                                        + "(?<note>(TWINT .*EMPFANGEN( VOM)?" //
                                         + "|GIRO (AUSLAND|AUS ONLINE-SIC [\\-\\d]+|AUS KONTO)" //
                                         + "|GUTSCHRIFT VON FREMDBANK [\\-\\d]+" //
                                         + "|GUTSCHRIFT( .*(BANK|PING))?" //

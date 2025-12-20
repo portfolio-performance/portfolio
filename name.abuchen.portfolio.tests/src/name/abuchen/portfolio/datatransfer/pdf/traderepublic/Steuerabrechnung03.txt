@@ -1,0 +1,19 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.79.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+Max Mustermann
+SEITE 1 von 1
+Musterstraße 9
+DATUM 01.09.2025
+8888 Wien
+AUSSCHÜTTUNG / AUSSCHÜTTUNGSGLEICHER ERTRAG
+AUSSCHÜTTUNG / AUSSCHÜTTUNGSGLEICHER ERTRAG
+BETRAG
+IE00BKM4GZ66 | iShares plc - iShares Core MSCI EM IMI UCITS ETF USD (Acc) -5,65 €
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.com/de-at Sitz der Gesellschaft: Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Trade Republic Bank GmbH Andreas Torner
+1010 Wien, Österreich Brunnenstrasse 19-21 Gernot Mittendorfer
+FN 630983 t 10119 Berlin, Deutschland Christian Hecker
+AG Charlottenburg HRB 244347 B Thomas Pischke

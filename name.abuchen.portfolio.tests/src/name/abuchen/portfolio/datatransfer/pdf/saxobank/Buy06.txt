@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+dPJEAH msVqaWl and BQWNqhao QPiD aHgKHvkVIy - 94275806
+Trade Details Report
+Reporting period: 05-sep-2025 - 05-sep-2025
+Generated at: 30-nov-2025 09:41:37 21:41:37 (W. Europe Standard Time)
+AhWSDR HAfLksT and cmaoKNcv fTmU pOcwLeGIXi Saxo Bank A/S BE Branch
+bkVGqXkmV(MZN) 54 Italiëlei 124
+1197 skxwGsLI 2000 Antwerpen
+BE Belgium
+Belgium
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium sFhegV cCDzQHP and yVWwmhkZ mqMM cJPJLzEDdU Reporting period
+Currency: EUR 05-sep-2025 - 05-sep-2025
+Page 1 of 3 Account(s): AutoInvest 08280/8560716hyu Generated at: 30-nov-2025
+Trade details, EUR
+Reporting period
+05-sep-2025 to 05-sep-2025
+ETF
+iShares Core MSCI Europe EUR (Acc) UCITS
+Instrument Trade time 05-sep-2025 13:16:09
+ETF
+ISIN IE00B4K48X80 Value Date 09-sep-2025
+Symbol IMAE:xams Order ID 6510309204
+Exchange Description TRADEWEB EUROPE LIMITED (TREU) Trade ID 4021824604
+Primary Exchange Euronext Amsterdam Traded Value -87,30 EUR
+Venue Exchange Price 87,3017 EUR
+Order Type Market Order Quantity 1,00
+B/S Buy Spread Costs 0,00 EUR
+Open/Close OPEN Total Trading Costs -0,10 EUR
+Saxo is counterparty No
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Share Amount 47349823419 05-sep-2025 09-sep-2025 -87,30 1,000000 0,00 -87,30
+Belgium Stock
+47351983134 05-sep-2025 09-sep-2025 -0,10 1,000000 0,00 -0,10
+Exchange 0.12%
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium gDtozi FujkleT and WOuSBNMU QPPK tAyIIQipxB Reporting period
+Currency: EUR 05-sep-2025 - 05-sep-2025
+Page 2 of 3 Account(s): AutoInvest 34186/3442477maW Generated at: 30-nov-2025
+Trade details, EUR
+Reporting period
+05-sep-2025 to 05-sep-2025
+Booking amount Amount Conversion cost Booked Amount
+Trade Date Value Date Conversion Rate
+ID EUR EUR EUR
+Net Amount - - - - - 0,00 -87,40
+Saxo Bank A/S BE Branch / Italiëlei 124 / 2000 Antwerpen / Belgium bLedae yQvgeqt and fOjFvAPC ibGE NAjPXyytBR Reporting period
+Currency: EUR 05-sep-2025 - 05-sep-2025
+Page 3 of 3 Account(s): AutoInvest 72645/8192444inW Generated at: 30-nov-2025

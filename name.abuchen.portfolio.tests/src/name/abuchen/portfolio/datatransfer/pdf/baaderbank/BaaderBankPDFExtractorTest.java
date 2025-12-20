@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -31,8 +30,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -63,7 +62,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -1352,12 +1350,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf27.txt"), //
                         hasNote("Vorgangs-Nr.: 123456"), //
                         hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.12), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.12))));
     }
 
     @Test
@@ -1455,12 +1448,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf29.txt"), //
                         hasNote("Vorgangs-Nr.: 123456789"), //
                         hasAmount("EUR", 813.38), hasGrossValue("EUR", 804.17), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.21 + 4.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.21 + 4.00))));
     }
 
     @Test
@@ -1558,12 +1546,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf31.txt"), //
                         hasNote("Vorgangs-Nr.: 249453219 | Stückzinsen für 54 Tag(e): 9,36 EUR"), //
                         hasAmount("EUR", 970.27), hasGrossValue("EUR", 970.27), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1629,12 +1612,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Kauf32.txt"), //
                         hasNote("Vorgangs-Nr.: 275613522"), //
                         hasAmount("EUR", 2621.66), hasGrossValue("EUR", 2613.71), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.95 + 4.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.95 + 4.00))));
     }
 
     @Test
@@ -1827,12 +1805,8 @@ public class BaaderBankPDFExtractorTest
                         hasDate("2022-10-06T16:34:27"), hasShares(5.3864), //
                         hasSource("Kauf37.txt"), //
                         hasNote("Vorgangs-Nr.: 868490405 | Stückzinsen für 145 Tag(e): 8,86 EUR"), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasAmount("EUR", 500.14), hasGrossValue("EUR", 500.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2784,12 +2758,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Verkauf19.txt"), //
                         hasNote("Vorgangs-Nr.: 25742277 | Obligatorische Barabfindung"), //
                         hasAmount("EUR", 212.68), hasGrossValue("EUR", 212.68), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4114,14 +4083,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Dividende15.txt"), //
                         hasNote("Transaction No.: 13241804"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
-                        hasTaxes("EUR", 0.03 + 0.14), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.03 + 0.14), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4187,14 +4149,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Dividende16.txt"), //
                         hasNote("Transaction No.: 15390292"), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
-                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4260,14 +4215,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 20120279"), //
                         hasAmount("USD", 12.24), hasGrossValue("USD", 14.40), //
                         hasForexGrossValue("EUR", 13.24), //
-                        hasTaxes("USD", 2.16), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 2.16), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4333,14 +4281,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 123"), //
                         hasAmount("USD", 2.79), hasGrossValue("USD", 3.75), //
                         hasForexGrossValue("EUR", 3.43), //
-                        hasTaxes("USD", 0.38 + 0.02 + 0.56), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 0.38 + 0.02 + 0.56), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4406,14 +4347,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 20483837"), //
                         hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
                         hasForexGrossValue("EUR", 5.70), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4479,14 +4413,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 14.89), hasGrossValue("USD", 20.00), //
                         hasForexGrossValue("EUR", 17.98), //
-                        hasTaxes("USD", 2.00 + 0.11 + 3.00), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 2.00 + 0.11 + 3.00), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4552,14 +4479,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 2.66), hasGrossValue("USD", 3.58), //
                         hasForexGrossValue("EUR", 3.28), //
-                        hasTaxes("USD", 0.36 + 0.02 + 0.54), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 0.36 + 0.02 + 0.54), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4625,14 +4545,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Vorgangs-Nr.: 25694016"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
                         hasForexGrossValue("EUR", 30.81), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4698,14 +4611,7 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Dividende23.txt"), //
                         hasNote("Vorgangs-Nr.: 22556339"), //
                         hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4803,14 +4709,7 @@ public class BaaderBankPDFExtractorTest
                         hasNote("Transaction No.: 01473347"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
                         hasForexGrossValue("EUR", 30.81), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("USD");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -4876,14 +4775,73 @@ public class BaaderBankPDFExtractorTest
                         hasSource("Dividende26.txt"), //
                         hasNote("Vorgangs-Nr.: 37229865"), //
                         hasAmount("EUR", 0.72), hasGrossValue("EUR", 1.01), //
-                        hasTaxes("EUR", 0.11 + 0.02 + 0.16), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.11 + 0.02 + 0.16), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende27()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US30231G1022"), hasWkn("852549"), hasTicker(null), //
+                        hasName("Exxon Mobil Corp."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote("Vorgangs-Nr.: 16224553"), //
+                        hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
+                        hasForexGrossValue("USD", 3.09), //
+                        hasTaxes("EUR", 0.27 + 0.02 + 0.01 + 0.39), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende27WithSecurityInEUR()
+    {
+        var security = new Security("Exxon Mobil Corp.", "EUR");
+        security.setIsin("US30231G1022");
+        security.setWkn("852549");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-10T00:00"), hasShares(3.000), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote("Vorgangs-Nr.: 16224553"), //
+                        hasAmount("EUR", 1.94), hasGrossValue("EUR", 2.63), //
+                        hasTaxes("EUR", 0.27 + 0.02 + 0.01 + 0.39), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5042,14 +5000,7 @@ public class BaaderBankPDFExtractorTest
                                         hasSource("DividendeStorno03.txt"), //
                                         hasNote("Vorgangs-Nr.: 2546"), //
                                         hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34), //
-                                        hasTaxes("EUR", 0.20), hasFees("EUR", 0.00), //
-                                        check(tx -> {
-                                            var c = new CheckCurrenciesAction();
-                                            var account = new Account();
-                                            account.setCurrencyCode("EUR");
-                                            var s = c.process((AccountTransaction) tx, account);
-                                            assertThat(s, is(Status.OK_STATUS));
-                                        })))));
+                                        hasTaxes("EUR", 0.20), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5119,14 +5070,7 @@ public class BaaderBankPDFExtractorTest
                                         hasSource("DividendeStorno04.txt"), //
                                         hasNote("Vorgangs-Nr.: 19658986"), //
                                         hasAmount("EUR", 1.45), hasGrossValue("EUR", 2.00), //
-                                        hasTaxes("EUR", 0.49 + 0.04 + 0.02), hasFees("EUR", 0.00), //
-                                        check(tx -> {
-                                            var c = new CheckCurrenciesAction();
-                                            var account = new Account();
-                                            account.setCurrencyCode("EUR");
-                                            var s = c.process((AccountTransaction) tx, account);
-                                            assertThat(s, is(Status.OK_STATUS));
-                                        })))));
+                                        hasTaxes("EUR", 0.49 + 0.04 + 0.02), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5871,6 +5815,28 @@ public class BaaderBankPDFExtractorTest
                                         hasAmount("EUR", 55.40), //
                                         hasSource("Periodenauszug16.txt"), //
                                         hasNote("Rechnungsabschluss")))));
+    }
+
+    @Test
+    public void testPeriodenauszug17()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug17.txt"), errors);
+
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2021-09-06"), hasAmount("EUR", 2200.00), //
+                        hasSource("Periodenauszug17.txt"), hasNote("Gutschrift"))));
     }
 
     @Test

@@ -213,6 +213,25 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
+                                        // Kurswert: -579,25 USD
+                                        // Devisenkurs: 1,0745 (20.02.2020) -551,42 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "exchangeRate", "termCurrency") //
+                                                        .match("^Kurswert: (\\-)?(?<gross>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<termCurrency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
                                         // Auftrags-Nr.: 00000000-3.5.2017
                                         // @formatter:on
                                         section -> section //
@@ -1151,8 +1170,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Inkassoprovision: -3,11 EUR
+                        // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Inkassoprovision: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // easybank Orderspesen: -9,95 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.*Orderspesen: (\\-)?(?<fee>[\\-\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off

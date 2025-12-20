@@ -136,10 +136,11 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // In accordance with your buy order of 06.02.2025, we have carried out the following transactions:
+                                        // In accordance with your sell order of 21.10.2025, we have carried out the following transactions:
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^In accordance with your buy order of (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^In accordance with your (buy|sell) order of (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Am 15.11.2024 haben wir folgende Transaktionen vorgenommen:
@@ -165,10 +166,11 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // To your debit CHF 390.45
+                                        // To your credit CHF 548.20
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^To your debit (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^To your (debit|credit) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));

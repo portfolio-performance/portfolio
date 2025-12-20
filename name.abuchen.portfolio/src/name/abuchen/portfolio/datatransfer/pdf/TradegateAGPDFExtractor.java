@@ -122,7 +122,8 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Ertragsgutschrift|Bardividende)");
+        final var type = new DocumentType("(Ertragsgutschrift|Bardividende)",
+                        "Durch steuerliche Verrechnungen");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();

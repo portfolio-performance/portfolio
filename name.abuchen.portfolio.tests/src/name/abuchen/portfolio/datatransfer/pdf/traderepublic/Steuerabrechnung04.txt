@@ -1,0 +1,19 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH AUSTRIA  KÄRNTNER RING 5-7  1010 WIEN, ÖSTERREICH
+Max Mustermann
+SEITE 1 von 1
+NsCW 2
+DATUM 09.10.2025
+7826 Wien
+AUSSCHÜTTUNG / AUSSCHÜTTUNGSGLEICHER ERTRAG
+AUSSCHÜTTUNG / AUSSCHÜTTUNGSGLEICHER ERTRAG
+BETRAG
+IE00B652H904 | iShares V plc - iShares EM Dividend UCITS ETF USD (Dist) 0,96 €
+Trade Republic Bank GmbH, Branch Austria www.traderepublic.at Sitz der Gesellschaft: Geschäftsführer
+Kärntner Ring 5-7 USt-IdNr DE307510626 Trade Republic Bank GmbH Andreas Torner
+1010 Wien, Österreich Brunnenstrasse 19-21 Gernot Mittendorfer
+FN 630983 t 10119 Berlin, Deutschland Christian Hecker
+AG Charlottenburg HRB 244347 B Thomas Pischke

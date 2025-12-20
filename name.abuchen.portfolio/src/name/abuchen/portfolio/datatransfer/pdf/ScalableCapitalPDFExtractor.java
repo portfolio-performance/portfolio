@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -27,7 +28,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addInterestTransaction();
-        addDepotStatementTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -38,12 +39,19 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("(Wertpapierabrechnung|Contract note)");
+        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale )");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^f.r (Kundenauftrag|Sparplanausf.hrung|savings plan order|client order).*$");
+        var firstRelevantLine = new Block("^(f.r|voor|per) " //
+                        + "(Kundenauftrag" //
+                        + "|Sparplanausf.hrung" //
+                        + "|savings plan order" //
+                        + "|client order" //
+                        + "|Auftrag" //
+                        + "|beleggingsplanorder" //
+                        + "|l.ordine del piano di accumulo).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -58,13 +66,31 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Verkauf" change from BUY to SELL
                         // Is type --> "Sell" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Buy|Verkauf|Sell)) .* [\\.,\\d]+ (Stk|pc)\\..*$") //
+                        .match("^(?<type>(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell)) .* [\\.,\\d]+ (Stk|pc)\\..*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Acquisto SPDR MSCI All Country World Investable Market (Acc) 1.071122 unità 233.40 EUR 250.00 EUR
+                                        // IE00B3YLTY66
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^Acquisto (?<name>.*) [\\.,\\d]+ unit. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
+                                        // XS2875106242
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^Kopen (?<name>.*) [\\.,\\d]+ stk\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
                                         // IE0008T6IUX0
@@ -92,6 +118,20 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Acquisto SPDR MSCI All Country World Investable Market (Acc) 1.071122 unità 233.40 EUR 250.00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Acquisto .* (?<shares>[\\.,\\d]+) unit. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Kopen .* (?<shares>[\\.,\\d]+) stk\\. [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
                                         // Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
                                         // Verkauf Scalable MSCI AC World Xtrackers (Acc) 1,00 Stk. 9,585 EUR 9,59 EUR
                                         // @formatter:on
@@ -111,9 +151,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ausführung 12.12.2024 13:12:51 Geschäft 36581526
                         // Execution 05.05.2025 12:25:16 Exchange ID 86828W28lTD45195
+                        // Uitvoering 07.05.2025 11:28:30 Exchange-ID 347993001
+                        // Esecuzione 25.08.2025 11:07:44 ID di scambio 0782210
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^(Ausf.hrung|Execution) (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                        .match("^(Ausf.hrung|Execution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -122,15 +164,31 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Belastung 200,00 EUR
                         // Debit 85.65 EUR
                         // Credit 14,951.10 EUR
+                        // Totaal 5.00 EUR
+                        // Addebito 250.00 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Total|Gutschrift|Belastung|Debit|Credit) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift|Belastung|Debit|Credit|Totaal|Addebito) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .optionalOneOf( //
+                                        // @formatter:off
+                                        // Tipo LIMIT ID ordine tRFkKlxFUnG7LmN
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^Tipo .* ID ordine (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("ID ordine: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Type LIMIT Order-ID SCALcbFSrNzHRn3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^Type .* Order\\-ID (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Order-ID: " + trim(v.get("note")))),
                                         // @formatter:off
                                         // Typ LIMIT Order SCALsin78vS5CYz
                                         // @formatter:on
@@ -154,12 +212,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Dividende|Zinszahlung)");
+        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Seite|Page) 1 \\/ [\\d]$");
+        var firstRelevantLine = new Block("^.*(Seite|Pagina) 1 \\/ [\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -172,6 +230,17 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Effect met recht VanEck Mstr.DM Dividend.UC.ETF
+                                        // ISIN NL0011683594
+                                        // 03.06.2025 11.06.2025 Krediet 0.90 EUR 2.769834 2.49 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Effect met recht (?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Krediet [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //)
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Berechtigtes Wertpapier AGNC Investment Corp.
                                         // ISIN US00123Q1040
@@ -186,6 +255,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Rechthebbende hoeveelheid 2.769834
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Rechthebbende hoeveelheid (?<shares>[\\.,\\d]+).*$") //")
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
                                         // Berechtigte Anzahl 0,663129
                                         // @formatter:on
                                         section -> section //
@@ -194,6 +270,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 03.06.2025 11.06.2025 Krediet 0.90 EUR 2.769834 2.49 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Krediet [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$") //"
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
                                         // @formatter:on
@@ -205,10 +288,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Gesamtbetrag 0,07 EUR
+                                        // Totaal 2.12 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Gesamtbetrag (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtbetrag|Totaal) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -289,9 +373,9 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDepotStatementTransaction()
+    private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Verrechnungskonto");
+        final var type = new DocumentType("(Verrechnungskonto|Cash Account Statement)");
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -300,7 +384,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         // @formatter:on
         var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(.berweisung" //
-                        + "|Lastschrift) " //
+                        + "|Lastschrift" //
+                        + "|Direct debit) " //
                         + "\\+[\\.,\\d]+ [A-Z]{3}.*$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -314,7 +399,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(.berweisung" //
-                                        + "|Lastschrift)) " //
+                                        + "|Lastschrift"
+                                        + "|Direct debit)) " //
                                         + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -398,6 +484,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*" //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
+                         v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
@@ -407,7 +495,14 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -443,10 +538,24 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
+                        // Belastingen op financiële transacties 0.00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Belastingen op financi.le transacties \\+(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
                         // Ausländische Quellensteuer -0,01 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Ausl.ndische Quellensteuer (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Buitenlandse bronbelasting -0.37 EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Buitenlandse bronbelasting (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
@@ -507,5 +616,24 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 }

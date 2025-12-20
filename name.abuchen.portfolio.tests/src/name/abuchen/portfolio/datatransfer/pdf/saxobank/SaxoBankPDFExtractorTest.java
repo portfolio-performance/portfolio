@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.saxobank;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -20,11 +19,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -36,14 +36,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SaxoBankPDFExtractor;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
@@ -114,12 +110,7 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf01.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
                         hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
-                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02))));
     }
 
     @Test
@@ -187,12 +178,7 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf02.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
                         hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
-                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02))));
     }
 
     @Test
@@ -260,12 +246,7 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf03.txt"), //
                         hasNote("Order-ID 5253341230 | Trade-ID 6154473459"), //
                         hasAmount("CHF", 21480.86), hasGrossValue("CHF", 21395.21), //
-                        hasTaxes("CHF", 32.17 - 0.08), hasFees("CHF", 53.48 + 0.08), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 32.17 - 0.08), hasFees("CHF", 53.48 + 0.08))));
     }
 
     @Test
@@ -333,12 +314,7 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf04.txt"), //
                         hasNote("Order-ID 5555555555 | Trade-ID 6666666666"), //
                         hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1894.49), //
-                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01))));
     }
 
     @Test
@@ -438,12 +414,7 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf06.txt"), //
                         hasNote("Order-ID 8482757546 | Trade-ID 3805096641"), //
                         hasAmount("CHF", 15972.49), hasGrossValue("CHF", 15908.79), //
-                        hasTaxes("CHF", 23.93 - 0.06), hasFees("CHF", 39.83), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 23.93 - 0.06), hasFees("CHF", 39.83))));
     }
 
     @Test
@@ -511,12 +482,73 @@ public class SaxoBankPDFExtractorTest
                         hasSource("Kauf07.txt"), //
                         hasNote("Order-ID 5311230162 | Trade-ID 6358706941"), //
                         hasAmount("CHF", 1947.88), hasGrossValue("CHF", 1940.11), //
-                        hasTaxes("CHF", 2.92 - 0.01), hasFees("CHF", 4.86), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("CHF", 2.92 - 0.01), hasFees("CHF", 4.86))));
+    }
+
+    @Test
+    public void testWertpapierKauf08()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
+                        hasName(null), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-10-06T13:31:10"), hasShares(5.00), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Order-ID 5330170993 | Trade-ID 6428724964"), //
+                        hasAmount("CHF", 376.70), hasGrossValue("CHF", 376.42), //
+                        hasTaxes("CHF", 0.28), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
+                        hasName(null), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-11-03T09:28:44"), hasShares(15.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Order-ID 5339573521 | Trade-ID 6463593307"), //
+                        hasAmount("CHF", 1130.17), hasGrossValue("CHF", 1134.02), //
+                        hasTaxes("CHF", 0.85), hasFees("CHF", 3.00))));
     }
 
     @Test
@@ -682,6 +714,69 @@ public class SaxoBankPDFExtractorTest
                         hasNote("Order ID 5311259140 | Trade ID 6358773884"), //
                         hasAmount("CHF", 376.27), hasGrossValue("CHF", 375.99), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.28))));
+    }
+
+    @Test
+    public void testSecurityBuy06()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4K48X80"), hasWkn(null), hasTicker("IMAE"), //
+                        hasName(null), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-09-05T13:16:09"), hasShares(1.00), //
+                        hasSource("Buy06.txt"), //
+                        hasNote("Order ID 6510309204 | Trade ID 4021824604"), //
+                        hasAmount("EUR", 87.40), hasGrossValue("EUR", 87.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.10))));
+
+    }
+
+    @Test
+    public void testSecurityBuy07()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0016999846"), hasWkn(null), hasTicker("CSBGC7"), //
+                        hasName(null), //
+                        hasCurrencyCode("CHF"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-05T12:33:36"), hasShares(13.00), //
+                        hasSource("Buy07.txt"), //
+                        hasNote("Order-ID 5349985997 | Trade-ID 6504011106"), //
+                        hasAmount("CHF", 978.77), hasGrossValue("CHF", 978.04), //
+                        hasTaxes("CHF", 0.73), hasFees("CHF", 0.00))));
     }
 
     @Test

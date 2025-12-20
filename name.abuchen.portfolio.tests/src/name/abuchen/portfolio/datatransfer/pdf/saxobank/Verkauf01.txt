@@ -1,0 +1,54 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+CH-00000000 - 00000000
+Bericht zu Trade-Details
+Berichtszeitraum: 03-Nov-2025 - 03-Nov-2025
+Generiert um: 06-Nov-2025 07:45:50 07:45:50 (W. Europe Standard Time)
+CH-00000000 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 03-Nov-2025 - 03-Nov-2025
+Seite 1 von 3 Konten: AI Spar 00000/000000 Generiert um: 06-Nov-2025
+Trade details, CHF
+Berichtszeitraum
+03-Nov-2025 bis 03-Nov-2025
+ETF
+iShares Swiss Domestic Government Bnd 3-7
+Instrument Handelszeit 03-Nov-2025 09:28:44
+(CH) ETF
+ISIN CH0016999846 Valuta 05-Nov-2025
+Symbol CSBGC7:xswx Order-ID 5339573521
+Börsenbeschreibung J.P. MORGAN SE (JPEU) Trade-ID 6463593307
+SIX Swiss Exchange ETFs on Bonds of the
+Hauptbörse Gehandelter Wert 1.131,02 CHF
+Swiss Conf
+Handelsplatz Exchange Preis 75,4012 CHF
+Ordertyp Marktorder Menge -15,00
+K/V Verkauf Spread-Kosten 0,00 CHF
+Eröffnung/Schluss To-Close Gesamte Trading-Kosten -3,85 CHF
+Saxo is counterparty No
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 03-Nov-2025 - 03-Nov-2025
+Seite 2 von 3 Konten: AI Spar 00000/000000 Generiert um: 06-Nov-2025
+Trade details, CHF
+Berichtszeitraum
+03-Nov-2025 bis 03-Nov-2025
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Provision 49083418552 03-Nov-2025 05-Nov-2025 -3,00 1,000000 0,00 -3,00
+Kundenprovisionsgu
+49086666461 03-Nov-2025 05-Nov-2025 3,00 1,000000 0,00 3,00
+tschrift
+Aktienbetrag 49088414311 03-Nov-2025 05-Nov-2025 1.131,02 1,000000 0,00 1.131,02
+Schweizerische
+Stempelgebühr 49090538363 03-Nov-2025 05-Nov-2025 -0,85 1,000000 0,00 -0,85
+Inland
+Nettobetrag - - - - - 0,00 1.130,17
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-00000000 Berichtszeitraum
+Währung: CHF 03-Nov-2025 - 03-Nov-2025
+Seite 3 von 3 Konten: AI Spar 00000/000000 Generiert um: 06-Nov-2025

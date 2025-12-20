@@ -269,7 +269,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount (debited|credited) to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount (debited|credited) to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -425,7 +425,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final var type = new DocumentType("(Fondsaussch.ttung" //
                         + "|Ertragsthesaurierung" //
-                        + "|Dividendenabrechnung"
+                        + "|Dividendenabrechnung" //
                         + "|Aussch.ttung" //
                         + "|Aussch.ttung aus" //
                         + "|Wahldividende" //
@@ -483,7 +483,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^((Dividendenabrechnung" //
                                         + "|Fondsaussch.ttung" //
-                                        + "|Dividende . 27) )?"
+                                        + "|Dividende . 27) )?" //
                                         + "(?<type>(STORNO|Reklassifizierung))$") //
                         .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
@@ -547,17 +547,18 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Zu Gunsten Konto 1111111111 Valuta: 06.07.2021 EUR 68,22
+                                        // Zu Gunsten Konto N10560540gQB Valuta: 10.12.2025 EUR 1,94
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zu Gunsten Konto [\\d]+ Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.,\\d]+$") //
+                                                        .match("^Zu Gunsten Konto .* Valuta: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Amount credited to account 1209625007 Value: 2022-02-25 EUR 0.20
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Amount credited to account [\\d]+ Value: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [A-Z]{3} [\\.,\\d]+$") //
+                                                        .match("^Amount credited to account .* Value: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) [A-Z]{3} [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -566,7 +567,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Gunsten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Zu Gunsten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -576,7 +577,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount credited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount credited to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -725,7 +726,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Zu Lasten Konto [\\d]+ Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Zu Lasten Konto .* Valuta: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -735,7 +736,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Amount debited to account [\\d]+ Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Amount debited to account .* Value: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2} (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
