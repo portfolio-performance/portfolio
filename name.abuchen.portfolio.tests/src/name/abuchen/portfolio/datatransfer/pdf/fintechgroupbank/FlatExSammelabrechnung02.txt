@@ -54,7 +54,7 @@ Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               0,02 USD
 Lagerstelle   : International
 Lagerland     : USA                     Bemessungs-
 Gewinn/Verlust: -49,72 EUR              grundlage     :             -49,74 EUR
-Valuta        : 02.12.2020            **Einbeh. Steuer:               0,84 EUR
+Valuta        : 02.12.2020            **Einbeh. Steuer:               0,00 EUR
                                         Endbetrag     :             955,98 USD
 *   Enthalten sind folgende Gebühren
                                 Courtage                :             0,00 USD
