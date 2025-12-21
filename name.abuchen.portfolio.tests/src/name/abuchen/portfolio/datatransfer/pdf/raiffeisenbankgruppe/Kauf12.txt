@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+d a 
+Raiffeisenbank Untersberg eGen 
+Hauptstraße 28 
+5082 Grödig b 
+a 
+a 
+Abrechnung Dauerauftrag a 
+11111111 - 23.06.2025 a 
+Depotnummer: 11.111.111 
+Ing. Blumentopf 
+Franz-Franzl-Straße 11/1 
+1111 Ort 111/8 
+Beratung Grödig 
+Wir haben für Sie am 23.06.2025 unten angeführtes Geschäft abgerechnet: 
+Geschäftsart: Ausgabe Fonds aus Dauerauftrag Dauerauftrag-Nr.: 54 - 22.09.2021 
+Auftragseingang: 20.06.2025 - 16:40:26 
+Zugang: 1,395 Stk    
+Titel: AT0000A2DFK8 Raiff.-SmartEnergy-ESG-Aktien(RZ)T 
+Miteigentumsanteile - Thesaurierend 
+Fondsgesellschaft: Raiffeisen Kapitalanlageges. m.b.H. 
+Kurs: 139,68 EUR 
+Handelsplatz: AT_F AT FONDS 
+Handelszeit: 20.06.2025  
+Verwahrart: SV 
+Positionsdaten: Loco: AT Österreich 
+Kurswert: -194,85 EUR  
+Transaktionsservice Grundpreis: -1,17 EUR  
+Transaktionsservice variabel: -3,88 EUR  
+Zu Lasten IBAN AT11 1111 1111 1111 1111 -199,90 EUR  
+Valuta 23.06.2025 
+Schlusstag: 20.06.2025 
+Kassatag: 23.06.2025 
+Bestand nach Buchung: 
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden  
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 1,395 Stk 
+steuerlicher Anschaffungswert: 194,85 EUR 
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF 
+23.06.2025 1 / 1 
