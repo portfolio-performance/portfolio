@@ -577,6 +577,39 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A2DFK8"), hasWkn(null), hasTicker(null), //
+                        hasName("Raiff.-SmartEnergy-ESG-Aktien(RZ)T Miteigentumsanteile - Thesaurierend"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-20T00:00"), hasShares(1.395), //
+                        hasSource("Kauf12.txt"), //
+                        hasNote("Dauerauftrag-Nr.: 54"), //
+                        hasAmount("EUR", 199.90), hasGrossValue("EUR", 194.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.17 + 3.88))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
