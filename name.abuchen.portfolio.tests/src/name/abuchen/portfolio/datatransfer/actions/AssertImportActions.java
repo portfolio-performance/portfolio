@@ -76,6 +76,10 @@ public class AssertImportActions
             if (item.isFailure())
                 continue;
 
+            // do not further check items which are meant to be ignored
+            if (item.isSkipped())
+                continue;
+
             // items that have no amount (e.g. a security) are checked against a
             // pseudo currency for the account to make sure that no attempt is
             // made to import into an account
