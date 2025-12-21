@@ -40,10 +40,6 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // 24.08.2024 Zinsbuchung 403,39 10.403,39
-        // 31.12.2024 01.01.2025 Interest 24,40
-        // @formatter:on
         var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Zinsbuchung|Interest) [\\.,\\d]+.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
@@ -54,14 +50,34 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount") //
-                        .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(Zinsbuchung|Interest) (?<amount>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf(
+                                        //
+                                        // @formatter:off
+                                        // 24.08.2024 Zinsbuchung 403,39 10.403,39
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Zinsbuchung (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        //
+                                        // @formatter:off
+                                        // 31.12.2024 01.01.2025 Interest 24,40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Interest (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        })
+                     )
 
                         .wrap(TransactionItem::new));
 
