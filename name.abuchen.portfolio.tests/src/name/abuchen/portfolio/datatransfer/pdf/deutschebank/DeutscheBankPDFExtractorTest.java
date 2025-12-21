@@ -26,15 +26,13 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAc
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +42,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -1646,7 +1645,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(48L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(48));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(49));
         new AssertImportActions().check(results, "EUR");
 
         // check transaction
@@ -2123,19 +2123,6 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Überweisung von Landeshauptstadt Stadt Stadtverwaltung"));
 
-        // item = iter.next();
-        //
-        // // assert transaction
-        // transaction = (AccountTransaction) item.getSubject();
-        // assertThat(transaction.getType(),
-        // is(AccountTransaction.Type.REMOVAL));
-        // assertThat(transaction.getDateTime(),
-        // is(LocalDateTime.parse("2020-12-31T00:00")));
-        // assertThat(transaction.getMonetaryAmount(),
-        // is(Money.of("EUR", Values.Amount.factorize(0.00))));
-        // assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        // assertThat(transaction.getNote(), is(""));
-
         item = iter.next();
 
         // assert transaction
@@ -2145,6 +2132,14 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
         assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Saldo der Abschlussposten"));
+
+        // assert skipped item
+        var skipped = (SkippedItem) results.stream().filter(SkippedItem.class::isInstance).findFirst().get();
+        assertThat(skipped.getSkipReason(), is(Messages.PDFSkipMissingDetails));
+        assertThat(skipped.getDate(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(skipped.getAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
+        assertThat(skipped.getTypeInformation(), is(AccountTransaction.Type.REMOVAL.toString()));
+        assertThat(skipped.getSubject().getNote(), is("GiroKontoauszug02.txt"));
     }
 
     @Test
@@ -2771,22 +2766,14 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug05.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug05.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(1));
     }
 
     @Test
@@ -2804,7 +2791,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(1));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
@@ -2822,22 +2810,9 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug07.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countSkippedItems(results), is(4L));
+        assertThat(results.size(), is(4));
     }
 
     @Test
@@ -2849,22 +2824,9 @@ public class DeutscheBankPDFExtractorTest
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug08.txt"), errors);
 
-        // Check if the results list is not empty
-        assertTrue(results.isEmpty());
-
-        // Check if at least one error is present
-        assertTrue(!errors.isEmpty());
-
-        // Extract the first error from the list
-        var firstError = errors.get(0);
-
-        // Check if the first error is an UnsupportedOperationException
-        assertTrue(firstError instanceof UnsupportedOperationException);
-
-        // Check the error message of the first error
-        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug08.txt");
-        assertEquals(expectedErrorMessage, firstError.getMessage());
+        assertThat(errors, empty());
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(1));
     }
 
     @Test
@@ -2905,7 +2867,8 @@ public class DeutscheBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(countSkippedItems(results), is(3L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
