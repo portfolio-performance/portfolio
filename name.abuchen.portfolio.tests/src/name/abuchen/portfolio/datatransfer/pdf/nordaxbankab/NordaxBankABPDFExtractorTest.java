@@ -54,8 +54,12 @@ public class NordaxBankABPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-24"), hasAmount("EUR", 403.39), //
-                        hasSource("AccountStatement01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-08-24"), //
+                        hasSource("AccountStatement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 403.39), hasGrossValue("EUR", 403.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check 1st cash transfer transaction
         assertThat(results, hasItem(outboundCash(hasDate("2024-08-24"), hasAmount("EUR", 403.39), //

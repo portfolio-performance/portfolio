@@ -74,8 +74,8 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         transferBlock.set(new Transaction<AccountTransferEntry>()
 
                         .subject(() -> {
-                            var accountTransaction = new AccountTransferEntry();
-                            return accountTransaction;
+                            var accountTransferEntry = new AccountTransferEntry();
+                            return accountTransferEntry;
                         })
 
                         .section("date", "amount") //
