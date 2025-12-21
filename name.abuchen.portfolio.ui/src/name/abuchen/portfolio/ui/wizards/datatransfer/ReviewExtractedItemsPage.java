@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -1030,6 +1031,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             {
                 entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
                 allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
+            }
+            else if (entry.getItem().isSkipped())
+            {
+                entry.addStatus(new ImportAction.Status(Code.ERROR, ((SkippedItem) entry.getItem()).getSkipReason()));
             }
             else
             {
