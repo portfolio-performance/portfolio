@@ -79,6 +79,10 @@ public class AssertImportActions
             if (item.isFailure())
                 continue;
 
+            // do not further check items which are meant to be ignored
+            if (item.isSkipped())
+                continue;
+
             for (ImportAction action : actions)
             {
                 ImportAction.Status status = item.apply(action, context);
