@@ -390,7 +390,7 @@ public class CSVAccountTransactionExtractorTest
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
                         new String[] { "2013-01-01", "", "", "", "", "110", "EUR", "TRANSFER_OUT", "", "", "Notiz", "",
-                                        "", "", "", "", "100", "USD", "1,1" }),
+                                        "", "", "", "", "100", "USD", "1.1" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -432,7 +432,7 @@ public class CSVAccountTransactionExtractorTest
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01", "", "", "", "", "110", "EUR",
-                                        "TRANSFER_IN", "", "", "Notiz", "", "", "", "", "", "100", "USD", "1,1" }),
+                                        "TRANSFER_IN", "", "", "Notiz", "", "", "", "", "", "100", "USD", "1.1" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -613,11 +613,11 @@ public class CSVAccountTransactionExtractorTest
                         new String[] { //
                                         "2013-01-01", "11:00:00", // Date + Time
                                         "", "", "", // ISIN + TickerSymbol + WKN
-                                        "7,5", "EUR", // Amount + Currency
+                                        "7.5", "EUR", // Amount + Currency
                                         "INTEREST", // Type
                                         "", "", //  Security name + Shares
                                         "Notiz", // Note
-                                        "2,5", "", // Taxes +  Fee
+                                        "2.5", "", // Taxes +  Fee
                                         "", "", "", // account + account2nd + portfolio
                                         "10", "EUR", // Gross + Gross currency
                                         "" }), // Exchange rate
@@ -652,12 +652,12 @@ public class CSVAccountTransactionExtractorTest
                         "DE0007164600", "SAP", "", // ISIN + TickerSymbol + WKN
                         "-100", "EUR", // Amount + Currency
                         "SELL", // Type
-                        "SAP SE", "1,9", // Security name + Shares
+                        "SAP SE", "1.9", // Security name + Shares
                         "Notiz", // Note
                         "12", "", // Taxes + Fee
                         "", "", "", // account + account2nd + portfolio
                         "110", "USD", // Gross + Gross currency
-                        "0,9091" }), // Exchange rate
+                        "0.9091" }), // Exchange rate
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -691,12 +691,12 @@ public class CSVAccountTransactionExtractorTest
                         "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
                         "56", "EUR", // Amount + Currency
                         "BUY", // Type
-                        "", "-0,701124", // Security name + Shares
+                        "", "-0.701124", // Security name + Shares
                         "Notiz", // Note
-                        "", "0,14", // Taxes + Fee
+                        "", "0.14", // Taxes + Fee
                         "", "", "", // account + account2nd + portfolio
                         "", "USD", // Gross + Gross currency
-                        "1,1194" }), // Exchange rate
+                        "1.1194" }), // Exchange rate
                         buildField2Column(extractor), errors);
         
         assertThat(errors, empty());

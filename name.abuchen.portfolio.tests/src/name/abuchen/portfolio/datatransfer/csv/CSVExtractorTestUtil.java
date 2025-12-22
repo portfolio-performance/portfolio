@@ -33,23 +33,7 @@ final class CSVExtractorTestUtil
             Column column = new Column(index++, f.getName());
             column.setField(f);
 
-            if (f instanceof EnumField)
-            {
-                // when running the tests, do not set a format and convert the
-                // raw string directly to the enum (see CSVExtractor#getEnum)
-            }
-            else if (f instanceof DateField)
-            {
-                // use a ISO date format as default import format when testing
-                column.setFormat(f.textToFormat("yyyy-MM-dd")); //$NON-NLS-1$
-            }
-            else
-            {
-                List<FieldFormat> formats = f.getAvailableFieldFormats();
-
-                if (!formats.isEmpty())
-                    column.setFormat(formats.get(0));
-            }
+            configure(f, column);
 
             field2column.put(f.getName(), column);
         }
@@ -78,32 +62,37 @@ final class CSVExtractorTestUtil
             Column column = new Column(index++, field.getName());
             column.setField(field);
 
-            if (field instanceof EnumField)
-            {
-                // when running the tests, do not set a format and convert the
-                // raw string directly to the enum (see CSVExtractor#getEnum)
-            }
-            else if (field instanceof DateField)
-            {
-                // use a ISO date format as default import format when testing
-                column.setFormat(field.textToFormat("yyyy-MM-dd")); //$NON-NLS-1$
-            }
-            else if (field instanceof AmountField)
-            {
-                // use the English date format
-                column.setFormat(field.textToFormat("0,000.00")); //$NON-NLS-1$
-            }
-            else
-            {
-                var formats = field.getAvailableFieldFormats();
-
-                if (!formats.isEmpty())
-                    column.setFormat(formats.get(0));
-            }
+            configure(field, column);
 
             field2column.put(field.getName(), column);
         }
         return field2column;
+    }
+
+    private static void configure(Field field, Column column)
+    {
+        if (field instanceof EnumField)
+        {
+            // when running the tests, do not set a format and convert the
+            // raw string directly to the enum (see CSVExtractor#getEnum)
+        }
+        else if (field instanceof DateField)
+        {
+            // use a ISO date format as default import format when testing
+            column.setFormat(field.textToFormat("yyyy-MM-dd")); //$NON-NLS-1$
+        }
+        else if (field instanceof AmountField)
+        {
+            // use the English date format
+            column.setFormat(field.textToFormat("0,000.00")); //$NON-NLS-1$
+        }
+        else
+        {
+            var formats = field.getAvailableFieldFormats();
+
+            if (!formats.isEmpty())
+                column.setFormat(formats.get(0));
+        }
     }
 
 }

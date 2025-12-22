@@ -28,7 +28,7 @@ public class CSVSecurityPriceExtractorTest
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
-                        new String[] { "2015-01-01", "14,20" }, new String[] { "2015-01-02", "15,20" }),
+                        new String[] { "2015-01-01", "14.20" }, new String[] { "2015-01-02", "15.20" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
