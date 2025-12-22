@@ -75,15 +75,53 @@ public abstract class Transaction implements Annotated, Adaptable
             this.forex = Objects.requireNonNull(forex);
             this.exchangeRate = Objects.requireNonNull(exchangeRate);
 
-            if (doValidityCheck)
+            if (doValidityCheck && !isWithinRoundingTolerance(amount, forex, exchangeRate))
             {
-                // check whether given amount is in range of converted amount
-                long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.003))
-                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-                long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.003))
-                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
+                                type.toString(), Values.Money.format(forex), exchangeRate,
+                                Values.Money.format(amount)));
+            }
+        }
 
-                // check for negative values
+        /**
+         * Checks whether the given amount is within rounding tolerance of the
+         * forex amount converted at the given exchange rate. This accounts for
+         * rounding errors that can occur during currency conversion.
+         *
+         * @param amount
+         *            the amount in target currency
+         * @param forex
+         *            the amount in foreign currency
+         * @param exchangeRate
+         *            the exchange rate used for conversion
+         * @return true if the amounts are within acceptable rounding tolerance
+         */
+        public static boolean isWithinRoundingTolerance(Money amount, Money forex, BigDecimal exchangeRate)
+        {
+            // check whether given amount is in range of converted amount
+            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.003))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.003))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+
+            // check for negative values
+            if (lower > upper)
+            {
+                long temp = lower;
+                lower = upper;
+                upper = temp;
+            }
+
+            if (amount.getAmount() < lower || amount.getAmount() > upper)
+            {
+                // do the reverse check b/c small currency amounts might not
+                // allow for a better exchange rate
+
+                upper = BigDecimal.valueOf(amount.getAmount() + 1).divide(exchangeRate, Values.MC)
+                                .setScale(0, RoundingMode.HALF_EVEN).longValue();
+                lower = BigDecimal.valueOf(amount.getAmount() - 1).divide(exchangeRate, Values.MC)
+                                .setScale(0, RoundingMode.HALF_EVEN).longValue();
+
                 if (lower > upper)
                 {
                     long temp = lower;
@@ -91,31 +129,13 @@ public abstract class Transaction implements Annotated, Adaptable
                     upper = temp;
                 }
 
-                if (amount.getAmount() < lower || amount.getAmount() > upper)
+                if (forex.getAmount() < lower || forex.getAmount() > upper)
                 {
-                    // do the reverse check b/c small currency amounts might not
-                    // allow for a better exchange rate
-
-                    upper = BigDecimal.valueOf(amount.getAmount() + 1).divide(exchangeRate, Values.MC)
-                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
-                    lower = BigDecimal.valueOf(amount.getAmount() - 1).divide(exchangeRate, Values.MC)
-                                    .setScale(0, RoundingMode.HALF_EVEN).longValue();
-
-                    if (lower > upper)
-                    {
-                        long temp = lower;
-                        lower = upper;
-                        upper = temp;
-                    }
-
-                    if (forex.getAmount() < lower || forex.getAmount() > upper)
-                    {
-                        throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
-                                        type.toString(), Values.Money.format(forex), exchangeRate,
-                                        Values.Money.format(amount)));
-                    }
+                    return false;
                 }
             }
+
+            return true;
         }
 
         public Unit split(double weight)
