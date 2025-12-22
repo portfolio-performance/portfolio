@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -16,6 +17,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class EbasePDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public EbasePDFExtractor(Client client)
     {
         super(client);
@@ -191,7 +194,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .match("^(?<type>Fondsertrag) .*$") //
                         .assign((t, v) -> {
                             if ("Fondsertrag".equals(v.get("type")))
-                                type.getCurrentContext().putBoolean("skipTransaction", true);
+                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.PDFSkipMissingDetails);
                         })
 
                         .oneOf( //
@@ -460,14 +463,15 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             var item = new BuySellEntryItem(t);
 
-                            if (type.getCurrentContext().getBoolean("skipTransaction"))
+                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                             {
                                 // @formatter:off
                                 // If we have multiple entries in the document,
                                 // then the "skipTransaction" flag must be removed.
                                 // @formatter:on
-                                type.getCurrentContext().remove("skipTransaction");
-                                return null;
+                                type.getCurrentContext().remove(SKIP_TRANSACTION);
+
+                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
                             }
 
                             return item;
