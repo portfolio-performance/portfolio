@@ -339,6 +339,7 @@ public class Messages extends NLS
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
     public static String PDFSkipMissingDetails;
+    public static String PDFSkipNotImportable;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;
