@@ -109,8 +109,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         // 03.11.2025 03.11.2025 Zahlung an 2.000,00
         // 10.12.2024 10.12.2024 Bezahlung von 12.000,00
         // @formatter:on
-        var depositRemovalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zahlung an|Bezahlung von) [\\.,\\d]+$");
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zahlung an|Bezahlung von) [\\.,\\d]+$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -124,7 +123,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                        // @formatter:off
+                            // @formatter:off
                             // When "Bezahlung von" change from DEPOSIT to REMOVAL
                             // @formatter:on
                             if ("Bezahlung von".equals(v.get("type")))

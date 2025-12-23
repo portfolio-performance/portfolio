@@ -115,6 +115,5 @@ public class NordaxBankABPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 24.40), hasGrossValue("EUR", 24.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
     }
 }
