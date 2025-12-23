@@ -6,49 +6,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  sync-and-build:
+  sync:
     runs-on: ubuntu-latest
+    outputs: # Optional: tell the next job if the sync actually happened
+      did_sync: ${{ steps.push.outputs.synced }}
     steps:
-      - name: Checkout Repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.SYNC_TOKEN }}
           fetch-depth: 0
 
-      - name: Git Config
+      - name: Sync Logic
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Update Master from Upstream
-        run: |
           git remote add upstream https://github.com//portfolio-performance/portfolio.git
           git fetch upstream
           
-          # Update your local master with the original master
+          # Update master
           git checkout master
           git merge upstream/master --no-edit
           git push origin master
-
-      - name: Merge Master into Feature Branch
-        run: |
-          # Switch to your branch where the custom changes live
+          
+          # Update your feature branch
           git checkout TLVTrade2
-          
-          # Bring the new master code into your feature branch
           git merge master --no-edit
-          
-          # Push the updated feature branch
           git push origin TLVTrade2
+          echo "synced=true" >> $GITHUB_OUTPUT
 
-      - name: Build from Feature Branch
-        run: |
-          # Your build steps here
-          echo "Building artifacts from feature-branch..."
-          # npm install && npm run build
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: feature-build-${{ github.run_id }}
-          path: ./dist/
+  # CALL THE BUILD WORKFLOW
+  call-build:
+    needs: sync
+    # Points to the file in your repo: .github/workflows/build-tlv.yml
+    uses: ./.github/workflows/build-tlv.yml@TLVTrade2
+    secrets: inherit # Passes secrets (like SYNC_TOKEN) to the build workflow
