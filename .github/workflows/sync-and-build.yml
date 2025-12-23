@@ -1,0 +1,54 @@
+name: Weekly Multi-Branch Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch:
+
+jobs:
+  sync-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SYNC_TOKEN }}
+          fetch-depth: 0
+
+      - name: Git Config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Master from Upstream
+        run: |
+          git remote add upstream https://github.com//portfolio-performance/portfolio.git
+          git fetch upstream
+          
+          # Update your local master with the original master
+          git checkout master
+          git merge upstream/master --no-edit
+          git push origin master
+
+      - name: Merge Master into Feature Branch
+        run: |
+          # Switch to your branch where the custom changes live
+          git checkout TLVTrade2
+          
+          # Bring the new master code into your feature branch
+          git merge master --no-edit
+          
+          # Push the updated feature branch
+          git push origin TLVTrade2
+
+      - name: Build from Feature Branch
+        run: |
+          # Your build steps here
+          echo "Building artifacts from feature-branch..."
+          # npm install && npm run build
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-build-${{ github.run_id }}
+          path: ./dist/
