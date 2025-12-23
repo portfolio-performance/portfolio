@@ -166,7 +166,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
                         // @formatter:on
                         .section("date") //
-                        .match("^.*(Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^.*(Handelstag|Schlusstag):?[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                                 t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -568,6 +568,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                        // @formatter: off
+                        // Nr.304630654/1 Kauf SG EFF. TURBOL MRK 
+                        // MERCK (DE000SX7G673/SX7G67)
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "tickerSymbol").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*)$")
+                        .match("^(?<tickerSymbol>[A-Z0-9\\\\._-]{1,10}(?:\\\\.[A-Z]{1,4})?) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$")
+//                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                         // @formatter:off
                         // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
                         // davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr

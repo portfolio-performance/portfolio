@@ -6324,6 +6324,42 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExSammelabrechnung04()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExSammelabrechnung04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(5L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(10));
+
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SQ0ZYQ2"), hasWkn("SQ0ZYQ"), hasTicker("ZALAND"), //
+                        hasName("SG EFF. TURBOL ZAL"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SX7G673"), hasWkn("SX7G67"), hasTicker("MERCK"), //
+                        hasName("SG EFF. TURBOL MRK"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-19T16:50"), hasShares(850.00), //
+                        hasSource("FlatExSammelabrechnung04.txt"), //
+                        hasNote("Transaktion-Nr.: 4657825824"), //
+                        hasAmount("EUR", 3308.40), hasGrossValue("EUR", 3306.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.90))));
+    }
+
+    @Test
     public void testFlatExKontoauszug01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -7678,4 +7714,5 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
+
 }

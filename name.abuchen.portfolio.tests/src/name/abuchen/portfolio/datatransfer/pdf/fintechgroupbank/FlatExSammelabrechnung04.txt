@@ -1,0 +1,156 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+0303502000005442437100
+Max Mustermann 
+Blumenstrasse 6/1/2 
+1234 Wien 
+ÖSTERREICH
+          Graz, 20.12.2025
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 11609572941
+Depotinhaber: Max Mustermann
+Nr.304630654/1 Kauf SG EFF. TURBOL MRK 
+MERCK (DE000SX7G673/SX7G67)
+Ordervolumen : 850,00 St. Handelsplatz : Société Générale
+davon ausgef. : 850,00 St. Schlusstag : 19.12.2025, 16:50 Uhr
+Kurs : 3,8900 EUR Kurswert : 3.306,50 EUR
+Devisenkurs : Provision : 1,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen :
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 23.12.2025 Endbetrag : -3.308,40 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4657825824.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 4
+2000005442437100 035130350000
+Nr.304630748/1 Kauf SG EFF. TURBOL ZAL 
+ZALAND (DE000SQ0ZYQ2/SQ0ZYQ)
+Ordervolumen : 400,00 St. Handelsplatz : Société Générale
+davon ausgef. : 400,00 St. Schlusstag : 19.12.2025, 16:52 Uhr
+Kurs : 7,8800 EUR Kurswert : 3.152,00 EUR
+Devisenkurs : Provision : 1,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen :
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 23.12.2025 Endbetrag : -3.153,90 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4657829395.
+Nr.304630840/1 Kauf DZ BANK TURBOC CBK 
+COMMER (DE000DY8SLN1/DY8SLN)
+Ordervolumen : 250,00 St. Handelsplatz : DZ Bank
+davon ausgef. : 250,00 St. Schlusstag : 19.12.2025, 16:53 Uhr
+Kurs : 12,1100 EUR Kurswert : 3.027,50 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen :
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 23.12.2025 Endbetrag : -3.033,40 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 4
+2000005442437100 035130350000
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4657832405.
+Nr.304630911/1 Kauf SG EFF. TURBOL JUN3 
+JUNGH (DE000SN98DZ5/SN98DZ)
+Ordervolumen : 250,00 St. Handelsplatz : Société Générale
+davon ausgef. : 250,00 St. Schlusstag : 19.12.2025, 16:54 Uhr
+Kurs : 11,6700 EUR Kurswert : 2.917,50 EUR
+Devisenkurs : Provision : 1,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen :
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 23.12.2025 Endbetrag : -2.919,40 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4657834889.
+Nr.304631166/1 Kauf SG EFF. TURBOL 0UB UBS 
+GR (DE000SX8LXR6/SX8LXR)
+Ordervolumen : 2.200,00 St. Handelsplatz : Société Générale
+davon ausgef. : 2.200,00 St. Schlusstag : 19.12.2025, 16:58 Uhr
+Kurs : 1,3800 EUR Kurswert : 3.036,00 EUR
+Devisenkurs : Provision : 1,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen :
+Lagerstelle : Clearstream Nat.
+Lagerland : CEU-Deutschland ** Einbeh. Steuer : 0,00 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 3 von 4
+2000005442437100 035130350000
+Nr.304631166/1 Kauf SG EFF. TURBOL 0UB UBS 
+GR (DE000SX8LXR6/SX8LXR)
+Gewinn/Verlust : 0,00 EUR
+Valuta : 23.12.2025 Endbetrag : -3.037,90 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4657843796.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 31009072963
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 4 von 4
+2000005442437100 035130350000
