@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 
 final class CSVExtractorTestUtil
 {
