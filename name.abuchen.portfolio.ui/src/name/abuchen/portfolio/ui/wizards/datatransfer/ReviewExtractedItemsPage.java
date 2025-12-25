@@ -200,6 +200,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         {
             case WARNING -> Images.WARNING;
             case ERROR -> Images.ERROR;
+            case SKIP -> Images.SKIP;
             case OK -> Images.OK;
             default -> throw new IllegalArgumentException();
         };
@@ -1035,7 +1036,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
             else if (entry.getItem().isSkipped())
             {
-                entry.addStatus(new ImportAction.Status(Code.ERROR, ((SkippedItem) entry.getItem()).getSkipReason()));
+                entry.addStatus(new ImportAction.Status(Code.SKIP, ((SkippedItem) entry.getItem()).getSkipReason()));
             }
             else
             {
