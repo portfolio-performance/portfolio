@@ -314,6 +314,7 @@ public class ClientInput
     private File pickFile(Shell shell, String extension, String fileNameProposal)
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setText(Messages.LabelSaveDialogTitle);
         dialog.setOverwrite(true);
 
         // set filter names and extension to make sure the file name keeps the
@@ -323,10 +324,10 @@ public class ClientInput
 
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog
-        if (extension != null && !fileNameProposal.endsWith('.' + extension))
+        if (extension != null && fileNameProposal.endsWith('.' + extension))
         {
             int p = fileNameProposal.lastIndexOf('.');
-            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
+            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.');
         }
 
         dialog.setFileName(fileNameProposal);

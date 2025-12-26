@@ -128,6 +128,12 @@
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache Commons" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>1.19.0</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.3.5</version>
@@ -137,12 +143,6 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-csv</artifactId>
 				<version>1.14.1</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>1.19.0</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
