@@ -115,15 +115,13 @@ jobs:
           git push origin "$RELEASE_TAG"
           
           # Create release notes file
-          cat > release_notes.md << 'EOFNOTES'
-          EOFNOTES
-          echo "$RELEASE_BODY" >> release_notes.md
-          cat >> release_notes.md << 'EOFNOTES'
-          
-          ---
-          
-          EOFNOTES
-          echo "This release is based on upstream portfolio-performance/portfolio $RELEASE_TAG, synced to TLVTrade2 branch." >> release_notes.md
+          {
+            echo "$RELEASE_BODY"
+            echo ""
+            echo "---"
+            echo ""
+            echo "This release is based on upstream portfolio-performance/portfolio $RELEASE_TAG, synced to TLVTrade2 branch."
+          } > release_notes.md
           
           # Create the release using GitHub CLI
           gh release create "$RELEASE_TAG" \
