@@ -220,6 +220,14 @@ public interface UIConstants
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
 
+        /**
+         * Preference key whether to activate in-place editing with a double
+         * click. As described in the Eclipse Platform issue
+         * https://github.com/eclipse-platform/eclipse.platform.ui/issues/1069,
+         * on macOS the UI can freeze on multiple double-clicks.
+         */
+        String DOUBLE_CLICK_CELL_TO_EDIT = "DOUBLE_CLICK_CELL_TO_EDIT"; //$NON-NLS-1$
+
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
 

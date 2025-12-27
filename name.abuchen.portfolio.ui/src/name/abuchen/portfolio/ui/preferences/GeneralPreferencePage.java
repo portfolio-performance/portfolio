@@ -41,5 +41,8 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
         addField(new BooleanFieldEditor(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, //
                         Messages.PrefLabelUseSWTChartLibrary, getFieldEditorParent()));
 
+        addField(new BooleanFieldEditor(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT, //
+                        Messages.PrefDoubleClickCellToEdit, getFieldEditorParent()));
+
     }
 }
