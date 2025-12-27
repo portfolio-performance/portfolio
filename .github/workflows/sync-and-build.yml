@@ -25,18 +25,32 @@ jobs:
         id: check_release
         run: |
           # Get the latest release from upstream
-          response=$(curl -s https://api.github.com/repos/portfolio-performance/portfolio/releases/latest)
+          response=$(curl -s -w "\n%{http_code}" https://api.github.com/repos/portfolio-performance/portfolio/releases/latest)
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
           
           # Check if API call was successful
-          if [ -z "$response" ] || echo "$response" | grep -q '"message".*"Not Found"'; then
-            echo "Failed to fetch release information from upstream"
+          if [ "$http_code" != "200" ]; then
+            echo "Failed to fetch release information from upstream (HTTP $http_code)"
             echo "new_release=false" >> $GITHUB_OUTPUT
             exit 0
           fi
           
-          latest_release=$(echo "$response" | jq -r '.tag_name')
-          release_name=$(echo "$response" | jq -r '.name')
-          release_body=$(echo "$response" | jq -r '.body')
+          if [ -z "$body" ]; then
+            echo "Empty response from API"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          latest_release=$(echo "$body" | jq -r '.tag_name // empty')
+          release_name=$(echo "$body" | jq -r '.name // empty')
+          release_body=$(echo "$body" | jq -r '.body // empty')
+          
+          if [ -z "$latest_release" ]; then
+            echo "Could not parse release tag from API response"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           
           echo "Latest upstream release: $latest_release"
           
@@ -102,12 +116,14 @@ jobs:
           
           # Create release notes file
           cat > release_notes.md << 'EOFNOTES'
-          ${{ needs.sync.outputs.release_body }}
+          EOFNOTES
+          echo "$RELEASE_BODY" >> release_notes.md
+          cat >> release_notes.md << 'EOFNOTES'
           
           ---
           
-          This release is based on upstream portfolio-performance/portfolio ${{ needs.sync.outputs.release_tag }}, synced to TLVTrade2 branch.
           EOFNOTES
+          echo "This release is based on upstream portfolio-performance/portfolio $RELEASE_TAG, synced to TLVTrade2 branch." >> release_notes.md
           
           # Create the release using GitHub CLI
           gh release create "$RELEASE_TAG" \
