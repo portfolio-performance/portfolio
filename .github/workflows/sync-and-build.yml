@@ -77,7 +77,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/portfolio-performance/portfolio.git
+          
+          # Add upstream remote if it doesn't exist
+          git remote get-url upstream >/dev/null 2>&1 || git remote add upstream https://github.com/portfolio-performance/portfolio.git
           git fetch upstream
           
           # Update master
@@ -110,6 +112,9 @@ jobs:
           RELEASE_NAME: ${{ needs.sync.outputs.release_name }}
           RELEASE_BODY: ${{ needs.sync.outputs.release_body }}
         run: |
+          # Remove local tag if it exists (cleanup from potential previous failed runs)
+          git tag -d "$RELEASE_TAG" 2>/dev/null || true
+          
           # Create a tag on TLVTrade2 branch
           git tag -a "$RELEASE_TAG" -m "Release $RELEASE_TAG for TLVTrade2"
           git push origin "$RELEASE_TAG"
