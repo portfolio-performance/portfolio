@@ -8,8 +8,12 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    outputs: # Optional: tell the next job if the sync actually happened
-      did_sync: ${{ steps.push.outputs.synced }}
+    outputs:
+      did_sync: ${{ steps.sync.outputs.synced }}
+      new_release: ${{ steps.check_release.outputs.new_release }}
+      release_tag: ${{ steps.check_release.outputs.release_tag }}
+      release_name: ${{ steps.check_release.outputs.release_name }}
+      release_body: ${{ steps.check_release.outputs.release_body }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,11 +21,65 @@ jobs:
           token: ${{ secrets.SYNC_TOKEN }}
           fetch-depth: 0
 
+      - name: Check for new upstream release
+        id: check_release
+        run: |
+          # Get the latest release from upstream
+          response=$(curl -s -w "\n%{http_code}" https://api.github.com/repos/portfolio-performance/portfolio/releases/latest)
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          # Check if API call was successful
+          if [ "$http_code" != "200" ]; then
+            echo "Failed to fetch release information from upstream (HTTP $http_code)"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          if [ -z "$body" ]; then
+            echo "Empty response from API"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          latest_release=$(echo "$body" | jq -r '.tag_name // empty')
+          release_name=$(echo "$body" | jq -r '.name // empty')
+          release_body=$(echo "$body" | jq -r '.body // empty')
+          
+          if [ -z "$latest_release" ]; then
+            echo "Could not parse release tag from API response"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "Latest upstream release: $latest_release"
+          
+          # Check if this release already exists in our repo
+          git fetch origin --tags
+          if git rev-parse "refs/tags/$latest_release" >/dev/null 2>&1; then
+            echo "Release $latest_release already exists in our repo"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "New release detected: $latest_release"
+            echo "new_release=true" >> $GITHUB_OUTPUT
+            echo "release_tag=$latest_release" >> $GITHUB_OUTPUT
+            echo "release_name=$release_name" >> $GITHUB_OUTPUT
+            # Escape the release body for multiline output
+            {
+              echo "release_body<<EOF"
+              echo "$release_body"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+          fi
+
       - name: Sync Logic
+        id: sync
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/portfolio-performance/portfolio.git
+          
+          # Add upstream remote if it doesn't exist
+          git remote get-url upstream >/dev/null 2>&1 || git remote add upstream https://github.com/portfolio-performance/portfolio.git
           git fetch upstream
           
           # Update master
@@ -35,9 +93,51 @@ jobs:
           git push origin TLVTrade2
           echo "synced=true" >> $GITHUB_OUTPUT
 
+  create-release:
+    needs: sync
+    if: needs.sync.outputs.new_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout TLVTrade2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: TLVTrade2
+          token: ${{ secrets.SYNC_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create Release on TLVTrade2
+        env:
+          GITHUB_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          RELEASE_TAG: ${{ needs.sync.outputs.release_tag }}
+          RELEASE_NAME: ${{ needs.sync.outputs.release_name }}
+          RELEASE_BODY: ${{ needs.sync.outputs.release_body }}
+        run: |
+          # Remove local tag if it exists (cleanup from potential previous failed runs)
+          git tag -d "$RELEASE_TAG" 2>/dev/null || true
+          
+          # Create a tag on TLVTrade2 branch
+          git tag -a "$RELEASE_TAG" -m "Release $RELEASE_TAG for TLVTrade2"
+          git push origin "$RELEASE_TAG"
+          
+          # Create release notes file
+          {
+            echo "$RELEASE_BODY"
+            echo ""
+            echo "---"
+            echo ""
+            echo "This release is based on upstream portfolio-performance/portfolio $RELEASE_TAG, synced to TLVTrade2 branch."
+          } > release_notes.md
+          
+          # Create the release using GitHub CLI
+          gh release create "$RELEASE_TAG" \
+            --title "$RELEASE_NAME (TLVTrade2)" \
+            --notes-file release_notes.md \
+            --target TLVTrade2
+
   # CALL THE BUILD WORKFLOW
   call-build:
-    needs: sync
+    needs: [sync, create-release]
+    if: always() && needs.sync.outputs.did_sync == 'true' && (needs.create-release.result == 'success' || needs.create-release.result == 'skipped')
     # Points to the file in your repo: .github/workflows/build-tlv.yml
     uses: arnonm/portfolio/.github/workflows/build-tlv.yml@TLVTrade2
     secrets: inherit # Passes secrets (like SYNC_TOKEN) to the build workflow
