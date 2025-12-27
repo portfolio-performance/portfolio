@@ -1,0 +1,43 @@
+name: Weekly Multi-Branch Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs: # Optional: tell the next job if the sync actually happened
+      did_sync: ${{ steps.push.outputs.synced }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SYNC_TOKEN }}
+          fetch-depth: 0
+
+      - name: Sync Logic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/portfolio-performance/portfolio.git
+          git fetch upstream
+          
+          # Update master
+          git checkout master
+          git merge upstream/master --no-edit
+          git push origin master
+          
+          # Update your feature branch
+          git checkout TLVTrade2
+          git merge master --no-edit
+          git push origin TLVTrade2
+          echo "synced=true" >> $GITHUB_OUTPUT
+
+  # CALL THE BUILD WORKFLOW
+  call-build:
+    needs: sync
+    # Points to the file in your repo: .github/workflows/build-tlv.yml
+    uses: arnonm/portfolio/.github/workflows/build-tlv.yml@TLVTrade2
+    secrets: inherit # Passes secrets (like SYNC_TOKEN) to the build workflow
