@@ -25,9 +25,18 @@ jobs:
         id: check_release
         run: |
           # Get the latest release from upstream
-          latest_release=$(curl -s https://api.github.com/repos/portfolio-performance/portfolio/releases/latest | jq -r '.tag_name')
-          release_name=$(curl -s https://api.github.com/repos/portfolio-performance/portfolio/releases/latest | jq -r '.name')
-          release_body=$(curl -s https://api.github.com/repos/portfolio-performance/portfolio/releases/latest | jq -r '.body')
+          response=$(curl -s https://api.github.com/repos/portfolio-performance/portfolio/releases/latest)
+          
+          # Check if API call was successful
+          if [ -z "$response" ] || echo "$response" | grep -q '"message".*"Not Found"'; then
+            echo "Failed to fetch release information from upstream"
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          latest_release=$(echo "$response" | jq -r '.tag_name')
+          release_name=$(echo "$response" | jq -r '.name')
+          release_body=$(echo "$response" | jq -r '.body')
           
           echo "Latest upstream release: $latest_release"
           
@@ -109,7 +118,7 @@ jobs:
   # CALL THE BUILD WORKFLOW
   call-build:
     needs: [sync, create-release]
-    if: always() && needs.sync.outputs.did_sync == 'true'
+    if: always() && needs.sync.outputs.did_sync == 'true' && (needs.create-release.result == 'success' || needs.create-release.result == 'skipped')
     # Points to the file in your repo: .github/workflows/build-tlv.yml
     uses: arnonm/portfolio/.github/workflows/build-tlv.yml@TLVTrade2
     secrets: inherit # Passes secrets (like SYNC_TOKEN) to the build workflow
