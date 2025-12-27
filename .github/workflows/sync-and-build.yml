@@ -112,6 +112,10 @@ jobs:
           RELEASE_NAME: ${{ needs.sync.outputs.release_name }}
           RELEASE_BODY: ${{ needs.sync.outputs.release_body }}
         run: |
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Remove local tag if it exists (cleanup from potential previous failed runs)
           git tag -d "$RELEASE_TAG" 2>/dev/null || true
           
