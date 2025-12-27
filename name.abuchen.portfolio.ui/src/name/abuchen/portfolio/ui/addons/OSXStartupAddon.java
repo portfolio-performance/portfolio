@@ -45,6 +45,13 @@ public class OSXStartupAddon
             {
                 int prefsIndex = systemMenu.indexOf(getItem(systemMenu, SWT.ID_PREFERENCES));
 
+                var prefsItem = getItem(systemMenu, SWT.ID_PREFERENCES);
+                if (isAtLeastMacOS13() && prefsItem != null)
+                {
+                    // "Preferences" changed to "Settings" since MacOS 13
+                    prefsItem.setText(Messages.LabelSettings + "..."); //$NON-NLS-1$
+                }
+
                 if (UpdateHelper.isInAppUpdateEnabled())
                 {
                     MenuItem updatesMenuItem = new MenuItem(systemMenu, SWT.CASCADE, ++prefsIndex);
@@ -88,6 +95,24 @@ public class OSXStartupAddon
                 });
 
             }
+        }
+    }
+
+    private boolean isAtLeastMacOS13()
+    {
+        var osVersion = System.getProperty("os.version"); //$NON-NLS-1$
+        if (osVersion == null)
+            return false;
+
+        try
+        {
+            var parts = osVersion.split("\\."); //$NON-NLS-1$
+            int major = Integer.parseInt(parts[0]);
+            return major >= 13;
+        }
+        catch (NumberFormatException | IndexOutOfBoundsException e)
+        {
+            return false;
         }
     }
 
