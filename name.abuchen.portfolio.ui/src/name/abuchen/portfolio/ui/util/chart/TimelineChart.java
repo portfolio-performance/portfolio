@@ -30,8 +30,6 @@ import org.eclipse.swtchart.internal.PlotArea;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
-import name.abuchen.portfolio.ui.views.SecuritiesChart;
 
 public class TimelineChart extends Chart // NOSONAR
 {
@@ -82,8 +80,6 @@ public class TimelineChart extends Chart // NOSONAR
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
-    private SecuritiesChart securitiesChart;
-
     @SuppressWarnings("restriction")
     public TimelineChart(Composite parent)
     {
@@ -109,23 +105,6 @@ public class TimelineChart extends Chart // NOSONAR
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
         yAxis.setPosition(Position.Secondary);
-
-        // 2nd y axis
-        int axisId = getAxisSet().createYAxis();
-        IAxis y2Axis = getAxisSet().getYAxis(axisId);
-        y2Axis.getTitle().setVisible(false);
-        y2Axis.getTick().setVisible(false);
-        y2Axis.getGrid().setStyle(LineStyle.NONE);
-        y2Axis.setPosition(Position.Primary);
-
-        // 3rd y axis (percentage)
-        int axisId3rd = getAxisSet().createYAxis();
-        IAxis y3Axis = getAxisSet().getYAxis(axisId3rd);
-        y3Axis.getTitle().setVisible(false);
-        y3Axis.getTick().setVisible(false);
-        y3Axis.getTick().setFormat(new AxisTickPercentNumberFormat("+#.##%;-#.##%")); //$NON-NLS-1$
-        y3Axis.getGrid().setStyle(LineStyle.NONE);
-        y3Axis.setPosition(Position.Primary);
 
         getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
@@ -155,12 +134,6 @@ public class TimelineChart extends Chart // NOSONAR
         getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
-    }
-
-    public TimelineChart(Composite parent, SecuritiesChart securitiesChart)
-    {
-        this(parent);
-        this.securitiesChart = securitiesChart;
     }
 
     public void addMarkerLine(LocalDate date, Color color, String label)
@@ -381,9 +354,6 @@ public class TimelineChart extends Chart // NOSONAR
         {
             setRedraw(true);
         }
-
-        if (securitiesChart != null)
-            securitiesChart.updateChart();
     }
 
     @Override

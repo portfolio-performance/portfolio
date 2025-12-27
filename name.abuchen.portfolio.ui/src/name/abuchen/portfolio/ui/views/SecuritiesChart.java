@@ -44,7 +44,6 @@ import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
-import org.eclipse.swtchart.Range;
 
 import com.google.common.primitives.Doubles;
 
@@ -75,8 +74,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ChartColorWheel;
-import name.abuchen.portfolio.ui.util.chart.ChartUtil;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.PriceTimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
@@ -402,7 +400,7 @@ public class SecuritiesChart
     private CurrencyConverter converter;
     private Security[] securities = new Security[0];
 
-    private TimelineChart chart;
+    private PriceTimelineChart chart;
 
     /**
      * Calculates dynamically for each security the interval of security prices
@@ -446,7 +444,7 @@ public class SecuritiesChart
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
-        chart = new TimelineChart(container, this);
+        chart = new PriceTimelineChart(container);
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getTitle().setVisible(false);
 
@@ -910,7 +908,7 @@ public class SecuritiesChart
         return Arrays.stream(securities).map(Named::getName).collect(Collectors.joining(", ")); //$NON-NLS-1$
     }
 
-    public void updateChart()
+    private void updateChart()
     {
         boolean isSingleSecurityMode = securities.length == 1;
 
@@ -1077,27 +1075,16 @@ public class SecuritiesChart
                 configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID, enableArea,
                                 !isSingleSecurityMode);
 
-                adjustRange();
+                chart.adjustRange();
 
                 addChartMarkerForeground(chartInterval, security, chartConfigPainting);
 
-                adjustRange();
+                chart.setFirstQuote(firstQuote);
+                chart.adjustRange();
 
                 IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
                 IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
                 IAxis yAxis3rd = chart.getAxisSet().getYAxis(2);
-
-                if (firstQuote == null)
-                    firstQuote = (prices.get(range.start).getValue() / Values.Quote.divider());
-
-                yAxis2nd.setRange(new Range(yAxis1st.getRange().lower - firstQuote,
-                                yAxis1st.getRange().upper - firstQuote));
-
-                if (firstQuote != 0)
-                {
-                    yAxis3rd.setRange(new Range(yAxis1st.getRange().lower / firstQuote - 1,
-                                    yAxis1st.getRange().upper / firstQuote - 1));
-                }
 
                 yAxis1st.enableLogScale(chartConfigPainting.contains(ChartDetails.SCALING_LOG));
                 yAxis2nd.enableLogScale(chartConfigPainting.contains(ChartDetails.SCALING_LOG));
@@ -1997,20 +1984,4 @@ public class SecuritiesChart
                 font.dispose();
         }
     }
-
-    private void adjustRange()
-    {
-        try
-        {
-            chart.setRedraw(false);
-
-            chart.getAxisSet().adjustRange();
-            ChartUtil.addYMargins(chart, 0.08);
-        }
-        finally
-        {
-            chart.setRedraw(true);
-        }
-    }
-
 }
