@@ -727,6 +727,16 @@ public class TradesTableViewer
             {
                 return portfolioName.apply(e);
             }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                Trade trade = asTrade(e);
+                if (trade != null)
+                    return LogoManager.instance().getDefaultColumnImage(trade.getPortfolio(),
+                                    view.getClient().getSettings());
+                return null;
+            }
         }));
         column.setSorter(ColumnViewerSorter.createIgnoreCase(portfolioName));
         column.setVisible(false);
