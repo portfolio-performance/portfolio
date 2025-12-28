@@ -33,7 +33,7 @@ public class DetectDuplicatesActionTest
     @Test
     public void testDuplicateDetection4AccountTransaction() throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
+        var action = new DetectDuplicatesAction(new Client());
 
         new PropertyChecker<AccountTransaction>(
                         AccountTransaction.class, "note", "source", "forex", "monetaryAmount", "updatedAt")
@@ -49,7 +49,7 @@ public class DetectDuplicatesActionTest
     public void testDuplicateDetection4PortfolioTransaction()
                     throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
+        var action = new DetectDuplicatesAction(new Client());
 
         new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "source",
                         "forex", "monetaryAmount", "updatedAt") //
@@ -65,7 +65,7 @@ public class DetectDuplicatesActionTest
     public void testDuplicateDetectionWithPurchaseAndDeliveryPairs()
                     throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
+        var action = new DetectDuplicatesAction(new Client());
 
         new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "source",
                         "forex", "monetaryAmount", "updatedAt") //
@@ -91,6 +91,53 @@ public class DetectDuplicatesActionTest
                                                         action.process(o, portfolio(c)).getCode(), is(Code.OK)))
                                         .run();
 
+    }
+
+    @Test
+    public void testDuplicateDetectionWithTransferInAndDeposit()
+    {
+        var transferIn = getTestEntry(AccountTransaction.Type.TRANSFER_IN);
+        var deposit = getTestEntry(AccountTransaction.Type.DEPOSIT);
+
+        var action = new DetectDuplicatesAction(new Client());
+
+        var status = action.process(deposit, account(transferIn));
+
+        assertThat(status.getCode(), is(Code.WARNING));
+
+        // check vice versa
+        status = action.process(transferIn, account(deposit));
+
+        assertThat(status.getCode(), is(Code.WARNING));
+    }
+
+    @Test
+    public void testDuplicateDetectionWithTransferOutAndWithdrawal()
+    {
+        var transferOut = getTestEntry(AccountTransaction.Type.TRANSFER_OUT);
+        var withdrawl = getTestEntry(AccountTransaction.Type.REMOVAL);
+
+        var action = new DetectDuplicatesAction(new Client());
+
+        var status = action.process(withdrawl, account(transferOut));
+
+        assertThat(status.getCode(), is(Code.WARNING));
+
+        // check vice versa
+        status = action.process(transferOut, account(withdrawl));
+
+        assertThat(status.getCode(), is(Code.WARNING));
+    }
+
+    private AccountTransaction getTestEntry(AccountTransaction.Type type)
+    {
+        var transaction = new AccountTransaction();
+        transaction.setType(type);
+        transaction.setAmount(1000);
+        transaction.setCurrencyCode("EUR"); //$NON-NLS-1$
+        transaction.setDateTime(LocalDateTime.of(2025, 12, 15, 0, 0));
+
+        return transaction;
     }
 
     private Account account(AccountTransaction t)
