@@ -13,7 +13,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 /* package */class CSVSecurityExtractor extends BaseCSVExtractor
@@ -22,7 +21,7 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
     {
         super(client, Messages.CSVDefSecurities);
 
-        List<Field> fields = getFields();
+        var fields = getFields();
         fields.add(new Field("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
@@ -45,13 +44,13 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // check if we can identify a security
-        Security security = getSecurity(rawValues, field2column, s -> {
+        var security = getSecurity(rawValues, field2column, s -> {
             s.setCurrencyCode(getCurrencyCode(Messages.CSVColumn_Currency, rawValues, field2column));
 
-            String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
+            var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
             s.setNote(note);
 
-            String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            var tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
             if (tickerSymbol != null && !tickerSymbol.isBlank())
             {
                 s.setTickerSymbol(tickerSymbol);

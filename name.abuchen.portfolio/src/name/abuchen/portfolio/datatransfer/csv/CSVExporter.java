@@ -164,7 +164,7 @@ public class CSVExporter
 
     private void printSecurityInfo(CSVPrinter printer, Transaction t) throws IOException
     {
-        Security security = t.getSecurity();
+        var security = t.getSecurity();
         if (security != null)
         {
             printer.print(escapeNull(security.getIsin()));
@@ -260,12 +260,12 @@ public class CSVExporter
 
         for (Security s : securities)
         {
-            List<SecurityPrice> prices = s.getPrices();
+            var prices = s.getPrices();
             if (!prices.isEmpty())
             {
                 export.add(s);
 
-                LocalDate quoteDate = prices.get(0).getDate();
+                var quoteDate = prices.get(0).getDate();
                 if (earliestDate == null)
                     earliestDate = quoteDate;
                 else
@@ -287,8 +287,8 @@ public class CSVExporter
                 return;
 
             // write quotes
-            LocalDate pointer = earliestDate;
-            LocalDate today = LocalDate.now();
+            var pointer = earliestDate;
+            var today = LocalDate.now();
 
             while (pointer.compareTo(today) <= 0)
             {
@@ -298,7 +298,7 @@ public class CSVExporter
                 int ii = 0;
                 for (Security security : export)
                 {
-                    SecurityPrice p = new SecurityPrice(pointer, 0);
+                    var p = new SecurityPrice(pointer, 0);
                     indices[ii] = Collections.binarySearch(security.getPrices(), p);
                     ii++;
                 }
