@@ -172,6 +172,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return allEntries;
     }
 
+    private Images getStatusImage(Code code)
+    {
+        return switch (code)
+        {
+            case WARNING -> Images.WARNING;
+            case ERROR -> Images.ERROR;
+            case OK -> Images.OK;
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
     @Override
     public Portfolio getPortfolio()
     {
@@ -397,21 +408,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public Image getImage(ExtractedEntry entry)
             {
-                Images image = null;
-                switch (entry.getMaxCode())
-                {
-                    case WARNING:
-                        image = Images.WARNING;
-                        break;
-                    case ERROR:
-                        image = Images.ERROR;
-                        break;
-                    case OK:
-                        image = Images.OK;
-                        break;
-                    default:
-                }
-                return image != null ? image.image() : null;
+                return getStatusImage(entry.getMaxCode()).image();
             }
 
             @Override
@@ -630,8 +627,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             entry.getStatus() //
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
-                                Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                                Images.WARNING : Images.ERROR;
+                                Images image = getStatusImage(s.getCode());
                                 manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
                             });
         }
