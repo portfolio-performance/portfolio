@@ -11,6 +11,7 @@ import java.util.MissingResourceException;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.TreeMap;
 
 import name.abuchen.portfolio.Messages;
@@ -77,15 +78,22 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     public static CurrencyUnit getDefaultInstance()
     {
-        if (Locale.getDefault().getCountry().isEmpty())
-            return CurrencyUnit.getInstance(EUR);
+        try
+        {
+            if (!Set.of(Locale.getISOCountries()).contains(Locale.getDefault().getCountry()))
+                return CurrencyUnit.getInstance(EUR);
 
-        var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
-        if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
-            return CurrencyUnit.getInstance(EUR);
+            var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
+            if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
+                return CurrencyUnit.getInstance(EUR);
 
-        var defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217.getCurrencyCode());
-        return defaultCurrencyUnit != null ? defaultCurrencyUnit : CurrencyUnit.getInstance(EUR);
+            var defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217.getCurrencyCode());
+            return defaultCurrencyUnit != null ? defaultCurrencyUnit : CurrencyUnit.getInstance(EUR);
+        }
+        catch (NullPointerException | IllegalArgumentException e)
+        {
+            return CurrencyUnit.getInstance(EUR);
+        }
     }
 
     public static CurrencyUnit getInstanceBySymbol(String currencySymbol)
