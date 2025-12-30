@@ -164,7 +164,7 @@
 								<argument>https://www.portfolio-performance.info</argument>
 								<argument>PortfolioPerformance-${project.version}-setup.exe</argument>
 							</arguments>
-							<skip>${installer.skip}</skip>
+						<skip>${exesigner.skip}</skip>
 						</configuration>
 					</execution>
 				</executions>
