@@ -76,14 +76,14 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         return CACHE.get(currencyCode);
     }
 
-    public static CurrencyUnit getDefaultInstance()
+    public static CurrencyUnit getDefaultInstance(Locale locale)
     {
         try
         {
-            if (!Set.of(Locale.getISOCountries()).contains(Locale.getDefault().getCountry()))
+            if (!Set.of(Locale.getISOCountries()).contains(locale.getCountry()))
                 return CurrencyUnit.getInstance(EUR);
 
-            var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
+            var defaultCurrencyISO4217 = java.util.Currency.getInstance(locale);
             if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
                 return CurrencyUnit.getInstance(EUR);
 
