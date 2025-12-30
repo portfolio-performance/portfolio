@@ -136,11 +136,13 @@ public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
         {
             String ownerCurrencyCode = account.getCurrencyCode();
             comboBoxItems = client.getAccounts().stream().filter(a -> !a.equals(skipTransfer))
-                            .filter(a -> a.getCurrencyCode().equals(ownerCurrencyCode)).collect(Collectors.toList());
+                            .filter(a -> a.getCurrencyCode().equals(ownerCurrencyCode)).sorted(new Account.ByName())
+                            .collect(Collectors.toList());
         }
         else if (ownerToEdit instanceof Portfolio)
         {
             comboBoxItems = client.getPortfolios().stream().filter(p -> !p.equals(skipTransfer))
+                            .sorted(new Portfolio.ByName())
                             .collect(Collectors.toList());
         }
         else
