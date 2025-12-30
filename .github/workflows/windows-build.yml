@@ -3,7 +3,7 @@ name: Windows Build
 on:
   push:
     branches:
-      - winInstaller
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
@@ -80,10 +80,7 @@ jobs:
       run: |
         Write-Host "Checking for Windows installer..."
         $installerPath = "portfolio-product\target\products"
-        if (Test-Path $installerPath) {
-          Write-Host "Contents of $installerPath :"
-          Get-ChildItem -Path $installerPath -Recurse | Select-Object FullName, Length
-        } else {
+        if not (Test-Path $installerPath) {
           Write-Host "Products directory not found at $installerPath"
         }
         Write-Host "`nChecking materialize-products output..."
