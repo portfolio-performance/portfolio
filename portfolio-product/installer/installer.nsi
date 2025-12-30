@@ -50,12 +50,13 @@ Section
   # uninstall.exe
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
-  AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite + Delete"
-  Pop $0
-  ${If} $0 == error
-    Pop $0
-    DetailPrint `AccessControl error: $0`
-  ${EndIf}
+  # AccessControl plugin not available in standard NSIS installation
+  # AccessControl::GrantOnFile "$INSTDIR" "(BU)" "GenericRead + GenericWrite + Delete"
+  # Pop $0
+  # ${If} $0 == error
+  #   Pop $0
+  #   DetailPrint `AccessControl error: $0`
+  # ${EndIf}
 
   # shortcuts
   CreateDirectory  "$SMPROGRAMS\$APPNAMEFULL"
