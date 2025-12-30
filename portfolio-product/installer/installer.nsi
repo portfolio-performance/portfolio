@@ -12,10 +12,12 @@
 
 !include nsDialogs.nsh
 !include LogicLib.nsh
+!include FileFunc.nsh
 
-RequestExecutionLevel highest
+RequestExecutionLevel user
 
 Var InstallType
+Var InstallTypeFromCmdLine
 Var Dialog
 Var RadioUser
 Var RadioAllUsers
@@ -37,11 +39,42 @@ Page directory
 Page instfiles
 
 Function .onInit
+  Var /GLOBAL cmdLineParams
+  Var /GLOBAL allUsersFlag
+  Var /GLOBAL currentUserFlag
+  
   StrCpy $InstallType "user"
+  StrCpy $InstallTypeFromCmdLine "0"
   StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${FOLDER_NAME}"
+  
+  # Check for command line parameters
+  ${GetParameters} $cmdLineParams
+  
+  # Check for /AllUsers flag
+  ClearErrors
+  ${GetOptions} $cmdLineParams "/AllUsers" $allUsersFlag
+  ${IfNot} ${Errors}
+    StrCpy $InstallType "allusers"
+    StrCpy $INSTDIR "$PROGRAMFILES\${FOLDER_NAME}"
+    StrCpy $InstallTypeFromCmdLine "1"
+  ${EndIf}
+  
+  # Check for /CurrentUser flag
+  ClearErrors
+  ${GetOptions} $cmdLineParams "/CurrentUser" $currentUserFlag
+  ${IfNot} ${Errors}
+    StrCpy $InstallType "user"
+    StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${FOLDER_NAME}"
+    StrCpy $InstallTypeFromCmdLine "1"
+  ${EndIf}
 FunctionEnd
 
 Function InstallTypePage
+  # Skip this page if installation type was specified via command line
+  ${If} $InstallTypeFromCmdLine == "1"
+    Abort
+  ${EndIf}
+  
   nsDialogs::Create 1018
   Pop $Dialog
 
