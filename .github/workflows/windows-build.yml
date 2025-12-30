@@ -63,12 +63,34 @@ jobs:
     - name: Build with Maven
       run: |
         $env:Path = "C:\Program Files (x86)\NSIS;" + $env:Path
+        Write-Host "Current PATH: $env:Path"
+        Write-Host "Testing makensis availability:"
+        makensis /VERSION
+        Write-Host "`nStarting Maven build..."
         mvn clean verify `
         --batch-mode `
         --file portfolio-app/pom.xml `
         -Ppackage-distro `
         "-Dinstaller.skip=false" `
-        "-Dexesigner.skip=false" 
+        "-Dexesigner.skip=false"
+      shell: powershell
+    
+    - name: Check Build Output
+      if: always()
+      run: |
+        Write-Host "Checking for Windows installer..."
+        $installerPath = "portfolio-product\target\products"
+        if (Test-Path $installerPath) {
+          Write-Host "Contents of $installerPath :"
+          Get-ChildItem -Path $installerPath -Recurse | Select-Object FullName, Length
+        } else {
+          Write-Host "Products directory not found at $installerPath"
+        }
+        Write-Host "`nChecking materialize-products output..."
+        $productsPath = "portfolio-product\target\products"
+        if (Test-Path $productsPath) {
+          Get-ChildItem -Path $productsPath | ForEach-Object { Write-Host $_.FullName }
+        }
       shell: powershell
     
     - name: Upload Build Artifacts

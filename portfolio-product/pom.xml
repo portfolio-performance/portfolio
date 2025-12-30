@@ -318,6 +318,32 @@
 						<version>${tycho-version}</version>
 						<executions>
 							<execution>
+								<id>materialize-products</id>
+								<goals>
+									<goal>materialize-products</goal>
+								</goals>
+								<configuration>
+									<products>
+										<product>
+											<id>name.abuchen.portfolio.product</id>
+											<rootFolder>portfolio</rootFolder>
+											<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
+											<rootFolders>
+												<macosx>PortfolioPerformance.app</macosx>
+											</rootFolders>
+										</product>
+										<product>
+											<id>name.abuchen.portfolio.distro.product</id>
+											<rootFolder>portfolio</rootFolder>
+											<archiveFileName>PortfolioPerformance-distro-${project.version}</archiveFileName>
+											<rootFolders>
+												<macosx>PortfolioPerformance.app</macosx>
+											</rootFolders>
+										</product>
+									</products>
+								</configuration>
+							</execution>
+							<execution>
 								<id>archive-products</id>
 								<phase>integration-test</phase>
 								<goals>
