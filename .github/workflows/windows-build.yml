@@ -45,9 +45,21 @@ jobs:
       run: choco install jsign -y
       shell: powershell
     
+    - name: Verify NSIS Installation
+      run: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        makensis /VERSION
+      shell: powershell
+    
     - name: Build with Maven
       run: |
-        mvn clean verify  --batch-mode --file portfolio-app/pom.xml -Ppackage-distro "-Dinstaller.skip=false" "-Dexesigner.skip=false" 
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        mvn clean verify `
+        --batch-mode `
+        --file portfolio-app/pom.xml `
+        -Ppackage-distro `
+        "-Dinstaller.skip=false" `
+        "-Dexesigner.skip=false" 
       shell: powershell
     
     - name: Upload Build Artifacts
