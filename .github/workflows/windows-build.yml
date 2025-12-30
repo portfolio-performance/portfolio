@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - winInstaller
-#  pull_request:
-#    types: [opened, synchronize, reopened]
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
@@ -50,8 +50,8 @@ jobs:
         mvn clean install `
         --batch-mode `
         --file portfolio-app/pom.xml `
-        -D'installer.skip=false' `
-        -D'exesigner.skip=false'
+        -D installer.skip=false `
+        -D exesigner.skip=false
       shell: powershell
     
     - name: Upload Build Artifacts
