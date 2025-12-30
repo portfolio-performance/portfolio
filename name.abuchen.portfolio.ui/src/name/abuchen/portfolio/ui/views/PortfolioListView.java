@@ -4,6 +4,8 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
@@ -228,7 +230,9 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
             }
         });
         ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(Portfolio.class, "referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
+        List<Account> modifiableAccountList = new ArrayList<>(getClient().getAccounts());
+        Collections.sort(modifiableAccountList, new Account.ByName());
+        new ListEditingSupport(Portfolio.class, "referenceAccount", modifiableAccountList) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
         portfolioColumns.addColumn(column);
 
