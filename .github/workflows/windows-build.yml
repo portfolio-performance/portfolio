@@ -38,7 +38,10 @@ jobs:
         maven-version: 3.9.11
     
     - name: Install NSIS
-      run: choco install nsis -y
+      run: |
+        choco install nsis -y
+        $env:Path = "C:\Program Files (x86)\NSIS;" + $env:Path
+        [Environment]::SetEnvironmentVariable("Path", $env:Path, [EnvironmentVariableTarget]::Process)
       shell: powershell
     
     - name: Install jsign
@@ -47,13 +50,19 @@ jobs:
     
     - name: Verify NSIS Installation
       run: |
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-        makensis /VERSION
+        $nsisPath = "C:\Program Files (x86)\NSIS\makensis.exe"
+        if (Test-Path $nsisPath) {
+          Write-Host "NSIS found at: $nsisPath"
+          & $nsisPath /VERSION
+        } else {
+          Write-Host "NSIS not found at expected location"
+          exit 1
+        }
       shell: powershell
     
     - name: Build with Maven
       run: |
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        $env:Path = "C:\Program Files (x86)\NSIS;" + $env:Path
         mvn clean verify `
         --batch-mode `
         --file portfolio-app/pom.xml `
