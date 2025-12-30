@@ -50,9 +50,9 @@ jobs:
         mvn clean install `
         --batch-mode `
         --file portfolio-app/pom.xml `
+        -Ppackage-distro `
         "-Dinstaller.skip=false" `
         "-Dexesigner.skip=false" `
-        "-Dapplesigner.skip=false"   
       shell: powershell
     
     - name: Upload Build Artifacts
