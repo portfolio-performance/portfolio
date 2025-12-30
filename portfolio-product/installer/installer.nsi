@@ -45,7 +45,7 @@ Section
 
   # all files
   #SetOverWrite try
-  File /r "${INPUT_DIR}\*"
+  File /r /x "p2" "${INPUT_DIR}\*"
 
   # uninstall.exe
   WriteUninstaller "$INSTDIR\uninstall.exe"
