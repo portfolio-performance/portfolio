@@ -72,7 +72,7 @@ jobs:
         --file portfolio-app/pom.xml `
         -Ppackage-distro `
         "-Dinstaller.skip=false" `
-        "-Dexesigner.skip=false"
+        "-Dexesigner.skip=true"
       shell: powershell
     
     - name: Check Build Output
