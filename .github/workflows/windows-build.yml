@@ -47,7 +47,7 @@ jobs:
     
     - name: Build with Maven
       run: |
-        mvn clean install  --batch-mode --file portfolio-app/pom.xml -Ppackage-distro "-Dinstaller.skip=false" "-Dexesigner.skip=false" 
+        mvn clean verify  --batch-mode --file portfolio-app/pom.xml -Ppackage-distro "-Dinstaller.skip=false" "-Dexesigner.skip=false" 
       shell: powershell
     
     - name: Upload Build Artifacts
