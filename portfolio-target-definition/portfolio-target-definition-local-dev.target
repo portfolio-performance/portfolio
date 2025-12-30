@@ -36,9 +36,9 @@
 	<!-- remove babel translations --> 
 
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/swtchart/releases/1.0.0/repository"/>
-		<unit id="org.eclipse.swtchart" version="1.0.0.202412021530"/>
-		<unit id="org.eclipse.swtchart.source" version="1.0.0.202412021530"/>
+		<repository location="https://download.eclipse.org/swtchart/releases/1.1.0/repository"/>
+		<unit id="org.eclipse.swtchart" version="1.1.0.202511241716"/>
+		<unit id="org.eclipse.swtchart.source" version="1.1.0.202511241716"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/eclipse/updates/4.38/R-4.38-202512010920/"/>

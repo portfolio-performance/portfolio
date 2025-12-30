@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.client;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -46,7 +47,7 @@ class BaseCurrencySelectionPage extends AbstractWizardPage
         combo = new ComboViewer(container);
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setInput(currencies);
-        combo.setSelection(new StructuredSelection(CurrencyUnit.getDefaultInstance()));
+        combo.setSelection(new StructuredSelection(CurrencyUnit.getDefaultInstance(Locale.getDefault())));
 
         Label description = new Label(container, SWT.WRAP);
         description.setText(this.explanationIndividualCurrency);

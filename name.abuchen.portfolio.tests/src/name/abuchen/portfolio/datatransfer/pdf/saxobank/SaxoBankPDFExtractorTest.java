@@ -780,6 +780,37 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy08()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1781541252"), hasWkn(null), hasTicker("LCUJ"), //
+                        hasName("Amundi Core MSCI Japan (Acc) UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-05T12:52:33"), hasShares(2.00), //
+                        hasSource("Buy08.txt"), //
+                        hasNote("Order ID 5073052313 | Trade ID 9047570613"), //
+                        hasAmount("EUR", 38.17), hasGrossValue("EUR", 38.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05))));
+    }
+
+    @Test
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());

@@ -9,7 +9,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
@@ -46,7 +45,7 @@ public abstract class CSVExtractor implements Extractor
 
     protected final String getText(String name, String[] rawValues, Map<String, Column> field2column)
     {
-        Column column = field2column.get(name);
+        var column = field2column.get(name);
         if (column == null)
             return null;
 
@@ -56,12 +55,12 @@ public abstract class CSVExtractor implements Extractor
             return null;
 
         String value = rawValues[columnIndex];
-        return value != null && value.trim().length() == 0 ? null : value;
+        return value != null && value.trim().isEmpty() ? null : value;
     }
 
     protected final String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
     {
-        Column column = field2column.get(name);
+        var column = field2column.get(name);
         if (column == null)
             return null;
 
@@ -76,12 +75,12 @@ public abstract class CSVExtractor implements Extractor
 
         value = value.trim().toUpperCase();
 
-        Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
-        Matcher matcher = pattern.matcher(value);
+        var pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+        var matcher = pattern.matcher(value);
         if (matcher.find())
             value = matcher.group(1);
 
-        return value.length() == 0 ? null : value;
+        return value.isEmpty() ? null : value;
     }
 
     protected final Long getAmount(String name, String[] rawValues, Map<String, Column> field2column)
@@ -99,13 +98,13 @@ public abstract class CSVExtractor implements Extractor
     protected final Long getValue(String name, String[] rawValues, Map<String, Column> field2column,
                     Values<Long> values) throws ParseException
     {
-        String value = getText(name, rawValues, field2column);
+        var value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
 
         try
         {
-            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            var num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
             return Long.valueOf(Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)
@@ -120,14 +119,14 @@ public abstract class CSVExtractor implements Extractor
     protected final LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
                     Map<String, Column> field2column) throws ParseException
     {
-        String dateValue = getText(dateColumn, rawValues, field2column);
+        var dateValue = getText(dateColumn, rawValues, field2column);
         if (dateValue == null)
             return null;
 
         LocalDateTime result;
         try
         {
-            Date date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
+            var date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
             result = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         }
         catch (ParseException e)
@@ -140,7 +139,7 @@ public abstract class CSVExtractor implements Extractor
         if (timeColumn == null)
             return result;
 
-        String timeValue = getText(timeColumn, rawValues, field2column);
+        var timeValue = getText(timeColumn, rawValues, field2column);
         if (timeValue != null)
         {
             String[] timeToks = timeValue.split(":"); //$NON-NLS-1$
@@ -166,13 +165,13 @@ public abstract class CSVExtractor implements Extractor
     protected final BigDecimal getBigDecimal(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
-        String value = getText(name, rawValues, field2column);
+        var value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
 
         try
         {
-            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            var num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
             return BigDecimal.valueOf(num.doubleValue());
         }
         catch (ParseException e)
@@ -186,7 +185,7 @@ public abstract class CSVExtractor implements Extractor
     protected final Long getShares(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
-        Long value = getValue(name, rawValues, field2column, Values.Share);
+        var value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
         return Math.abs(value);
@@ -196,7 +195,7 @@ public abstract class CSVExtractor implements Extractor
     protected final <E extends Enum<E>> E getEnum(String name, Class<E> type, String[] rawValues,
                     Map<String, Column> field2column) throws ParseException
     {
-        String value = getText(name, rawValues, field2column);
+        var value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
         FieldFormat ff = field2column.get(name).getFormat();
@@ -224,15 +223,15 @@ public abstract class CSVExtractor implements Extractor
     protected final Account getAccount(Client client, String[] rawValues, Map<String, Column> field2column,
                     boolean use2nd)
     {
-        String type = use2nd ? Messages.CSVColumn_AccountName2nd : Messages.CSVColumn_AccountName;
-        String accountName = getText(type, rawValues, field2column);
-        Account account = null;
+        var type = use2nd ? Messages.CSVColumn_AccountName2nd : Messages.CSVColumn_AccountName;
+        var accountName = getText(type, rawValues, field2column);
+
         if (accountName != null && !accountName.isEmpty())
         {
-            account = client.getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst()
+            return client.getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst()
                             .orElse(null);
         }
-        return account;
+        return null;
     }
 
     protected final Portfolio getPortfolio(Client client, String[] rawValues, Map<String, Column> field2column)
@@ -243,14 +242,14 @@ public abstract class CSVExtractor implements Extractor
     protected final Portfolio getPortfolio(Client client, String[] rawValues, Map<String, Column> field2column,
                     boolean use2nd)
     {
-        String type = use2nd ? Messages.CSVColumn_PortfolioName2nd : Messages.CSVColumn_PortfolioName;
-        String portfolioName = getText(type, rawValues, field2column);
-        Portfolio portfolio = null;
+        var type = use2nd ? Messages.CSVColumn_PortfolioName2nd : Messages.CSVColumn_PortfolioName;
+        var portfolioName = getText(type, rawValues, field2column);
+
         if (portfolioName != null && !portfolioName.isEmpty())
         {
-            portfolio = client.getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst()
+            return client.getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst()
                             .orElse(null);
         }
-        return portfolio;
+        return null;
     }
 }
