@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.csv;
+package name.abuchen.portfolio.datatransfer.csv.exporter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -135,17 +135,15 @@ public class VINISExporter
 
     private void write(CSVPrinter printer, String description, Money value) throws IOException
     {
-        printer.print(description);
-        printer.print(Values.Amount.format(value.getAmount()));
-        printer.print(value.getCurrencyCode());
-        printer.println();
+        printer.printRecord(description, //
+                        Values.Amount.format(value.getAmount()), //
+                        value.getCurrencyCode());
     }
 
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        printer.print(Messages.CSVColumn_Name);
-        printer.print(Messages.CSVColumn_Value);
-        printer.print(Messages.CSVColumn_Currency);
-        printer.println();
+        printer.printRecord(Messages.CSVColumn_Name, //
+                        Messages.CSVColumn_Value, //
+                        Messages.CSVColumn_Currency);
     }
 }
