@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.csv;
+package name.abuchen.portfolio.datatransfer.csv.exporter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -36,21 +35,21 @@ public class AktienfreundeNetExporter
                         .concat(client.getAccounts().stream(), client.getPortfolios().stream())
                         .flatMap(l -> l.getTransactions().stream()) //
                         .sorted(Transaction.BY_DATE) //
-                        .collect(Collectors.toList());
+                        .toList();
 
         // write to file
-        try (CSVPrinter printer = new CSVPrinter(
+        try (var printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8),
                         CSVExporter.STRATEGY))
         {
             writeHeader(printer);
 
             // only buy/sell/dividend transactions
-            for (Transaction t : transactions)
+            for (var transaction : transactions)
             {
-                if (t instanceof AccountTransaction at)
+                if (transaction instanceof AccountTransaction at)
                     writeDividend(printer, at);
-                else if (t instanceof PortfolioTransaction pt)
+                else if (transaction instanceof PortfolioTransaction pt)
                     writeBuySell(printer, pt);
             }
         }
@@ -80,22 +79,16 @@ public class AktienfreundeNetExporter
     @SuppressWarnings("nls")
     private void writeBuySell(CSVPrinter printer, PortfolioTransaction transaction) throws IOException
     {
-        String type;
-
-        switch (transaction.getType())
+        var type = switch (transaction.getType())
         {
-            case BUY:
-            case DELIVERY_INBOUND:
-                type = "Kauf"; //$NON-NLS-1$
-                break;
-            case SELL:
-            case DELIVERY_OUTBOUND:
-                type = "Verkauf"; //$NON-NLS-1$
-                break;
-            default:
-                // ignore all other transactions
-                return;
-        }
+            case BUY, DELIVERY_INBOUND -> "Kauf"; //$NON-NLS-1$
+            case SELL, DELIVERY_OUTBOUND -> "Verkauf"; //$NON-NLS-1$
+            default -> null;
+        };
+
+        // skip writing other transaction types
+        if (type == null)
+            return;
 
         printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
@@ -112,15 +105,14 @@ public class AktienfreundeNetExporter
     @SuppressWarnings("nls")
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        printer.print("Datum");
-        printer.print("ISIN");
-        printer.print("Name");
-        printer.print("Typ");
-        printer.print("Transaktion");
-        printer.print("Preis");
-        printer.print("Anzahl");
-        printer.print("Kommission");
-        printer.print("Steuern");
-        printer.println();
+        printer.printRecord("Datum", //
+                        "ISIN", //
+                        "Name", //
+                        "Typ", //
+                        "Transaktion", //
+                        "Preis", //
+                        "Anzahl", //
+                        "Kommission", //
+                        "Steuern");
     }
 }
