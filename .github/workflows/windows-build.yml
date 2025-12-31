@@ -3,9 +3,7 @@ name: Windows Build
 on:
   push:
     branches:
-      - WindowsBuild
-  pull_request:
-    types: [opened, synchronize, reopened]
+      - WindowsInstaller
   workflow_dispatch:
 
 jobs:
