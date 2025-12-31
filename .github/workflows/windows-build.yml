@@ -78,7 +78,7 @@ jobs:
       run: |
         Write-Host "Checking for Windows installer..."
         $installerPath = "portfolio-product\target\products"
-        if (not Test-Path $installerPath) {
+        if (-not (Test-Path $installerPath)) {
           Write-Host "Products directory not found at $installerPath"
         }
         Write-Host "`nChecking materialize-products output..."
