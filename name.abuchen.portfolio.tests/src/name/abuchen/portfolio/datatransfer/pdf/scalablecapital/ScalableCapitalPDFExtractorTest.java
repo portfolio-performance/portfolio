@@ -182,6 +182,39 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn(null), hasTicker(null), //
+                        hasName("VanEck Morningstar Developed Markets Dividend Leaders (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-30T10:16:29"), hasShares(163.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Ord.-Nr.: SCALJ7ia7RAxG2B"), //
+                        hasAmount("EUR", 7807.88), hasGrossValue("EUR", 7806.89), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
+    }
+
+    @Test
     public void testSecurityBuy01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
