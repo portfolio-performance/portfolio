@@ -4508,6 +4508,39 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKauf07()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A0VRQ6"), hasWkn("A1G6UV"), hasTicker(null), //
+                        hasName("AUSTRIA 12/44 MTN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-23T10:00"), hasShares(20.00), //
+                        hasSource("FlatExDegiroKauf07.txt"), //
+                        hasNote("Transaktion-Nr.: 1234567890"), //
+                        hasAmount("EUR", 1902.31), hasGrossValue("EUR", 1868.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.07 + 33.14))));
+    }
+
+    @Test
     public void testCryptoKauf01()
     {
         List<Exception> errors = new ArrayList<>();
