@@ -3486,4 +3486,76 @@ public class IBFlexStatementExtractorTest
                                         hasAmount("EUR", 62.05), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
+
+    @Test
+    public void testIBFlexStatementFile27() throws IOException
+    {
+        // Test minor unit currency handling: IBKR provides GBP, security is GBX
+        var client = new Client();
+
+        // Create security with GBX currency (minor unit)
+        var eqqq = new Security("INVESCO NASDAQ-100 DIST", "GBX");
+        eqqq.setTickerSymbol("EQQQ.L");
+        eqqq.setIsin("IE0032077012");
+        eqqq.setWkn("35628280");
+        client.addSecurity(eqqq);
+
+        var referenceAccount = new Account("A");
+        referenceAccount.setCurrencyCode("GBP");
+        client.addAccount(referenceAccount);
+
+        var portfolio = new Portfolio("U1234567");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile27.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L)); // Security already exists
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        // Find the buy transaction
+        BuySellEntry entry = (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Buy transaction not found")) //
+                        .getSubject();
+
+        // Verify transaction currency is GBP (from IBKR)
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is("GBP"));
+        // netCash is -1369.52, but transaction amount should be absolute value
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("GBP", Values.Money.factorize(1369.52))));
+
+        // Verify security currency is GBX
+        assertThat(entry.getPortfolioTransaction().getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for GBP->GBX conversion", grossValueUnit.isPresent(), is(true));
+
+        var unit = grossValueUnit.get();
+        // GROSS_VALUE unit amount is the gross value before fees
+        // Transaction amount is 1369.52 GBP (netCash), fees are 3.00 GBP
+        // Gross value = 1369.52 - 3.00 = 1366.52 GBP = 136652 (in smallest
+        // unit)
+        assertThat(unit.getAmount().getCurrencyCode(), is("GBP"));
+        assertThat(unit.getAmount().getAmount(), is(1366_52L));
+
+        // Forex amount in GBX: 1369.52 GBP * 100 = 136952 GBX (in smallest
+        // unit)
+        assertThat(unit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(unit.getForex().getAmount(), is(136952_00L)); // 136952.00 GBX
+
+        // Exchange rate should be 0.01 (GBP to GBX: 1 GBP = 100 GBX, so rate is
+        // 0.01)
+        assertThat(unit.getExchangeRate().compareTo(new java.math.BigDecimal("0.01")), is(0));
+    }
 }

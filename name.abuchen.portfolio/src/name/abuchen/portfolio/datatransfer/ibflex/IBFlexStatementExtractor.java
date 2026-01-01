@@ -58,6 +58,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.impl.FixedExchangeRateProvider;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.Pair;
@@ -291,6 +292,8 @@ public class IBFlexStatementExtractor implements Extractor
         private static final String ASSETKEY_CERTIFICATE = "IOPT";
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
         private static final String ASSETKEY_WARRANTS = "WAR";
+
+        private static final FixedExchangeRateProvider FIXED_RATE_PROVIDER = new FixedExchangeRateProvider();
 
         private Element statement;
         private List<Exception> errors = new ArrayList<>();
@@ -611,6 +614,9 @@ public class IBFlexStatementExtractor implements Extractor
             
             portfolioTransaction.setDate(extractDate(element));
 
+            // Set security before amount so that setAmount can detect currency mismatches in all cases
+            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
             // attribute. If the element contains only the "cost" attribute, the
@@ -618,17 +624,23 @@ public class IBFlexStatementExtractor implements Extractor
             // @formatter:on
             if (element.hasAttribute("netCash"))
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                                asAmount(element.getAttribute("netCash")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                // the account transaction must not carry the gross value unit
+                // for currency conversion
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
             else
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                                asAmount(element.getAttribute("cost")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                // the account transaction must not carry the gross value unit
+                // for currency conversion
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
 
             // Set share quantity
@@ -645,8 +657,6 @@ public class IBFlexStatementExtractor implements Extractor
             Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
             Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
             portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
-
-            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
             // Set note
             if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
@@ -936,6 +946,40 @@ public class IBFlexStatementExtractor implements Extractor
 
                 if (fromRate != null && toRate != null)
                     return fromRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
+            }
+
+            // Check if there's a fixed exchange rate (e.g. GBP/GBX)
+            BigDecimal fixedRate = getWellKnownFixedExchangeRate(fromCurrency, toCurrency);
+            if (fixedRate != null)
+                return fixedRate;
+
+            return null;
+        }
+
+        /**
+         * Returns the exchange rate for currency pairs with a fixed
+         * relationship (e.g. GBX/GBP) using FixedExchangeRateProvider. Handles
+         * both directions.
+         *
+         * @param fromCurrency
+         *            The source currency
+         * @param toCurrency
+         *            The target currency
+         * @return The exchange rate, or null if not a known fixed-rate pair
+         */
+        private BigDecimal getWellKnownFixedExchangeRate(String fromCurrency, String toCurrency)
+        {
+            for (var series : FIXED_RATE_PROVIDER.getAvailableTimeSeries(null))
+            {
+                if (series.getRates() == null || series.getRates().isEmpty())
+                    continue;
+
+                var rate = series.getRates().get(0).getValue();
+
+                if (series.getBaseCurrency().equals(fromCurrency) && series.getTermCurrency().equals(toCurrency))
+                    return rate;
+                else if (series.getBaseCurrency().equals(toCurrency) && series.getTermCurrency().equals(fromCurrency))
+                    return BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_UP);
             }
 
             return null;
