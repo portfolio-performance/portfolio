@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 21.0.9+10-Ubuntu-124.04 | Ubuntu
+-----------------------------------------
+Deutsche Bank AG
+24/7-Kundenservice (069) 910-10000
+Max Mustermann
+Musterstr. 1 X
+11111 Musterstadt
+11. Dezember 2025
+Ihr Depot Nr. 100 7777777 01
+Dividendengutschrift
+COAF: US152664910 CorpID: US152664910
+Stück WKN ISIN
+100,000000 A14V4U US05605H1005
+BWX TECHNOLOGIES INC.RG.SH. DL -,01
+Dividende pro Stück 0,2500000000 USD Zahlbar 10.12.2025
+Ursprungsland USA Ex-Tag 19.11.2025
+Geschäftsjahr 2025
+Bruttoertrag 25,00 USD 
+15,0000000 % Ausländische Quellensteuer - 3,75 USD 
+Kapitalertragsteuer (KESt) - 2,50 USD 
+Solidaritätszuschlag auf KESt - 0,13 USD
+Umrechnungskurs USD zu EUR 1,1687000000
+Gutschrift mit Wert 10.12.2025 18,62 USD
+Steuerliche Bemessungsgrundlagen zur Dividendengutschrift - keine Steuerbescheinigung
+KESt-pflichtiger Kapitalertrag 21,39 EUR 
+Anrechenbare ausländische Quellensteuer 3,21 EUR
+Auf die KESt angerechnete ausländische 3,21 EUR
+Quellensteuer
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, 
+Rebecca Short
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379; www.db.com/de 1/2
+TRINCM0001 DIVI 20251211 43148489
+ 
+  
+Wir überweisen den Betrag von 18,62 USD auf Ihr Konto 7777777 01.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+2/2
