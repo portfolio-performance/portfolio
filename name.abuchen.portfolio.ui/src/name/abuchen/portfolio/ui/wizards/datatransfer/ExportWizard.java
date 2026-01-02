@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 
-import name.abuchen.portfolio.datatransfer.csv.exporter.AktienfreundeNetExporter;
 import name.abuchen.portfolio.datatransfer.csv.exporter.CSVExporter;
 import name.abuchen.portfolio.datatransfer.csv.exporter.VINISExporter;
 import name.abuchen.portfolio.model.Account;
@@ -120,8 +119,6 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
                     new CSVExporter().exportMergedSecurityPrices(converter, file, client.getSecurities());
-                else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
-                    new AktienfreundeNetExporter().exportAllTransactions(file, client);
                 else if (Messages.ExportWizardVINISApp.equals(exportItem))
                     new VINISExporter().exportAllValues(file, client, factory);
             }

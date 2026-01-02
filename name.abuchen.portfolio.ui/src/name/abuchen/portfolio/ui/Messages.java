@@ -446,7 +446,6 @@ public class Messages extends NLS
     public static String ExperimentalColumnExpectedDividends;
     public static String ExperimentalColumnExpectedDividends_MenuLabel;
     public static String ExportWizardAccountTransactions;
-    public static String ExportWizardAllTransactionsAktienfreundeNet;
     public static String ExportWizardCurrencyConversionQuotes;
     public static String ExportWizardDescription;
     public static String ExportWizardErrorExporting;
