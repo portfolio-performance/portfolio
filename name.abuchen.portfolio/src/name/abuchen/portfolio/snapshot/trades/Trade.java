@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Adaptable;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -24,11 +23,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
-import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
-import name.abuchen.portfolio.util.Interval;
 
 public class Trade implements Adaptable
 {
@@ -51,6 +47,7 @@ public class Trade implements Adaptable
     private final long shares;
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
+    private List<TransactionPair<PortfolioTransaction>> transactionsMovingAverage = new ArrayList<>();
 
     private Money entryValue;
     private Money entryValueWithoutTaxesAndFees;
@@ -74,7 +71,7 @@ public class Trade implements Adaptable
         return transactions.get(0).getTransaction().getType().isPurchase();
     }
 
-    /* package */ void calculate(Client client, CurrencyConverter converter)
+    /* package */ void calculate(CurrencyConverter converter)
     {
         boolean isLong = this.isLong();
 
@@ -148,9 +145,9 @@ public class Trade implements Adaptable
         calculateIRR(converter);
 
         this.entryValueMovingAverage = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.INCLUDED));
+                        () -> getMovingAverageCost(converter, TaxesAndFees.INCLUDED));
         this.entryValueMovingAverageWithoutTaxesAndFees = new LazyValue<>(
-                        () -> getMovingAverageCost(client, converter, TaxesAndFees.NOT_INCLUDED));
+                        () -> getMovingAverageCost(converter, TaxesAndFees.NOT_INCLUDED));
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -290,6 +287,11 @@ public class Trade implements Adaptable
         return transactions;
     }
 
+    public List<TransactionPair<PortfolioTransaction>> getTransactionsMovingAverage()
+    {
+        return transactionsMovingAverage;
+    }
+
     public TransactionPair<PortfolioTransaction> getLastTransaction()
     {
         // transactions have been sorted by calculate(), which is called once
@@ -412,47 +414,37 @@ public class Trade implements Adaptable
                         shares, start, entryValue, end, exitValue);
     }
 
-    private Money getMovingAverageCost(Client client, CurrencyConverter converter, TaxesAndFees taxesAndFees)
+    private Money getMovingAverageCost(CurrencyConverter converter, TaxesAndFees taxesAndFees)
     {
-        var closingTransaction = transactions.stream() //
-                        .filter(t -> t.getTransaction().getType().isLiquidation()) //
-                        .findFirst().map(t -> t.getTransaction());
+        var holdShares = 0d;
+        var amount = 0L;
 
-        Client filteredClient = client;
-        if (closingTransaction.isPresent())
+        Collections.sort(transactionsMovingAverage, TradeCollector.BY_DATE_AND_TYPE);
+        for (TransactionPair<PortfolioTransaction> t : transactionsMovingAverage)
         {
-            // if a closing transaction is present, we need to calculate the
-            // moving average costs based on all transactions before the
-            // closing transaction
+            PortfolioTransaction tx = t.getTransaction();
+            if (tx.getType().isPurchase())
+            {
+                holdShares += tx.getShares();
+                amount += taxesAndFees == TaxesAndFees.INCLUDED
+                                ? tx.getMonetaryAmount().with(converter.at(tx.getDateTime())).getAmount()
+                                : tx.getGrossValue().with(converter.at(tx.getDateTime())).getAmount();
+            }
+            else
+            {
+                if (holdShares == 0)
+                    return Money.of(converter.getTermCurrency(), 0);
 
-            filteredClient = new ClientTransactionFilter(security, closingTransaction.get()).filter(client);
+                boolean isClosingTransaction = getClosingTransaction().isPresent()
+                                && getClosingTransaction().get().getTransaction().equals(tx);
+                var shareRatio = BigDecimal.valueOf(
+                                (isClosingTransaction ? tx.getShares() : holdShares - tx.getShares()) / holdShares);
+
+                holdShares -= tx.getShares();
+                amount = shareRatio.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN)
+                                .longValue();
+            }
         }
-
-        var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter,
-                        Interval.of(LocalDate.MIN,
-                                        closingTransaction.isPresent()
-                                                        ? closingTransaction.get().getDateTime().toLocalDate()
-                                                        : LocalDate.now()));
-        var r = snapshot.getRecord(security);
-        if (r.isEmpty())
-            return null;
-
-        // the trade might be a partial liquidation, so we have to calculate
-        // the moving average purchase value based on the number of shares
-        // sold
-
-        var totalCosts = taxesAndFees == TaxesAndFees.INCLUDED //
-                        ? r.get().getMovingAverageCost().get()
-                        : r.get().getMovingAverageCostWithoutTaxesAndFees().get();
-        var totalShares = r.get().getSharesHeld().get();
-
-        if (totalShares <= 0)
-            return Money.of(totalCosts.getCurrencyCode(), 0);
-
-        var cost = BigDecimal.valueOf(shares / (double) totalShares) //
-                        .multiply(BigDecimal.valueOf(totalCosts.getAmount())) //
-                        .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-        return Money.of(totalCosts.getCurrencyCode(), cost);
+        return Money.of(converter.getTermCurrency(), amount);
     }
 }

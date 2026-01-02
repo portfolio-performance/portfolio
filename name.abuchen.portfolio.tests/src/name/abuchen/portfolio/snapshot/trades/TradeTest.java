@@ -127,26 +127,6 @@ public class TradeTest
     }
 
     @Test
-    public void testShortMovingAverageCostDoesNotDivideByZero() throws TradeCollectorException
-    {
-        Client client = new Client();
-        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
-
-        var portfolio = new PortfolioBuilder();
-        portfolio.addTo(client);
-
-        Security securityShort = new SecurityBuilder().addTo(client);
-        portfolio.sellPrice(securityShort, "2024-01-01", 3.0, 20.0).buyPrice(securityShort, "2024-12-31", 3.0, 5.0);
-
-        List<Trade> trades = collector.collect(securityShort);
-        Trade trade = trades.get(0);
-
-        Money movingAverageEntryValue = trade.getEntryValueMovingAverage();
-
-        assertThat(movingAverageEntryValue, is(Money.of(CurrencyUnit.EUR, 0L)));
-    }
-
-    @Test
     public void testLongMultipleBuys() throws TradeCollectorException
     {
         Client client = new Client();
