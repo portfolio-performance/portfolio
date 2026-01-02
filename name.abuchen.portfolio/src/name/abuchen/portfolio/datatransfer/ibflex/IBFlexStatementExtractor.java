@@ -935,6 +935,65 @@ public class IBFlexStatementExtractor implements Extractor
                     return asExchangeRate(element.getAttribute("fxRateToBase"));
                 }
 
+                // Before trying accountCurrency conversion, check if toCurrency is a minor unit
+                // (e.g., GBX is minor unit of GBP). If so, convert to the major unit first.
+                String toMajorUnit = findMajorUnitCurrency(toCurrency);
+                if (toMajorUnit != null)
+                {
+                    // Convert fromCurrency -> toMajorUnit via accountCurrency
+                    // Then apply minor unit conversion
+                    Pair<String, String> fromKey = new Pair<>(dateStr, fromCurrency + "-" + accountCurrency);
+                    Pair<String, String> toKey = new Pair<>(dateStr, toMajorUnit + "-" + accountCurrency);
+
+                    BigDecimal fromRate = conversionRates.get(fromKey);
+                    // If fromRate is not in conversionRates, try using fxRateToBase from the element
+                    // (fxRateToBase is the rate from transaction currency to base currency)
+                    if (fromRate == null && element.hasAttribute("fxRateToBase"))
+                    {
+                        fromRate = asExchangeRate(element.getAttribute("fxRateToBase"));
+                    }
+                    BigDecimal majorUnitRate = conversionRates.get(toKey);
+
+                    if (fromRate != null && majorUnitRate != null)
+                    {
+                        // Calculate fromCurrency -> toMajorUnit
+                        BigDecimal toMajorUnitRate = fromRate.divide(majorUnitRate, 10, RoundingMode.HALF_DOWN);
+                        // Apply minor unit conversion: toMajorUnitRate / minorUnitRate
+                        // (e.g., USD->GBP / GBX->GBP = USD->GBX)
+                        BigDecimal minorUnitRate = getWellKnownFixedExchangeRate(toCurrency, toMajorUnit);
+                        if (minorUnitRate != null)
+                        {
+                            return toMajorUnitRate.divide(minorUnitRate, 10, RoundingMode.HALF_DOWN);
+                        }
+                    }
+                }
+
+                // Check if fromCurrency is a minor unit (e.g., GBX -> USD)
+                String fromMajorUnit = findMajorUnitCurrency(fromCurrency);
+                if (fromMajorUnit != null)
+                {
+                    // First convert fromCurrency (minor) -> fromMajorUnit (major)
+                    // Then convert fromMajorUnit -> toCurrency via accountCurrency
+                    BigDecimal minorToMajorRate = getWellKnownFixedExchangeRate(fromCurrency, fromMajorUnit);
+                    if (minorToMajorRate != null)
+                    {
+                        Pair<String, String> fromKey = new Pair<>(dateStr, fromMajorUnit + "-" + accountCurrency);
+                        Pair<String, String> toKey = new Pair<>(dateStr, toCurrency + "-" + accountCurrency);
+
+                        BigDecimal fromMajorRate = conversionRates.get(fromKey);
+                        BigDecimal toRate = conversionRates.get(toKey);
+
+                        if (fromMajorRate != null && toRate != null)
+                        {
+                            // Calculate fromMajorUnit -> toCurrency
+                            BigDecimal majorToTargetRate = fromMajorRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
+                            // Combine: fromCurrency -> fromMajorUnit -> toCurrency
+                            // (e.g., GBX->GBP * GBP->USD = GBX->USD)
+                            return minorToMajorRate.multiply(majorToTargetRate);
+                        }
+                    }
+                }
+
                 // Attempt to calculate cross rate via accountCurrency. No use
                 // in trying a different intermediate currency, it seems like
                 // toCurrency is only ever the account's base.
@@ -942,6 +1001,12 @@ public class IBFlexStatementExtractor implements Extractor
                 Pair<String, String> toKey = new Pair<>(dateStr, toCurrency + "-" + accountCurrency);
 
                 BigDecimal fromRate = conversionRates.get(fromKey);
+                // If fromRate is not in conversionRates, try using fxRateToBase from the element
+                // (fxRateToBase is the rate from transaction currency to base currency)
+                if (fromRate == null && element.hasAttribute("fxRateToBase"))
+                {
+                    fromRate = asExchangeRate(element.getAttribute("fxRateToBase"));
+                }
                 BigDecimal toRate = conversionRates.get(toKey);
 
                 if (fromRate != null && toRate != null)
@@ -952,6 +1017,29 @@ public class IBFlexStatementExtractor implements Extractor
             BigDecimal fixedRate = getWellKnownFixedExchangeRate(fromCurrency, toCurrency);
             if (fixedRate != null)
                 return fixedRate;
+
+            return null;
+        }
+
+        /**
+         * Returns the major unit currency for a given minor unit currency, or null
+         * if the currency is not a known minor unit.
+         *
+         * @param minorUnitCurrency The minor unit currency (e.g., "GBX")
+         * @return The major unit currency (e.g., "GBP"), or null if not a known minor unit
+         */
+        private String findMajorUnitCurrency(String minorUnitCurrency)
+        {
+            for (var series : FIXED_RATE_PROVIDER.getAvailableTimeSeries(null))
+            {
+                if (series.getRates() == null || series.getRates().isEmpty())
+                    continue;
+
+                if (series.getBaseCurrency().equals(minorUnitCurrency) && series.getTermCurrency() != null)
+                {
+                    return series.getTermCurrency();
+                }
+            }
 
             return null;
         }
