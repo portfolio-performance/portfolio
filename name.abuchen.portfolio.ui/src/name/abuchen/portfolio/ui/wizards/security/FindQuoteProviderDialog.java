@@ -66,7 +66,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LoginButton;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -124,6 +123,15 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 item.security.setFeed(QuoteFeed.MANUAL);
                 item.security.setLatestFeed(null);
             });
+        }
+    }
+
+    private static class LabelOnly extends Action
+    {
+        public LabelOnly(String text)
+        {
+            super(text);
+            setEnabled(false);
         }
     }
 
