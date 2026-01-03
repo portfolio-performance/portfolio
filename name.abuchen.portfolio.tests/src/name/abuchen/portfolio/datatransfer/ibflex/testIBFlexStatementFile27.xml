@@ -1,0 +1,11 @@
+<FlexQueryResponse queryName="PP" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U1234567" fromDate="20251201" toDate="20251231" period="LastMonth" whenGenerated="20251220;120000">
+<AccountInformation accountId="U1234567" acctAlias="A" model="" currency="GBP" name="John Doe" accountType="Individual" customerType="Individual" />
+<Trades>
+<Trade accountId="U1234567" acctAlias="" model="" currency="GBP" fxRateToBase="1.1426" assetCategory="STK" subCategory="ETF" symbol="EQQQ.L" description="INVESCO NASDAQ-100 DIST" conid="35628280" securityID="IE0032077012" securityIDType="ISIN" cusip="" isin="IE0032077012" figi="BBG000QYQVV5" listingExchange="LSEETF" underlyingConid="" underlyingSymbol="EQQQ.L" underlyingSecurityID="" underlyingListingExchange="" issuer="" issuerCountryCode="IE" tradeID="1252050191" multiplier="1" relatedTradeID="" strike="" reportDate="20251216" expiry="" dateTime="20251216;103059" putCall="" tradeDate="20251216" principalAdjustFactor="" settleDateTarget="20251218" transactionType="ExchTrade" exchange="TRWBUKETF" quantity="3" tradePrice="455.5054" tradeMoney="1366.52" proceeds="-1366.52" taxes="0" ibCommission="-3" ibCommissionCurrency="GBP" netCash="-1369.52" closePrice="455.49" openCloseIndicator="O" notes="" cost="1369.52" fifoPnlRealized="0" mtmPnl="-0.05" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" origTransactionID="0" buySell="BUY" clearingFirmID="" ibOrderID="1022115019" transactionID="5103375270" ibExecID="00015269.69411ea0.01.01" relatedTransactionID="" rtn="" brokerageOrderID="000e3ea6.0001cbfa.6940ef59.0001" orderReference="" volatilityOrderLink="" exchOrderId="N/A" extExecID="PC16JANEETF201531" orderTime="20251216;103058" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" orderType="LMT" traderID="" isAPIOrder="N" accruedInt="0" initialInvestment="" positionActionID="" serialNumber="" deliveryType="" commodityType="" fineness="0.0" weight="0.0" />
+</Trades>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>
+
