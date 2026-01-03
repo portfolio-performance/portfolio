@@ -1123,7 +1123,7 @@ public class StatementOfAssetsViewer
 
         for (final Taxonomy t : client.getTaxonomies())
         {
-            Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+            Action action = new SimpleAction(TextUtil.tooltipAddTab(t.getName()), a -> {
                 taxonomy = t;
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
             });

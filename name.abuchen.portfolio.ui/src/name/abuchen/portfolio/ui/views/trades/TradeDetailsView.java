@@ -420,7 +420,7 @@ public final class TradeDetailsView extends AbstractFinanceView
 
             for (final Taxonomy t : getClient().getTaxonomies())
             {
-                Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+                Action action = new SimpleAction(TextUtil.tooltipAddTab(t.getName()), a -> {
                     taxonomy = t;
                     getPreferenceStore().setValue(PREF_TAXONOMY, t.getId());
                     update();

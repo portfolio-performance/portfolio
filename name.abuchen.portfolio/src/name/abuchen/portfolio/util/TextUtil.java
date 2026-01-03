@@ -107,6 +107,19 @@ public final class TextUtil
     }
 
     /**
+     * As the TextUtil.tooltip method, creates a tooltip text by escaping '&'
+     * characters to ensure correct display in graphical user interfaces, but in
+     * addition, adds a TAB ("\t") character to allow MenuManager to display "@"
+     * character instead of space for Action texts.
+     * https://stackoverflow.com/questions/77472261/how-to-keep-character-in-swt-menu-item-text
+     * https://github.com/portfolio-performance/portfolio/issues/5288
+     */
+    public static final String tooltipAddTab(String text)
+    {
+        return text == null ? null : tooltip(text) + "\t"; //$NON-NLS-1$
+    }
+
+    /**
      * Sanitizes a given filename by filtering out characters that may cause
      * issues in file systems. Replaces characters such as ?, \, /, :, |, <, >,
      * //, and * with spaces, and removes multiple spaces by replacing them with
