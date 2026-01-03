@@ -630,16 +630,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         if (t.getCurrencyCode() != null && t.getAmount() == 0)
                             item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
-                            {
-                                var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
-                                // If we have multiple entries in the document,
-                                // then the SKIP_TRANSACTION flag must be
-                                // removed.
-                                type.getCurrentContext().remove(SKIP_TRANSACTION);
+                        if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                        {
+                            var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+                            // If we have multiple entries in the document,
+                            // then the SKIP_TRANSACTION flag must be
+                            // removed.
+                            type.getCurrentContext().remove(SKIP_TRANSACTION);
 
-                                return skipped;
-                            }
+                            return skipped;
+                        }
 
                         return item;
                     }));
