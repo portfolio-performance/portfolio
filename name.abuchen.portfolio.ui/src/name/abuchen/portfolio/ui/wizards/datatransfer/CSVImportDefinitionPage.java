@@ -110,6 +110,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -406,7 +407,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
                 manager.add(new Separator());
                 configManager.getUserSpecificConfigurations().forEach(config -> subMenu
-                                .add(new SimpleAction(config.getLabel(), a -> onConfigDeleted(config))));
+                                .add(new MenuContribution(config.getLabel(), () -> onConfigDeleted(config))));
                 manager.add(new SimpleAction(Messages.CSVConfigExport, a -> onConfigExport()));
                 manager.add(new SimpleAction(Messages.CSVConfigImport, a -> onConfigImport()));
 

@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -84,7 +85,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
             List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
             Collections.sort(templates, (r, l) -> TextUtil.compare(r.getLabel(), l.getLabel()));
 
-            templates.forEach(bm -> menuListener.add(new SimpleAction(bm.getLabel(), a -> {
+            templates.forEach(bm -> menuListener.add(new MenuContribution(bm.getLabel(), () -> {
                 client.getSettings().getBookmarks().add(bm);
                 client.touch();
 
