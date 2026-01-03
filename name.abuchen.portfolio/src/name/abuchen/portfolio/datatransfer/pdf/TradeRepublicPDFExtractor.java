@@ -2712,6 +2712,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Juni Prämie Your Saveback payment 5,18 € 3.484,00 €
                                         // 2024
                                         //
+                                        // 01 
+                                        // Dez. Bonus Cash reward allocation 4,71 € 10.004,74 €
+                                        // 2025
+                                        //
                                         // 29
                                         // Aug. Überweisung Incoming transfer from Vorname Nachname 2.500,00 € 19.885,07 €
                                         // 2024
@@ -2732,10 +2736,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(.berweisung|Transferencia|Pr.mie|Recompensa) (?<note>(Einzahlung akzeptiert:" //
+                                                                        + "(.berweisung" //
+                                                                        + "|Transferencia" //
+                                                                        + "|Pr.mie" //
+                                                                        + "|Recompensa" //
+                                                                        + "|Bonus) " //
+                                                                        + "(?<note>(Einzahlung akzeptiert:" //
                                                                         + "|Incoming transfer from"
                                                                         + "|Ingreso aceptado" //
                                                                         + "|Your Saveback" //
+                                                                        + "|Cash reward allocation" //
                                                                         + "|Your Kindergeld bonus)" //
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
@@ -2893,6 +2903,29 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note0") + v.get("note1"));
+                                                        }),
+                                        // @formatter:off
+                                        // 31 
+                                        // Outgoing transfer for Vorname Nachname 
+                                        // Dez. Überweisung 1.800,00 € 8.204,71 €
+                                        // (DE00000000000000000000)
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]*$") //
+                                                        .match("^(?<note0>(Outgoing transfer for) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^(?<note1>.*)$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
