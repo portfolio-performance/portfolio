@@ -27,7 +27,7 @@ public interface ImportAction
     {
         public enum Code
         {
-            OK, WARNING, ERROR;
+            OK, SKIP, WARNING, ERROR;
 
             public boolean isHigherSeverityAs(Code other)
             {

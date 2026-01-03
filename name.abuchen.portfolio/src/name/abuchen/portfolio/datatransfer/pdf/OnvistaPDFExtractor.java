@@ -19,6 +19,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public OnvistaPDFExtractor(Client client)
     {
         super(client);
@@ -742,7 +744,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .find("Ertragsthesaurierung .*") //
                                                         .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                            type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                            Messages.PDFSkipNotImportable);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -906,8 +909,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
 
-                            if (type.getCurrentContext().getBoolean("skipTransaction"))
-                                return null;
+                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
