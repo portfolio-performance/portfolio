@@ -2138,8 +2138,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(skipped.getSkipReason(), is(Messages.PDFSkipMissingDetails));
         assertThat(skipped.getDate(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(skipped.getAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
-        assertThat(skipped.getTypeInformation(), is("Removal"));
-        // assertThat(skipped.getSource(), is("GiroKontoauszug02.txt"));
+        assertThat(skipped.getTypeInformation(), is(AccountTransaction.Type.REMOVAL.toString()));
         assertThat(skipped.getSubject().getNote(), is("GiroKontoauszug02.txt"));
     }
 
