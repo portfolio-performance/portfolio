@@ -60,7 +60,7 @@ public class AttributeEditingSupport extends ColumnEditingSupport
         Object oldValue = attribs.get(attribute);
 
         // update the value
-        // * if it has non null value and the value actually changed
+        // * if it has non-null value and the value actually changed
         // * or if it is null and previously existed
 
         if ((newValue != null && !newValue.equals(oldValue)) //
