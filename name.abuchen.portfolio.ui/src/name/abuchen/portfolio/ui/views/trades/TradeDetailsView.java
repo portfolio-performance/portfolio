@@ -57,6 +57,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
@@ -65,7 +66,6 @@ import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
-import name.abuchen.portfolio.util.TextUtil;
 
 public final class TradeDetailsView extends AbstractFinanceView
 {
@@ -420,13 +420,11 @@ public final class TradeDetailsView extends AbstractFinanceView
 
             for (final Taxonomy t : getClient().getTaxonomies())
             {
-                Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+                manager.add(new MenuContribution(t.getName(), () -> {
                     taxonomy = t;
                     getPreferenceStore().setValue(PREF_TAXONOMY, t.getId());
                     update();
-                });
-                action.setChecked(t.equals(taxonomy));
-                manager.add(action);
+                }, t.equals(taxonomy)));
             }
 
             manager.add(new Separator());

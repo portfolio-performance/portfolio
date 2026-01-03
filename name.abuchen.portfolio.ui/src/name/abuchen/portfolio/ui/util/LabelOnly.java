@@ -1,19 +1,17 @@
 package name.abuchen.portfolio.ui.util;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 
-public class LabelOnly extends Action
+public class LabelOnly extends MenuContribution
 {
     public LabelOnly(String text)
     {
         super(text);
-        setEnabled(false);
     }
 
-    public LabelOnly(String text, ImageDescriptor image)
+    public LabelOnly(String text, Images image)
     {
         super(text, image);
-        setEnabled(false);
     }
 }

@@ -94,6 +94,7 @@ import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
@@ -119,7 +120,6 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class StatementOfAssetsViewer
 {
@@ -1123,12 +1123,10 @@ public class StatementOfAssetsViewer
 
         for (final Taxonomy t : client.getTaxonomies())
         {
-            Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+            manager.add(new MenuContribution(t.getName(), () -> {
                 taxonomy = t;
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
-            });
-            action.setChecked(t.equals(taxonomy));
-            manager.add(action);
+            }, t.equals(taxonomy)));
         }
 
         manager.add(new Separator());

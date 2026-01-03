@@ -7,7 +7,7 @@ import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TaxonomyConfig implements WidgetConfig
@@ -38,15 +38,13 @@ public class TaxonomyConfig implements WidgetConfig
         MenuManager subMenu = new MenuManager(Messages.LabelTaxonomies);
 
         delegate.getClient().getTaxonomies().forEach(t -> {
-            SimpleAction action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
+            subMenu.add(new MenuContribution(t.getName(), () -> {
                 taxonomy = t;
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.TAXONOMY.name(), t.getId());
 
                 delegate.update();
                 delegate.getClient().touch();
-            });
-            action.setChecked(this.taxonomy == t);
-            subMenu.add(action);
+            }, this.taxonomy == t));
         });
 
         manager.add(subMenu);

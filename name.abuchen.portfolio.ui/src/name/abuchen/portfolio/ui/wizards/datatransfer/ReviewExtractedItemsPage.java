@@ -87,6 +87,7 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
@@ -670,7 +671,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
                                 Images image = getStatusImage(s.getCode());
-                                manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
+                                manager.add(new LabelOnly(s.getMessage(), image));
                             });
         }
 
@@ -732,7 +733,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         for (T subject : options.get())
         {
-            manager.add(new SimpleAction(subject.getName(), a -> {
+            manager.add(new MenuContribution(subject.getName(), () -> {
                 for (Object element : tableViewer.getStructuredSelection().toList())
                     applier.accept(((ExtractedEntry) element).getItem(), subject);
 
