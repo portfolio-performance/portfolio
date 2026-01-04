@@ -110,6 +110,7 @@ public class PDFImportAssistant
         extractors.add(new PictetCieGruppeSAPDFExtractor(client));
         extractors.add(new PostbankPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
+        extractors.add(new QuestradePDFExtractor(client));
         extractors.add(new QuirinBankAGPDFExtractor(client));
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
         extractors.add(new RaisinBankAGPDFExtractor(client));
