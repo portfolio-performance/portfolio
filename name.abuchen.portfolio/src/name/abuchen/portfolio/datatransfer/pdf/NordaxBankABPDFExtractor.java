@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -71,7 +73,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "amount") //
                                                         .documentContext("currency") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Interest (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Interest (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(v.get("currency"));
@@ -119,19 +121,30 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "type", "amount") //
+                        .section("date", "type", "amount", "note") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
+                        .match("(?<note>.*)")
                         .assign((t, v) -> {
                             // @formatter:off
-                            // When "Bezahlung von" change from DEPOSIT to REMOVAL
+                            // When "Zahlung an" change from DEPOSIT to REMOVAL
                             // @formatter:on
-                            if ("Bezahlung von".equals(v.get("type")))
+                            if ("Zahlung an".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .section("note2").optional() //
+                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$")
+                        .match("^.*$") //
+                        .match("^(?<note2>.*)$") //
+                        .assign((t, v) -> {
+                            if (!v.get("note2").startsWith("Bank Norwegian, "))
+                                t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                         .wrap(TransactionItem::new));
