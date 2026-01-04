@@ -44,6 +44,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.taxonomy.TaxonomyImportModel.ImportItem;
@@ -239,8 +240,8 @@ public class TaxonomyFileSelectionPage extends AbstractWizardPage
 
             for (var taxonomy : importModel.getClient().getTaxonomies())
             {
-                manager.add(new SimpleAction(MessageFormat.format(Messages.LabelColonSeparated,
-                                ImportAction.UPDATE.getLabel(), taxonomy.getName()), a -> {
+                manager.add(new MenuContribution(MessageFormat.format(Messages.LabelColonSeparated,
+                                ImportAction.UPDATE.getLabel(), taxonomy.getName()), () -> {
                                     item.setImportAction(ImportAction.UPDATE);
                                     item.setTargetTaxonomy(taxonomy);
                                     rerunDryRun(item);
