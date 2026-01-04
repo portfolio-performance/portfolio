@@ -392,7 +392,7 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Payment In Lieu Of Dividends":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true, false));
 
                     accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                     this.calculateShares(accountTransaction, element);
@@ -400,7 +400,7 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Withholding Tax":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true, false));
 
                     // Positive amount are a tax refund
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
@@ -613,7 +613,7 @@ public class IBFlexStatementExtractor implements Extractor
             portfolioTransaction.setDate(extractDate(element));
 
             // Set security before amount so that setAmount can detect currency mismatches in all cases
-            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
 
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
@@ -692,7 +692,7 @@ public class IBFlexStatementExtractor implements Extractor
                 double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 portfolioTransaction.setShares(Values.Share.factorize(qty));
 
-                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
@@ -714,7 +714,7 @@ public class IBFlexStatementExtractor implements Extractor
                 Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 portfolioTransaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
                 portfolioTransaction.setNote(element.getAttribute("description"));
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
@@ -1071,6 +1071,27 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
+         * Checks if two currencies are compatible for matching purposes.
+         * Currencies are compatible if they are equal or if one is a major/minor
+         * unit of the other (e.g., GBP and GBX, ILS and ILA, ZAR and ZAC).
+         *
+         * @param currency1 First currency code
+         * @param currency2 Second currency code
+         * @return true if currencies are compatible
+         */
+        private boolean isCurrencyCompatible(String currency1, String currency2)
+        {
+            if (currency1 == null || currency2 == null)
+                return false;
+
+            if (currency1.equals(currency2))
+                return true;
+
+            // Check if there's a fixed exchange rate between them (major/minor unit relationship)
+            return getUnitExchangeRate(currency1, currency2) != null;
+        }
+
+        /**
          * @formatter:off
          * Imports model objects from the statement based on the specified type using the provided handling function.
          *
@@ -1199,11 +1220,13 @@ public class IBFlexStatementExtractor implements Extractor
          * Looks up a Security in the model or creates a new one if it does not yet exist.
          * It uses the IB ContractID (conID) for the WKN, tries to degrade if conID or ISIN are not available.
          *
-         * @param element   The XML element containing information about the security.
-         * @param doCreate  A flag indicating whether to create a new Security if not found.
-         * @return          The found or created Security object.
+         * @param element              The XML element containing information about the security.
+         * @param doCreate             A flag indicating whether to create a new Security if not found.
+         * @param strictCurrencyMatch  If true (for trades), only match on ISIN if currency also matches.
+         *                             If false (for dividends), allow ISIN match regardless of currency.
+         * @return                     The found or created Security object.
          */
-        private Security getOrCreateSecurity(Element element, boolean doCreate)
+        private Security getOrCreateSecurity(Element element, boolean doCreate, boolean strictCurrencyMatch)
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
@@ -1268,6 +1291,7 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             Security matchingSecurity = null;
+            Security matchingTickerSecurity = null;
 
             for (Security security : allSecurities)
             {
@@ -1276,17 +1300,35 @@ public class IBFlexStatementExtractor implements Extractor
                     return security;
 
                 if (!isin.isEmpty() && isin.equals(security.getIsin()))
-                    if (currency.equals(security.getCurrencyCode()))
+                    if (isCurrencyCompatible(currency, security.getCurrencyCode()))
                         return security;
-                    else
+                    else if (!strictCurrencyMatch)
                         matchingSecurity = security;
 
+                // Only match by ticker symbol if CONID and ISIN don't conflict
                 if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(security.getTickerSymbol()))
-                    return security;
+                {
+                    // Don't match by ticker if CONID or ISIN conflict
+                    boolean conidConflicts = conid != null && conid.length() > 0
+                                    && security.getWkn() != null && security.getWkn().length() > 0
+                                    && !conid.equals(security.getWkn());
+                    boolean isinConflicts = !isin.isEmpty()
+                                    && security.getIsin() != null && security.getIsin().length() > 0
+                                    && !isin.equals(security.getIsin());
+                    
+                    // For strict currency match (trades), also check currency compatibility
+                    boolean currencyIncompatible = strictCurrencyMatch && !isCurrencyCompatible(currency, security.getCurrencyCode());
+
+                    if (!conidConflicts && !isinConflicts && !currencyIncompatible)
+                        matchingTickerSecurity = security;
+                }
             }
 
             if (matchingSecurity != null)
                 return matchingSecurity;
+
+            if (matchingTickerSecurity != null)
+                return matchingTickerSecurity;
 
             if (!doCreate)
                 return null;

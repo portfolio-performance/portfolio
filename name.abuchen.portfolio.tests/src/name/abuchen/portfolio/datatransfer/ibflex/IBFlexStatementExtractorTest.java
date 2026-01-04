@@ -3679,4 +3679,112 @@ public class IBFlexStatementExtractorTest
         BigDecimal eqqqTolerance = new BigDecimal("0.0000001"); // Same tolerance as HIDR test
         assertThat(eqqqUnit.getExchangeRate().subtract(eqqqExpectedRate).abs().compareTo(eqqqTolerance) < 0, is(true));
     }
+
+    @Test
+    public void testIBFlexStatementFile29() throws IOException
+    {
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile29.xml");
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+
+        List<Item> securityItems = results.stream().filter(SecurityItem.class::isInstance) //
+                        .collect(Collectors.toList());
+
+        // Should have 6 securities total:
+        // 1. GCM CAD (CA38501D2041) - Case 1 base trade
+        // 2. GCM EUR (CA38501D2041) - Case 1 trade (same ISIN, different currency - NEW security)
+        // 3. GCM CAD (CA38501D2042) - Case 2 trade (same symbol, different ISIN - NEW security)
+        // 4. GCM EUR (CA38501D2043) - Case 2 dividend (different ISIN from Case 2 trade - NEW security)
+        // 5. UUU CAD (no ISIN) - Case 3 base trade
+        // 6. UUU EUR (no ISIN) - Case 3 trade (same symbol, different currency - NEW security)
+        assertThat("Should create 6 distinct securities", securityItems.size(), is(6));
+
+        // Verify Case 1: Same ISIN, different currency creates separate securities
+        Security gcmCad = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2041".equals(s.getIsin()) && "CAD".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CAD security not found"));
+        assertThat(gcmCad.getTickerSymbol(), is("GCM.TO"));
+
+        Security gcmEur = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2041".equals(s.getIsin()) && "EUR".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM EUR security not found"));
+        assertThat(gcmEur.getTickerSymbol(), is("GCM.TO"));
+        assertThat("Same ISIN but different currencies should be separate securities", gcmCad.getUUID(), not(is(gcmEur.getUUID())));
+
+        // Verify Case 2: Same symbol, different ISIN creates separate securities
+        Security gcmCad2042 = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2042".equals(s.getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CA38501D2042 security not found"));
+        assertThat(gcmCad2042.getTickerSymbol(), is("GCM.TO"));
+
+        Security gcmEur2043 = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2043".equals(s.getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CA38501D2043 security not found"));
+        assertThat(gcmEur2043.getTickerSymbol(), is("GCM.TO"));
+        assertThat("Same symbol but different ISINs should be separate securities", gcmCad2042.getUUID(), not(is(gcmEur2043.getUUID())));
+
+        // Verify Case 3: Same symbol, no ISIN, different currency creates separate securities
+        Security uuuCad = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> (s.getIsin() == null || s.getIsin().isEmpty()) && "UUU.TO".equals(s.getTickerSymbol()) && "CAD".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("UUU CAD security not found"));
+        assertThat(uuuCad.getTickerSymbol(), is("UUU.TO"));
+
+        Security uuuEur = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> (s.getIsin() == null || s.getIsin().isEmpty()) && "UUU.TO".equals(s.getTickerSymbol()) && "EUR".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("UUU EUR security not found"));
+        assertThat(uuuEur.getTickerSymbol(), is("UUU.TO"));
+        assertThat("Same symbol but different currencies should be separate securities", uuuCad.getUUID(), not(is(uuuEur.getUUID())));
+
+        // Verify dividends are associated with correct securities
+        List<AccountTransaction> dividends = results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(item -> (AccountTransaction) ((TransactionItem) item).getSubject()) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .collect(Collectors.toList());
+
+        assertThat("Should have 3 dividend transactions", dividends.size(), is(3));
+
+        // Verify Case 1 dividend: ISIN match with non-strict currency (should match one of the Case 1 securities)
+        AccountTransaction case1Dividend = dividends.stream() //
+                        .filter(t -> "CA38501D2041".equals(t.getSecurity().getIsin()) && "USD".equals(t.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 1 USD dividend not found"));
+        assertThat("Case 1 dividend should match one of the Case 1 securities", case1Dividend.getSecurity().getIsin(), is("CA38501D2041"));
+
+        // Verify Case 2 dividend: Creates new security (different ISIN)
+        AccountTransaction case2Dividend = dividends.stream() //
+                        .filter(t -> "CA38501D2043".equals(t.getSecurity().getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 2 EUR dividend not found"));
+        assertThat(case2Dividend.getCurrencyCode(), is("EUR"));
+        assertThat(case2Dividend.getSecurity().getTickerSymbol(), is("GCM.TO"));
+
+        // Verify Case 3 dividend: Ticker match with no ISIN (should match one of the Case 3 securities)
+        AccountTransaction case3Dividend = dividends.stream() //
+                        .filter(t -> (t.getSecurity().getIsin() == null || t.getSecurity().getIsin().isEmpty()) 
+                                        && "UUU.TO".equals(t.getSecurity().getTickerSymbol()) 
+                                        && "AUD".equals(t.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 3 AUD dividend not found"));
+        assertThat("Case 3 dividend should match one of the Case 3 securities", case3Dividend.getSecurity().getTickerSymbol(), is("UUU.TO"));
+    }
 }
