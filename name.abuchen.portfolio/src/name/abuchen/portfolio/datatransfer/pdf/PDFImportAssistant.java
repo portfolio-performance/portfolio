@@ -35,6 +35,7 @@ public class PDFImportAssistant
         extractors.add(new AkfBankPDFExtractor(client));
         extractors.add(new ArkeaDirectBankPDFExtractor(client));
         extractors.add(new AudiBankPDFExtractor(client));
+        extractors.add(new AustrianAnadiBankPDFExtractor(client));
         extractors.add(new AlpacCapitalPDFExtractor(client));
         extractors.add(new AvivaPLCPDFExtractor(client));
         extractors.add(new BaaderBankPDFExtractor(client));
