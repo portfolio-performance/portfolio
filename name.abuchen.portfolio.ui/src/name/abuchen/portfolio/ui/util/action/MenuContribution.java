@@ -4,12 +4,26 @@ import java.util.Objects;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.util.TextUtil;
 
+/**
+ * A specialized {@link ContributionItem} for adding menu entries to a
+ * {@code MenuManager}.
+ * <p>
+ * This class is used instead of directly adding {@code Action} objects to a
+ * {@code MenuManager} because Eclipse JFace interprets the '@' character as a
+ * separator for accelerator keys. Since menu labels in Portfolio Performance
+ * may contain user-created text (view names, bookmarks, classifications,
+ * taxonomies) that include '@' characters, this class bypasses that special
+ * character handling.
+ */
 public class MenuContribution extends ContributionItem
 {
     private final String label;
@@ -20,21 +34,34 @@ public class MenuContribution extends ContributionItem
 
     private MenuItem menuItem;
 
+    /**
+     * Creates a disabled push-button menu item with the given label.
+     */
     public MenuContribution(String label)
     {
         this(label, null, null, SWT.PUSH, false);
     }
 
+    /**
+     * Creates a push-button menu item with the given label and action.
+     */
     public MenuContribution(String label, Runnable runnable)
     {
         this(label, null, runnable, SWT.PUSH, false);
     }
 
+    /**
+     * Creates a disabled push-button menu item with the given label and icon.
+     */
     public MenuContribution(String label, Images image)
     {
         this(label, image, null, SWT.PUSH, false);
     }
 
+    /**
+     * Creates a checkable menu item with the given label, action, and initial
+     * checked state.
+     */
     public MenuContribution(String label, Runnable runnable, boolean isChecked)
     {
         this(label, null, runnable, SWT.CHECK, isChecked);
@@ -82,6 +109,24 @@ public class MenuContribution extends ContributionItem
     }
 
     @Override
+    public void fill(Composite parent)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void fill(ToolBar parent, int index)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void fill(CoolBar parent, int index)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void dispose()
     {
         if (menuItem != null && !menuItem.isDisposed())
@@ -90,5 +135,4 @@ public class MenuContribution extends ContributionItem
             menuItem = null;
         }
     }
-
 }
