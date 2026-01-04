@@ -2480,12 +2480,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 set
                                         // Bonifico Incoming transfer from eraE IQRKrwr 3.000,00 € 4.305,56 €
                                         // 2025
+                                        //
+                                        // 01 Dez. 
+                                        // Bonus Cash reward allocation 0,06 € 659,83 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^((.berweisung" //
                                                                         + "|Pr.mie" //
+                                                                        + "|Bonus" //
                                                                         + "|Transferencia" //
                                                                         + "|Recompensa" //
                                                                         + "|Recomendaci.n" //
@@ -2497,9 +2502,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Paiement accept.:" //
                                                                         + "|Your Saveback" //
                                                                         + "|Your Saveback payment" //
+                                                                        + "|Cash reward allocation" //
                                                                         + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
-                                                                        + " .*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                                        + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -3229,11 +3235,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 ago
                                         // Pago de intereses Interest payment 47,64 € 34.107,54 €
                                         // 2025
+                                        //
+                                        // 01 Dez. 
+                                        // Zinsen Interest payment 1,17 € 661,00 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$")
-                                                        .match("^(Zinszahlung|intereses|d.int.r.ts|Pago de intereses|Pagamento) (Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(Zinszahlung|intereses|d.int.r.ts|Pago de intereses|Pagamento|Zinsen) (Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
