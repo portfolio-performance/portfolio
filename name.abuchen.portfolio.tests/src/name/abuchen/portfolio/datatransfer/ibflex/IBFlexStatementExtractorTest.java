@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -3485,5 +3487,304 @@ public class IBFlexStatementExtractorTest
                                         hasSecurity(hasTicker("GOVS")), //
                                         hasAmount("EUR", 62.05), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile27() throws IOException
+    {
+        // Test minor unit currency handling: IBKR provides GBP, security is GBX
+        var client = new Client();
+
+        // Create security with GBX currency (minor unit)
+        var eqqq = new Security("INVESCO NASDAQ-100 DIST", "GBX");
+        eqqq.setTickerSymbol("EQQQ.L");
+        eqqq.setIsin("IE0032077012");
+        eqqq.setWkn("35628280");
+        client.addSecurity(eqqq);
+
+        var referenceAccount = new Account("A");
+        referenceAccount.setCurrencyCode("GBP");
+        client.addAccount(referenceAccount);
+
+        var portfolio = new Portfolio("U1234567");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile27.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L)); // Security already exists
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        // Find the buy transaction
+        BuySellEntry entry = (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Buy transaction not found")) //
+                        .getSubject();
+
+        // Verify transaction currency is GBP (from IBKR)
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is("GBP"));
+        // netCash is -1369.52, but transaction amount should be absolute value
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(136952L)); // 1369.52 GBP
+
+        // Verify security currency is GBX
+        assertThat(entry.getPortfolioTransaction().getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for GBP->GBX conversion", grossValueUnit.isPresent(), is(true));
+
+        var unit = grossValueUnit.get();
+        // GROSS_VALUE unit amount is the gross value before fees
+        // Transaction amount is 1369.52 GBP (netCash), fees are 3.00 GBP
+        // Gross value = 1369.52 - 3.00 = 1366.52 GBP = 136652 (in smallest unit)
+        assertThat(unit.getAmount().getCurrencyCode(), is("GBP"));
+        assertThat(unit.getAmount().getAmount(), is(136652L));
+
+        // Forex amount in GBX: 1369.52 GBP * 100 = 136952 GBX (in smallest unit)
+        assertThat(unit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(unit.getForex().getAmount(), is(13695200L)); // 136952.00 GBX
+
+        // Exchange rate should be 0.01 (GBP to GBX: 1 GBP = 100 GBX, so rate is 0.01)
+        assertThat(unit.getExchangeRate().compareTo(new java.math.BigDecimal("0.01")), is(0));
+    }
+
+    @Test
+    public void testIBFlexStatementFile28() throws IOException
+    {
+        // Test cross-rate calculation using fxRateToBase when direct rate is missing
+        // Case 1: Transaction currency: USD, Security currency: GBP, Base currency: EUR
+        // Case 2: Transaction currency: USD, Security currency: GBX (minor unit), Base currency: EUR
+        // USD/EUR available via fxRateToBase, GBP/EUR available via ConversionRate
+        var client = new Client();
+
+        // Create security with GBP currency (security currency differs from transaction currency)
+        var hidr = new Security("HSBC MSCI INDONESIA UCITS ET", "GBP");
+        hidr.setTickerSymbol("HIDR");
+        hidr.setIsin("IE00B46G8275");
+        hidr.setWkn("86281326");
+        client.addSecurity(hidr);
+
+        // Create security with GBX currency (minor unit)
+        var eqqq = new Security("INVESCO NASDAQ-100 DIST", "GBX");
+        eqqq.setTickerSymbol("EQQQ");
+        eqqq.setIsin("IE0032077012");
+        eqqq.setWkn("18706552");
+        client.addSecurity(eqqq);
+
+        var referenceAccount = new Account("A");
+        referenceAccount.setCurrencyCode("EUR");
+        client.addAccount(referenceAccount);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile28.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L)); // Securities already exist
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+
+        // Find the first dividend transaction (HIDR - USD->GBP)
+        List<AccountTransaction> transactions = results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(item -> (AccountTransaction) ((TransactionItem) item).getSubject()) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .collect(Collectors.toList());
+
+        assertThat(transactions.size(), is(2));
+
+        // Test first transaction: HIDR (USD->GBP)
+        AccountTransaction hidrTransaction = transactions.stream() //
+                        .filter(t -> "HIDR".equals(t.getSecurity().getTickerSymbol())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("HIDR dividend transaction not found"));
+
+        assertThat(hidrTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(hidrTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-04T00:00")));
+
+        assertThat(hidrTransaction.getCurrencyCode(), is("USD"));
+        assertThat(hidrTransaction.getAmount(), is(1815L)); // 18.15 USD
+        assertThat(hidrTransaction.getSecurity().getCurrencyCode(), is("GBP"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        // USD/EUR = 0.94106 (from fxRateToBase)
+        // GBP/EUR = 1.2041 (from ConversionRate on 20250304)
+        // USD/GBP = (USD/EUR) / (GBP/EUR) = 0.94106 / 1.2041 ≈ 0.781546
+        // After inversion in setAmount: GBP/USD ≈ 1.2795
+        var hidrGrossValueUnit = hidrTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for USD->GBP conversion", hidrGrossValueUnit.isPresent(), is(true));
+
+        var hidrUnit = hidrGrossValueUnit.get();
+        assertThat(hidrUnit.getAmount().getCurrencyCode(), is("USD"));
+        assertThat(hidrUnit.getAmount().getAmount(), is(1815L)); // 18.15 USD
+        assertThat(hidrUnit.getForex().getCurrencyCode(), is("GBP"));
+        assertThat(hidrUnit.getForex().getAmount(), is(1419L)); // 14.19 GBP (rounded)
+
+        BigDecimal hidrExpectedRate = new BigDecimal("1.2795145899");
+        BigDecimal tolerance = new BigDecimal("0.0000001");
+        assertThat(hidrUnit.getExchangeRate().subtract(hidrExpectedRate).abs().compareTo(tolerance) < 0, is(true));
+
+        // Test second transaction: EQQQ (USD->GBX via GBP)
+        AccountTransaction eqqqTransaction = transactions.stream() //
+                        .filter(t -> "EQQQ".equals(t.getSecurity().getTickerSymbol())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("EQQQ dividend transaction not found"));
+
+        assertThat(eqqqTransaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(eqqqTransaction.getDateTime(), is(LocalDateTime.parse("2025-03-21T00:00")));
+
+        assertThat(eqqqTransaction.getCurrencyCode(), is("USD"));
+        assertThat(eqqqTransaction.getAmount(), is(136L)); // 1.36 USD
+        assertThat(eqqqTransaction.getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        // USD/EUR = 0.92464 (from fxRateToBase)
+        // GBP/EUR = 1.1726 (from ConversionRate on 20250321)
+        // USD/GBP = (USD/EUR) / (GBP/EUR) = 0.92464 / 1.1726 ≈ 0.7887
+        // GBX/GBP = 0.01 (from FixedExchangeRateProvider)
+        // USD/GBX = USD/GBP / GBX/GBP = 0.7887 / 0.01 = 78.87
+        // After inversion in setAmount: GBX/USD ≈ 0.01268
+        var eqqqGrossValueUnit = eqqqTransaction.getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for USD->GBX conversion", eqqqGrossValueUnit.isPresent(), is(true));
+
+        var eqqqUnit = eqqqGrossValueUnit.get();
+        assertThat(eqqqUnit.getAmount().getCurrencyCode(), is("USD"));
+        assertThat(eqqqUnit.getAmount().getAmount(), is(136L)); // 1.36 USD
+        assertThat(eqqqUnit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(eqqqUnit.getForex().getAmount(), is(10724L)); // 107.24 GBX (rounded)
+
+        // Exchange rate calculation (with 10 decimal precision, HALF_DOWN in divisions):
+        // USD/EUR = 0.92464, GBP/EUR = 1.1726
+        // USD/GBP = 0.92464 / 1.1726 = 0.7887030844... (exact)
+        //   With 10 decimals HALF_DOWN: 0.7887030844
+        // USD/GBX = 0.7887030844 / 0.01 = 78.87030844
+        // After inversion in setAmount (10 decimals, HALF_DOWN): GBX/USD = 1 / 78.87030844
+        // Calculate expected rate with same precision as implementation
+        BigDecimal usdToGbp = new BigDecimal("0.92464").divide(new BigDecimal("1.1726"), 10, RoundingMode.HALF_DOWN);
+        BigDecimal usdToGbx = usdToGbp.divide(new BigDecimal("0.01"), 10, RoundingMode.HALF_DOWN);
+        BigDecimal eqqqExpectedRate = BigDecimal.ONE.divide(usdToGbx, 10, RoundingMode.HALF_DOWN);
+        BigDecimal eqqqTolerance = new BigDecimal("0.0000001"); // Same tolerance as HIDR test
+        assertThat(eqqqUnit.getExchangeRate().subtract(eqqqExpectedRate).abs().compareTo(eqqqTolerance) < 0, is(true));
+    }
+
+    @Test
+    public void testIBFlexStatementFile29() throws IOException
+    {
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile29.xml");
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertThat(errors, empty());
+
+        List<Item> securityItems = results.stream().filter(SecurityItem.class::isInstance) //
+                        .collect(Collectors.toList());
+
+        // Should have 6 securities total:
+        // 1. GCM CAD (CA38501D2041) - Case 1 base trade
+        // 2. GCM EUR (CA38501D2041) - Case 1 trade (same ISIN, different currency - NEW security)
+        // 3. GCM CAD (CA38501D2042) - Case 2 trade (same symbol, different ISIN - NEW security)
+        // 4. GCM EUR (CA38501D2043) - Case 2 dividend (different ISIN from Case 2 trade - NEW security)
+        // 5. UUU CAD (no ISIN) - Case 3 base trade
+        // 6. UUU EUR (no ISIN) - Case 3 trade (same symbol, different currency - NEW security)
+        assertThat("Should create 6 distinct securities", securityItems.size(), is(6));
+
+        // Verify Case 1: Same ISIN, different currency creates separate securities
+        Security gcmCad = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2041".equals(s.getIsin()) && "CAD".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CAD security not found"));
+        assertThat(gcmCad.getTickerSymbol(), is("GCM.TO"));
+
+        Security gcmEur = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2041".equals(s.getIsin()) && "EUR".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM EUR security not found"));
+        assertThat(gcmEur.getTickerSymbol(), is("GCM.TO"));
+        assertThat("Same ISIN but different currencies should be separate securities", gcmCad.getUUID(), not(is(gcmEur.getUUID())));
+
+        // Verify Case 2: Same symbol, different ISIN creates separate securities
+        Security gcmCad2042 = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2042".equals(s.getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CA38501D2042 security not found"));
+        assertThat(gcmCad2042.getTickerSymbol(), is("GCM.TO"));
+
+        Security gcmEur2043 = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> "CA38501D2043".equals(s.getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("GCM CA38501D2043 security not found"));
+        assertThat(gcmEur2043.getTickerSymbol(), is("GCM.TO"));
+        assertThat("Same symbol but different ISINs should be separate securities", gcmCad2042.getUUID(), not(is(gcmEur2043.getUUID())));
+
+        // Verify Case 3: Same symbol, no ISIN, different currency creates separate securities
+        Security uuuCad = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> (s.getIsin() == null || s.getIsin().isEmpty()) && "UUU.TO".equals(s.getTickerSymbol()) && "CAD".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("UUU CAD security not found"));
+        assertThat(uuuCad.getTickerSymbol(), is("UUU.TO"));
+
+        Security uuuEur = securityItems.stream() //
+                        .map(item -> ((SecurityItem) item).getSecurity()) //
+                        .filter(s -> (s.getIsin() == null || s.getIsin().isEmpty()) && "UUU.TO".equals(s.getTickerSymbol()) && "EUR".equals(s.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("UUU EUR security not found"));
+        assertThat(uuuEur.getTickerSymbol(), is("UUU.TO"));
+        assertThat("Same symbol but different currencies should be separate securities", uuuCad.getUUID(), not(is(uuuEur.getUUID())));
+
+        // Verify dividends are associated with correct securities
+        List<AccountTransaction> dividends = results.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .map(item -> (AccountTransaction) ((TransactionItem) item).getSubject()) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
+                        .collect(Collectors.toList());
+
+        assertThat("Should have 3 dividend transactions", dividends.size(), is(3));
+
+        // Verify Case 1 dividend: ISIN match with non-strict currency (should match one of the Case 1 securities)
+        AccountTransaction case1Dividend = dividends.stream() //
+                        .filter(t -> "CA38501D2041".equals(t.getSecurity().getIsin()) && "USD".equals(t.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 1 USD dividend not found"));
+        assertThat("Case 1 dividend should match one of the Case 1 securities", case1Dividend.getSecurity().getIsin(), is("CA38501D2041"));
+
+        // Verify Case 2 dividend: Creates new security (different ISIN)
+        AccountTransaction case2Dividend = dividends.stream() //
+                        .filter(t -> "CA38501D2043".equals(t.getSecurity().getIsin())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 2 EUR dividend not found"));
+        assertThat(case2Dividend.getCurrencyCode(), is("EUR"));
+        assertThat(case2Dividend.getSecurity().getTickerSymbol(), is("GCM.TO"));
+
+        // Verify Case 3 dividend: Ticker match with no ISIN (should match one of the Case 3 securities)
+        AccountTransaction case3Dividend = dividends.stream() //
+                        .filter(t -> (t.getSecurity().getIsin() == null || t.getSecurity().getIsin().isEmpty()) 
+                                        && "UUU.TO".equals(t.getSecurity().getTickerSymbol()) 
+                                        && "AUD".equals(t.getCurrencyCode())) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Case 3 AUD dividend not found"));
+        assertThat("Case 3 dividend should match one of the Case 3 securities", case3Dividend.getSecurity().getTickerSymbol(), is("UUU.TO"));
     }
 }

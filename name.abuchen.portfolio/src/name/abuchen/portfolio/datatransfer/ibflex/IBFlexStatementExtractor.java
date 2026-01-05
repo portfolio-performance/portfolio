@@ -58,6 +58,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.impl.FixedExchangeRateProvider;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.Pair;
@@ -391,7 +392,7 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Payment In Lieu Of Dividends":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true, false));
 
                     accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                     this.calculateShares(accountTransaction, element);
@@ -399,7 +400,7 @@ public class IBFlexStatementExtractor implements Extractor
                 case "Withholding Tax":
                     // Set the Symbol
                     if (element.getAttribute("symbol").length() > 0)
-                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                        accountTransaction.setSecurity(this.getOrCreateSecurity(element, true, false));
 
                     // Positive amount are a tax refund
                     if (Math.signum(Double.parseDouble(element.getAttribute("amount"))) == -1)
@@ -611,6 +612,9 @@ public class IBFlexStatementExtractor implements Extractor
             
             portfolioTransaction.setDate(extractDate(element));
 
+            // Set security before amount so that setAmount can detect currency mismatches in all cases
+            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
+
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
             // attribute. If the element contains only the "cost" attribute, the
@@ -621,14 +625,14 @@ public class IBFlexStatementExtractor implements Extractor
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
             else
             {
                 Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
 
             // Set share quantity
@@ -645,8 +649,6 @@ public class IBFlexStatementExtractor implements Extractor
             Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
             Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
             portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
-
-            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
 
             // Set note
             if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
@@ -690,7 +692,7 @@ public class IBFlexStatementExtractor implements Extractor
                 double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 portfolioTransaction.setShares(Values.Share.factorize(qty));
 
-                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
@@ -712,7 +714,7 @@ public class IBFlexStatementExtractor implements Extractor
                 Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
                 portfolioTransaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+                portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true, true));
                 portfolioTransaction.setNote(element.getAttribute("description"));
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
@@ -925,6 +927,65 @@ public class IBFlexStatementExtractor implements Extractor
                     return asExchangeRate(element.getAttribute("fxRateToBase"));
                 }
 
+                // Before trying accountCurrency conversion, check if toCurrency is a minor unit
+                // (e.g., GBX is minor unit of GBP). If so, convert to the major unit first.
+                String toMajorUnit = findMajorUnitCurrency(toCurrency);
+                if (toMajorUnit != null)
+                {
+                    // Convert fromCurrency -> toMajorUnit via accountCurrency
+                    // Then apply minor unit conversion
+                    Pair<String, String> fromKey = new Pair<>(dateStr, fromCurrency + "-" + accountCurrency);
+                    Pair<String, String> toKey = new Pair<>(dateStr, toMajorUnit + "-" + accountCurrency);
+
+                    BigDecimal fromRate = conversionRates.get(fromKey);
+                    // If fromRate is not in conversionRates, try using fxRateToBase from the element
+                    // (fxRateToBase is the rate from transaction currency to base currency)
+                    if (fromRate == null && element.hasAttribute("fxRateToBase"))
+                    {
+                        fromRate = asExchangeRate(element.getAttribute("fxRateToBase"));
+                    }
+                    BigDecimal majorUnitRate = conversionRates.get(toKey);
+
+                    if (fromRate != null && majorUnitRate != null)
+                    {
+                        // Calculate fromCurrency -> toMajorUnit
+                        BigDecimal toMajorUnitRate = fromRate.divide(majorUnitRate, 10, RoundingMode.HALF_DOWN);
+                        // Apply minor unit conversion: toMajorUnitRate / minorUnitRate
+                        // (e.g., USD->GBP / GBX->GBP = USD->GBX)
+                        BigDecimal minorUnitRate = getUnitExchangeRate(toCurrency, toMajorUnit);
+                        if (minorUnitRate != null)
+                        {
+                            return toMajorUnitRate.divide(minorUnitRate, 10, RoundingMode.HALF_DOWN);
+                        }
+                    }
+                }
+
+                // Check if fromCurrency is a minor unit (e.g., GBX -> USD)
+                String fromMajorUnit = findMajorUnitCurrency(fromCurrency);
+                if (fromMajorUnit != null)
+                {
+                    // First convert fromCurrency (minor) -> fromMajorUnit (major)
+                    // Then convert fromMajorUnit -> toCurrency via accountCurrency
+                    BigDecimal minorToMajorRate = getUnitExchangeRate(fromCurrency, fromMajorUnit);
+                    if (minorToMajorRate != null)
+                    {
+                        Pair<String, String> fromKey = new Pair<>(dateStr, fromMajorUnit + "-" + accountCurrency);
+                        Pair<String, String> toKey = new Pair<>(dateStr, toCurrency + "-" + accountCurrency);
+
+                        BigDecimal fromMajorRate = conversionRates.get(fromKey);
+                        BigDecimal toRate = conversionRates.get(toKey);
+
+                        if (fromMajorRate != null && toRate != null)
+                        {
+                            // Calculate fromMajorUnit -> toCurrency
+                            BigDecimal majorToTargetRate = fromMajorRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
+                            // Combine: fromCurrency -> fromMajorUnit -> toCurrency
+                            // (e.g., GBX->GBP * GBP->USD = GBX->USD)
+                            return minorToMajorRate.multiply(majorToTargetRate);
+                        }
+                    }
+                }
+
                 // Attempt to calculate cross rate via accountCurrency. No use
                 // in trying a different intermediate currency, it seems like
                 // toCurrency is only ever the account's base.
@@ -932,13 +993,102 @@ public class IBFlexStatementExtractor implements Extractor
                 Pair<String, String> toKey = new Pair<>(dateStr, toCurrency + "-" + accountCurrency);
 
                 BigDecimal fromRate = conversionRates.get(fromKey);
+                // If fromRate is not in conversionRates, try using fxRateToBase from the element
+                // (fxRateToBase is the rate from transaction currency to base currency)
+                if (fromRate == null && element.hasAttribute("fxRateToBase"))
+                {
+                    fromRate = asExchangeRate(element.getAttribute("fxRateToBase"));
+                }
                 BigDecimal toRate = conversionRates.get(toKey);
 
                 if (fromRate != null && toRate != null)
                     return fromRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
             }
 
+            // Check if there's a fixed exchange rate (e.g. GBP/GBX)
+            BigDecimal fixedRate = getUnitExchangeRate(fromCurrency, toCurrency);
+            if (fixedRate != null)
+                return fixedRate;
+
             return null;
+        }
+
+        /**
+         * Returns the major unit currency for a given minor unit currency, or null
+         * if the currency is not a known minor unit.
+         *
+         * @param minorUnitCurrency The minor unit currency (e.g., "GBX")
+         * @return The major unit currency (e.g., "GBP"), or null if not a known minor unit
+         */
+        private String findMajorUnitCurrency(String minorUnitCurrency)
+        {
+            var provider = new FixedExchangeRateProvider();
+
+            for (var series : provider.getAvailableTimeSeries(null))
+            {
+                if (series.getRates().isEmpty())
+                    continue;
+
+                if (series.getBaseCurrency().equals(minorUnitCurrency) && series.getTermCurrency() != null)
+                {
+                    return series.getTermCurrency();
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * Returns the exchange rate for currency pairs with a fixed relationship
+         * (e.g. GBX/GBP) using FixedExchangeRateProvider. Handles both directions.
+         *
+         * @param fromCurrency The source currency
+         * @param toCurrency The target currency
+         * @return The exchange rate, or null if not a known fixed-rate pair
+         */
+        private BigDecimal getUnitExchangeRate(String fromCurrency, String toCurrency)
+        {
+            var provider = new FixedExchangeRateProvider();
+
+            for (var series : provider.getAvailableTimeSeries(null))
+            {
+                if (series.getRates().isEmpty())
+                    continue;
+
+                BigDecimal rate = series.getRates().get(0).getValue();
+
+                if (series.getBaseCurrency().equals(fromCurrency) && series.getTermCurrency().equals(toCurrency))
+                {
+                    return rate;
+                }
+                else if (series.getBaseCurrency().equals(toCurrency) && series.getTermCurrency().equals(fromCurrency))
+                {
+                    return BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_UP);
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * Checks if two currencies are compatible for matching purposes.
+         * Currencies are compatible if they are equal or if one is a major/minor
+         * unit of the other (e.g., GBP and GBX, ILS and ILA, ZAR and ZAC).
+         *
+         * @param currency1 First currency code
+         * @param currency2 Second currency code
+         * @return true if currencies are compatible
+         */
+        private boolean isCurrencyCompatible(String currency1, String currency2)
+        {
+            if (currency1 == null || currency2 == null)
+                return false;
+
+            if (currency1.equals(currency2))
+                return true;
+
+            // Check if there's a fixed exchange rate between them (major/minor unit relationship)
+            return getUnitExchangeRate(currency1, currency2) != null;
         }
 
         /**
@@ -1070,11 +1220,13 @@ public class IBFlexStatementExtractor implements Extractor
          * Looks up a Security in the model or creates a new one if it does not yet exist.
          * It uses the IB ContractID (conID) for the WKN, tries to degrade if conID or ISIN are not available.
          *
-         * @param element   The XML element containing information about the security.
-         * @param doCreate  A flag indicating whether to create a new Security if not found.
-         * @return          The found or created Security object.
+         * @param element              The XML element containing information about the security.
+         * @param doCreate             A flag indicating whether to create a new Security if not found.
+         * @param strictCurrencyMatch  If true (for trades), only match on ISIN if currency also matches.
+         *                             If false (for dividends), allow ISIN match regardless of currency.
+         * @return                     The found or created Security object.
          */
-        private Security getOrCreateSecurity(Element element, boolean doCreate)
+        private Security getOrCreateSecurity(Element element, boolean doCreate, boolean strictCurrencyMatch)
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
@@ -1139,6 +1291,7 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             Security matchingSecurity = null;
+            Security matchingTickerSecurity = null;
 
             for (Security security : allSecurities)
             {
@@ -1147,17 +1300,35 @@ public class IBFlexStatementExtractor implements Extractor
                     return security;
 
                 if (!isin.isEmpty() && isin.equals(security.getIsin()))
-                    if (currency.equals(security.getCurrencyCode()))
+                    if (isCurrencyCompatible(currency, security.getCurrencyCode()))
                         return security;
-                    else
+                    else if (!strictCurrencyMatch)
                         matchingSecurity = security;
 
+                // Only match by ticker symbol if CONID and ISIN don't conflict
                 if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(security.getTickerSymbol()))
-                    return security;
+                {
+                    // Don't match by ticker if CONID or ISIN conflict
+                    boolean conidConflicts = conid != null && conid.length() > 0
+                                    && security.getWkn() != null && security.getWkn().length() > 0
+                                    && !conid.equals(security.getWkn());
+                    boolean isinConflicts = !isin.isEmpty()
+                                    && security.getIsin() != null && security.getIsin().length() > 0
+                                    && !isin.equals(security.getIsin());
+                    
+                    // For strict currency match (trades), also check currency compatibility
+                    boolean currencyIncompatible = strictCurrencyMatch && !isCurrencyCompatible(currency, security.getCurrencyCode());
+
+                    if (!conidConflicts && !isinConflicts && !currencyIncompatible)
+                        matchingTickerSecurity = security;
+                }
             }
 
             if (matchingSecurity != null)
                 return matchingSecurity;
+
+            if (matchingTickerSecurity != null)
+                return matchingTickerSecurity;
 
             if (!doCreate)
                 return null;
