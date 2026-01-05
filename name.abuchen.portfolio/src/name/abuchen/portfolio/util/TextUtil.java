@@ -329,7 +329,8 @@ public final class TextUtil
     }
 
     /**
-     * Concatenates two strings with a specified separator.
+     * Concatenates two strings with a specified separator but only if the first
+     * and second string actually differ.
      */
     public static String concatenate(String first, String second, String separator)
     {
@@ -337,11 +338,11 @@ public final class TextUtil
             return null;
 
         if (first != null && second == null)
-            return first;
+            return trim(first);
 
         if (first != null && first.equals(second))
-            return first;
+            return trim(first);
 
-        return first == null ? second : first + separator + second;
+        return first == null ? trim(second) : trim(first) + separator + trim(second);
     }
 }
