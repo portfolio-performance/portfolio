@@ -268,6 +268,7 @@ public final class CSVImporter
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDDTHHMM, "yyyy-MM-dd'T'HH:mm"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDD, "yyyy-MM-dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatYYYYMMDDSlashes, "yyyy/MM/dd"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatYYYYMMDDDot, "yyyy.MM.dd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatISO, "yyyyMMdd"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMYYYY, "dd.MM.yyyy"), //$NON-NLS-1$
                         new DateFieldFormat(Messages.CSVFormatDDMMYY, "dd.MM.yy"), //$NON-NLS-1$
