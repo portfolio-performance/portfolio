@@ -258,31 +258,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // @formatter:on
-                        .section("name", "wkn", "currency") //
+                        .section("name", "wkn", "date", "shares", "amount", "currency") //
                         .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}), .* [\\.,\\d]+%$")//
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
-                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
-                        // @formatter:on
-                        .section("date")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        // @formatter:off
-                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
