@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+DB Privat- und Firmenkundenbank AG
+Privat- und Firmenkunden
+Kundenservice DVAG
+V 111 222 04024 Leipzig
+Herr
+Max Mustermann Telefon (069) 910-10000*
+Musterstraße 15 Telefax (069) 910-10001
+77777 Musterstadt *24h-Kundenservice
+Ihr Ansprechpartner bei der
+Deutsche Vermögensberatung Gruppe:
+Karl Gustav
+27. Januar 2020
+Ihr VermögensSparplan - Abrechnung für den Zeitraum vom 01.07.2019 bis 31.12.2019
+Vertrags-Nr. 555 1234567 01 - Max Mustermann
+Ihre Wertpapiertransaktionen, Geschäftsart Kauf außerbörslich/ Festpreisgeschäft:
+Schlusstag Stück Wertpapierkurs Sparrate
+Belegnummer Valuta
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+01.08.2019 0,1028 174,6400 25,00 EUR
+1322539998 05.08.2019
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+02.09.2019 0,1042 172,4300 25,00 EUR
+1325508109 04.09.2019
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+01.10.2019 0,1017 176,5400 25,00 EUR
+1328132997 03.10.2019
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+01.11.2019 0,1008 178,2100 25,00 EUR
+1330793123 05.11.2019
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+02.12.2019 0,0972 184,7000 25,00 EUR
+1333770889 04.12.2019
+Die Buchung erfolgt über das Depot Nummer 555 1234567 00 und das Konto Nr.
+DE12 3456 7891 2345 63789 01.
+Wichtige Hinweise:
+Es kann in der Abrechnung zu geringfügigen Rundungsdifferenzen kommen.
+Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen in den Geschäftsräumen der Bank oder schriftlich an DB
+Privat- und Firmenkundenbank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. Die abgerechneten Leistungen sind als
+Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen ist. Umsatzsteuer ID Nr.: DB Privat- und
+Firmenkundenbank AG, 60262 Frankfurt DE811907980
+1/1
+ISS0000005 TVP0 20200127 06440253
