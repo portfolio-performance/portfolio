@@ -1292,6 +1292,67 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierSparplan02()
+    {
+        var extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(5L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("847652"), hasTicker(null), //
+                        hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD"), //
+                        hasCurrencyCode("EUR"))));
+        
+        // check transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-08-01"), hasShares(0.1028), //
+                        hasSource("Sparplan02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-09-02"), hasShares(0.1042), //
+                        hasSource("Sparplan02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-10-01"), hasShares(0.1017), //
+                        hasSource("Sparplan02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-11-01"), hasShares(0.1008), //
+                        hasSource("Sparplan02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2019-12-02"), hasShares(0.0972), //
+                        hasSource("Sparplan02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.0))));
+    }
+
+    @Test
     public void testGiroKontoauszug01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());
