@@ -180,7 +180,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-04-16T18:33"), hasShares(2.00), //
                         hasSource("Kauf04.txt"), //
-                        hasNote("Ord.-Nr.: -001 | R.-Nr.: "), //
+                        hasNote("Ord.-Nr.: -001 | R.-Nr.:"), //
                         hasAmount("EUR", 4444.15), hasGrossValue("EUR", 4412.36), //
                         hasForexGrossValue("USD", 4768.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 18.93 + (13.90 / 1.080600)))));
@@ -215,7 +215,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-04-16T18:33"), hasShares(2.00), //
                         hasSource("Kauf04.txt"), //
-                        hasNote("Ord.-Nr.: -001 | R.-Nr.: "), //
+                        hasNote("Ord.-Nr.: -001 | R.-Nr.:"), //
                         hasAmount("EUR", 4444.15), hasGrossValue("EUR", 4412.36), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 18.93 + (13.90 / 1.080600)))));
     }
@@ -683,7 +683,7 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2020-12-28T16:50"), hasShares(150.00), //
                         hasSource("KaufMitSteuerbehandlung10.txt"), //
-                        hasNote("R.-Nr.: "), //
+                        hasNote("R.-Nr.:"), //
                         hasAmount("EUR", 1430.30), hasGrossValue("EUR", 1417.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90))));
     }
