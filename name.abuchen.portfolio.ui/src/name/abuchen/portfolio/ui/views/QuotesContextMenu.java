@@ -26,7 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
-import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
+import name.abuchen.portfolio.datatransfer.csv.exporter.CSVExporter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;

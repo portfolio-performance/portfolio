@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +47,15 @@ import name.abuchen.portfolio.model.SecurityPrice;
     public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors)
     {
-        Security dummy = new Security(null, null);
+        var dummy = new Security(null, null);
 
         for (String[] line : rawValues)
         {
             try
             {
-                SecurityPrice p = extract(line, field2column);
-                if (p.getValue() >= 0)
-                    dummy.addPrice(p);
+                var price = extract(line, field2column);
+                if (price.getValue() >= 0)
+                    dummy.addPrice(price);
             }
             catch (ParseException e)
             {
@@ -72,11 +71,11 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
     private SecurityPrice extract(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        LocalDateTime date = getDate(Messages.CSVColumn_Date, null, rawValues, field2column);
+        var date = getDate(Messages.CSVColumn_Date, null, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
-        Long amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
+        var amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 

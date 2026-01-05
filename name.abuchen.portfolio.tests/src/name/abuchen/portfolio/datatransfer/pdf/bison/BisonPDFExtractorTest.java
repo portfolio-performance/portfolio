@@ -267,7 +267,7 @@ public class BisonPDFExtractorTest
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
 
-        // check removal transaction
+        // check withdrawal transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2020-11-22T09:51"), //
                         hasSource("InfoReport03.txt"), //

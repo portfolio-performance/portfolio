@@ -110,12 +110,11 @@ class MeasurementTool implements ChartTool
             var buffer = new StringBuilder();
             buffer.append(String.valueOf(ChronoUnit.DAYS.between(start.date(), end.date())));
             buffer.append(" | "); //$NON-NLS-1$
-            buffer.append(chart.getToolTip().getDefaultValueFormat()
-                            .format(end.valueYRightAxis() - start.valueYRightAxis()));
+            buffer.append(chart.getToolTip().getDefaultValueFormat().format(end.valueYAxis() - start.valueYAxis()));
             if (showRelativeChange)
             {
                 buffer.append(" | "); //$NON-NLS-1$
-                buffer.append(Values.PercentWithSign.format(end.valueYRightAxis() / start.valueYRightAxis() - 1));
+                buffer.append(Values.PercentWithSign.format(end.valueYAxis() / start.valueYAxis() - 1));
             }
             var text = buffer.toString();
 

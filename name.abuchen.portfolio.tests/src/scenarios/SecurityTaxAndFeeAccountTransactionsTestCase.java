@@ -145,7 +145,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
                         .collect(Collectors.toList());
 
         // expect 4 transactions: the two fees-related ones plus the
-        // deposit/removal to have the account balance at zero
+        // deposit/withdrawal to have the account balance at zero
 
         assertThat(txa.size(), is(4));
 
@@ -176,7 +176,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
     public void checkTaxonomyWihtSecurityAndAccountAssignment()
     {
         // if account and security are both classified, only the tax
-        // transactions are converted to deposits or removals
+        // transactions are converted to deposits or withdrawals
 
         Taxonomy case3 = client.getTaxonomies().stream()
                         .filter(t -> "case_full_classification_adidas_with_account".equals(t.getName())).findAny()
@@ -191,7 +191,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         List<AccountTransaction> txa1 = filteredClient.getAccounts().stream()
                         .flatMap(a1 -> a1.getTransactions().stream()).collect(Collectors.toList());
 
-        // expect 7 transactions: the original 6 plus the removal of the taxes
+        // expect 7 transactions: the original 6 plus the withdrawal of the taxes
         // as
         // part of the buy
 
@@ -235,7 +235,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         List<AccountTransaction> txa = filteredClient.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .collect(Collectors.toList());
 
-        // expect 9 transactions: the original 6 plus the removal of the fees as
+        // expect 9 transactions: the original 6 plus the withdrawal of the fees as
         // part of the buy + partial transactions to offset fees
 
         assertThat(txa.size(), is(9));
@@ -267,7 +267,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
     public void checkTaxonomyWihtAccountOnlyAssignment()
     {
         // if only the account is classified, the fees and taxes related to the
-        // security must be plain deposit and removal transactions
+        // security must be plain deposit and withdrawal transactions
 
         Taxonomy case5 = client.getTaxonomies().stream().filter(t -> "case_account_classification".equals(t.getName()))
                         .findAny().orElseThrow(IllegalArgumentException::new);

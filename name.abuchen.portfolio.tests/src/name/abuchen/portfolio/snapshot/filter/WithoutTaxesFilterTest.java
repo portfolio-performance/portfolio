@@ -95,11 +95,11 @@ public class WithoutTaxesFilterTest
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.REMOVAL)
                         .findAny().isPresent(), is(true));
 
-        // taxes converted to removal
+        // taxes converted to withdrawal
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.TAXES)
                         .findAny().isPresent(), is(false));
 
-        // expect 5 removals: for the tax transaction + part of buy + sell + interest +
+        // expect 5 withdrawals: for the tax transaction + part of buy + sell + interest +
         // dividend
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.REMOVAL)
                         .count(), is(5L));
@@ -153,7 +153,7 @@ public class WithoutTaxesFilterTest
 
         Account account = result.getAccounts().get(0);
 
-        // dividend + removal taxes + removal dividend
+        // dividend + withdrawal taxes + withdrawal dividend
         assertThat(account.getTransactions().size(), is(3));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)

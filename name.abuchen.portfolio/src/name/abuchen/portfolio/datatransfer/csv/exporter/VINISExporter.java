@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.csv;
+package name.abuchen.portfolio.datatransfer.csv.exporter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,17 +7,13 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.MonetaryOperator;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -42,56 +38,55 @@ public class VINISExporter
      */
     public void exportAllValues(File file, Client client, ExchangeRateProviderFactory factory) throws IOException
     {
-        final String baseCurrency = client.getBaseCurrency();
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, baseCurrency);
+        final var baseCurrency = client.getBaseCurrency();
+        var converter = new CurrencyConverterImpl(factory, baseCurrency);
 
-        LocalDate lastYear = LocalDate.now().minusYears(1);
-        LocalDate firstYear = LocalDate.now().minusYears(100);
+        var lastYear = LocalDate.now().minusYears(1);
+        var firstYear = LocalDate.now().minusYears(100);
 
-        ReportingPeriod periodCurrentYear = new ReportingPeriod.YearToDate();
-        ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
-        ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(
+        var periodCurrentYear = new ReportingPeriod.YearToDate();
+        var periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
+        var periodAllYears = new ReportingPeriod.FromXtoY(
                         firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now());
 
-        ClientPerformanceSnapshot performanceAllYears = new ClientPerformanceSnapshot(client, converter,
+        var performanceAllYears = new ClientPerformanceSnapshot(client, converter,
                         periodAllYears.toInterval(LocalDate.now()));
-        ClientPerformanceSnapshot performanceCurrentYear = new ClientPerformanceSnapshot(client, converter,
+        var performanceCurrentYear = new ClientPerformanceSnapshot(client, converter,
                         periodCurrentYear.toInterval(LocalDate.now()));
-        ClientPerformanceSnapshot performanceLastYear = new ClientPerformanceSnapshot(client, converter,
+        var performanceLastYear = new ClientPerformanceSnapshot(client, converter,
                         periodLastYear.toInterval(LocalDate.now()));
 
-        Money earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
-        Money earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);
-        Money earningsAll = performanceAllYears.getValue(CategoryType.EARNINGS);
+        var earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
+        var earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);
+        var earningsAll = performanceAllYears.getValue(CategoryType.EARNINGS);
 
-        Money capitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.CAPITAL_GAINS);
-        Money capitalGainsLastYear = performanceLastYear.getValue(CategoryType.CAPITAL_GAINS);
-        Money capitalGainsAll = performanceAllYears.getValue(CategoryType.CAPITAL_GAINS);
+        var capitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.CAPITAL_GAINS);
+        var capitalGainsLastYear = performanceLastYear.getValue(CategoryType.CAPITAL_GAINS);
+        var capitalGainsAll = performanceAllYears.getValue(CategoryType.CAPITAL_GAINS);
 
-        Money realizedCapitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
-        Money realizedCapitalGainsLastYear = performanceLastYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
-        Money realizedCapitalGainsAll = performanceAllYears.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
+        var realizedCapitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
+        var realizedCapitalGainsLastYear = performanceLastYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
+        var realizedCapitalGainsAll = performanceAllYears.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
 
-        MutableMoney buySecurityValue = MutableMoney.of(baseCurrency);
-        MutableMoney currentSecurityValue = MutableMoney.of(baseCurrency);
-        MutableMoney buyTotalValue = MutableMoney.of(baseCurrency);
-        MutableMoney currentTotalValue = MutableMoney.of(baseCurrency);
+        var buySecurityValue = MutableMoney.of(baseCurrency);
+        var currentSecurityValue = MutableMoney.of(baseCurrency);
+        var buyTotalValue = MutableMoney.of(baseCurrency);
+        var currentTotalValue = MutableMoney.of(baseCurrency);
 
-        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter,
+        var securityPerformance = SecurityPerformanceSnapshot.create(client, converter,
                         Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
 
-        List<AssetPosition> assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions()
-                        .collect(Collectors.toList());
+        var assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions().toList();
 
-        MonetaryOperator toBaseCurrency = converter.at(LocalDate.now());
+        var toBaseCurrency = converter.at(LocalDate.now());
 
         for (AssetPosition asset : assets)
         {
-            Money valuation = asset.getValuation().with(toBaseCurrency);
+            var valuation = asset.getValuation().with(toBaseCurrency);
 
             if (asset.getSecurity() != null)
             {
-                Money fifo = securityPerformance.getRecord(asset.getSecurity())
+                var fifo = securityPerformance.getRecord(asset.getSecurity())
                                 .map(SecurityPerformanceRecord::getFifoCost).orElse(Money.of(baseCurrency, 0))
                                 .with(toBaseCurrency);
                 buySecurityValue.add(fifo);
@@ -106,11 +101,11 @@ public class VINISExporter
             currentTotalValue.add(valuation);
         }
 
-        Money cash = performanceCurrentYear.getEndClientSnapshot().getAccounts().stream().map(AccountSnapshot::getFunds)
+        var cash = performanceCurrentYear.getEndClientSnapshot().getAccounts().stream().map(AccountSnapshot::getFunds)
                         .collect(MoneyCollectors.sum(baseCurrency));
 
         // write to file
-        try (CSVPrinter printer = new CSVPrinter(
+        try (var printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8),
                         CSVExporter.STRATEGY))
         {
@@ -140,17 +135,15 @@ public class VINISExporter
 
     private void write(CSVPrinter printer, String description, Money value) throws IOException
     {
-        printer.print(description);
-        printer.print(Values.Amount.format(value.getAmount()));
-        printer.print(value.getCurrencyCode());
-        printer.println();
+        printer.printRecord(description, //
+                        Values.Amount.format(value.getAmount()), //
+                        value.getCurrencyCode());
     }
 
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        printer.print(Messages.CSVColumn_Name);
-        printer.print(Messages.CSVColumn_Value);
-        printer.print(Messages.CSVColumn_Currency);
-        printer.println();
+        printer.printRecord(Messages.CSVColumn_Name, //
+                        Messages.CSVColumn_Value, //
+                        Messages.CSVColumn_Currency);
     }
 }

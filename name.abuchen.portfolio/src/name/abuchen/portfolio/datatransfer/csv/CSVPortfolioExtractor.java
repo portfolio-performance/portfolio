@@ -3,26 +3,20 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Money;
 
 /* package */class CSVPortfolioExtractor extends BaseCSVExtractor
 {
@@ -30,7 +24,7 @@ import name.abuchen.portfolio.money.Money;
     {
         super(client, Messages.CSVDefPortfolio);
 
-        List<Field> fields = getFields();
+        var fields = getFields();
         fields.add(new DateField("date", Messages.CSVColumn_DateValue).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
 
@@ -62,11 +56,11 @@ import name.abuchen.portfolio.money.Money;
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // check if we have a security
-        Security security = getSecurity(rawValues, field2column, s -> {
-            String currency = getText(Messages.CSVColumn_Currency, rawValues, field2column);
+        var security = getSecurity(rawValues, field2column, s -> {
+            var currency = getText(Messages.CSVColumn_Currency, rawValues, field2column);
             if (currency != null)
             {
-                CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+                var unit = CurrencyUnit.getInstance(currency.trim());
                 s.setCurrencyCode(unit == null ? getClient().getBaseCurrency() : unit.getCurrencyCode());
             }
         });
@@ -78,25 +72,25 @@ import name.abuchen.portfolio.money.Money;
                             0);
 
         // check for valuation (either current or historic)
-        Money valuation = getMoney(Messages.CSVColumn_Value, Messages.CSVColumn_Currency, rawValues, field2column);
+        var valuation = getMoney(Messages.CSVColumn_Value, Messages.CSVColumn_Currency, rawValues, field2column);
 
         // check for the number of shares
-        Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
+        var shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         if (shares == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Shares),
                             0);
 
         // determine remaining fields
-        LocalDateTime date = getDate(Messages.CSVColumn_DateValue, Messages.CSVColumn_Time, rawValues, field2column);
+        var date = getDate(Messages.CSVColumn_DateValue, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             date = LocalDate.now().atStartOfDay();
 
-        String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
+        var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 
-        Account account = getAccount(getClient(), rawValues, field2column);
-        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
+        var account = getAccount(getClient(), rawValues, field2column);
+        var portfolio = getPortfolio(getClient(), rawValues, field2column);
 
-        BuySellEntry entry = new BuySellEntry();
+        var entry = new BuySellEntry();
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.setSecurity(security);
         entry.setDate(date);
@@ -105,7 +99,7 @@ import name.abuchen.portfolio.money.Money;
         entry.setShares(shares);
         entry.setNote(note);
 
-        Extractor.Item item = new BuySellEntryItem(entry);
+        var item = new BuySellEntryItem(entry);
 
         item.setAccountPrimary(account);
         item.setPortfolioPrimary(portfolio);

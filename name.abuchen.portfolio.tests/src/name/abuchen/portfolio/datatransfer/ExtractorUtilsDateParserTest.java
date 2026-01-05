@@ -156,6 +156,7 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("11 APR 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("11 April 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("11 APRIL 2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("11-Apr-2023", Locale.UK));
 
         expected = LocalDateTime.of(2023, 4, 1, 0, 0);
         assertEquals(expected, ExtractorUtils.asDate("4/1/2023", Locale.UK));
@@ -166,6 +167,8 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("01 Apr 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("1 APR 2023", Locale.UK));
         assertEquals(expected, ExtractorUtils.asDate("01 APR 2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("1-Apr-2023", Locale.UK));
+        assertEquals(expected, ExtractorUtils.asDate("01-Apr-2023", Locale.UK));
     }
 
     @Test(expected = DateTimeParseException.class)

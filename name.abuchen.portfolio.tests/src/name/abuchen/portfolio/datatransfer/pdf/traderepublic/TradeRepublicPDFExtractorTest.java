@@ -3905,6 +3905,63 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug37()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+
+        assertThat(results, hasItem(deposit(hasDate("2025-12-01"), hasAmount("EUR", 4.71),
+                        hasSource("Kontoauszug37.txt"), hasNote("Cash reward allocation"))));
+
+
+        assertThat(results, hasItem(removal(hasDate("2025-12-31"), hasAmount("EUR", 1800.00),
+                        hasSource("Kontoauszug37.txt"), hasNote("Outgoing transfer for Vorname Nachname (DE00000000000000000000)"))));
+    }
+
+    @Test
+    public void testKontoauszug38()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug38.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+
+        assertThat(results, hasItem(deposit(hasDate("2025-12-01"), hasAmount("EUR", 0.06),
+                        hasSource("Kontoauszug38.txt"), hasNote("Cash reward allocation"))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2025-12-01"), hasAmount("EUR", 1.17), //
+                                        hasSource("Kontoauszug38.txt"), hasNote(null)))));
+    }
+
+    @Test
     public void testEstrattoContoRiassuntivo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
