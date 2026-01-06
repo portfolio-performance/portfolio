@@ -43,13 +43,13 @@ public class QuestradePDFExtractorTest
 {
 
     @Test
-    public void testDeposit()
+    public void testDeposit01()
     {
         var extractor = new QuestradePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "contribution.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Deposit01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -62,17 +62,17 @@ public class QuestradePDFExtractorTest
         
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-04-09"), hasAmount("CAD", 10000.00), //
-                        hasSource("contribution.txt"), hasNote("Contribution"))));
+                        hasSource("Deposit01.txt"), hasNote("Contribution"))));
     }
 
     @Test
-    public void testBuy()
+    public void testBuy01()
     {
         var extractor = new QuestradePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "buy.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -101,7 +101,7 @@ public class QuestradePDFExtractorTest
 
         assertThat(transaction.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2025-04-10T00:00:00")));
         assertThat(transaction.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
-        assertThat(transaction.getSource(), is("buy.txt"));
+        assertThat(transaction.getSource(), is("Buy01.txt"));
         assertNull(transaction.getNote());
 
         assertThat(transaction.getPortfolioTransaction().getMonetaryAmount(),
@@ -115,13 +115,13 @@ public class QuestradePDFExtractorTest
     }
 
     @Test
-    public void testDividend()
+    public void testDividend01()
     {
         var extractor = new QuestradePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "dividend.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -150,7 +150,7 @@ public class QuestradePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2025-01-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(29)));
-        assertThat(transaction.getSource(), is("dividend.txt"));
+        assertThat(transaction.getSource(), is("Dividend01.txt"));
         assertThat(transaction.getNote(), is("REC 12/30/24"));
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CAD", Values.Amount.factorize(20.69))));
