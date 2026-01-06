@@ -17,7 +17,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("HAABAT2K");
 
-        addDepositRemoveAccountTransaction();
+        addAccountStatementTransaction();
         addSubAccountInterestTransaction();
     }
 
@@ -27,7 +27,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
         return "Austrian Anadi Bank AG";
     }
 
-    private void addDepositRemoveAccountTransaction()
+    private void addAccountStatementTransaction()
     {
         final var type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
@@ -86,7 +86,6 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                                 .assign((t, v) -> { //
                                                         t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                         t.setCurrencyCode(v.get("currency"));
-                                                        t.setType(AccountTransaction.Type.DEPOSIT);
                                                         t.setAmount(asAmount(v.get("amount")));
                                                         t.setNote("ABRECHNUNG ZU KONTO " + v.get("account"));
                                                 }), //
@@ -143,7 +142,6 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                                 .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
-                                                            t.setType(AccountTransaction.Type.DEPOSIT);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                 }),
 
@@ -161,7 +159,6 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setType(AccountTransaction.Type.REMOVAL);
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            // t.setNote(v.get("note"));
                                                 })
                         ) //
 
@@ -208,7 +205,7 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
 
@@ -232,7 +229,6 @@ public class AustrianAnadiBankPDFExtractor extends AbstractPDFExtractor
                                                 .assign((t, v) -> { //
                                                         t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
                                                         t.setCurrencyCode(v.get("currency"));
-                                                        t.setType(AccountTransaction.Type.INTEREST);
                                                         t.setAmount(asAmount(v.get("interest")));
                                                         t.setNote("Habenzinsen ABRECHNUNG ZU KONTO " + v.get("account"));
                                                         
