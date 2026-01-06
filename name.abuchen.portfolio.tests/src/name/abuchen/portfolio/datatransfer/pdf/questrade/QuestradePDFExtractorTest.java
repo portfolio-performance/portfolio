@@ -115,6 +115,55 @@ public class QuestradePDFExtractorTest
     }
 
     @Test
+    public void testBuy02()
+    {
+        var extractor = new QuestradePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+        
+        // check security
+        var security = results.stream().filter(Extractor.SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin());
+        assertNull(security.getWkn());
+        assertThat(security.getTickerSymbol(), is("VEQT.TO"));
+        assertThat(security.getName(), is("VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF"));
+        assertThat(security.getCurrencyCode(), is("CAD"));
+
+        // check buy sell transaction
+        var transaction = (BuySellEntry) results.stream().filter(Extractor.BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(transaction.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-16T00:00:00")));
+        assertThat(transaction.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
+        assertThat(transaction.getSource(), is("Buy02.txt"));
+        assertNull(transaction.getNote());
+
+        assertThat(transaction.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CAD", Values.Amount.factorize(974.50))));
+        assertThat(transaction.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CAD", Values.Amount.factorize(974.40))));
+        assertThat(transaction.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CAD", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CAD", Values.Amount.factorize(0.10))));
+    }
+
+    @Test
     public void testDividend01()
     {
         var extractor = new QuestradePDFExtractor(new Client());
