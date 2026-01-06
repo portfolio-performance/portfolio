@@ -93,29 +93,29 @@ public class AustrianAnadiBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(deposit( //
-                        hasDate("2025-12-09"), hasShares(0), //
+                        hasDate("2025-12-09"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3500.00), hasGrossValue("EUR", 3500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
         assertThat(results, hasItem(deposit( //
-                        hasDate("2025-12-11"), hasShares(0), //
+                        hasDate("2025-12-11"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
         assertThat(results, hasItem(removal( //
-                        hasDate("2025-12-16"), hasShares(0), //
+                        hasDate("2025-12-16"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2000.00), hasGrossValue("EUR", 2000.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
         assertThat(results, hasItem(interest( //
-                        hasDate("2025-12-31"), hasShares(0), //
+                        hasDate("2025-12-31"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote("Habenzinsen"), //
                         hasAmount("EUR", 123.91), hasGrossValue("EUR", 165.21), //
-                        hasTaxes("EUR", (41.30)), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 41.30), hasFees("EUR", 0.00))));
     }
 
     @Test
