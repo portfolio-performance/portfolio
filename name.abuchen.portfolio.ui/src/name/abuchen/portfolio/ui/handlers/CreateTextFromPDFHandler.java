@@ -145,8 +145,8 @@ public class CreateTextFromPDFHandler
         private boolean containsForbiddenCharacters(String text)
         {
             // we don't want to replace special characters and an ISIN
-            return text.matches(".*[\\-\\.,':\\/].*") // $NON-NLS-1$
-                            || text.matches("[A-Z]{2}[A-Z0-9]{9}[0-9]"); // $NON-NLS-1$
+            return text.matches(".*[\\-\\.,':\\/].*") //$NON-NLS-1$
+                            || text.matches("[A-Z]{2}[A-Z0-9]{9}[0-9]"); //$NON-NLS-1$
         }
 
         private char generateRandomLetter()
