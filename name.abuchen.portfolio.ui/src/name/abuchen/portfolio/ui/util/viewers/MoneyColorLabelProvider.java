@@ -45,7 +45,7 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        return money.getAmount() >= 0 ? Images.UP_ARROW.image() : Images.DOWN_ARROW.image();
     }
 
     @Override

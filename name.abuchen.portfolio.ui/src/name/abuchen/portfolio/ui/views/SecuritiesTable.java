@@ -1272,9 +1272,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() > 0)
-                return Images.GREEN_ARROW.image();
+                return Images.UP_ARROW.image();
             if (value.doubleValue() < 0)
-                return Images.RED_ARROW.image();
+                return Images.DOWN_ARROW.image();
             return null;
         }
     }

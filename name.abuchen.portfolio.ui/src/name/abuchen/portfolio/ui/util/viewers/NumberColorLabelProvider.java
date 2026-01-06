@@ -45,7 +45,7 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        return value.doubleValue() >= 0 ? Images.UP_ARROW.image() : Images.DOWN_ARROW.image();
     }
 
     @Override

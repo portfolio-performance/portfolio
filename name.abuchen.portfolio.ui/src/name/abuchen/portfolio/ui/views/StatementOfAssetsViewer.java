@@ -1650,9 +1650,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue > 0)
-                return Images.GREEN_ARROW.image();
+                return Images.UP_ARROW.image();
             if (doubleValue < 0)
-                return Images.RED_ARROW.image();
+                return Images.DOWN_ARROW.image();
             return null;
         }
 

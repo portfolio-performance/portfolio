@@ -8,11 +8,17 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.model.ImageManager;
+import name.abuchen.portfolio.ui.util.Colors;
 
 @SuppressWarnings("restriction")
 public enum Images
@@ -106,8 +112,8 @@ public enum Images
     ONLINE("online.png"), //$NON-NLS-1$
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
 
-    RED_ARROW("red_arrow.png"), //$NON-NLS-1$
-    GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
+    DOWN_ARROW("red_arrow.png"), //$NON-NLS-1$
+    UP_ARROW("green_arrow.png"), //$NON-NLS-1$
 
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$
@@ -171,13 +177,115 @@ public enum Images
         ImageDescriptor descriptor = imageRegistry.getDescriptor(file);
         if (descriptor == null)
         {
-            Bundle bundle = FrameworkUtil.getBundle(Images.class);
-            IPath path = new Path("icons/" + file); //$NON-NLS-1$
-            URL url = FileLocator.find(bundle, path, null);
-            descriptor = ImageDescriptor.createFromURL(url);
-            imageRegistry.put(file, descriptor);
+            // The arrow icon is used in multiple data rendering scenarios.
+            // To support theme switching, we render it dynamically instead of
+            // using pre-rendered static files.
+            if (UP_ARROW.file.equals(file) || DOWN_ARROW.file.equals(file))
+            {
+                descriptor = createArrowDescriptor(UP_ARROW.file.equals(file));
+            }
+            else
+            {
+                Bundle bundle = FrameworkUtil.getBundle(Images.class);
+                IPath path = new Path("icons/" + file); //$NON-NLS-1$
+                URL url = FileLocator.find(bundle, path, null);
+                if (url != null)
+                    descriptor = ImageDescriptor.createFromURL(url);
+            }
+
+            if (descriptor != null)
+                imageRegistry.put(file, descriptor);
         }
         return descriptor;
+    }
+
+    private static ImageDescriptor createArrowDescriptor(final boolean isUp)
+    {
+        return ImageDescriptor.createFromImageDataProvider(zoom -> {
+            // Calculate dimensions based on zoom level
+            final int imageSize = 16 * zoom / 100;
+            final int triangleHeight = 9 * zoom / 100;
+            final int triangleWidth = (int) (triangleHeight * 1.15);
+
+            // Calculate centering offsets
+            final int horizontalOffset = (imageSize - triangleWidth) / 2;
+            final int verticalOffset = (imageSize - triangleHeight) / 2;
+
+            // Create image and graphics context
+            Image image = new Image(null, imageSize, imageSize);
+            GC gc = new GC(image);
+
+            try
+            {
+                // Fill background with white
+                gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
+                gc.fillRectangle(0, 0, imageSize, imageSize);
+
+                // Set arrow color based on direction
+                Color arrowColor = isUp ? Colors.ICON_UP : Colors.ICON_DOWN;
+                gc.setBackground(arrowColor);
+
+                // Draw triangle
+                int[] trianglePoints = createTrianglePoints(isUp, imageSize, horizontalOffset, verticalOffset,
+                                triangleHeight);
+                gc.fillPolygon(trianglePoints);
+
+                // Cleanup graphics resources
+                gc.dispose();
+
+                // Convert to ImageData with transparency
+                ImageData imageData = image.getImageData();
+                imageData.transparentPixel = imageData.palette.getPixel(new RGB(255, 255, 255));
+
+                return imageData;
+            }
+            finally
+            {
+                image.dispose();
+            }
+        });
+    }
+
+    /**
+     * Creates the point array for the triangle polygon.
+     * 
+     * @param isUp
+     *            true for upward arrow, false for downward
+     * @param imageSize
+     *            total size of the image
+     * @param horizontalOffset
+     *            left offset for centering
+     * @param verticalOffset
+     *            top offset for centering
+     * @param triangleHeight
+     *            height of the triangle
+     * @return array of x,y coordinates: [x1, y1, x2, y2, x3, y3]
+     */
+    private static int[] createTrianglePoints(boolean isUp, int imageSize, int horizontalOffset, int verticalOffset,
+                    int triangleHeight)
+    {
+        int centerX = imageSize / 2;
+        int topY = verticalOffset;
+        int bottomY = verticalOffset + triangleHeight;
+        int leftX = horizontalOffset;
+        int rightX = imageSize - horizontalOffset;
+
+        if (isUp)
+        {
+            // Triangle pointing up: apex at top center, base at bottom
+            return new int[] { centerX, topY, // Top vertex (apex)
+                            leftX, bottomY, // Bottom-left vertex
+                            rightX, bottomY // Bottom-right vertex
+            };
+        }
+        else
+        {
+            // Triangle pointing down: base at top, apex at bottom center
+            return new int[] { leftX, topY, // Top-left vertex
+                            rightX, topY, // Top-right vertex
+                            centerX, bottomY // Bottom vertex (apex)
+            };
+        }
     }
 
     public ImageDescriptor descriptor()
