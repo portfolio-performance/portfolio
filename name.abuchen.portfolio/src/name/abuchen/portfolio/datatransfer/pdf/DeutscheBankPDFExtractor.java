@@ -254,18 +254,30 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        .oneOf(
+
                         // @formatter:off
                         // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
                         // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
                         //
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                        // @formatter:on
+                                        section -> section.attributes("name", "wkn", "currency") //
+                                                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+
+                                        // @formatter:off
+                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+                        //
                         // 02.09.2019 0,1042 172,4300 25,00 EUR
                         // @formatter:on
-                        .section("name", "wkn", "currency") //
-                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ ([A-Z]{3}\\s)?[\\.,\\d]+ (?<currency>[A-Z]{3})") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
+                                        section -> section.attributes("name", "wkn", "currency") //
+                                                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
                         // @formatter:off
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // 02.09.2019 0,1042 172,4300 25,00 EUR
