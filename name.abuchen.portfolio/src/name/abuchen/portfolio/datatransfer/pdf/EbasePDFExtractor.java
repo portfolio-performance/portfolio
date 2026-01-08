@@ -70,7 +70,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .match("^^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Dividende pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
