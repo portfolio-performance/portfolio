@@ -21,8 +21,8 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Questrade, Inc.");
 
-        addDepositTransaction();
-        addBuyTransaction();
+        addAccountStatementTransaction();
+        addBuySellTransaction();
         addDividendTransaction();
     }
 
@@ -32,21 +32,21 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
         return "Questrade, Inc.";
     }
 
-    private void addDepositTransaction()
+    private void addAccountStatementTransaction()
     {
         final var type = new DocumentType("04\\. ACTIVITY DETAILS", 
-                        documentContext -> documentContext.
-                                        section("currency") //
+                        documentContext -> documentContext
+                                        .section("currency") //
                                         .match(".*Combined in (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        // Matches lines like:
-        // 04-09-2025 04-09-2025 Contribution CONT 6263984218 - - - - 10,000.00 - - - -
-        var depositBlock = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Contribution .* [\\.,\\d]+.*$");
-        type.addBlock(depositBlock);
+        var pdfTransaction = new Transaction<AccountTransaction>();
+        var firstRelevantLine = new Block(".* Contribution .*");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-        depositBlock.set(new Transaction<AccountTransaction>()
+        pdfTransaction //
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
@@ -54,9 +54,13 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount")
-                        .documentContext("currency")
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Contribution .* (?<amount>[\\.,\\d]+).*$")
+                        // @formatter:off
+                        // Matches lines like:
+                        // 04-09-2025 04-09-2025 Contribution CONT 6263984218 - - - - 10,000.00 - - - -
+                        // @formatter:on
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Contribution .* (?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             // date format is mm-dd-yyyy
                             t.setDateTime(asDate(v.get("date"), Locale.US));
@@ -65,23 +69,24 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
                             t.setNote("Contribution");
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new);
     }
 
-    private void addBuyTransaction()
+    private void addBuySellTransaction()
     {
         final var type = new DocumentType("04\\. ACTIVITY DETAILS",
-                        documentContext -> documentContext.
-                                        section("currency") //
+                        documentContext -> documentContext
+                                        .section("currency") //
                                         .match(".*Combined in (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        var buyBlock = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy .*");
-        buyBlock.setMaxSize(2);
-        type.addBlock(buyBlock);
+        var pdfTransaction = new Transaction<BuySellEntry>();
+        var firstRelevantLine = new Block(".* Buy .*");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-        buyBlock.set(new Transaction<BuySellEntry>()
+        pdfTransaction //
 
                         .subject(() -> {
                             var tx = new BuySellEntry();
@@ -89,77 +94,90 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
                             return tx;
                         })
 
-                        .oneOf(
-                            // Matches lines like:
-                            // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO 
-                            // ETF UNIT  WE ACTED AS AGENT 50.0000 40.930 (2,046.50) - (2,046.50) - - - -
-                            section -> section
-                                .attributes("date", "tickerSymbol", "name", "shares", "gross", "amount")
-                                .documentContext("currency")
-                            .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\.(?<tickerSymbol>\\S+)\\s+(?<name>.*?)$")
-                            .match("^.+ UNIT  WE ACTED AS AGENT (?<shares>[\\d\\.,]+) (?<price>[\\d\\.,]+) \\((?<gross>[\\d,\\.\\-]+)\\) \\- \\((?<amount>[\\d,\\.\\-]+)\\).*$")
-                            .assign((t, v) -> {
-                                processBuyEntry(t, v, type);
-                            }),
+                        // @formatter:off
+                        // Matches lines like:
+                        // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
+                        // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF 
+                        // @formatter:on
+                        .section("date", "tickerSymbol", "name") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\.(?<tickerSymbol>\\S+)\\s+(?<name>.*?)$") //
+                        .assign((t, v) -> {
+                            v.put("name", v.get("name").trim());
+                            v.put("tickerSymbol", asTickerSymbol(v.get("tickerSymbol")));
 
-                            // Matches lines like:
-                            // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF 
-                            // UNIT|WE ACTED AS AGENT 29 33.600 (974.40) (0.10) (974.50) - - - -
-                            section -> section
-                                .attributes("date", "tickerSymbol", "name", "shares", "gross", "fee", "amount")
-                                .documentContext("currency")
-                                .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\.(?<tickerSymbol>\\S+)\\s+(?<name>.*?)$")
-                                .match("^UNIT\\|WE ACTED AS AGENT (?<shares>[\\d\\.,]+) (?<price>[\\d\\.,]+) \\((?<gross>[\\d,\\.\\-]+)\\) \\((?<fee>[\\d,\\.\\-]+)\\) \\((?<amount>[\\d,\\.\\-]+)\\) .*$")
-                                .assign((t, v) -> {
-                                    processBuyEntry(t, v, type);
-                                    processFeeEntries(t, v, type);
-                                })
+                            // date format is mm-dd-yyyy
+                            t.setDate(asDate(v.get("date"), Locale.US));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .oneOf( //
+
+                                        // @formatter:off
+                                        // Matches lines like:
+                                        // ETF UNIT  WE ACTED AS AGENT 50.0000 40.930 (2,046.50) - (2,046.50) - - - -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "gross", "amount") //
+                                                        .match("^.+ UNIT\\s+WE ACTED AS AGENT (?<shares>[\\d\\.,]+) (?<price>[\\d\\.,]+) \\((?<gross>[\\d,\\.\\-]+)\\) - \\((?<amount>[\\d,\\.\\-]+)\\) .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares"), "en", "CA"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+
+                                        // @formatter:off
+                                        // Matches lines like:
+                                        // UNIT|WE ACTED AS AGENT 50.0000 40.930 (2,046.50) (0.10) (2,046.60) - - - -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "gross", "fee", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^UNIT\\|WE ACTED AS AGENT (?<shares>[\\d\\.,]+) (?<price>[\\d\\.,]+) \\((?<gross>[\\d,\\.\\-]+)\\) \\((?<fee>[\\d,\\.\\-]+)\\) \\((?<amount>[\\d,\\.\\-]+)\\) .*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares"), "en", "CA"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+
+                                                            processFeeEntries(t, v, type);
+                                                        })
                         )
 
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    private void processBuyEntry(BuySellEntry entry, java.util.Map<String, String> values, DocumentType type)
-    {
-        values.put("name", values.get("name").trim());
-        values.put("tickerSymbol", asTickerSymbol(values.get("tickerSymbol")));
-
-        entry.setDate(asDate(values.get("date"), Locale.US));
-        entry.setCurrencyCode(values.get("currency"));
-        entry.setShares(asShares(values.get("shares"), "en", "CA"));
-        entry.setAmount(asAmount(values.get("amount")));
-        entry.setSecurity(getOrCreateSecurity(values));
+                        .wrap(BuySellEntryItem::new);
     }
 
     private void addDividendTransaction()
     {
         final var type = new DocumentType("04\\. ACTIVITY DETAILS",
-                        documentContext -> documentContext.
-                                        section("currency") //
+                        documentContext -> documentContext
+                                        .section("currency") //
                                         .match(".*Combined in (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        // Matches lines like:
-        // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
-        var dividendBlock = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}\\s+\\.VEQT UNIT DIST\\s+ON.+");
-        type.addBlock(dividendBlock);
+        var pdfTransaction = new Transaction<AccountTransaction>();
+        var firstRelevantLine = new Block(".* UNIT DIST .*");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
 
-        dividendBlock.set(new Transaction<AccountTransaction>()
-
+        pdfTransaction //
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
 
-                        .section("date", "tickerSymbol", "shares", "amount", "recNote")
-                        .documentContext("currency")
+                        .section("date", "tickerSymbol", "shares", "amount", "recNote") //
+                        .documentContext("currency") //
 
-                        .match("^(?<date>\\d{2}-\\d{2}-\\d{4}) \\d{2}-\\d{2}-\\d{4}\\s+\\.(?<tickerSymbol>\\S+) UNIT DIST\\s+ON\\s+(?<shares>[\\d,\\.]+) SHS (?<recNote>REC \\d{2}/\\d{2}/\\d{2}) PAY [\\s\\-]+(?<amount>[\\d,\\.\\-]+).*$")
+                        // @formatter:off
+                        // Matches lines like:
+                        // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // @formatter:on
+                        .match("^(?<date>\\d{2}-\\d{2}-\\d{4}) \\d{2}-\\d{2}-\\d{4}\\s+\\.(?<tickerSymbol>\\S+) UNIT DIST\\s+ON\\s+(?<shares>[\\d,\\.]+) SHS (?<recNote>REC \\d{2}/\\d{2}/\\d{2}) PAY [\\s\\-]+(?<amount>[\\d,\\.\\-]+).*$") //
                         .assign((t, v) -> {
                             v.put("tickerSymbol", asTickerSymbol(v.get("tickerSymbol")));
 
+                            // date format is mm-dd-yyyy
                             t.setDateTime(asDate(v.get("date"), Locale.US));
                             t.setCurrencyCode(v.get("currency"));
                             t.setShares(asShares(v.get("shares"), "en", "CA"));
@@ -168,7 +186,7 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap(TransactionItem::new);
     }
 
     @Override
@@ -179,6 +197,7 @@ public class QuestradePDFExtractor extends AbstractPDFExtractor
 
     private String asTickerSymbol(String value)
     {
+        // If the exchange designator is missing, assume Toronto Stock Exchange (.TO)
         if (!value.contains("."))
         {
             value = value.trim() + ".TO";
