@@ -566,7 +566,8 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testDividende11()
     {
-        // US-security bought via EUR-based stock exchange
+        // US-security bought via EUR-based stock exchange. That is the crucial
+        // difference to the Coca Cola case in testDividende08.
         var security = new Security("BWX TECHNOLOGIES INC.RG.SH. DL -,01", "EUR");
         security.setIsin("US05605H1005");
         security.setWkn("A14V4U");
@@ -579,7 +580,7 @@ public class DeutscheBankPDFExtractorTest
         List<Exception> errors = new ArrayList<>();
 
         // dividend payment is supposed to go into newly created USD-account
-        // clearing account
+        // clearing account. Despite the EUR currency of the security.
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
