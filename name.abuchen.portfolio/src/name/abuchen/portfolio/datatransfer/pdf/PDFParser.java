@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -206,14 +207,23 @@ import name.abuchen.portfolio.model.TypedMap;
         private int maxSize = -1;
         private Transaction<?> transaction;
 
+        /**
+         * Creates a block that represents the whole file.
+         */
+        public Block()
+        {
+            this(null, null);
+        }
+
         public Block(String startsWith)
         {
-            this(startsWith, null);
+            this(Objects.requireNonNull(startsWith), null);
         }
 
         public Block(String startsWith, String endsWith)
         {
-            this.startsWith = Pattern.compile(startsWith);
+            if (startsWith != null)
+                this.startsWith = Pattern.compile(startsWith);
 
             if (endsWith != null)
                 this.endsWith = Pattern.compile(endsWith);
@@ -261,11 +271,20 @@ import name.abuchen.portfolio.model.TypedMap;
         {
             List<Integer> blocks = new ArrayList<>();
 
-            for (int ii = 0; ii < lines.length; ii++)
+            // if startsWith pattern is given, extract the blocks; otherwise use
+            // the whole file as a block
+            if (startsWith != null)
             {
-                Matcher matcher = startsWith.matcher(lines[ii]);
-                if (matcher.matches())
-                    blocks.add(ii);
+                for (int ii = 0; ii < lines.length; ii++)
+                {
+                    Matcher matcher = startsWith.matcher(lines[ii]);
+                    if (matcher.matches())
+                        blocks.add(ii);
+                }
+            }
+            else
+            {
+                blocks.add(0);
             }
 
             for (int ii = 0; ii < blocks.size(); ii++)
@@ -711,7 +730,8 @@ import name.abuchen.portfolio.model.TypedMap;
                             }
                         }
 
-                        // enrich extracted values with context values (Optionally)
+                        // enrich extracted values with context values
+                        // (Optionally)
                         if (documentAttributesOptionally != null)
                         {
                             for (String attribute : documentAttributesOptionally)
