@@ -9,9 +9,9 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class AudiBankPDFExtractor extends AbstractPDFExtractor
+public class VolkswagenFinancialServicesPDFExtractor extends AbstractPDFExtractor
 {
-    public AudiBankPDFExtractor(Client client)
+    public VolkswagenFinancialServicesPDFExtractor(Client client)
     {
         super(client);
 
