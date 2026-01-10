@@ -66,7 +66,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^.*Auftragsdatum.*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -3818,6 +3818,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.* \\*[\\s]*Fremde Spesen[:\\s]{1,}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+                        
+                        // @formatter:off
+                        // * Fremde Spesen: 2,51 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^\\* Fremde Spesen[:\\s]{1,}(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
