@@ -325,7 +325,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Verh.ltnis: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Spitzenregulierung KOPIE
@@ -335,7 +335,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Spitzenregulierung|Ablauf der Optionsfrist|Obligatorische Barabfindung|Squeeze Out)).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Stückzinsen für 54 Tag(e) nächster Zinstermin: 27.09.2023 EUR 9,36
@@ -343,9 +343,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2", "note3").optional() //
                         .match("^(?<note1>St.ckzinsen .* [\\d]+ Tag\\(e\\)).* (?<note3>[A-Z]{3}) (?<note2>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), ": "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
+                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -765,7 +765,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Zahlungszeitraum|Payment Period): .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(t -> {
                             var item = new TransactionItem(t);
@@ -1000,7 +1000,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | Ref.-Nr.: "));
+                                                            t.setNote(concatenate(v.get("note1"), v.get("note2"), " | Ref.-Nr.: "));
                                                         }))
 
                         .wrap(TransactionItem::new));
@@ -1029,7 +1029,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | Ref.-Nr.: "));
+                            t.setNote(concatenate(v.get("note1"), v.get("note2"), " | Ref.-Nr.: "));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1139,7 +1139,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Abrechnungszeitraum .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -1217,14 +1217,14 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // For the period from 2023-03-31 to 2023-06-30 following closing entries have been posted for account LN85
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^For the period from (?<note>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .* [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .wrap(TransactionItem::new);
 

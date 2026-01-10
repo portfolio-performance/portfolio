@@ -713,56 +713,56 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // [ZIP CODE] [CITY] EXÉCUTION cee1-2d00
                                         // @formatter:on
                                        section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // EXECUTION 4A66-g597
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // EJECUCIÓN d4e7-9ecc
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // 131 56 rwMMPGwX EXECUTION d008-0f58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 12345 CIudad EJECUCIÓN ff4d-982a
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // ESECUZIONE V711-7789
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // AUSFÜHRUNG 4019-2100
                                         // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
@@ -770,7 +770,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ausführung: "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ausführung: "))))
 
                         // @formatter:off
                         // Stückzinsen -75,25 EUR
@@ -778,8 +778,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>St.ckzinsen) \\-(?<note2>[\\.,\\d]+ [A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                         .wrap((t, ctx) -> {
@@ -1171,56 +1171,56 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // [ZIP CODE] [CITY] EXÉCUTION cee1-2d00
                                         // @formatter:on
                                        section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // EXECUTION 4A66-g597
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // EJECUCIÓN d4e7-9ecc
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // 131 56 rwMMPGwX EXECUTION d008-0f58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 12345 CIudad EJECUCIÓN ff4d-982a
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // ESECUZIONE V711-7789
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // AUSFÜHRUNG 4019-2100
                                         // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
@@ -1228,7 +1228,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ausführung: "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ausführung: "))))
 
                         .wrap(BuySellEntryItem::new);
 

@@ -216,9 +216,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note1", "note2", "note3") //
                                                         .match("^(?<note1>Zinsen .* [\\d]+ Zinstag(e)?).* (?<note3>[A-Z]{3}) (?<note2>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), ": "));
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                                                         }))
 
                         .wrap(t -> {

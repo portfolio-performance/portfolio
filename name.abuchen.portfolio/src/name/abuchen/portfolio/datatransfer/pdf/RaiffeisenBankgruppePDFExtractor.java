@@ -255,7 +255,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -495,7 +495,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             // @formatter:off
@@ -564,7 +564,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^F.r den Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
@@ -651,7 +651,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note>Verh.ltnis: .*)$") //
                         .assign((t, v) -> {
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
                         .wrap((t, ctx) -> {
@@ -750,7 +750,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .match("^Die (?<note>.nderung\\/Stornierung) dieses Auftrages .*$") //
                         .assign((t, v) -> {
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
                         .wrap((t, ctx) -> {

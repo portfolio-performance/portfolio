@@ -253,12 +253,12 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^Limit: (?<note>.*:.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Limit: 42,500000
                                         // @formatter:on
                                         section -> section.attributes("note").match("^(?<note>Limit:.*)$")
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         // @formatter:off
                         // Stückzinsen für 6 Tage: -1,55 EUR
@@ -266,9 +266,9 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2", "note3").optional() //
                         .match("^(?<note1>St.ckzinsen .* [\\d]+ Tage:) \\-(?<note2>[\\.,\\d]+) (?<note3>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -829,7 +829,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*Abrechnung Verkauf(?<note>.*).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)

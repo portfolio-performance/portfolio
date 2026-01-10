@@ -153,7 +153,7 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(concatenate(trim(item.getSubject().getNote()), filename, " | ")); //$NON-NLS-1$
+                    item.getSubject().setNote(concatenate(item.getSubject().getNote(), filename, " | ")); //$NON-NLS-1$
             }
 
             return items;

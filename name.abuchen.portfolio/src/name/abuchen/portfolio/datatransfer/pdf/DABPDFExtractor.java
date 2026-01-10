@@ -839,14 +839,14 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note1", "note2") //
                                                         .match("^(?<note1>Steuerausgleich) f.r das Jahr (?<note2>[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | ") + " " + trim(v.get("note2")))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1"), " | ") + " " + trim(v.get("note2")))),
                                         // @formatter:off
                                         // Steuerliche Korrektur zu Ihrer Abrechnung Nr. 55935348 vom 09.01.2025 mit Steuerausgleich nach § 43a EStG
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "note2") //
                                                         .match("^(?<note1>Steuerliche Korrektur) zu Ihrer (?<note2>Abrechnung Nr\\..* vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | ") + " " + trim(v.get("note2")))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1"), " | ") + " " + trim(v.get("note2")))))
 
                         .wrap(TransactionItem::new);
     }

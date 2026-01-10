@@ -416,49 +416,49 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Ausgang externer .bertrag) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Entgelt Verkauf mit Kursdatum 20.12.2017 aus Depotposition 11111111111.01
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Entgelt Verkauf) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 06.04.2021 aus Depotposition 99999999999.01
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Entgeltbelastung Verkauf) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // vermögenswirksame Leistungen
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>verm.genswirksame Leistungen)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Verkauf wegen Vorabpauschale 0,14 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXXXX.05
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Verkauf wegen Vorabpauschale) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Wiederanlage Fondsertrag 0,37 EUR mit Kursdatum 20.01.2020 in Depotposition 1234567890.21
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Wiederanlage Fondsertrag) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Wiederanlage Ertragsausschüttung 400023594/2001 18.01.2016 23,550000 0,082378 1,94 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Wiederanlage Ertragsaussch.ttung) .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .wrap(t -> {
                             var item = new BuySellEntryItem(t);
@@ -750,7 +750,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Vorabpauschale zum Stichtag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -948,7 +948,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Depotf.hrungsentgelt|VL\\-Vertragsentgelt)) inkl\\. .*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -1052,14 +1052,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Depotf.hrungsentgelt) inkl\\. .*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // VL-Vertragsentgelt inkl. 16 % USt 9,75 EUR
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>VL\\-Vertragsentgelt) inkl\\. .*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
     }

@@ -1066,7 +1066,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^Referenz (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ref.-Nr.: ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ref.-Nr.: ")))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)

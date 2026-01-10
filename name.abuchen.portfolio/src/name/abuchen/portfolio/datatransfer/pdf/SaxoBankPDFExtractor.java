@@ -301,14 +301,14 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*(?<note>Trade\\-ID [\\d]+).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Exchange Description KNIGHT LINK (KNLI) Trade ID 6236413100
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*(?<note>Trade ID [\\d]+).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .optionalOneOf( //
                                         // @formatter:off

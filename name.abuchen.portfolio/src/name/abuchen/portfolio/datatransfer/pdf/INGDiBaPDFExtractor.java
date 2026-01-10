@@ -333,14 +333,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>R.ckzahlung)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>St.ckzinsen .*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 

@@ -292,7 +292,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%)).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
@@ -453,7 +453,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Kapitalrückzahlung
@@ -529,7 +529,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Depotkonto\\-Nr\\. .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
     }
