@@ -736,16 +736,21 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private Consumer<Element> buildSalesTaxTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
-
-            // Set transaction type
-            accountTransaction.setType(AccountTransaction.Type.TAXES);
-
+            
             // Set date
             accountTransaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("salesTax")));
             setAmount(element, accountTransaction, amount);
+            
+            // Set transaction type
+            // accountTransaction.setType(AccountTransaction.Type.TAXES);
+            // Positive amount are a tax refund
+            if (Math.signum(Double.parseDouble(element.getAttribute("salesTax"))) == -1)
+                accountTransaction.setType(AccountTransaction.Type.TAXES);
+            else
+                accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
 
             // Set note
             accountTransaction.setNote(element.getAttribute("taxableDescription"));
@@ -1003,6 +1008,7 @@ public class IBFlexStatementExtractor implements Extractor
         private void importModelObjects(String type, Consumer<Element> handleNodeFunction)
         {
             NodeList nList = statement.getElementsByTagName(type);
+
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
                 Node nNode = nList.item(temp);
@@ -1296,6 +1302,8 @@ public class IBFlexStatementExtractor implements Extractor
     @Override
     public void postProcessing(List<Item> items)
     {
+          /**
+     * @formatter:off
         // Filter transactions by taxes treatment's
         List<Item> taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance)
@@ -1343,6 +1351,8 @@ public class IBFlexStatementExtractor implements Extractor
                 items.remove(pair.tax());
             }
         }
+             * @formatter:on
+     */
     }
 
     /**
