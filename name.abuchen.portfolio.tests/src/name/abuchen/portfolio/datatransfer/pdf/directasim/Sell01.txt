@@ -1,0 +1,33 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Signor
+yHljpGto jNbsRScvBnhG
+Via enmBIjkGc 93t
+15765 HGBxmr
+Italia
+Conto H1966
+Nota Informativa per l'ordine B6023301689031
+Vi Confermiamo il Vs. ordine sopra riportato del 18.11.2025
+per la vendita di: 2.000  ISHARES EUR ULTRASHORT BOND ISIN IE000RHYOR04 (FASE CORRENTE)
+eseguito per: 2.000
+tramite l'intermediario Banca IMI
+Tipo di Operazione: Vendita     Mercato di esecuzione: Borsa - XETRA
+Modalità di liquidazione:  Per consegna e pagamento in contanti
+                                                  Quantita'                 Euro               Prezzo      Valuta
+18.11.2025  10:10:44  Richiesta Immissione            2.000                                    5,5100
+18.11.2025  10:10:44  Inoltro
+18.11.2025  10:10:45  In negoziazione
+18.11.2025  10:10:45  Eseguito                        2.000            11.021,20               5,5106  20.11.2025
+                      Controvalore:                                    11.021,20               5,5106
+                      Commissioni:                                         -9,50
+                      Capital Gain *                                     -101,51               5,3106
+                      Totale a Vs. Credito                             10.910,19
+Risultato lordo operazione 390,41 euro
+Gli effetti fiscali sono calcolati per data valuta e consultabili nello  Zainetto Fiscale
+Torino, 18.11.2025
+       DIRECTA SIM
+
+```
