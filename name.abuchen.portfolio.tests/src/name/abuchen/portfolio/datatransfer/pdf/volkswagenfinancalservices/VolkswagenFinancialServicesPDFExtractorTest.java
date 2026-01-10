@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.audibank;
+package name.abuchen.portfolio.datatransfer.pdf.volkswagenfinancalservices;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -27,17 +27,17 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.AudiBankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.VolkswagenFinancialServicesPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class AudiBankPDFExtractorTest
+public class VolkswagenFinancialServicesPDFExtractorTest
 {
     @Test
     public void testKontoauszug01()
     {
-        var extractor = new AudiBankPDFExtractor(new Client());
+        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class AudiBankPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        var extractor = new AudiBankPDFExtractor(new Client());
+        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class AudiBankPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        var extractor = new AudiBankPDFExtractor(new Client());
+        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
