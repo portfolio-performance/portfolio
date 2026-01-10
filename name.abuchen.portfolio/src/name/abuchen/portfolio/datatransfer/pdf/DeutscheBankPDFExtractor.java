@@ -409,7 +409,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
-                                                        .match("^Bruttoertrag (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Bruttoertrag (?<gross>[\\.,\\d]+) [A-Z]{3}[\\s]*$") //
                                                         .match("^Umrechnungskurs (?<termCurrency>[A-Z]{3}) zu (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             if (!type.getCurrentContext().getBoolean("negative"))
