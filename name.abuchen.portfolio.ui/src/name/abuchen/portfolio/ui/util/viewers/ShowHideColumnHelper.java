@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.util.ConfigurationStore.ConfigurationStoreOwner
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.Column.CacheInvalidationListener;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -631,7 +632,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 {
                     boolean isVisible = options.contains(option);
                     String label = column.getOptions().getMenuLabel(option);
-                    addShowHideAction(subMenu, column, TextUtil.tooltip(label), isVisible, option);
+                    addShowHideAction(subMenu, column, label, isVisible, option);
 
                     if (isVisible)
                         options.remove(option);
@@ -640,7 +641,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 for (Object option : options)
                 {
                     String label = column.getOptions().getMenuLabel(option);
-                    addShowHideAction(subMenu, column, TextUtil.tooltip(label), true, option);
+                    addShowHideAction(subMenu, column, label, true, option);
                 }
 
                 if (column.getOptions().canCreateNewOptions())
@@ -650,7 +651,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             }
             else
             {
-                addShowHideAction(managerToAdd, column, TextUtil.tooltip(column.getMenuLabel()), visible.containsKey(column), null);
+                addShowHideAction(managerToAdd, column, column.getMenuLabel(), visible.containsKey(column), null);
             }
         }
 
@@ -691,28 +692,21 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     private void addShowHideAction(IMenuManager manager, final Column column, String label, final boolean isChecked,
                     final Object option)
     {
-        Action action = new Action(label)
-        {
-            @Override
-            public void run()
+        manager.add(new MenuContribution(label, () -> {
+            if (isChecked)
             {
-                if (isChecked)
-                {
-                    if (column.isRemovable())
-                        destroyColumnWithOption(column, option);
-                }
-                else
-                {
-                    policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
-                    policy.getViewer().refresh(true);
-                }
-
-                if (store != null)
-                    store.updateActive(serialize());
+                if (column.isRemovable())
+                    destroyColumnWithOption(column, option);
             }
-        };
-        action.setChecked(isChecked);
-        manager.add(action);
+            else
+            {
+                policy.create(column, option, column.getDefaultSortDirection(), column.getDefaultWidth());
+                policy.getViewer().refresh(true);
+            }
+
+            if (store != null)
+                store.updateActive(serialize());
+        }, isChecked));
     }
 
     public void destroyColumnWithOption(Column column, Object option)

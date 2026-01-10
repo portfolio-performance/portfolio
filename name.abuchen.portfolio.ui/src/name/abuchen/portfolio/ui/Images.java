@@ -75,6 +75,7 @@ public enum Images
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
     CHECK("check.png"), //$NON-NLS-1$
+    EDIT("edit.svg"),  //$NON-NLS-1$
     XMARK("xmark.png"), //$NON-NLS-1$
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
@@ -105,6 +106,7 @@ public enum Images
     INFO("info.png"), //$NON-NLS-1$
     ONLINE("online.png"), //$NON-NLS-1$
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
+    SKIP("skip.svg"), //$NON-NLS-1$
 
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$

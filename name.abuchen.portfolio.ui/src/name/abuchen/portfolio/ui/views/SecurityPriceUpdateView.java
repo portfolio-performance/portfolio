@@ -55,7 +55,6 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.CommandAction;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -195,7 +194,11 @@ public class SecurityPriceUpdateView extends AbstractFinanceView implements Pric
 
         toolBar.add(new Separator());
 
-        toolBar.add(new LabelOnly(null, Images.FILTER_ON.descriptor()));
+        var image = new Action(null, Images.FILTER_ON.descriptor())
+        {
+        };
+        image.setEnabled(false);
+        toolBar.add(image);
 
         var showInProgressAction = new SimpleAction(Messages.LabelInProgress,
                         a -> toggleFilter(UpdateStatus.WAITING, UpdateStatus.LOADING));
