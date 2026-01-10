@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
@@ -44,14 +46,27 @@ public class TransactionContextMenu
 
     public void menuAboutToShow(IMenuManager manager, boolean fullContextMenu, IStructuredSelection selection)
     {
-        if (selection.isEmpty() && fullContextMenu)
+        if (selection.isEmpty())
         {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
+            if (fullContextMenu)
+                new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
+
+            return;
         }
 
-        if (selection.size() == 1)
+        // convert the selection to a list of unwrapped transaction pairs to
+        // ensure that any downstream action does not work on the filtered
+        // client
+
+        // editing, copying, deletion is only possible, if the transaction has
+        // not been created for calculation purposes
+
+        @SuppressWarnings("unchecked")
+        var txs = selection.stream().map(o -> ((TransactionPair<Transaction>) o).unwrap()).toList();
+
+        if (txs.size() == 1)
         {
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            var tx = txs.getFirst();
 
             tx.withAccountTransaction().ifPresent(t -> fillContextMenuAccountTx(manager, fullContextMenu, t));
             tx.withPortfolioTransaction().ifPresent(t -> fillContextMenuPortfolioTx(manager, fullContextMenu, t));
@@ -59,23 +74,23 @@ public class TransactionContextMenu
             manager.add(new Separator());
         }
 
-        if (!selection.isEmpty())
+        if (fullContextMenu)
         {
-            if (fullContextMenu)
-            {
-                fillContextMenuAccountTxList(manager, selection);
-                fillContextMenuPortfolioTxList(manager, selection);
-            }
-
-            manager.add(new Separator());
-
-            manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
-                for (Object tx : selection.toArray())
-                    ((TransactionPair<?>) tx).deleteTransaction(owner.getClient());
-
-                owner.markDirty();
-            }));
+            fillContextMenuAccountTxList(manager, txs);
+            fillContextMenuPortfolioTxList(manager, txs);
         }
+
+        manager.add(new Separator());
+
+        var deletableTx = txs.stream().filter(tx -> tx.getTransaction().getOriginalTransaction() == null).toList();
+
+        var deleteAction = new SimpleAction(Messages.MenuTransactionDelete, a -> {
+            for (var tx : deletableTx)
+                tx.deleteTransaction(owner.getClient());
+            owner.markDirty();
+        });
+        deleteAction.setEnabled(!deletableTx.isEmpty());
+        manager.add(deleteAction);
     }
 
     public void handleEditKey(KeyEvent e, IStructuredSelection selection)
@@ -85,7 +100,12 @@ public class TransactionContextMenu
             if (selection.isEmpty())
                 return;
 
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            TransactionPair<?> tx = ((TransactionPair<?>) selection.getFirstElement()).unwrap();
+
+            // do not edit derived transactions
+            if (tx.getTransaction().getOriginalTransaction() != null)
+                return;
+
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
         }
@@ -94,24 +114,29 @@ public class TransactionContextMenu
             if (selection.isEmpty())
                 return;
 
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            TransactionPair<?> tx = ((TransactionPair<?>) selection.getFirstElement()).unwrap();
+
+            // do not edit derived transactions
+            if (tx.getTransaction().getOriginalTransaction() != null)
+                return;
+
             tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createCopyPortfolioTransactionAction(t).run());
         }
     }
 
-    private void fillContextMenuAccountTxList(IMenuManager manager, IStructuredSelection selection)
+    private void fillContextMenuAccountTxList(IMenuManager manager, List<TransactionPair<Transaction>> selection)
     {
-        @SuppressWarnings("unchecked")
         var accountTxPairs = selection.stream() //
+                        .filter(p -> ((TransactionPair<?>) p).getTransaction().getOriginalTransaction() == null)
                         .filter(p -> ((TransactionPair<?>) p).isAccountTransaction())
-                        .map(p -> ((TransactionPair<AccountTransaction>) p)) //
+                        .map(p -> p.withAccountTransaction().get()) //
                         .toList();
 
         if (accountTxPairs.size() != selection.size())
             return;
 
-        var transfers = accountTxPairs.stream()
+        var transfers = accountTxPairs.stream().filter(p -> p.getTransaction().getOriginalTransaction() == null)
                         .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_IN
                                         || p.getTransaction().getType() == AccountTransaction.Type.TRANSFER_OUT)
                         .map(p -> p.getTransaction()).toList();
@@ -121,7 +146,7 @@ public class TransactionContextMenu
             manager.add(new ConvertTransferToDepositRemovalAction(owner.getClient(), transfers));
         }
 
-        var dividends = accountTxPairs.stream()
+        var dividends = accountTxPairs.stream().filter(p -> p.getTransaction().getOriginalTransaction() == null)
                         .filter(p -> p.getTransaction().getType() == AccountTransaction.Type.DIVIDENDS).toList();
 
         if (dividends.size() == accountTxPairs.size())
@@ -130,14 +155,15 @@ public class TransactionContextMenu
         }
     }
 
-    private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
+    private void fillContextMenuPortfolioTxList(IMenuManager manager, List<TransactionPair<Transaction>> selection)
     {
         Collection<TransactionPair<PortfolioTransaction>> txCollection = new ArrayList<>(selection.size());
         Iterator<?> it = selection.iterator();
         while (it.hasNext())
         {
             TransactionPair<?> foo = (TransactionPair<?>) it.next();
-            foo.withPortfolioTransaction().ifPresent(txCollection::add);
+            if (foo.getTransaction().getOriginalTransaction() == null)
+                foo.withPortfolioTransaction().ifPresent(txCollection::add);
         }
 
         if (txCollection.size() != selection.size())
@@ -173,10 +199,12 @@ public class TransactionContextMenu
     {
         Action action = createEditAccountTransactionAction(tx);
         action.setAccelerator(SWT.MOD1 | 'E');
+        action.setEnabled(tx.getTransaction().getOriginalTransaction() == null);
         manager.add(action);
 
         Action duplicateAction = createCopyAccountTransactionAction(tx);
         duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        duplicateAction.setEnabled(tx.getTransaction().getOriginalTransaction() == null);
         manager.add(duplicateAction);
 
         if (fullContextMenu)
@@ -194,10 +222,12 @@ public class TransactionContextMenu
 
         Action editAction = createEditPortfolioTransactionAction(tx);
         editAction.setAccelerator(SWT.MOD1 | 'E');
+        editAction.setEnabled(ptx.getOriginalTransaction() == null);
         manager.add(editAction);
 
         Action duplicateAction = createCopyPortfolioTransactionAction(tx);
         duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        duplicateAction.setEnabled(ptx.getOriginalTransaction() == null);
         manager.add(duplicateAction);
 
         manager.add(new Separator());
