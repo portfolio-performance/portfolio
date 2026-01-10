@@ -5,6 +5,8 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class ApoBankPDFExtractor extends AbstractPDFExtractor
@@ -84,6 +86,20 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Kapitalertragsteuer EUR -0,02
+                        // Solidaritätszuschlag EUR 0,00
+                        // Kirchensteuer EUR 0,00
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
                         .wrap(TransactionItem::new);

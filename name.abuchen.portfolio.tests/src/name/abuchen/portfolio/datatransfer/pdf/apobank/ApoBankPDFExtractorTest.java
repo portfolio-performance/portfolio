@@ -67,7 +67,7 @@ public class ApoBankPDFExtractorTest
                         hasDate("2025-08-27"), hasShares(0.707), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.06), hasGrossValue("EUR", 0.06), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.02), hasFees("EUR", 0.00))));
     }
 }
