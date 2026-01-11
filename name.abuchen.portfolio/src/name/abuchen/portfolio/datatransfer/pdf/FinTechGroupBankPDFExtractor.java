@@ -559,15 +559,32 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
-
-                        // @formatter:off
-                        // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
-                        // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
-                        // @formatter:on
-                        .section("name", "isin", "wkn", "currency").optional() //
-                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
+                                        // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
+                                        // @formatter:on
+                                        section -> section
+                                        .attributes("name", "isin", "wkn", "currency") //
+                                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        
+                                        // @formatter:off
+                                        // Nr.329393872/1 Verkauf WITR 
+                                        // COM.SEC.Z08/UN.IDX (JE00B2NFTL95/A0V6Z0)
+                                        // Kurs : 193,6300 EUR Kurswert : 1.742,67 EUR
+                                        // @formatter:on
+                                        section -> section
+                                        .attributes("name", "name2", "isin", "wkn", "currency") //
+                                        .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*)$") //
+                                        .match("^(?<name2>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                        .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                        .assign((t, v) -> {
+                                            v.put("name", concatenate(v.get("name"), v.get("name2"), " "));
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                        }))
 
                         // @formatter:off
                         // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr

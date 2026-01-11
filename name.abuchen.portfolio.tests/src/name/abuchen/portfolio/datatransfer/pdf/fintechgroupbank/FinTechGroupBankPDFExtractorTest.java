@@ -14,6 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValu
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -7678,6 +7679,54 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr.: 4485191452"), //
                         hasAmount("EUR", 1480.90), hasGrossValue("EUR", 1477.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
+    }
+
+    @Test
+    public void testFlatExDeGiroSammelabrechnung06()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("JE00B2NFTL95"), hasWkn("A0V6Z0"), hasTicker(null), //
+                        hasName("WITR COM.SEC.Z08/UN.IDX"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2852999775"), hasWkn("A4AH1M"), hasTicker(null), //
+                        hasName("LEVERAGE SHARES GOLD+ ETP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check purchase transactions
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("JE00B2NFTL95")),
+                        hasDate("2025-12-29T08:31"), hasShares(9.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 4636047412"), //
+                        hasAmount("EUR", 1683.96), hasGrossValue("EUR", 1742.67), //
+                        hasTaxes("EUR", 50.07), hasFees("EUR", 5.90 + 2.74))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("XS2852999775")),
+                        hasDate("2025-12-29T08:51"), hasShares(150.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
+                        hasNote("Transaktion-Nr.: 4666192991"), //
+                        hasAmount("EUR", 2033.04), hasGrossValue("EUR", 2024.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.74))));
     }
 
     @Test
