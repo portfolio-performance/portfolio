@@ -144,7 +144,7 @@ public class SearchSecurityWizardPage extends WizardPage
 
         for (CurrencyUnit currency : model.getClient().getUsedCurrencies())
         {
-            var chip = new Chips(chips, SWT.PUSH);
+            var chip = new Chips(chips, SWT.TOGGLE);
             chip.setData(currency);
             chip.setText(currency.getCurrencyCode());
             chip.setPushedStateBackground(Colors.EQUITY);
@@ -156,7 +156,7 @@ public class SearchSecurityWizardPage extends WizardPage
                         name.abuchen.portfolio.Messages.LabelCryptocurrency,
                         name.abuchen.portfolio.Messages.LabelCommodity))
         {
-            var chip = new Chips(chips, SWT.PUSH);
+            var chip = new Chips(chips, SWT.TOGGLE);
             chip.setData(type);
             chip.setText(type);
             chip.setPushedStateBackground(Colors.ICON_ORANGE);
