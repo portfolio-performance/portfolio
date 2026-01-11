@@ -250,7 +250,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if (t.getNote() == null || t.getNote().isEmpty())
                                 t.setNote(v.get("noteNumber"));
 
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -558,7 +558,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.* Art der Dividende (?<note>.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Ertragsthesaurierung
                                         // Ertrag für 2017 USD 54,16

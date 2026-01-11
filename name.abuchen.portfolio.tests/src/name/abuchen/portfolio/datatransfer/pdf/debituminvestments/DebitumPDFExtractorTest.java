@@ -30,6 +30,7 @@ import name.abuchen.portfolio.datatransfer.pdf.DebitumInvestmentsPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
+@SuppressWarnings("nls")
 public class DebitumPDFExtractorTest
 {
 

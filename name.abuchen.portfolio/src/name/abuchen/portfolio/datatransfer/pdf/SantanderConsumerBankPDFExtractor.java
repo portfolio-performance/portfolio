@@ -108,7 +108,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -210,7 +210,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
 

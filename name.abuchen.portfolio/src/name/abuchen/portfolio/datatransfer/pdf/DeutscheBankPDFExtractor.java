@@ -23,6 +23,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public DeutscheBankPDFExtractor(Client client)
     {
         super(client);
@@ -214,9 +216,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note1", "note2", "note3") //
                                                         .match("^(?<note1>Zinsen .* [\\d]+ Zinstag(e)?).* (?<note3>[A-Z]{3}) (?<note2>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), ": "));
-                                                            t.setNote(concatenate(t.getNote(), trim(v.get("note3")), " "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note2"), ": "));
+                                                            t.setNote(concatenate(t.getNote(), v.get("note3"), " "));
                                                         }))
 
                         .wrap(t -> {
@@ -303,7 +305,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         var type = new DocumentType("(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)");
         this.addDocumentTyp(type);
 
-        var firstRelevantLine = new Block("^^(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)$");
+        var firstRelevantLine = new Block("^(Dividendengutschrift|Ertragsgutschrift|Kupongutschrift)$");
         type.addBlock(firstRelevantLine);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -523,8 +525,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // 31.12. 31.12. Verwendungszweck/ Kundenreferenz - 13,47
                                                             // Saldo der Abschlussposten
                                                             // @formatter:on
-                                                                if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                                                    type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                            if ("Saldo der Abschlussposten".equals(v.get("note1")))
+                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                                Messages.PDFSkipMissingDetails);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -536,7 +539,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
-                                                                type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                                Messages.PDFSkipMissingDetails);
                                                         }),
                                         // @formatter:off
                                         // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
@@ -603,7 +607,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // Saldo der Abschlussposten
                                                             // @formatter:on
                                                                 if ("Saldo der Abschlussposten".equals(v.get("note1")))
-                                                                    type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                                Messages.PDFSkipMissingDetails);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -615,7 +620,8 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // 2023 2023 ZINSEN/DIVIDENDEN/ERTRAEGE FIL/DEPOT-NR:
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
-                                                                type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                                type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                                Messages.PDFSkipMissingDetails);
                                                         }))
 
                     .wrap(t -> {
@@ -624,12 +630,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         if (t.getCurrencyCode() != null && t.getAmount() == 0)
                             item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                        if (type.getCurrentContext().getBoolean("skipTransaction"))
-                            return null;
+                        if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                        {
+                            var skipped = new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
+                            // If we have multiple entries in the document,
+                            // then the SKIP_TRANSACTION flag must be
+                            // removed.
+                            type.getCurrentContext().remove(SKIP_TRANSACTION);
 
-                        // If we have multiple entries in the document,
-                        // then the "skipTransaction" flag must be removed.
-                        type.getCurrentContext().remove("skipTransaction");
+                            return skipped;
+                        }
 
                         return item;
                     }));

@@ -240,14 +240,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Barabfindung wegen Fusion
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Barabfindung wegen .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -499,7 +499,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.* Art der Dividende (?<note>.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Bruttoertrag 312,50 USD 285,83 EUR
                                         // Umrechnungskurs USD zu EUR 1,0933000000
@@ -507,7 +507,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.* (?<note>Zinsschein .*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 

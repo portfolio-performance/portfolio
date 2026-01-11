@@ -1,0 +1,69 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 25.0.1+8-LTS-27 | Oracle Corporation
+-----------------------------------------
+Oslo, 01.01.2026
+Bank Norwegian, en filial av 
+NOBA Bank Group AB (publ)
+Postboks 110
+1325 Lysaker, NORWAY
+Org.Nr: 916 573 154
+Max Mustermann
+Musterstr. 2
+54321 Musterhausen
+Germany
+Kontoauszug - NO2093577251509
+Währung: Euro (EUR)
+Buchungsda Valutadatu Beschreibung Zahlungseinga Zahlungsausga
+tum m ng ng
+31.12.2025 01.01.2026 Interest 129,70
+30.12.2025 30.12.2025 Bezahlung von 1.020,00
+DE22513900000075401501 
+xyz PKW Abschlag
+22.12.2025 22.12.2025 Zahlung an 20,00
+DE92500617410200574015 
+19026490 Auszahlung BN 001
+01.12.2025 01.12.2025 Bezahlung von 1.020,00
+DE22513900000075401501 
+xyz PKW Abschlag
+31.10.2025 31.10.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+30.09.2025 30.09.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+01.09.2025 01.09.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+31.07.2025 31.07.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+30.06.2025 30.06.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+Bank Norwegian, en filial av NOBA Bank Group AB (publ)
+Postboks 110, 1325 Lysaker, Norge
+Telefon 0800 7 238470
+E-Mail post@banknorwegian.de
+Webseite banknorwegian.de
+02.06.2025 02.06.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+30.04.2025 30.04.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+28.03.2025 28.03.2025 Bezahlung von 1.020,00
+DE92500617410200574015 
+xyz PKW Abschlag
+14.02.2025 14.02.2025 Bezahlung von 1.020,00
+DE92500617410200574015
+14.01.2025 14.01.2025 Bezahlung von 1.020,00
+DE92500617410200574015
+Bank Norwegian, en filial av NOBA Bank Group AB (publ)
+Postboks 110, 1325 Lysaker, Norge
+Telefon 0800 7 238470
+E-Mail post@banknorwegian.de
+Webseite banknorwegian.de
+
+```

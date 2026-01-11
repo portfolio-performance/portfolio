@@ -159,7 +159,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit [\\.,\\d]+ [A-Z]{3}).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 

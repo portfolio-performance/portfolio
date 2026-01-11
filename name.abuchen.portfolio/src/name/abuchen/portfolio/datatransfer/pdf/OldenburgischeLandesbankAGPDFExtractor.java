@@ -148,7 +148,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*Handelsreferenz (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Handels.-Ref.: ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Handels.-Ref.: ")))
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);

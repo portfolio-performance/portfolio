@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -15,6 +17,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Nordax Bank AB");
+        addBankIdentifier("Bank Norwegian");
 
         addAccountStatementTransaction();
     }
@@ -27,21 +30,19 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final var type = new DocumentType("Account Statement", //
+        final var type = new DocumentType("(Account Statement|Kontoauszug)", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // 11286 SBNIRZM Währung: EUR
+                                        // Währung: Euro (EUR)
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^.* W.hrung: (?<currency>[\\w]{3})$") //
+                                        .match("^.*W.hrung:.*(?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // 24.08.2024 Zinsbuchung 403,39 10.403,39
-        // @formatter:on
-        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Zinsbuchung [\\.,\\d]+ [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*(Zinsbuchung|Interest) [\\.,\\d]+.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -51,14 +52,34 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount") //
-                        .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Zinsbuchung (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf(
+                                        //
+                                        // @formatter:off
+                                        // 24.08.2024 Zinsbuchung 403,39 10.403,39
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Zinsbuchung (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        //
+                                        // @formatter:off
+                                        // 31.12.2024 01.01.2025 Interest 24,40
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Interest (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        })
+                     )
 
                         .wrap(TransactionItem::new));
 
@@ -85,5 +106,47 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new AccountTransferItem(t, true)));
+
+        // @formatter:off
+        // 03.11.2025 03.11.2025 Zahlung an 2.000,00
+        // 10.12.2024 10.12.2024 Bezahlung von 12.000,00
+        // @formatter:on
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zahlung an|Bezahlung von) [\\.,\\d]+$");
+        type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "type", "amount", "note") //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
+                        .match("(?<note>.*)")
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // When "Zahlung an" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("Zahlung an".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .section("note2").optional() //
+                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$")
+                        .match("^.*$") //
+                        .match("^(?<note2>.*)$") //
+                        .assign((t, v) -> {
+                            if (!v.get("note2").startsWith("Bank Norwegian, "))
+                                t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }

@@ -24,7 +24,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
     private static final String DEPOSIT_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\.,\\d]+) (.*)$";
     private static final String REMOVAL_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
-    private static final String INTEREST_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\w+zinsen) (\\w+) (?<amount>[\\.,\\d]+) (.*)";
+    private static final String INTEREST_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) +(\\w+zinsen) (\\w+) (?<amount>[\\.,\\d]+) (.*)";
     private static final String TAXES_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
 
     private static final String CONTEXT_KEY_YEAR = "year";

@@ -41,6 +41,16 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 
+/**
+ * Abstract base class of bank-specific classes for extraction of purchases,
+ * sales, fees, taxes and other transactions from PDF documents issued by the
+ * bank.
+ * <p>
+ * Implementations have to override {@link #getLabel() getLabel} method,
+ * register one or several identifiers via {@link #addBankIdentifier(String)
+ * addBankIdentifier} and define blocks and sections in order to extract
+ * {@link Transaction} objects.
+ */
 public abstract class AbstractPDFExtractor implements Extractor
 {
     protected static final String FAILURE = "FAILURE"; //$NON-NLS-1$
@@ -68,6 +78,21 @@ public abstract class AbstractPDFExtractor implements Extractor
         this.documentTypes.add(type);
     }
 
+    /**
+     * Adds a new bank identifier to this Extractor.
+     * <p>
+     * In order to have this extractor claim responsibility for a PDF document,
+     * have your class implementation denote a character sequence uniquely
+     * identifying a bank's documents. Like "Best Bank Limited". Such an
+     * identifier will usually be found in the header or footer.
+     * <p>
+     * As bank brand names or legal titles sometimes change over time, multiple
+     * identifiers may need to be registered in order to accept both old and
+     * current files.
+     *
+     * @param identifier
+     *            unique character sequence
+     */
     protected final void addBankIdentifier(String identifier)
     {
         this.bankIdentifier.add(identifier);
@@ -128,7 +153,7 @@ public abstract class AbstractPDFExtractor implements Extractor
                 else if (subject.getNote() == null || trim(subject.getNote()).length() == 0)
                     item.getSubject().setNote(filename);
                 else
-                    item.getSubject().setNote(concatenate(trim(item.getSubject().getNote()), filename, " | ")); //$NON-NLS-1$
+                    item.getSubject().setNote(concatenate(item.getSubject().getNote(), filename, " | ")); //$NON-NLS-1$
             }
 
             return items;

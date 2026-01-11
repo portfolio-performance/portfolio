@@ -121,7 +121,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note1>Abrechnungsnummer).*$")
                         .match("^(.* )?(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
                         .find("Wir haben f.r.*") //
-                        .assign((t, v) -> t.setNote(concatenate(trim(v.get("note1")), trim(v.get("note2")), ": ")))
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), ": ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -211,7 +211,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>Auftragsnummer).*")
                         .match("^(.* )?(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(trim(v.get("note1")), trim(v.get("note2")), ": ")))
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), ": ")))
 
                         .wrap(TransactionItem::new);
 

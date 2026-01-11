@@ -1,0 +1,31 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 25.0.1+8-LTS-27 | Oracle Corporation
+-----------------------------------------
+Oslo, 01.01.2026
+Bank Norwegian, en filial av 
+NOBA Bank Group AB (publ)
+Postboks 110
+1325 Lysaker, NORWAY
+Org.Nr: 916 573 154
+Max Mustermann
+Musterstr. 2
+54321 Musterhausen
+Germany
+Kontoauszug - NO1293573415517
+Währung: Euro (EUR)
+Buchungsda Valutadatu Beschreibung Zahlungseinga Zahlungsausga
+tum m ng ng
+31.12.2025 01.01.2026 Interest 34,77
+11.12.2025 11.12.2025 Bezahlung von 24.500,00
+DE22513900000075401501 
+Einzahlung 01 BankNorwegian 
+Spar31
+Bank Norwegian, en filial av NOBA Bank Group AB (publ)
+Postboks 110, 1325 Lysaker, Norge
+Telefon 0800 7 238470
+E-Mail post@banknorwegian.de
+Webseite banknorwegian.de
+
+```

@@ -259,7 +259,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -522,7 +522,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note1", "note2") //
                         .match("^(?<note1>Jahresgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
@@ -566,7 +566,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note1", "note2") //
                         .match("^(?<note1>Depotgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), trim(v.get("note2")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " | ")))
 
                         .wrap(TransactionItem::new);
     }

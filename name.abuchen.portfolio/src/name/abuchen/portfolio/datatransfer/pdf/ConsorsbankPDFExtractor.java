@@ -351,14 +351,14 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limitkurs .*)") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Ursprungs-WKN 549532
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Ursprungs\\-WKN .*)") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Stückzins Zinsvaluta 10.07.2023 356 Tage 25,60 EUR
@@ -366,8 +366,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>St.ckzins) .* (?<note2>[\\d]+ Tag(e)? [\\.,\\d]+ [A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                         .wrap((t) -> {

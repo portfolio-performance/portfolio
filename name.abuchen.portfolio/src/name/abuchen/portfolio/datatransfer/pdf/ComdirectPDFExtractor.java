@@ -975,7 +975,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "|Schlussdividende" //
                                         + "|monatl\\. Dividende))" //
                                         + ".*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);

@@ -116,7 +116,7 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .find("Market-Order") //
                         .match("^(?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -207,7 +207,7 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(TransactionItem::new);
 

@@ -713,56 +713,56 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // [ZIP CODE] [CITY] EXÉCUTION cee1-2d00
                                         // @formatter:on
                                        section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // EXECUTION 4A66-g597
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // EJECUCIÓN d4e7-9ecc
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // 131 56 rwMMPGwX EXECUTION d008-0f58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 12345 CIudad EJECUCIÓN ff4d-982a
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // ESECUZIONE V711-7789
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // AUSFÜHRUNG 4019-2100
                                         // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
@@ -770,7 +770,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ausführung: "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ausführung: "))))
 
                         // @formatter:off
                         // Stückzinsen -75,25 EUR
@@ -778,8 +778,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>St.ckzinsen) \\-(?<note2>[\\.,\\d]+ [A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | "));
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
+                            t.setNote(concatenate(t.getNote(), v.get("note1"), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
                         })
 
                         .wrap((t, ctx) -> {
@@ -1171,56 +1171,56 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // [ZIP CODE] [CITY] EXÉCUTION cee1-2d00
                                         // @formatter:on
                                        section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Exécution : "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Exécution : "))),
                                         // @formatter:off
                                         // EXECUTION 4A66-g597
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // EJECUCIÓN d4e7-9ecc
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // 131 56 rwMMPGwX EXECUTION d008-0f58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Execution: "))),
                                         // @formatter:off
                                         // 12345 CIudad EJECUCIÓN ff4d-982a
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ejecución: "))),
                                         // @formatter:off
                                         // ESECUZIONE V711-7789
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Esecuzione: "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Esecuzione: "))),
                                         // @formatter:off
                                         // AUSFÜHRUNG 4019-2100
                                         // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
@@ -1228,7 +1228,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ausführung: "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | Ausführung: "))))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -2480,12 +2480,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 set
                                         // Bonifico Incoming transfer from eraE IQRKrwr 3.000,00 € 4.305,56 €
                                         // 2025
+                                        //
+                                        // 01 Dez. 
+                                        // Bonus Cash reward allocation 0,06 € 659,83 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
                                                         .match("^((.berweisung" //
                                                                         + "|Pr.mie" //
+                                                                        + "|Bonus" //
                                                                         + "|Transferencia" //
                                                                         + "|Recompensa" //
                                                                         + "|Recomendaci.n" //
@@ -2497,9 +2502,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Paiement accept.:" //
                                                                         + "|Your Saveback" //
                                                                         + "|Your Saveback payment" //
+                                                                        + "|Cash reward allocation" //
                                                                         + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
-                                                                        + " .*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                                        + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -2712,6 +2718,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Juni Prämie Your Saveback payment 5,18 € 3.484,00 €
                                         // 2024
                                         //
+                                        // 01 
+                                        // Dez. Bonus Cash reward allocation 4,71 € 10.004,74 €
+                                        // 2025
+                                        //
                                         // 29
                                         // Aug. Überweisung Incoming transfer from Vorname Nachname 2.500,00 € 19.885,07 €
                                         // 2024
@@ -2732,10 +2742,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("day", "month", "note", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]*$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + "(.berweisung|Transferencia|Pr.mie|Recompensa) (?<note>(Einzahlung akzeptiert:" //
+                                                                        + "(.berweisung" //
+                                                                        + "|Transferencia" //
+                                                                        + "|Pr.mie" //
+                                                                        + "|Recompensa" //
+                                                                        + "|Bonus) " //
+                                                                        + "(?<note>(Einzahlung akzeptiert:" //
                                                                         + "|Incoming transfer from"
                                                                         + "|Ingreso aceptado" //
                                                                         + "|Your Saveback" //
+                                                                        + "|Cash reward allocation" //
                                                                         + "|Your Kindergeld bonus)" //
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
@@ -2893,6 +2909,29 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note0") + v.get("note1"));
+                                                        }),
+                                        // @formatter:off
+                                        // 31 
+                                        // Outgoing transfer for Vorname Nachname 
+                                        // Dez. Überweisung 1.800,00 € 8.204,71 €
+                                        // (DE00000000000000000000)
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note0", "note1", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]*$") //
+                                                        .match("^(?<note0>(Outgoing transfer for) .*)$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (.berweisung) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^(?<note1>.*)$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -3196,11 +3235,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 ago
                                         // Pago de intereses Interest payment 47,64 € 34.107,54 €
                                         // 2025
+                                        //
+                                        // 01 Dez. 
+                                        // Zinsen Interest payment 1,17 € 661,00 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$")
-                                                        .match("^(Zinszahlung|intereses|d.int.r.ts|Pago de intereses|Pagamento) (Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(Zinszahlung|intereses|d.int.r.ts|Pago de intereses|Pagamento|Zinsen) (Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));

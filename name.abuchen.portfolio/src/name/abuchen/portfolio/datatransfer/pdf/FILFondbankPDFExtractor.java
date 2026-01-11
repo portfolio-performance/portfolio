@@ -235,7 +235,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                             if ("Splittkauf".equals(v.get("note")))
                                 v.put("note", "Splitkauf");
 
-                            t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "));
+                            t.setNote(concatenate(t.getNote(), v.get("note"), " | "));
                         })
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
@@ -471,7 +471,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Depotf.hrungsentgelt( [\\d]+)?) [\\.,\\d]+ [\\w]{3}$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Verwahrentgelt Fonds ohne Abschlussfolgeprovision 2019 1,00 EUR
