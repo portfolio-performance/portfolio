@@ -44,12 +44,12 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositTransaction()
     {
-        DocumentType type = new DocumentType("(Einzahlung|Deposit) 3a");
+        DocumentType type = new DocumentType("(Einzahlung|Deposit|Avis de versement) 3a");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Einzahlung|Deposit) 3a$");
+        Block firstRelevantLine = new Block("^(Einzahlung|Deposit|Avis de versement) 3a$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -66,7 +66,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Gutschrift: Valuta 15.01.2019 CHF 2'150.00
                         // @formatter:on
                         .section("date", "amount", "currency") //
-                        .find("(Einzahlung|Deposit|Versement) 3a") //
+                        .find("(Einzahlung|Deposit|Versement|Avis de versement) 3a") //
                         .match("^(Gutschrift: Valuta|Credit: Value date|Montant cr.dit.: Valeur) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -78,7 +78,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Zahlungseingang von: Einzahlung ABCD
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(Zahlungseingang von|Incoming payment from): (?<note>.*)$") //
+                        .match("^(Zahlungseingang von|Incoming payment from|Mode de versement): (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
@@ -206,7 +206,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Zins|Interest|Int.r.ts)") //
-                        .match("^(Am|On|Nous avons cr.dit. le) " //
+                        .match("^(Am|On|Nous avons cr.dit. le) ?" //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(haben wir (Ihrem Konto|Ihnen) gutgeschrieben|we have credited (you|your account)|les int.r.ts suivants):$") //
                         .match("^(Zinsgutschrift|Interest credit|Int.r.ts cr.diteurs): (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
@@ -253,7 +253,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "currency") //
                         .find("(Belastung|Commission)") //
-                        .match("^(Verrechneter Betrag|Charged amount|Montant d.bit.): (Valuta|Value)( date)? " //
+                        .match("^(Verrechneter Betrag|Charged amount|Montant d.bit.): (Valuta|Value|Valeur)( date)? " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.,'\\d]+)$")
                         .assign((t, v) -> {
@@ -266,12 +266,19 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Effektive VIAC Verwaltungsgebühr: 0.123% p.a. CHF -1.11
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(Effektive|Effective|Commission de gestion effective) " //
+                        .match("^(Effektive|Effective) " //
                                         + "(?<note1>(VIAC Verwaltungsgeb.hr" //
                                         + "|VIAC administration fee" //
                                         + "|VIAC p\\.a\\.)).*" //
                                         + ": (?<note2>[\\.,\\d]+%).*$") //
                         .assign((t, v) -> t.setNote(v.get("note1") + ": " + v.get("note2")))
+
+                        // @formatter:off
+                        // Commission de gestion effective VIAC: 0.26% p.a. CHF -3.10
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>Commission de gestion effective VIAC.*: [\\.,\\d]+%).*$")
+                        .assign((t, v) -> t.setNote(v.get("note")))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);

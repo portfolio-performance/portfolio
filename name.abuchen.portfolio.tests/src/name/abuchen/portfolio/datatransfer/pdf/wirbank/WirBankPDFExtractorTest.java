@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.wirbank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -1220,6 +1221,36 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testInterest06()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins06_Francais_2019.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2019-11-30"), hasShares(0.00), //
+                        hasSource("Zins06_Francais_2019.txt"), //
+                        hasNote("Taux d’intérêt: 0.20% | Période d’intérêt: novembre"), //
+                        hasAmount("CHF", 1.15), hasGrossValue("CHF", 1.15), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testFees01()
     {
         var client = new Client();
@@ -1352,6 +1383,34 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testFees05()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren05_Francais.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-04-30T00:00"), hasShares(0.00), //
+                        hasSource("Gebuehren05_Francais.txt"), //
+                        hasNote("Commission de gestion effective VIAC: 0.26%"), //
+                        hasAmount("CHF", 3.10), hasGrossValue("CHF", 3.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testCreditNote01()
     {
         var client = new Client();
@@ -1460,6 +1519,35 @@ public class WirBankPDFExtractorTest
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testCreditNote04()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote04_Francais.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2018-12-27"), //
+                        hasSource("CreditNote04_Francais.txt"), //
+                        hasNote("Versement BVRB"), //
+                        hasAmount("CHF", 6768.00))));
     }
 
     @Test
