@@ -1194,6 +1194,42 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testInterest06()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zins06_Francais_2019.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check interest transaction
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-30T00:00")));
+        assertThat(transaction.getSource(), is("Zins06_Francais_2019.txt"));
+        assertThat(transaction.getNote(), is("Taux d’intérêt: 0.20% | Période d’intérêt: novembre"));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.15))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1.15))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
     public void testFees01()
     {
         var client = new Client();
@@ -1322,6 +1358,33 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testFees05()
+    {
+        var extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehren05_Francais.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2019-04-30T00:00"), hasShares(0.00), //
+                        hasSource("Gebuehren05_Francais.txt"), //
+                        hasNote("Commission de gestion effective VIAC: 0.26%"), //
+                        hasAmount("CHF", 3.10), hasGrossValue("CHF", 3.10), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testCreditNote01()
     {
         var client = new Client();
@@ -1425,6 +1488,42 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testCreditNote04()
+    {
+        var client = new Client();
+
+        var extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CreditNote04_Francais.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check deposit transaction
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-27T00:00")));
+        assertThat(transaction.getSource(), is("CreditNote04_Francais.txt"));
+        assertThat(transaction.getNote(), is("Versement BVRB"));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(6768.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(6768.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
