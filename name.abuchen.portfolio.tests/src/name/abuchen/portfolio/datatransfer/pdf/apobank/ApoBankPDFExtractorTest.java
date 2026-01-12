@@ -14,6 +14,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
@@ -39,7 +40,7 @@ import name.abuchen.portfolio.model.Client;
 public class ApoBankPDFExtractorTest
 {
     @Test
-    public void testDividend01()
+    public void testDividende01()
     {
         var extractor = new ApoBankPDFExtractor(new Client());
 
@@ -70,4 +71,38 @@ public class ApoBankPDFExtractorTest
                         hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.06), //
                         hasTaxes("EUR", 0.02), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKauf01()
+    {
+        var extractor = new ApoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BYZTVT56"), hasWkn("A142NT"), hasTicker(null), //
+                        hasName("iShsII-EO Corp Bd ESG U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-10-06"), hasShares(189), //
+                        hasSource("Kauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 847.44), hasGrossValue("EUR", 847.44), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
 }

@@ -4,7 +4,9 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
@@ -17,6 +19,7 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("apoBank");
 
+        addBuySellTransaction();
         addDividendTransaction();
     }
 
@@ -103,6 +106,66 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
+
+    }
+
+    private void addBuySellTransaction()
+    {
+        final var type = new DocumentType("Wertpapierabrechnung");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Transaktion: Kauf$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wertpapierbezeichnung: iShsII-EO Corp Bd ESG U.ETF Registered Shares o.N.
+                        // ISIN: IE00BYZTVT56
+                        // WKN: A142NT
+                        // Kurswert: EUR -847,44
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency") //
+                        .match("^Wertpapierbezeichnung: (?<name>.*)$") //
+                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^WKN: (?<wkn>[A-Z0-9]{6})$") //
+                        .match("^Kurswert: (?<currency>[A-Z]{3}) -[\\.,\\d]+$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Nominal / Stück: 189
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Nominal / Stück: (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Schlusstag: 06.10.2022
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Schlusstag: (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4})$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag: EUR -847,44
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag: (?<currency>[A-Z]{3}) -(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
 
     }
 }
