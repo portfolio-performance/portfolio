@@ -442,7 +442,18 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                 var gross = rate.convert(rate.getBaseCurrency(),
                                                                                 fxGross);
 
-                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                                // @formatter:off
+                                                                // Even though this is a forex transaction, the security may be
+                                                                // held in the native currency. In that case, the GROSS_VALUE
+                                                                // unit needs to be set. In the foreign currency that is.
+                                                                // @formatter:on
+                                                                if (t.getSecurity().getCurrencyCode()
+                                                                                .equals(t.getCurrencyCode()))
+                                                                    checkAndSetGrossUnit(gross, fxGross, t,
+                                                                                    type.getCurrentContext());
+                                                                else
+                                                                    checkAndSetGrossUnit(fxGross, gross, t,
+                                                                                    type.getCurrentContext());
                                                             }
                                                         }))
 
