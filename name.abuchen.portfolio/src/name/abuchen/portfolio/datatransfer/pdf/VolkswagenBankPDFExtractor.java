@@ -23,7 +23,7 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Volkswagen Financial Services (Volkswagen Bank, Audi Bank)";
+        return "Volkswagen Bank";
     }
 
 
