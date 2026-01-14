@@ -10,6 +10,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +46,7 @@ public class Bank11PDFExtractorTest
         assertThat(countAccountTransactions(results), is(14L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(14));
         new AssertImportActions().check(results, "EUR");
 
@@ -103,6 +105,7 @@ public class Bank11PDFExtractorTest
         assertThat(countAccountTransactions(results), is(20L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(20));
         new AssertImportActions().check(results, "EUR");
 
