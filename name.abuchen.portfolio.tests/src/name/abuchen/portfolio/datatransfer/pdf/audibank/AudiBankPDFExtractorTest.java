@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.volkswagenfinancalservices;
+package name.abuchen.portfolio.datatransfer.pdf.audibank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -27,17 +27,17 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.pdf.AudiBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.VolkswagenFinancialServicesPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class VolkswagenFinancialServicesPDFExtractorTest
+public class AudiBankPDFExtractorTest
 {
     @Test
     public void testKontoauszug01()
     {
-        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
+        var extractor = new AudiBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class VolkswagenFinancialServicesPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
+        var extractor = new AudiBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class VolkswagenFinancialServicesPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
+        var extractor = new AudiBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -133,48 +133,5 @@ public class VolkswagenFinancialServicesPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 0.83), hasGrossValue("EUR", 1.13), //
                         hasTaxes("EUR", (0.27 + 0.01 + 0.02)), hasFees("EUR", 0.00))));
-    }
-
-    @Test
-    public void testKontoauszug04()
-    {
-        var extractor = new VolkswagenFinancialServicesPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(5L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, "EUR");
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2026-01-05"), hasAmount("EUR", 50.00), //
-                        hasSource("Kontoauszug04.txt"), hasNote(null))));
-        
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2026-01-05"), hasAmount("EUR", 4453.30), //
-                        hasSource("Kontoauszug04.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2026-01-07"), hasAmount("EUR", 1.00), //
-                        hasSource("Kontoauszug04.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2026-01-06"), hasAmount("EUR", 5497.70), //
-                        hasSource("Kontoauszug04.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest( //
-                        hasDate("2026-01-10"), hasShares(0), //
-                        hasSource("Kontoauszug04.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 26.55), hasGrossValue("EUR", 36.05), //
-                        hasTaxes("EUR", (0.49 + 9.01)), hasFees("EUR", 0.00))));
     }
 }

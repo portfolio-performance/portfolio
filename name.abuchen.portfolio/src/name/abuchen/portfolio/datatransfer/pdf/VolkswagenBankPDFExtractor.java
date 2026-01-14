@@ -9,13 +9,12 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class VolkswagenFinancialServicesPDFExtractor extends AbstractPDFExtractor
+public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
 {
-    public VolkswagenFinancialServicesPDFExtractor(Client client)
+    public VolkswagenBankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Audi Bank");
         addBankIdentifier("Volkswagen Bank");
 
         addAccountStatementTransaction();
