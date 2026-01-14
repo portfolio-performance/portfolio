@@ -33,7 +33,7 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("acquisto di", //
+        final DocumentType type = new DocumentType("(acquisto|vendita) di", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -65,6 +65,16 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                             BuySellEntry portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Tipo di Operazione: Vendita     Mercato di esecuzione: Borsa - XETRA
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^Tipo di Operazione: (?<type>(Vendita|Acquisto)).*$") //
+                        .assign((t, v) -> {
+                            if ("Vendita".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         .oneOf( //
@@ -132,6 +142,17 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //                      Totale a Vs. Credito                             10.910,19
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^.*Totale a Vs\\. Credito[\\s]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         // @formatter:off
@@ -167,6 +188,7 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -188,6 +210,27 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^.*Commissioni:[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<fee>[\\.,\\d]+)\\*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        //                      Commissioni:                                         -9,50
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^.*Commissioni:[\\s]{1,}\\-(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        //                      Capital Gain *                                     -101,51               5,3106
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^.*Capital Gain[\\s]{1,}\\*[\\s]{1,}\\-(?<tax>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }
