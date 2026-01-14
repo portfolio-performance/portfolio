@@ -188,6 +188,7 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
+        addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
@@ -217,7 +218,12 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^.*Commissioni:[\\s]{1,}\\-(?<fee>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
 
                         // @formatter:off
                         //                      Capital Gain *                                     -101,51               5,3106
