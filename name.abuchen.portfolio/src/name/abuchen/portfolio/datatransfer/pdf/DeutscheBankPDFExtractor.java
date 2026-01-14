@@ -236,12 +236,12 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransactionFundsSavingsPlan()
     {
-        var type = new DocumentType("Ihr db AnsparPlan");
+        var type = new DocumentType("(db AnsparPlan|Verm.gensSparplan)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^.*, WKN [A-Z0-9]{6}, .* [\\.,\\d]+%$");
+        var firstRelevantLine = new Block("^.*, WKN [A-Z0-9]{6}.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(2);
         firstRelevantLine.set(pdfTransaction);
@@ -254,34 +254,53 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        .oneOf( //
                         // @formatter:off
-                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
-                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
-                        // @formatter:on
-                        .section("name", "wkn", "currency") //
-                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}), .* [\\.,\\d]+%$")//
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+                                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+                                        //
+                                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "currency") //
+                                                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
 
+                                        // @formatter:off
+                                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+                                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652
+                                        //
+                                        // 02.09.2019 0,1042 172,4300 25,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "currency") //
+                                                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}).*$")//
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        )
                         // @formatter:off
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                        // 02.09.2019 0,1042 172,4300 25,00 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) [\\.,\\d]+ ([A-Z]{3}\\s)?[\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                        // 02.09.2019 0,1042 172,4300 25,00 EUR
                         // @formatter:on
                         .section("date")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ ([A-Z]{3}\\s)?[\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
                         // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                        // 02.09.2019 0,1042 172,4300 25,00 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ ([A-Z]{3}\\s)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
