@@ -116,7 +116,7 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^Transaktion: Kauf$");
+        var firstRelevantLine = new Block("^Transaktion: (Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -129,6 +129,18 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Transaktion: Kauf
+                        // Transaktion: Verkauf
+                        // @formatter:on
+                        .section("type") //
+                        .match("^Transaktion: (?<type>Kauf|Verkauf)$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+
+                        })
+
+                        // @formatter:off
                         // Wertpapierbezeichnung: iShsII-EO Corp Bd ESG U.ETF Registered Shares o.N.
                         // ISIN: IE00BYZTVT56
                         // WKN: A142NT
@@ -138,7 +150,7 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Wertpapierbezeichnung: (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN: (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^Kurswert: (?<currency>[A-Z]{3}) \\-[\\.,\\d]+$") //
+                        .match("^Kurswert: (?<currency>[A-Z]{3}) (\\-)?[\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -159,7 +171,7 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag: EUR -847,44
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag: (?<currency>[A-Z]{3}) -(?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag: (?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
