@@ -440,30 +440,23 @@ public class EbasePDFExtractorTest
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
-        // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("LU0322253732"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        // check security1
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0322253732"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("DE000A0F5UH1"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security2
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0F5UH1"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("DE000A0D8Q49"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"));
-        assertThat(security3.getCurrencyCode(), is("USD"));
+        // check security3
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0D8Q49"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("USD"))));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()

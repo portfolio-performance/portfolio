@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Postbank - eine Niederlassung 
+der Deutsche Bank AG
+Postbank
+24/7-Kundenservice (0228) 5500-5500
+qXjb koNjQJ 
+DMdBWr cRncywMZfV 
+Xrgakrefsgstr. 45 
+67633 tOlTagG
+15. Januar 2026
+Ihr Depot Nr. 618 3674850 55 
+Vorabpauschale
+CorpID: 2027086146700
+Stück WKN ISIN
+70,000000 A2PKXG IE00BK5BQT80
+VANG.FTSE A.W. DLA FUNDS
+Vorabpauschale Jahreswert (p.St.) 2,3826077600 EUR Kalenderjahr 2025
+Fondsart Aktienfonds (30% Teilfreistellung) Steuerjahr 2026
+Steuerliche Bemessungsgrundlagen zur Vorabpauschale - keine Steuerbescheinigung
+Vorabpauschale vor Teilfreistellung* 166,78 EUR 
+Abzüglich Teilfreistellung der Vorabpauschale 50,03 EUR 
+Vorabpauschale nach Teilfreistellung 116,75 EUR 
+Auf Ihren Freistellungsbetrag angerechnet 116,75 EUR 
+KESt-pflichtige Vorabpauschale 0,00 EUR
+Hinweise
+Im Steuerabzugsverfahren sind generell die für Privatanleger geltenden Teilfreistellungssätze anzuwenden. Für einkommensteuerpflichtige Anleger, die ihre 
+Anteile im Betriebsvermögen halten, und körperschaftsteuerpflichtige Anleger werden die erhöhten Teilfreistellungssätze erst im Veranlagungsverfahren der 
+Besteuerung zu Grunde gelegt.
+* Unterjährige Anschaffungen des bezogenen Kalenderjahres wurden mit einer anteiligen Vorabpauschale gemäß §18 Abs. 2 InvStG 2018
+(1/12 des Jahreswertes pro Haltemonat) berücksichtigt.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Raja Akram, Fabrizio Campelli, Marcus Chromik, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, Rebecca Short 
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TRINCM0001 VOPA 20260115 59617993
