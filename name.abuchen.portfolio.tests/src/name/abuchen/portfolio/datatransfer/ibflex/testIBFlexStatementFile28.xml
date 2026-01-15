@@ -1,0 +1,15 @@
+<FlexQueryResponse queryName="PP" type="AF">
+<FlexStatements count="1">
+<FlexStatement accountId="U1234567" fromDate="20250201" toDate="20250331" period="LastQuarter" whenGenerated="20250310;120000">
+<AccountInformation accountId="U1234567" acctAlias="A" model="" currency="EUR" name="John Doe" accountType="Individual" customerType="Individual" />
+<CashTransactions>
+<CashTransaction accountId="U1234567" acctAlias="" model="" currency="USD" fxRateToBase="0.94106" assetCategory="STK" symbol="HIDR" description="HIDR(IE00B46G8275) CASH DIVIDEND USD 0.9076 PER SHARE (Mixed Income)" conid="86281326" securityID="IE00B46G8275" securityIDType="ISIN" isin="IE00B46G8275" amount="18.15" type="Dividends" reportDate="20250304" />
+<CashTransaction accountId="U1234567" acctAlias="" model="" currency="USD" fxRateToBase="0.92464" assetCategory="STK" subCategory="ETF" symbol="EQQQ" description="EQQQ(IE0032077012) CASH DIVIDEND USD 0.4531 PER SHARE (Mixed Income)" conid="18706552" securityID="IE0032077012" securityIDType="ISIN" isin="IE0032077012" amount="1.36" type="Dividends" reportDate="20250321" />
+</CashTransactions>
+<ConversionRates>
+<ConversionRate reportDate="20250304" fromCurrency="GBP" toCurrency="EUR" rate="1.2041" />
+<ConversionRate reportDate="20250321" fromCurrency="GBP" toCurrency="EUR" rate="1.1726" />
+</ConversionRates>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>
