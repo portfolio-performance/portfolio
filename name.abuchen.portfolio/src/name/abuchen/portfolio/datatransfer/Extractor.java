@@ -241,7 +241,12 @@ public interface Extractor
         @Override
         public Money getAmount()
         {
-            return transaction.getMonetaryAmount();
+            var currencyCode = transaction.getCurrencyCode();
+            var amount = transaction.getAmount();
+
+            // if the transaction is not parsed completely, then the
+            // currency code maybe null
+            return currencyCode != null ? Money.of(currencyCode, amount) : null;
         }
 
         @Override
@@ -694,6 +699,7 @@ public interface Extractor
         private Money amount;
         private String typeInformation;
         private String source;
+        private Security security;
         private SkippedSubject subject;
 
         private class SkippedSubject implements Annotated
@@ -733,6 +739,7 @@ public interface Extractor
             amount = item.getAmount();
             typeInformation = item.getTypeInformation();
             source = item.getSource();
+            security = item.getSecurity();
         }
 
         @Override
@@ -744,13 +751,13 @@ public interface Extractor
         @Override
         public Security getSecurity()
         {
-            return null;
+            return security;
         }
 
         @Override
         public void setSecurity(Security security)
         {
-            throw new UnsupportedOperationException();
+            this.security = security;
         }
 
         @Override

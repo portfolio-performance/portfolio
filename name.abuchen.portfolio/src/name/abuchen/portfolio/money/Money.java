@@ -11,7 +11,7 @@ public final class Money implements Comparable<Money>
     private Money(String currencyCode, long amount)
     {
         if (currencyCode == null || currencyCode.isEmpty())
-            throw new NullPointerException();
+            throw new NullPointerException("currencyCode"); //$NON-NLS-1$
 
         this.currencyCode = currencyCode;
         this.amount = amount;
