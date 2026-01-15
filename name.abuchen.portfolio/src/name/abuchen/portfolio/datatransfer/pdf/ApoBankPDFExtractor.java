@@ -71,14 +71,14 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         // Nominal/Stück 0,707 ST
                         // @formatter:on
                         .section("shares") //
-                        .match("^Nominal/Stück (?<shares>[\\.,\\d]+).*$") //
+                        .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
                         // @formatter:off
                         // Zahlungsdatum 27.08.2025
                         // @formatter:on
                         .section("date") //
-                        .match("^Zahlungsdatum (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4})$")
+                        .match("^Zahlungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -96,7 +96,7 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag EUR 0,00
                         // Kirchensteuer EUR 0,00
                         // @formatter:on
-                        .section("tax", "currency").optional() //
+                        .section("currency", "tax").optional() //
                         .match("^(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
@@ -138,27 +138,27 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Wertpapierbezeichnung: (?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN: (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^Kurswert: (?<currency>[A-Z]{3}) -[\\.,\\d]+$") //
+                        .match("^Kurswert: (?<currency>[A-Z]{3}) \\-[\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Nominal / Stück: 189
                         // @formatter:on
                         .section("shares") //
-                        .match("^Nominal / Stück: (?<shares>[\\.,\\d]+).*$") //
+                        .match("^Nominal \\/ St.ck: (?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // Schlusstag: 06.10.2022
                         // @formatter:on
                         .section("date") //
-                        .match("^Schlusstag: (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4})$")
+                        .match("^Schlusstag: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag: EUR -847,44
                         // @formatter:on
-                        .section("amount", "currency") //
+                        .section("currency", "amount") //
                         .match("^Ausmachender Betrag: (?<currency>[A-Z]{3}) -(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
