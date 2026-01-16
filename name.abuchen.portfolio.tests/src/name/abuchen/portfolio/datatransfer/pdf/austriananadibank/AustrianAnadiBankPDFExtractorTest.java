@@ -3,10 +3,8 @@ package name.abuchen.portfolio.datatransfer.pdf.austriananadibank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
@@ -53,24 +51,13 @@ public class AustrianAnadiBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-05-14"), hasShares(0), //
+        assertThat(results, hasItem(deposit(hasDate("2025-05-14"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug01.txt"))));
+        assertThat(results, hasItem(removal(hasDate("2025-05-15"), hasAmount("EUR", 2500.00), //
                         hasSource("Kontoauszug01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 2500.00), hasGrossValue("EUR", 2500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(removal( //
-                        hasDate("2025-05-15"), hasShares(0), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote("ONLINE-FESTGELD / KONTO 12345555555"), //
-                        hasAmount("EUR", 2500.00), hasGrossValue("EUR", 2500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-05-19"), hasShares(0), //
-                        hasSource("Kontoauszug01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 8320.00), hasGrossValue("EUR", 8320.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
+                        hasNote("ONLINE-FESTGELD / KONTO 12345555555"))));
+        assertThat(results, hasItem(deposit(hasDate("2025-05-19"), hasAmount("EUR", 8320.00), //
+                        hasSource("Kontoauszug01.txt"))));
     }
 
     @Test
@@ -92,30 +79,16 @@ public class AustrianAnadiBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-12-09"), //
-                        hasSource("Kontoauszug02.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 3500.00), hasGrossValue("EUR", 3500.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-12-11"), //
-                        hasSource("Kontoauszug02.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(removal( //
-                        hasDate("2025-12-16"), //
-                        hasSource("Kontoauszug02.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 2000.00), hasGrossValue("EUR", 2000.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(interest( //
-                        hasDate("2025-12-31"), //
-                        hasSource("Kontoauszug02.txt"), //
+        assertThat(results, hasItem(deposit(hasDate("2025-12-09"), hasAmount("EUR", 3500.00), //
+                        hasSource("Kontoauszug02.txt"))));
+        assertThat(results, hasItem(deposit(hasDate("2025-12-11"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug02.txt"))));
+        assertThat(results, hasItem(removal(hasDate("2025-12-16"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug02.txt"))));
+        assertThat(results, hasItem(interest(hasDate("2025-12-31"), hasAmount("EUR", 123.91), //
+                        hasGrossValue("EUR", 165.21), hasTaxes("EUR", 41.30), //
                         hasNote("Habenzinsen"), //
-                        hasAmount("EUR", 123.91), hasGrossValue("EUR", 165.21), //
-                        hasTaxes("EUR", 41.30), hasFees("EUR", 0.00))));
+                        hasSource("Kontoauszug02.txt"))));
     }
 
     @Test
@@ -137,41 +110,20 @@ public class AustrianAnadiBankPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(removal( //
-                        hasDate("2025-11-04"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-11-05"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-11-11"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2025-11-17"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
+        assertThat(results, hasItem(removal(hasDate("2025-11-04"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug03.txt"))));
+        assertThat(results, hasItem(deposit(hasDate("2025-11-05"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug03.txt"))));
+        assertThat(results, hasItem(deposit(hasDate("2025-11-11"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug03.txt"))));
+        assertThat(results, hasItem(deposit(hasDate("2025-11-17"), hasAmount("EUR", 2500.00), //
                         hasNote("ABRECHNUNG ZU KONTO 00123456678"), //
-                        hasAmount("EUR", 2500.00), hasGrossValue("EUR", 2500.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(interest( //
-                        hasDate("2025-11-17"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
-                        hasNote("Habenzinsen ABRECHNUNG ZU KONTO 00123456678"), //
-                        hasAmount("EUR", 22.75), hasGrossValue("EUR", 30.33), //
-                        hasTaxes("EUR", (7.58)), hasFees("EUR", 0.00))));
-        assertThat(results, hasItem(removal( //
-                        hasDate("2025-11-24"), hasShares(0), //
-                        hasSource("Kontoauszug03.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 2784.00), hasGrossValue("EUR", 2784.00), //
-                        hasTaxes("EUR", (0.00)), hasFees("EUR", 0.00))));
+                        hasSource("Kontoauszug03.txt"))));
+        assertThat(results, hasItem(interest(hasDate("2025-11-17"), hasAmount("EUR", 22.75), //
+                        hasGrossValue("EUR", 30.33), hasTaxes("EUR", 7.58), //
+                        hasNote("ABRECHNUNG ZU KONTO 00123456678"), //
+                        hasSource("Kontoauszug03.txt"))));
+        assertThat(results, hasItem(removal(hasDate("2025-11-24"), hasAmount("EUR", 2784.00), //
+                        hasSource("Kontoauszug03.txt"))));
     }
 }
