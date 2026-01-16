@@ -731,6 +731,40 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSparplanausfuehrung07()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BTN1Y115"), hasWkn(null), hasTicker(null), //
+                        hasName("Medtronic"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-16T11:07:00"), hasShares(0.585137), //
+                        hasSource("Sparplanausfuehrung07.txt"), //
+                        hasNote("Ord.-Nr.: SCALQCpPumUCcUV"), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSavingsplan01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());

@@ -44,14 +44,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^(f.r|voor|per) " //
-                        + "(Kundenauftrag" //
-                        + "|Sparplanausf.hrung" //
-                        + "|savings plan order" //
-                        + "|client order" //
-                        + "|Auftrag" //
-                        + "|beleggingsplanorder" //
-                        + "|l.ordine del piano di accumulo).*$");
+        var firstRelevantLine = new Block();
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
