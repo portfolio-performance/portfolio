@@ -1,0 +1,67 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+Graz, 03.01.2026
+0202272000005548848680
+Max Mustermann 
+Blumenstraße 1
+3456 Graz Auftragsdatum 02.01.2026
+ÖSTERREICH Handelstag 02.01.2026
+Ausführungszeit 16:24 Uhr
+Valuta 06.01.2026
+Auftragsnummer 329509082/1
+Ausf.platz/-art KVG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer: 12345678901
+Depotinhaber: Mustermann, Max
+Nr. 329509082/1     Kauf       ISHARES S&P 500 INFO TECH (IE00B3WJKG14/A142N1)
+Ausgeführt: 13,948947 St. Kurswert: 500,00 EUR
+Kurs: 35,845000 EUR Provision: 1,50 EUR
+Devisenkurs: 1,000000 Eigene Spesen: 0,00 EUR
+* Fremde Spesen: 0,00 EUR
+Verwahrart: Wertpapierrechnung
+Lagerstelle: Clearstream Lux.
+Lagerland: Irland Bemessungsgrundlage: 0,00 EUR
+Gewinn/Verlust: 0,00 EUR ** Einbeh. KESt: 0,00 EUR
+Endbetrag: -501,50 EUR
+* Enthalten sind folgende Gebühren: Courtage: 0,00 EUR
+Tradinggebühr: 0,00 EUR
+Regulierung: 0,00 EUR
+Schlussnoten: 0,00 EUR
+LS-Umlegung: 0,00 EUR
+Finanztransaktionssteuer: 0,00 EUR
+Sonstige: 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4685418678.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA) abzg. Rabatt
+Rabattierung: keine gezahlter AA: 0,00 EUR
+Kurs: 35,8450 EUR Kurswert: 500,0000 EUR
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 23456789012
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 2
+2000005548848680 035120227000
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 2
+2000005548848680 035120227000
