@@ -1,0 +1,312 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank AG 
+Kundenservice 
+Gadollaplatz 1 
+8010 Graz 
+Tel.: +43 - (0)720 518 777 
+Mail: info@flatex.at
+flatexDEGIRO Bank AG - Gadollaplatz 1 - A-8010 Graz
+0303502000005543594500
+IKTC luxf-cdhOGFMJd 
+fEwFZvyLQQnprSjz xaj. 78/gtrfder 9
+9675 dkJAXxw 
+ÖSTERREICH
+          Graz, 03.01.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 63xwe34g7yu76
+Depotinhaber: ayKO ujikl-KBwDnHgxU
+Nr.329633163/1 Verkauf AES CORP., THE (US00130H1059/882177)
+Ordervolumen : 120,00 St. Handelsplatz : Société Générale
+davon ausgef. : 120,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
+Kurs : 12,3000 EUR Kurswert : 1.476,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 9,31 EUR
+Gewinn/Verlust : 33,84 EUR
+Valuta : 06.01.2026 Endbetrag : 1.460,05 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682588850.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 1 von 8
+2000005543594500 035130350000
+Nr.329633182/1 Verkauf AURINIA 
+PHARMACEUTICALS I (CA05156V1022/A1W7D4)
+Ordervolumen : 105,00 St. Handelsplatz : Société Générale
+davon ausgef. : 105,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
+Kurs : 13,4600 EUR Kurswert : 1.413,30 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : Canada ** Einbeh. Steuer : -9,31 EUR
+Gewinn/Verlust : -47,78 EUR
+Valuta : 06.01.2026 Endbetrag : 1.414,31 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682592903.
+Nr.329633206/1 Verkauf BROADCOM INC. (US11135F1012/A2JG9Z)
+Ordervolumen : 5,00 St. Handelsplatz : Société Générale
+davon ausgef. : 5,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
+Kurs : 301,3500 EUR Kurswert : 1.506,75 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : -113,88 EUR
+Valuta : 06.01.2026 Endbetrag : 1.500,11 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 2 von 8
+2000005543594500 035130350000
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682595695.
+Nr.329633285/1 Verkauf CARETRUST REIT INC. (US14174T1079/A11398)
+Ordervolumen : 45,00 St. Handelsplatz : Société Générale
+davon ausgef. : 45,00 St. Schlusstag : 02.01.2026, 15:32 Uhr
+Kurs : 30,6000 EUR Kurswert : 1.377,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : -72,00 EUR
+Valuta : 06.01.2026 Endbetrag : 1.368,70 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682601474.
+Nr.329633305/1 Verkauf ELI LILLY AND COMPANY (US5324571083/858560)
+Ordervolumen : 2,00 St. Handelsplatz : Société Générale
+davon ausgef. : 2,00 St. Schlusstag : 02.01.2026, 15:32 Uhr
+Kurs : 904,0000 EUR Kurswert : 1.808,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 75,00 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 3 von 8
+2000005543594500 035130350000
+Nr.329633305/1 Verkauf ELI LILLY AND COMPANY (US5324571083/858560)
+Valuta : 06.01.2026 Endbetrag : 1.801,36 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682602407.
+Nr.329633324/1 Verkauf VIATRIS INC. (US92556V1061/A2QAME)
+Ordervolumen : 160,00 St. Handelsplatz : Société Générale
+davon ausgef. : 160,00 St. Schlusstag : 02.01.2026, 15:32 Uhr
+Kurs : 10,5600 EUR Kurswert : 1.689,60 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 33,09 EUR
+Gewinn/Verlust : 245,12 EUR
+Valuta : 06.01.2026 Endbetrag : 1.649,87 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682603713.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 4 von 8
+2000005543594500 035130350000
+Nr.329633404/1 Kauf SOTERA HEALTH 
+COMPANY (US83601L1026/A2QHA5)
+Ordervolumen : 95,00 St. Handelsplatz : Société Générale
+davon ausgef. : 95,00 St. Schlusstag : 02.01.2026, 15:34 Uhr
+Kurs : 15,1850 EUR Kurswert : 1.442,58 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.450,88 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682606959.
+Nr.329633439/1 Kauf ENOVA INTERNATIONAL 
+INC. (US29357K1034/A12D51)
+Ordervolumen : 10,00 St. Handelsplatz : Société Générale
+davon ausgef. : 10,00 St. Schlusstag : 02.01.2026, 15:34 Uhr
+Kurs : 138,0000 EUR Kurswert : 1.380,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.388,30 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 5 von 8
+2000005543594500 035130350000
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682608626.
+Nr.329633472/1 Kauf NU HOLDINGS LTD. A (KYG6683N1034/A3C82G)
+Ordervolumen : 100,00 St. Handelsplatz : Société Générale
+davon ausgef. : 100,00 St. Schlusstag : 02.01.2026, 15:35 Uhr
+Kurs : 14,2560 EUR Kurswert : 1.425,60 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.433,90 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682610434.
+Nr.329633517/1 Kauf FORD MOTOR CO. (US3453708600/502391)
+Ordervolumen : 130,00 St. Handelsplatz : Société Générale
+davon ausgef. : 130,00 St. Schlusstag : 02.01.2026, 15:35 Uhr
+Kurs : 11,1860 EUR Kurswert : 1.454,18 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 6 von 8
+2000005543594500 035130350000
+Nr.329633517/1 Kauf FORD MOTOR CO. (US3453708600/502391)
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.460,82 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682612776.
+Nr.329633559/1 Kauf HALLIBURTON CO. (US4062161017/853986)
+Ordervolumen : 60,00 St. Handelsplatz : Société Générale
+davon ausgef. : 60,00 St. Schlusstag : 02.01.2026, 15:35 Uhr
+Kurs : 24,1500 EUR Kurswert : 1.449,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : GS-Verwahrung * Fremde Spesen : 0,74 EUR
+Lagerstelle : Clearstream Nat.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.455,64 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,71 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682613610.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 7 von 8
+2000005543594500 035130350000
+Nr.329633638/1 Kauf MILLICOM INTL CELLULAR 
+S. (LU0038705702/889328)
+Ordervolumen : 30,00 St. Handelsplatz : Société Générale
+davon ausgef. : 30,00 St. Schlusstag : 02.01.2026, 15:36 Uhr
+Kurs : 48,2000 EUR Kurswert : 1.446,00 EUR
+Devisenkurs : Provision : 5,90 EUR
+Bew-Faktor : 1,0000 Eigene Spesen :
+Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+Lagerstelle : Clearstream Lux.
+Lagerland : USA ** Einbeh. Steuer : 0,00 EUR
+Gewinn/Verlust : 0,00 EUR
+Valuta : 06.01.2026 Endbetrag : -1.454,30 EUR
+*   Enthalten sind folgende Gebühren
+Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 2,37 EUR
+Schlussnoten : 0,03 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.: 4682615368.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 7q437xf87k48
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit dem angegebenen Valutatag 
+buchen. Bitte prüfen Sie diese Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Abrechnung müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die Unterlassung rechtzeitiger 
+Einwendung gilt als Genehmigung. Bitte beachten Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger 
+Fälligstellung, beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und informieren Sie sich 
+rechtzeitig, welche spezielle Fälligkeitsregelung auf die von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge 
+sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben. Für weitergehende Fragen wenden Sie sich bitte 
+an Ihr flatex-Service-Team.
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Gadollaplatz 1 | 8010 Graz | Landesgericht für Zivilrechtssachen Graz | FN 334642 x | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Omniturm | Große Gallusstr. 16-18 | 60312 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter | Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+Evgeni Kaplun, Jens Möbitz, Christiane Strubel -
+Seite 8 von 8
+2000005543594500 035130350000
