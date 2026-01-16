@@ -205,7 +205,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend)", //
+        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
                         "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell)");
         this.addDocumentTyp(type);
 
@@ -237,12 +237,13 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Berechtigtes Wertpapier AGNC Investment Corp.
+                                        // BerechtigtesWertpapier PepsiCo Inc.
                                         // ISIN US00123Q1040
-                                        // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR     
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^Berechtigtes Wertpapier (?<name>.*)$") //
+                                                        .match("^Berechtigtes(\\s)?Wertpapier (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
