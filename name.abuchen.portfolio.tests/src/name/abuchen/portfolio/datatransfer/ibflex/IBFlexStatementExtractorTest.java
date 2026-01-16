@@ -3558,4 +3558,78 @@ public class IBFlexStatementExtractorTest
         // 0.01)
         assertThat(unit.getExchangeRate().compareTo(new java.math.BigDecimal("0.01")), is(0));
     }
+
+    @Test
+    public void testParseDateTimeFormats()
+    {
+        // Compact format yyyyMMdd - date only
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        // Compact format yyyyMMdd with time HHmmss
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Compact format yyyyMMdd with time HH:mm:ss
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Compact format with timezone (timezone is dropped)
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // ISO format yyyy-MM-dd - date only
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        // ISO format with comma+space separator (backward compat with
+        // CorporateAction)
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15, 14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // ISO format with semicolon separator
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // US format MM/dd/yyyy
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // US format MM/dd/yy (2-digit year)
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // European format dd/MM/yyyy - use day > 12 to avoid ambiguity
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // European format dd/MM/yy (2-digit year)
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Month abbreviation format dd-MMM-yy
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // With timezone (should be dropped)
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Null and empty handling
+        assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
+        assertThat(IBFlexStatementExtractor.parseDateTime(""), is(nullValue()));
+
+        // Invalid format should return null
+        assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
+    }
 }

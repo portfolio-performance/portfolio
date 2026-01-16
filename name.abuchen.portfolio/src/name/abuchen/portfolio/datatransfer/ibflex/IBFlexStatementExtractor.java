@@ -10,10 +10,12 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -92,18 +94,46 @@ public class IBFlexStatementExtractor implements Extractor
     // Map to store exchange mappings from Interactive Broker to Yahoo
     private Map<String, String> exchanges = new HashMap<>();
 
-    // dateTime attribute formats by tag:
-    // @formatter:off
-    // | Tag             | Format Pattern(s)                       |
-    // |-----------------|-----------------------------------------|
-    // | Trade           | YYYYMMDD;HHMMSS                         |
-    // | FxTransaction   | YYYYMMDD;HHMMSS                         |
-    // | CorporateAction | YYYY-MM-DD, HH:MM:SS OR YYYYMMDD;HHMMSS |
-    // | CashTransaction | YYYY-MM-DD OR YYYYMMDD[;HHMMSS]         |
-    // @formatter:on
+    // Supported date formats (from IB Flex Query configuration):
+    // - yyyyMMdd, yyyy-MM-dd, MM/dd/yyyy, MM/dd/yy, dd/MM/yyyy, dd/MM/yy,
+    // dd-MMM-yy
+    //
+    // Supported time formats:
+    // - HHmmss, HH:mm:ss, HHmmss zzz (with timezone), HH:mm:ss zzz (with
+    // timezone)
+    //
+    // Date and time are separated by semicolon. Time and timezone are optional.
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
-                    createFormatter("yyyyMMdd[;HHmmss]"), //
-                    createFormatter("yyyy-MM-dd[, HH:mm:ss]"), //
+                    // Compact format: yyyyMMdd with optional time and timezone
+                    createFormatter("yyyyMMdd[;HHmmss][ z]"), //
+                    createFormatter("yyyyMMdd[;HH:mm:ss][ z]"), //
+
+                    // ISO format (comma+space separator for backward compat
+                    // with CorporateAction)
+                    createFormatter("yyyy-MM-dd[, HH:mm:ss][ z]"), //
+                    createFormatter("yyyy-MM-dd[;HHmmss][ z]"), //
+                    createFormatter("yyyy-MM-dd[;HH:mm:ss][ z]"), //
+
+                    // US format MM/dd/yyyy (4-digit year first to avoid
+                    // ambiguity)
+                    createFormatter("MM/dd/yyyy[;HHmmss][ z]"), //
+                    createFormatter("MM/dd/yyyy[;HH:mm:ss][ z]"), //
+
+                    // US format MM/dd/yy (2-digit year)
+                    createFormatter("MM/dd/yy[;HHmmss][ z]"), //
+                    createFormatter("MM/dd/yy[;HH:mm:ss][ z]"), //
+
+                    // European format dd/MM/yyyy (4-digit year first)
+                    createFormatter("dd/MM/yyyy[;HHmmss][ z]"), //
+                    createFormatter("dd/MM/yyyy[;HH:mm:ss][ z]"), //
+
+                    // European format dd/MM/yy (2-digit year)
+                    createFormatter("dd/MM/yy[;HHmmss][ z]"), //
+                    createFormatter("dd/MM/yy[;HH:mm:ss][ z]"), //
+
+                    // Month abbreviation format dd-MMM-yy (e.g., 15-Jan-24)
+                    createFormatter("dd-MMM-yy[;HHmmss][ z]"), //
+                    createFormatter("dd-MMM-yy[;HH:mm:ss][ z]"), //
     };
 
     private static DateTimeFormatter createFormatter(String pattern)
@@ -114,6 +144,38 @@ public class IBFlexStatementExtractor implements Extractor
                         .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0) //
                         .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0) //
                         .toFormatter(Locale.US);
+    }
+
+    /**
+     * Parses a date/time string using all supported formats.
+     * <p/>
+     * If a timezone is present, it is dropped (not converted).
+     *
+     * @param dateTime
+     *            the date/time string to parse
+     * @return the parsed LocalDateTime, or null if parsing fails
+     */
+    /* package */ static LocalDateTime parseDateTime(String dateTime)
+    {
+        if (dateTime == null || dateTime.isEmpty())
+            return null;
+
+        for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
+        {
+            try
+            {
+                TemporalAccessor parsed = formatter.parseBest(dateTime, ZonedDateTime::from, LocalDateTime::from);
+                if (parsed instanceof ZonedDateTime zdt)
+                    return zdt.toLocalDateTime();
+                return LocalDateTime.from(parsed);
+            }
+            catch (DateTimeParseException ignore)
+            {
+                // try next formatter
+            }
+        }
+
+        return null;
     }
 
 
@@ -848,22 +910,7 @@ public class IBFlexStatementExtractor implements Extractor
                 dateTime = element.getAttribute("dateTime");
             }
 
-            if (!dateTime.isEmpty())
-            {
-                for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
-                {
-                    try
-                    {
-                        return LocalDateTime.parse(dateTime, formatter);
-                    }
-                    catch (DateTimeParseException ignore)
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            return null;
+            return parseDateTime(dateTime);
         }
 
         /**
