@@ -29,6 +29,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAc
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -1174,6 +1175,74 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 0.12), hasGrossValue("EUR", 0.17), //
                         hasTaxes("EUR", 0.05), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7134481081"), hasWkn(null), hasTicker(null), //
+                        hasName("PepsiCo Inc."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-01-09"), hasShares(1.588739), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.42), hasGrossValue("EUR", 1.93), //
+                        hasTaxes("EUR", (0.29 + 0.22)), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende09()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0114405324"), hasWkn(null), hasTicker(null), //
+                        hasName("Garmin Ltd."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-12-31"), hasShares(6.0), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.30), hasGrossValue("EUR", 4.58), //
+                        hasTaxes("EUR", 1.28), hasFees("EUR", 0.00))));
     }
 
     @Test
