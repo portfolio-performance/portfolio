@@ -7728,6 +7728,207 @@ public class FinTechGroupBankPDFExtractorTest
                         hasAmount("EUR", 2033.04), hasGrossValue("EUR", 2024.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.74))));
     }
+    
+    @Test
+    public void testFlatExDeGiroSammelabrechnung07()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(12L));
+        assertThat(countBuySell(results), is(12L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(24));
+        new AssertImportActions().check(results, "EUR");
+
+        // AES CORP., THE
+        assertThat(results, hasItem(security( //
+                        hasIsin("US00130H1059"), hasWkn("882177"), hasTicker(null), //
+                        hasName("AES CORP., THE"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US00130H1059")), //
+                        hasDate("2026-01-02T15:30"), hasShares(120.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682588850"), //
+                        hasAmount("EUR", 1460.05), hasGrossValue("EUR", 1476.00), //
+                        hasTaxes("EUR", 9.31), hasFees("EUR", 5.90 + 0.74))));
+
+        // AURINIA PHARMACEUTICALS I (includes negative taxes - unsupported)
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA05156V1022"), hasWkn("A1W7D4"), hasTicker(null), //
+                        hasName("AURINIA PHARMACEUTICALS I"), //
+                        hasCurrencyCode("EUR"))));
+
+        // Nr.329633182/1 Verkauf AURINIA
+        // PHARMACEUTICALS I (CA05156V1022/A1W7D4)
+        // Ordervolumen : 105,00 St. Handelsplatz : Société Générale
+        // davon ausgef. : 105,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
+        // Kurs : 13,4600 EUR Kurswert : 1.413,30 EUR
+        // Devisenkurs : Provision : 5,90 EUR
+        // Bew-Faktor : 1,0000 Eigene Spesen :
+        // Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
+        // Lagerstelle : Clearstream Lux.
+        // Lagerland : Canada ** Einbeh. Steuer : -9,31 EUR
+        // Gewinn/Verlust : -47,78 EUR
+        // Valuta : 06.01.2026 Endbetrag : 1.414,31 EUR
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("CA05156V1022")), //
+                        hasDate("2026-01-02T15:30"), hasShares(105.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682592903"), //
+                        hasAmount("EUR", 1414.31), hasGrossValue("EUR", 1422.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // BROADCOM INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US11135F1012"), hasWkn("A2JG9Z"), hasTicker(null), //
+                        hasName("BROADCOM INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US11135F1012")), //
+                        hasDate("2026-01-02T15:30"), hasShares(5.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682595695"), //
+                        hasAmount("EUR", 1500.11), hasGrossValue("EUR", 1506.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // CARETRUST REIT INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US14174T1079"), hasWkn("A11398"), hasTicker(null), //
+                        hasName("CARETRUST REIT INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US14174T1079")), //
+                        hasDate("2026-01-02T15:32"), hasShares(45.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682601474"), //
+                        hasAmount("EUR", 1368.70), hasGrossValue("EUR", 1377.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // ELI LILLY AND COMPANY (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5324571083"), hasWkn("858560"), hasTicker(null), //
+                        hasName("ELI LILLY AND COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US5324571083")), //
+                        hasDate("2026-01-02T15:32"), hasShares(2.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682602407"), //
+                        hasAmount("EUR", 1801.36), hasGrossValue("EUR", 1808.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // VIATRIS INC.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92556V1061"), hasWkn("A2QAME"), hasTicker(null), //
+                        hasName("VIATRIS INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US92556V1061")), //
+                        hasDate("2026-01-02T15:32"), hasShares(160.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682603713"), //
+                        hasAmount("EUR", 1649.87), hasGrossValue("EUR", 1689.60), //
+                        hasTaxes("EUR", 33.09), hasFees("EUR", 5.90 + 0.74))));
+
+        // SOTERA HEALTH COMPANY
+        assertThat(results, hasItem(security( //
+                        hasIsin("US83601L1026"), hasWkn("A2QHA5"), hasTicker(null), //
+                        hasName("SOTERA HEALTH COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US83601L1026")), //
+                        hasDate("2026-01-02T15:34"), hasShares(95.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682606959"), //
+                        hasAmount("EUR", 1450.88), hasGrossValue("EUR", 1442.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // ENOVA INTERNATIONAL
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29357K1034"), hasWkn("A12D51"), hasTicker(null), //
+                        hasName("ENOVA INTERNATIONAL INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US29357K1034")), //
+                        hasDate("2026-01-02T15:34"), hasShares(10.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682608626"), //
+                        hasAmount("EUR", 1388.30), hasGrossValue("EUR", 1380.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // NU HOLDINGS LTD. A
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG6683N1034"), hasWkn("A3C82G"), hasTicker(null), //
+                        hasName("NU HOLDINGS LTD. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("KYG6683N1034")), //
+                        hasDate("2026-01-02T15:35"), hasShares(100.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682610434"), //
+                        hasAmount("EUR", 1433.90), hasGrossValue("EUR", 1425.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // FORD MOTOR CO. (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
+                        hasName("FORD MOTOR CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US3453708600")), //
+                        hasDate("2026-01-02T15:35"), hasShares(130.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682612776"), //
+                        hasAmount("EUR", 1460.82), hasGrossValue("EUR", 1454.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // HALLIBURTON CO.
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4062161017"), hasWkn("853986"), hasTicker(null), //
+                        hasName("HALLIBURTON CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("US4062161017")), //
+                        hasDate("2026-01-02T15:35"), hasShares(60.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682613610"), //
+                        hasAmount("EUR", 1455.64), hasGrossValue("EUR", 1449.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
+
+        // FORD MOTOR CO. (includes page break)
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0038705702"), hasWkn("889328"), hasTicker(null), //
+                        hasName("MILLICOM INTL CELLULAR S."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("LU0038705702")), //
+                        hasDate("2026-01-02T15:36"), hasShares(30.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682615368"), //
+                        hasAmount("EUR", 1454.30), hasGrossValue("EUR", 1446.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+    }
 
     @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
