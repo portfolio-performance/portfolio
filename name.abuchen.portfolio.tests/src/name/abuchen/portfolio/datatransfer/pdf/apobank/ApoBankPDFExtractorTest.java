@@ -63,7 +63,7 @@ public class ApoBankPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00BGPP6473"), hasWkn("A2PDTT"), hasTicker(null), //
-                        hasName("iShs VII-$ Trsy Bd 3-7yr U.ETF Registered Shs EUR DIS.Hgd"), //
+                        hasName("iShs VII-$ Trsy Bd 3-7yr U.ETF Registered Shs EUR DIS.Hgd o.N"), //
                         hasCurrencyCode("EUR"))));
 
         // assert transaction

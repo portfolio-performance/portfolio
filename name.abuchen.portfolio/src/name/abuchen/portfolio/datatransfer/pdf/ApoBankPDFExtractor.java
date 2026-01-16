@@ -7,8 +7,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class ApoBankPDFExtractor extends AbstractPDFExtractor
@@ -60,8 +58,9 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         // Nominal/Stück 0,707 ST
                         // Währung EUR
                         // @formatter:on
-                        .section("name", "isin", "wkn", "currency") //
+                        .section("name", "nameContinued", "isin", "wkn", "currency") //
                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                        .match("^(?<nameContinued>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
                         .match("^Währung (?<currency>[A-Z]{3})$") //
@@ -82,31 +81,43 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
-                        // Bruttobetrag EUR 0,06
+                        // Ausmachender Betrag EUR 0,04
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Bruttobetrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^Ausmachender Betrag (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+        // @formatter:off
                         // Kapitalertragsteuer EUR -0,02
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Kapitalertragsteuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
                         // Solidaritätszuschlag EUR 0,00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Solidarit.tszuschlag (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
                         // Kirchensteuer EUR 0,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            var tax = Money.of(v.get("currency"), asAmount(v.get("tax")));
-
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
-                        })
-
-                        .wrap(TransactionItem::new);
-
+                        .match("^Kirchensteuer (?<currency>[A-Z]{3}) (\\-)?(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private void addBuySellTransaction()
