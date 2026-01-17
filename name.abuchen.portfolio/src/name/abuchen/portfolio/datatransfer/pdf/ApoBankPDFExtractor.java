@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -7,6 +9,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class ApoBankPDFExtractor extends AbstractPDFExtractor
@@ -179,16 +182,33 @@ public class ApoBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
-                        // Ausmachender Betrag: EUR -847,44
+                        // Gutschrift - EUR Privatkonto 3476831 EUR 5,63
+                        // Belastung - EUR apoVV SMART Konto 76161273 EUR -847,44
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ausmachender Betrag: (?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.,\\d]+)$") //
+                        .match("^(Gutschrift|Belastung) \\- .*(?<currency>[A-Z]{3}) (\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap(BuySellEntryItem::new);
+                        // @formatter:off
+                        // Devisenkurs: EUR/USD 1,18205
+                        // Gutschrift - EUR Privatkonto 3476831 EUR 5,63
+                        // @formatter:on
+                        .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
+                        .match("^Devisenkurs: (?<baseCurrency>[A-Z]{3})\\/(?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Gutschrift \\- .* [A-Z]{3} (?<gross>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
 
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .wrap(BuySellEntryItem::new);
     }
 }
