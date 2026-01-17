@@ -1412,4 +1412,27 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2025-07-04"), hasAmount("EUR", 1300.00), //
                         hasSource("AccountStatement01.txt"), hasNote("Direct debit"))));
     }
+
+    @Test
+    public void testSteuererstattung01()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuererstattung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2026-01-10"), hasAmount("EUR", 3.65), //
+                        hasSource("Steuererstattung01.txt"), hasNote(null))));
+    }
 }

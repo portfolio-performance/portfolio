@@ -29,6 +29,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addInterestTransaction();
         addAccountStatementTransaction();
+        addTaxAdjustmentTransaction();
     }
 
     @Override
@@ -504,6 +505,45 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         }));
+    }
+
+    private void addTaxAdjustmentTransaction()
+    {
+        final var type = new DocumentType("Steuerneuberechnung");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block();
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // 96023 TNVf Datum 10.01.2026
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Gutschrift 3,65 EUR 
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Gutschrift (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})\\s?$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
