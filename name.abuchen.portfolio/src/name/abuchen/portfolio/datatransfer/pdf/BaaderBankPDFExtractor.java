@@ -1186,9 +1186,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             if ("-".equals(v.get("sign")))
-                            {
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            }
                         })
 
                         .optionalOneOf( //
