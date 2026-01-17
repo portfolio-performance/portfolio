@@ -1179,12 +1179,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Calculation of Interest: Amount in EUR
                         // Total Amount: 112.45
                         // @formatter:on
-                        .section("currency", "amount") //
+                        .section("currency", "amount", "sign") //
                         .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
-                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+)$") //
+                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+) *(?<sign>-?)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            if ("-".equals(v.get("sign")))
+                            {
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            }
                         })
 
                         .optionalOneOf( //
