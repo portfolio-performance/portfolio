@@ -145,9 +145,9 @@ public class Trade implements Adaptable
         calculateIRR(converter);
 
         this.entryValueMovingAverage = new LazyValue<>(
-                        () -> getMovingAverageCost(converter, TaxesAndFees.INCLUDED));
+                        () -> getMovingAverageCost(converter, TaxesAndFees.INCLUDED, isLong));
         this.entryValueMovingAverageWithoutTaxesAndFees = new LazyValue<>(
-                        () -> getMovingAverageCost(converter, TaxesAndFees.NOT_INCLUDED));
+                        () -> getMovingAverageCost(converter, TaxesAndFees.NOT_INCLUDED, isLong));
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -332,7 +332,10 @@ public class Trade implements Adaptable
 
     public Money getProfitLossMovingAverage()
     {
-        return exitValue.subtract(entryValueMovingAverage.get());
+        if (isLong())
+            return exitValue.subtract(entryValueMovingAverage.get());
+        else
+            return entryValueMovingAverage.get().subtract(exitValue);
     }
 
     public Money getProfitLossWithoutTaxesAndFees()
@@ -345,7 +348,10 @@ public class Trade implements Adaptable
 
     public Money getProfitLossMovingAverageWithoutTaxesAndFees()
     {
-        return exitValueWithoutTaxesAndFees.subtract(entryValueMovingAverageWithoutTaxesAndFees.get());
+        if (isLong())
+            return exitValueWithoutTaxesAndFees.subtract(entryValueMovingAverageWithoutTaxesAndFees.get());
+        else
+            return entryValueMovingAverageWithoutTaxesAndFees.get().subtract(exitValueWithoutTaxesAndFees);
     }
 
     public long getHoldingPeriod()
@@ -368,7 +374,11 @@ public class Trade implements Adaptable
 
     public double getReturnMovingAverage()
     {
-        return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+        if (isLong())
+            return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+        else
+            return 1 - (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount());
+
     }
 
     /**
@@ -414,7 +424,7 @@ public class Trade implements Adaptable
                         shares, start, entryValue, end, exitValue);
     }
 
-    private Money getMovingAverageCost(CurrencyConverter converter, TaxesAndFees taxesAndFees)
+    private Money getMovingAverageCost(CurrencyConverter converter, TaxesAndFees taxesAndFees, boolean isLong)
     {
         var holdShares = 0d;
         var amount = 0L;
@@ -423,7 +433,7 @@ public class Trade implements Adaptable
         for (TransactionPair<PortfolioTransaction> t : transactionsMovingAverage)
         {
             PortfolioTransaction tx = t.getTransaction();
-            if (tx.getType().isPurchase())
+            if (tx.getType().isPurchase() == isLong)
             {
                 holdShares += tx.getShares();
                 amount += taxesAndFees == TaxesAndFees.INCLUDED
