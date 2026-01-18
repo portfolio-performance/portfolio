@@ -482,6 +482,17 @@ public class Messages extends NLS
     public static String HintSubscription;
     public static String HoldingsWarningAssetsWithNegativeValuation;
     public static String HoldingsWarningAssetsWithNegativeValuationDetails;
+    public static String IBFlexConfigureCredentials;
+    public static String IBFlexDeleteConfiguration;
+    public static String IBFlexDeleteConfigurationConfirm;
+    public static String IBFlexDocumentationLink;
+    public static String IBFlexFetching;
+    public static String IBFlexFieldRequired;
+    public static String IBFlexQueryId;
+    public static String IBFlexSecurityHint;
+    public static String IBFlexToken;
+    public static String IBFlexTokenExpired;
+    public static String IBFlexNoItemsExtracted;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
