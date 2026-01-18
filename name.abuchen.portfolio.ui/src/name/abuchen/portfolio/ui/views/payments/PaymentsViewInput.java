@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel.Mode;
 
@@ -17,6 +18,8 @@ public class PaymentsViewInput
     private static final String KEY_USE_GROSS_VALUE = PaymentsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
     private static final String KEY_USE_CONSOLIDATE_RETIRED = PaymentsView.class.getSimpleName()
                     + "-use-consolidate-retired"; //$NON-NLS-1$
+    private static final String KEY_COST_METHOD = PaymentsView.class.getSimpleName() + "-cost-method"; //$NON-NLS-1$
+
     // for legacy reasons, the key is stored with the name PaymentsViewModel
     private static final String KEY_USED_FILTER = PaymentsViewModel.class.getSimpleName();
 
@@ -35,9 +38,10 @@ public class PaymentsViewInput
     private PaymentsViewModel.Mode mode;
     private boolean useGrossValue;
     private boolean useConsolidateRetired;
+    private CostMethod costMethod;
 
     public PaymentsViewInput(int tab, int year, Optional<String> clientFilterId, Mode mode, boolean useGrossValue,
-                    boolean useConsolidateRetired)
+                    boolean useConsolidateRetired, CostMethod costMethod)
     {
         this.tab = tab;
         this.year = year;
@@ -45,6 +49,7 @@ public class PaymentsViewInput
         this.mode = mode;
         this.useGrossValue = useGrossValue;
         this.useConsolidateRetired = useConsolidateRetired;
+        this.costMethod = costMethod;
     }
 
     public int getTab()
@@ -107,6 +112,16 @@ public class PaymentsViewInput
         this.useConsolidateRetired = useConsolidateRetired;
     }
 
+    public CostMethod getCostMethod()
+    {
+        return costMethod;
+    }
+
+    public void setCostMethod(CostMethod costMethod)
+    {
+        this.costMethod = costMethod;
+    }
+
     public static PaymentsViewInput fromPreferences(IPreferenceStore preferences, Client client)
     {
         int tab = preferences.getInt(KEY_TAB);
@@ -136,7 +151,21 @@ public class PaymentsViewInput
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
         boolean useConsolidateRetired = preferences.getBoolean(KEY_USE_CONSOLIDATE_RETIRED);
 
-        return new PaymentsViewInput(tab, year, clientFilterId, mode, useGrossValue, useConsolidateRetired);
+        prefMode = preferences.getString(KEY_COST_METHOD);
+        var costMethod = CostMethod.FIFO;
+        if (prefMode != null && !prefMode.isEmpty())
+        {
+            try
+            {
+                costMethod = CostMethod.valueOf(prefMode);
+            }
+            catch (Exception ignore)
+            { // use default cost method : FIFO
+            }
+        }
+
+        return new PaymentsViewInput(tab, year, clientFilterId, mode, useGrossValue, useConsolidateRetired,
+                        costMethod);
     }
 
     public void writeToPreferences(IPreferenceStore preferences, Client client)
@@ -146,6 +175,7 @@ public class PaymentsViewInput
         preferences.setValue(KEY_MODE, mode.name());
         preferences.setValue(KEY_USE_GROSS_VALUE, useGrossValue);
         preferences.setValue(KEY_USE_CONSOLIDATE_RETIRED, useConsolidateRetired);
+        preferences.setValue(KEY_COST_METHOD, costMethod.name());
 
         ClientFilterMenu.saveSelectedFilter(client, KEY_USED_FILTER, clientFilterId.orElse("")); //$NON-NLS-1$
     }

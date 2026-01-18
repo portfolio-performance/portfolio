@@ -655,6 +655,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCostMethod;
     public static String LabelCountry;
     public static String LabelCreateAccountFirst;
     public static String LabelCrosshair;
