@@ -48,7 +48,7 @@ public class QuoteFromTransactionExtractor
 
         boolean bChanges = false;
         SecurityPrice pLatest = null;
-        // walk through all all transactions for security
+        // walk through all transactions for security
         for (TransactionPair<?> p : security.getTransactions(client))
         {
             Transaction t = p.getTransaction();
