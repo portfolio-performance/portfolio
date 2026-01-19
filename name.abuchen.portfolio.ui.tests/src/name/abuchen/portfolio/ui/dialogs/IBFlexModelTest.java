@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.time.LocalDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,11 +68,13 @@ public class IBFlexModelTest
     {
         client.setProperty("ibflex-token", "mytoken");
         client.setProperty("ibflex-query-id", "12345");
+        IBFlexModel.setLastImportDate(client, LocalDateTime.of(2024, 1, 15, 10, 30));
 
         IBFlexModel.clearConfiguration(client);
 
         assertThat(IBFlexModel.getToken(client), is(nullValue()));
         assertThat(IBFlexModel.getQueryId(client), is(nullValue()));
+        assertThat(IBFlexModel.getLastImportDate(client), is(nullValue()));
     }
 
     @Test
@@ -91,5 +95,31 @@ public class IBFlexModelTest
         client.setProperty("ibflex-query-id", "");
 
         assertThat(IBFlexModel.hasConfiguration(client), is(false));
+    }
+
+    @Test
+    public void testGetLastImportDateReturnsNullWhenNotSet()
+    {
+        assertThat(IBFlexModel.getLastImportDate(client), is(nullValue()));
+    }
+
+    @Test
+    public void testSetAndGetLastImportDate()
+    {
+        LocalDateTime date = LocalDateTime.of(2024, 6, 15, 14, 30, 45);
+
+        IBFlexModel.setLastImportDate(client, date);
+
+        assertThat(IBFlexModel.getLastImportDate(client), is(date));
+    }
+
+    @Test
+    public void testSetLastImportDateToNullRemovesProperty()
+    {
+        IBFlexModel.setLastImportDate(client, LocalDateTime.of(2024, 1, 1, 0, 0));
+
+        IBFlexModel.setLastImportDate(client, null);
+
+        assertThat(IBFlexModel.getLastImportDate(client), is(nullValue()));
     }
 }
