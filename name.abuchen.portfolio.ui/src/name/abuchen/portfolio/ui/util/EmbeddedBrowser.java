@@ -122,6 +122,16 @@ public class EmbeddedBrowser
         browser.setText(loadHTML(htmlpage));
     }
 
+    /**
+     * Executes a JavaScript script in the browser context.
+     *
+     * @return true if the script was executed successfully
+     */
+    public boolean execute(String script)
+    {
+        return browser.execute(script);
+    }
+
     private String loadHTML(String htmlpage)
     {
         Scanner scanner = null;
