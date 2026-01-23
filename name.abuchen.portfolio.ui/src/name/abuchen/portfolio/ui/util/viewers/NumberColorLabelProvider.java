@@ -7,8 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 public final class NumberColorLabelProvider<N extends Number> extends ColumnLabelProvider
 {
@@ -35,7 +34,8 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
+        return value.doubleValue() >= 0 ? ValueColorScheme.current().positiveForeground()
+                        : ValueColorScheme.current().negativeForeground();
     }
 
     @Override
@@ -45,7 +45,8 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        return value.doubleValue() >= 0 ? ValueColorScheme.current().upArrow()
+                        : ValueColorScheme.current().downArrow();
     }
 
     @Override

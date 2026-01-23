@@ -78,7 +78,7 @@ public class TradesWidget extends AbstractTradesWidget
 
         List<Trade> trades = input.getTrades();
         long positive = trades.stream().filter(t -> t.getProfitLoss().isPositive()).count();
-        String text = MessageFormat.format("{0} <green>↑{1}</green> <red>↓{2}</red>", //$NON-NLS-1$
+        String text = MessageFormat.format("{0} <positive>↑{1}</positive> <negative>↓{2}</negative>", //$NON-NLS-1$
                         trades.size(), positive, trades.size() - positive);
 
         this.indicator.setText(text);

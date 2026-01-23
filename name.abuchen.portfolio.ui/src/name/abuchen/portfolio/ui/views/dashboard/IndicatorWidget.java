@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Composite;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
@@ -178,7 +178,8 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
 
         if (isValueColored)
         {
-            indicator.setTextColor(isNegative ? Colors.theme().redForeground() : Colors.theme().greenForeground());
+            indicator.setTextColor(isNegative ? ValueColorScheme.current().negativeForeground()
+                            : ValueColorScheme.current().positiveForeground());
         }
 
     }

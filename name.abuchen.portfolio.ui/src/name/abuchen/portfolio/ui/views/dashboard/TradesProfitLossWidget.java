@@ -35,7 +35,7 @@ public class TradesProfitLossWidget extends AbstractTradesWidget
                         .collect(MoneyCollectors.sum(getDashboardData().getCurrencyConverter().getTermCurrency()));
 
         this.indicator.setText(
-                        MessageFormat.format(profitLoss.isNegative() ? "<red>{0}</red>" : "<green>{0}</green>", //$NON-NLS-1$ //$NON-NLS-2$
+                        MessageFormat.format(profitLoss.isNegative() ? "<negative>{0}</negative>" : "<positive>{0}</positive>", //$NON-NLS-1$ //$NON-NLS-2$
                                         Values.Money.format(profitLoss, getClient().getBaseCurrency())));
     }
 }

@@ -34,9 +34,9 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
@@ -374,14 +374,15 @@ public class TransactionsTab implements PaymentsTab
         TransactionPair<?> tx = (TransactionPair<?>) element;
         if (tx.getTransaction() instanceof AccountTransaction)
         {
-            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit()
+                            ? ValueColorScheme.current().positiveForeground()
+                            : ValueColorScheme.current().negativeForeground();
         }
         else
         {
             return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
-                            ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+                            ? ValueColorScheme.current().positiveForeground()
+                            : ValueColorScheme.current().negativeForeground();
         }
     }
 }

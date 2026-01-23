@@ -73,6 +73,7 @@ import name.abuchen.portfolio.ui.jobs.priceupdate.UpdatePricesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -1185,9 +1186,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() < 0)
-                return Colors.theme().redForeground();
+                return ValueColorScheme.current().negativeForeground();
             else if (value.doubleValue() > 0)
-                return Colors.theme().greenForeground();
+                return ValueColorScheme.current().positiveForeground();
             else
                 return null;
         }
@@ -1272,9 +1273,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() > 0)
-                return Images.GREEN_ARROW.image();
+                return ValueColorScheme.current().upArrow();
             if (value.doubleValue() < 0)
-                return Images.RED_ARROW.image();
+                return ValueColorScheme.current().downArrow();
             return null;
         }
     }

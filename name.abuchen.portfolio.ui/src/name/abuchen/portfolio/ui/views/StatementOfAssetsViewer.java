@@ -80,7 +80,6 @@ import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
@@ -91,9 +90,9 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.CacheKey;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -1622,9 +1621,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue < 0)
-                return Colors.theme().redForeground();
+                return ValueColorScheme.current().negativeForeground();
             else if (doubleValue > 0)
-                return Colors.theme().greenForeground();
+                return ValueColorScheme.current().positiveForeground();
             else
                 return null;
         }
@@ -1648,9 +1647,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue > 0)
-                return Images.GREEN_ARROW.image();
+                return ValueColorScheme.current().upArrow();
             if (doubleValue < 0)
-                return Images.RED_ARROW.image();
+                return ValueColorScheme.current().downArrow();
             return null;
         }
 

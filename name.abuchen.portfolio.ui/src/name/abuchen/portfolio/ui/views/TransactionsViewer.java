@@ -43,6 +43,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -99,9 +100,11 @@ public final class TransactionsViewer implements ModificationListener
             Transaction tx = ((TransactionPair<?>) element).getTransaction();
 
             if (tx instanceof PortfolioTransaction t)
-                return t.getType().isLiquidation() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+                return t.getType().isLiquidation() ? ValueColorScheme.current().negativeForeground()
+                                : ValueColorScheme.current().positiveForeground();
             else if (tx instanceof AccountTransaction t)
-                return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+                return t.getType().isDebit() ? ValueColorScheme.current().negativeForeground()
+                                : ValueColorScheme.current().positiveForeground();
 
             throw new IllegalArgumentException("unsupported transaction type " + tx); //$NON-NLS-1$
         }
