@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -27,16 +28,19 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.theme.ThemePreferences;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 @SuppressWarnings("restriction")
@@ -63,6 +67,8 @@ public final class ThemePreferencePage extends PreferencePage
 
     private int currentFontSize = -1;
     private ComboViewer fontSizeCombo;
+
+    private List<Button> valueColorSchemeOptions = new ArrayList<>();
 
     public ThemePreferencePage(IThemeEngine themeEngine)
     {
@@ -153,6 +159,23 @@ public final class ThemePreferencePage extends PreferencePage
                 fontSizeDecorator.hide();
         });
 
+        // color value scheme selection
+
+        label = new Label(area, SWT.NONE);
+        label.setText("Color Value Scheme");
+        GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(label);
+
+        var selectedSchemaId = getPreferenceStore().getString(UIConstants.Preferences.VALUE_COLOR_SCHEME);
+        var schemes = ValueColorScheme.getAvailableSchemes();
+
+        for (var scheme : schemes)
+        {
+            var radioButton = createSchemeOption(area, scheme);
+            radioButton.setData(scheme);
+            radioButton.setSelection(Objects.equals(selectedSchemaId, scheme.getIdentifier()));
+            valueColorSchemeOptions.add(radioButton);
+        }
+
         return area;
     }
 
@@ -200,6 +223,15 @@ public final class ThemePreferencePage extends PreferencePage
                 writeFrontSizeToCSS(selectedFontSize);
         }
 
+        for (var button : valueColorSchemeOptions)
+        {
+            if (button.getSelection())
+            {
+                getPreferenceStore().setValue(UIConstants.Preferences.VALUE_COLOR_SCHEME,
+                                ((ValueColorScheme) button.getData()).getIdentifier());
+            }
+        }
+
         return super.performOk();
     }
 
@@ -211,6 +243,12 @@ public final class ThemePreferencePage extends PreferencePage
         themeIdCombo.setSelection(new StructuredSelection(AUTOMATIC_THEME));
 
         fontSizeCombo.setSelection(new StructuredSelection(-1));
+
+        for (var button : valueColorSchemeOptions)
+        {
+            var scheme = (ValueColorScheme) button.getData();
+            button.setSelection(ValueColorScheme.STANDARD_SCHEME.equals(scheme.getIdentifier()));
+        }
 
         super.performDefaults();
     }
@@ -279,5 +317,35 @@ public final class ThemePreferencePage extends PreferencePage
         {
             PortfolioPlugin.log(e);
         }
+    }
+
+    private Button createSchemeOption(Composite parent, ValueColorScheme scheme)
+    {
+        var radioButton = new Button(parent, SWT.RADIO);
+        radioButton.setText(scheme.getIdentifier());
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(radioButton);
+
+        // Color preview composite
+        var previewComposite = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(4).margins(20, 5).spacing(10, 5).applyTo(previewComposite);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(previewComposite);
+
+        // Positive
+        var positiveArrowLabel = new Label(previewComposite, SWT.NONE);
+        positiveArrowLabel.setImage(scheme.upArrow());
+
+        var positiveLabel = new Label(previewComposite, SWT.NONE);
+        positiveLabel.setText(Values.Amount.format(Values.Amount.factorize(1234.56)));
+        positiveLabel.setForeground(scheme.positiveForeground());
+
+        // Negative
+        var negativeArrowLabel = new Label(previewComposite, SWT.NONE);
+        negativeArrowLabel.setImage(scheme.downArrow());
+
+        var negativeLabel = new Label(previewComposite, SWT.NONE);
+        negativeLabel.setText(Values.Amount.format(Values.Amount.factorize(-1234.56)));
+        negativeLabel.setForeground(scheme.negativeForeground());
+
+        return radioButton;
     }
 }

@@ -9,6 +9,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.PresetValues;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 public class PreferencesInitializer extends AbstractPreferenceInitializer
 {
@@ -41,6 +42,9 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
         store.setDefault(UIConstants.Preferences.BACKUP_MODE, BackupMode.getDefault().name());
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE, ClientInput.DEFAULT_RELATIVE_BACKUP_FOLDER);
         store.setDefault(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, ""); //$NON-NLS-1$
+
+        // Value color scheme
+        store.setDefault(UIConstants.Preferences.VALUE_COLOR_SCHEME, ValueColorScheme.STANDARD_SCHEME);
     }
 
     public static int compareOSVersion(String version)

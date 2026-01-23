@@ -299,6 +299,11 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+        /**
+         * Preference key for value color scheme (green/red or blue/orange)
+         */
+        String VALUE_COLOR_SCHEME = "VALUE_COLOR_SCHEME"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR
