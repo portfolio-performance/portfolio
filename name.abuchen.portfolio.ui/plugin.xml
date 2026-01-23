@@ -169,6 +169,22 @@
                name="delta-area-negative-color">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.ValueColorSchemeElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.ValueColorSchemeCSSHandler">
+         <property-name
+               name="positive-foreground">
+         </property-name>
+         <property-name
+               name="negative-foreground">
+         </property-name>
+         <property-name
+               name="up-arrow">
+         </property-name>
+         <property-name
+               name="down-arrow">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -203,6 +219,9 @@
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.views.PortfolioBalanceChart">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.util.ValueColorScheme">
          </widget>
       </provider>
    </extension>
