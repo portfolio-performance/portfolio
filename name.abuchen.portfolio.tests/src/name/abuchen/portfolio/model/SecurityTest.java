@@ -137,8 +137,8 @@ public class SecurityTest
         List<SecurityPrice> prices2 = security.getPricesIncludingLatest();
 
         assertThat(prices2.size(), is(1));
-        assertThat(prices2.contains(historical), is(true));
-        assertThat(prices2.contains(latest), is(false));
+        assertThat(prices2.contains(historical), is(false)); // latest should replace historical
+        assertThat(prices2.contains(latest), is(true));
 
         // create latest with different date
         LatestSecurityPrice latest2 = new LatestSecurityPrice(LocalDate.parse("2020-02-28"), 150);
@@ -147,7 +147,7 @@ public class SecurityTest
         List<SecurityPrice> prices3 = security.getPricesIncludingLatest();
 
         assertThat(prices3.size(), is(2));
-        assertThat(prices2.contains(historical), is(true));
+        assertThat(prices3.contains(historical), is(true)); // historical price from 2019 should still be there
         assertThat(prices3.contains(latest2), is(true));
 
     }
