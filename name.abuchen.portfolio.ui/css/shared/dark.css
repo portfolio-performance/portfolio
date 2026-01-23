@@ -65,6 +65,20 @@ CustomColors {
 	hyperlink: #6FC5EE;
 }
 
+ValueColorScheme.standard {
+	positive-foreground: #02f500;
+	negative-foreground: #fe2b05;
+	up-arrow: "scheme/standard/dark/up_arrow.svg";
+	down-arrow: "scheme/standard/dark/down_arrow.svg";
+}
+
+ValueColorScheme.blueorange {
+	positive-foreground: #4DA6FF;
+	negative-foreground: #FFB366;
+	up-arrow: "scheme/blueorange/dark/up_arrow.svg";
+	down-arrow: "scheme/blueorange/dark/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #4ddaff;
 	quote-area-positive-color: #23b0d7;

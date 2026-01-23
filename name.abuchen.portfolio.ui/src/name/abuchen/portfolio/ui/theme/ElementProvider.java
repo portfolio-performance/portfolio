@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 
 import name.abuchen.portfolio.ui.editor.Sidebar;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
 
@@ -44,6 +45,8 @@ public class ElementProvider implements IElementProvider
             return new SecuritiesChartElementAdapter(securitiesChart, engine);
         if (element instanceof PortfolioBalanceChart portfolioBalanceChart)
             return new PortfolioBalanceChartElementAdapter(portfolioBalanceChart, engine);
+        if (element instanceof ValueColorScheme scheme)
+            return new ValueColorSchemeElementAdapter(scheme, engine);
 
         return null;
     }
