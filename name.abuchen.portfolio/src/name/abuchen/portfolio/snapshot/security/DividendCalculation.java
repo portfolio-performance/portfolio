@@ -258,6 +258,28 @@ import name.abuchen.portfolio.util.Dates;
         return sum.toMoney();
     }
 
+    /**
+     * Gets the sum of dividends within the specified date range (inclusive).
+     * 
+     * @param startDate
+     *            start date (inclusive)
+     * @param endDate
+     *            end date (inclusive)
+     * @return sum of dividends in the date range
+     */
+    public Money getSum(LocalDate startDate, LocalDate endDate)
+    {
+        MutableMoney result = MutableMoney.of(sum.getCurrencyCode());
+        for (Payment p : payments)
+        {
+            if (!p.date.isBefore(startDate) && !p.date.isAfter(endDate))
+            {
+                result.add(p.amount);
+            }
+        }
+        return result.toMoney();
+    }
+
     @Override
     public void setTermCurrency(String termCurrency)
     {

@@ -1110,7 +1110,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(
                         r -> Values.Money.format(r.getFifoCost().get(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
@@ -1127,7 +1126,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(
                         r -> Values.Money.format(r.getMovingAverageCost().get(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
@@ -1196,7 +1194,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
                         .format(r.getFifoCostPerSharesHeld().get(), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter
@@ -1209,7 +1206,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
                         .format(r.getMovingAverageCostPerSharesHeld().get(), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter
@@ -1224,7 +1220,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
                         .format(r.getGrossFifoCostPerSharesHeld().get(), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter
@@ -1237,7 +1232,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
                         .format(r.getGrossMovingAverageCostPerSharesHeld().get(), getClient().getBaseCurrency())));
         column.setSorter(ColumnViewerSorter.create(
@@ -1757,7 +1751,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
                         + Messages.DescriptionDataRelativeToReportingPeriod);
         column.setGroupLabel(Messages.LabelClientFilterMenu);
-        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new RowElementOptionLabelProvider(
                         r -> Values.Money.format(r.getFifoCost().get(), getClient().getBaseCurrency()),
                         aggregate -> Values.Money.format(
