@@ -56,12 +56,12 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -508,7 +508,8 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private Color colorFor(AccountTransaction t)
     {
-        return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+        return t.getType().isDebit() ? ValueColorScheme.current().negativeForeground()
+                        : ValueColorScheme.current().positiveForeground();
     }
 
     private void hookKeyListener()
