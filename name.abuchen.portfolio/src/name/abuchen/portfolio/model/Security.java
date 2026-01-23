@@ -397,10 +397,16 @@ public final class Security implements Attributable, InvestmentVehicle
 
         int index = Collections.binarySearch(copy, new SecurityPrice(latest.getDate(), latest.getValue()));
 
-        if (index >= 0) // historic quote exists -> use it
-            return copy;
+        // eigene Änderung
+        // if (index >= 0) // historic quote exists -> use it
+        // return copy;
+        //
+        // copy.add(~index, latest);
 
-        copy.add(~index, latest);
+        if (index >= 0) // historic quote exists -> replace it with latest
+            copy.set(index, latest);
+        else // historic quote does not exist -> add it
+            copy.add(~index, latest);
         return copy;
     }
 
