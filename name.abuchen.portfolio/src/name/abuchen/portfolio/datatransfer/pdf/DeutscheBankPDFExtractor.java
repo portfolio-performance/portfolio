@@ -100,10 +100,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         // ISIN US900123AY60 Kurs 100,06 %
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .attributes("name", "wkn", "isin", "currency", "percent") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
                                                         .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs .* %$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs .* (?<percent>%)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //

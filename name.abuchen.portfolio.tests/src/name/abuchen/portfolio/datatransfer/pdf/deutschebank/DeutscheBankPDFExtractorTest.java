@@ -16,6 +16,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.isPercentageQuoted;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
@@ -1031,7 +1032,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("US900123AY60"), hasWkn("A0GLU5"), hasTicker(null), //
                         hasName("6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36"), //
-                        hasCurrencyCode("USD"))));
+                        hasCurrencyCode("USD"), isPercentageQuoted(true))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
