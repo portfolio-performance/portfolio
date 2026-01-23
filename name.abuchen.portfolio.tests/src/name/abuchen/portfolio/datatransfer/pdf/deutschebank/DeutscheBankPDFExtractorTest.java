@@ -85,7 +85,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("US17275R1023"), hasWkn("878841"), hasTicker(null), //
                         hasName("CISCO SYSTEMS INC.REGISTERED SHARES DL-,001"), //
-                        hasCurrencyCode("USD"))));
+                        hasCurrencyCode("USD"), isPercentageQuoted(false))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -153,7 +153,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
                         hasName("BASF SE"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -190,6 +190,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHS-MSCI N. AMERIC.UCITS ETF BE.SH.(DT.ZT.)"));
         assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check dividends transaction
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
@@ -285,6 +286,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("ISHSII-CORE MSCI EUROPE U.ETF REG.SH.O.N."));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check dividends transaction
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
@@ -329,6 +331,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("DWS EUROPEAN OPPORTUNITIES INHABER-ANTEIL.LD"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check dividends transaction
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
@@ -374,6 +377,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VANGUARD FTSE EMU.ETF DLD FUNDS"));
         assertThat(security.getCurrencyCode(), is("USD"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check dividends transaction
         var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
@@ -418,7 +422,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0006501554"), hasWkn("650155"), hasTicker(null), //
                         hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR") /* impossible to tell from doc, isPercentageQuoted(true) */)));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -451,7 +455,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
                         hasName("COCA-COLA CO., THE REGISTERED SHARES DL -,25"), //
-                        hasCurrencyCode("USD"))));
+                        hasCurrencyCode("USD"), isPercentageQuoted(false))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -484,7 +488,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("CA0641491075"), hasWkn("850388"), hasTicker(null), //
                         hasName("BANK OF NOVA SCOTIA, THE RG.SH. O.N."), //
-                        hasCurrencyCode("CAD"))));
+                        hasCurrencyCode("CAD"), isPercentageQuoted(false))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -552,7 +556,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE000DWS0TS9"), hasWkn("DWS0TS"), hasTicker(null), //
                         hasName("FOS STRATEGIE-FONDS NR.1 INHABER-ANTEILE"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -622,7 +626,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("XS2722190795"), hasWkn("A3511H"), hasTicker(null), //
                         hasName("4% DEUTSCHE BAHN AG MTN.23 23.11. 43"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR") /* cannot tell from doc, isPercentageQuoted(true)*/)));
 
         // check dividends (here: interest) transaction
         assertThat(results, hasItem(dividend( //
@@ -655,7 +659,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
                         hasName("BASF SE"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -692,6 +696,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -741,6 +746,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -790,6 +796,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WORLD 1D FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -839,6 +846,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI WRLD QUAL.1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -888,6 +896,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("X(IE)-MSCI EM.MKTS 1CDL FUNDS 1/1"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -933,7 +942,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("LU0321464652"), hasWkn("DBX0A1"), hasTicker(null), //
                         hasName("XTRACKERS II GBP OVER.RATE SW.INH.ANT.1D ON 1/1"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -966,7 +975,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0008476524"), hasWkn("847652"), hasTicker(null), //
                         hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -999,7 +1008,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0008476524"), hasWkn("847652"), hasTicker(null), //
                         hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1065,7 +1074,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE000DB9WGP3"), hasWkn("DB9WGP"), hasTicker(null), //
                         hasName("3% KUENDB. DB FESTZ. 28/32 25.08.32"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(true))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1102,6 +1111,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1147,7 +1157,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
                         hasName("BASF SE"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -1184,6 +1194,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BASF SE"));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1233,6 +1244,7 @@ public class DeutscheBankPDFExtractorTest
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N."));
         assertThat(security.getCurrencyCode(), is("EUR"));
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1278,7 +1290,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn("847652"), hasTicker(null), //
                         hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1352,7 +1364,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn("847652"), hasTicker(null), //
                         hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD"), //
-                        hasCurrencyCode("EUR"))));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(false))));
         
         // check transaction
         assertThat(results, hasItem(purchase( //
