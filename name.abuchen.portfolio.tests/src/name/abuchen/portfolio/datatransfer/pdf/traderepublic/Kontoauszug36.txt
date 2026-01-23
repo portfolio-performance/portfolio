@@ -1,0 +1,59 @@
+```
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME NACHNAME DATUM 01 Nov. 2025 - 30 Nov. 2025
+Straße 1 IBAN DE00000000000000000000
+12345 Ort BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 6.235,94 € 5.073,79 € 2.413,07 € 8.235,94 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+21 
+Nov. Handel Buy trade XF000BTC0017 Bitcoin, quantity: 0.000801 58,36 € 6.177,58 €
+2025
+21 
+Crypto one percent bonus compensation for orderId: 0a000a0a-
+Nov. Belohnung 58,36 € 6.235,94 €
+a000-000a-a000-00a000a0a0a0
+2025
+26 
+Crypto one percent bonus compensation for orderId: 
+Nov. Belohnung 93,99 € 6.329.93 €
+0a00000a-a000-000a-a000-00a000a0a0a0
+2025
+26 
+Nov. Handel Buy trade XF000BTC0017 Bitcoin, quantity: 0.001206 93,98 € 6.235,94 €
+2025
+28 
+Incoming transfer from Vorname Nachname 
+Nov. Überweisung 2.000,00 € 8.235,94 €
+(DE00000000000000000000)
+2025
+BARMITTELÜBERSICHT
+Zum 30 Nov. 2025
+TREUHANDKONTEN SALDO
+Deutsche Bank 8.235,94 €
+GELDMARKTFONDS ISIN STK. / NOMINALE KURS PRO STÜCK KURSWERT IN EUR
+BlackRock ICS Euro Liquidity Fund IE000GWTNRJ7 0,00 1,00 € 0,00 €
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe Deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der 
+angegebene Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. 
+Nennbetrag also nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als 
+genehmigt, sofern Du innerhalb von 6 Wochen keine Einwendungen erhebst. Zur Fristwahrung genügt die Einreichung einer Einwendung 
+über unseren Kundenservice (Chat). Alle Chats sind Gegenstand unabhängiger Überprüfungen durch den Bereich Internal Audit. Dieser 
+Kontoauszug gilt im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG. 
+Die Guthaben, die bei Treuhandbanken verwahrt werden, sind jeweils bis zu €100.000 von der Einlagensicherung der Treuhandbank 
+gesichert. Die Anteile an qualifizierten Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic 
+geschützt. Weitere Informationen zur Sicherung Deiner Gelder findest Du unter https://support.traderepublic.com.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Vorname Hecker
+Thomas Pischke
+Erstellt am 01.12.2025, 18:07:55 Seite 5 von 5
+
+```

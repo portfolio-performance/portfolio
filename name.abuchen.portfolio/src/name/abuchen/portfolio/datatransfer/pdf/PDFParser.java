@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -33,6 +34,14 @@ import name.abuchen.portfolio.model.TypedMap;
 
 /* package */ final class PDFParser
 {
+    /**
+     * This class handles the parsing of the individual types of documents as
+     * issued by a particular bank.
+     * <p>
+     * Keyword patterns for positive and negative matches will be provided
+     * through the constructors. Blocks of data to be parsed can be defined via
+     * calls to {@link #addBlock(Block) addBlock}.
+     */
     /* package */ static class DocumentType
     {
         private List<Pattern> mustInclude = new ArrayList<>();
@@ -184,24 +193,123 @@ import name.abuchen.portfolio.model.TypedMap;
         }
     }
 
-    /* package */static class Block
+    /**
+     * Represents a continuous section of lines within a document, defined by
+     * inclusive start and end line numbers.
+     */
+    /* package */ record LineSpan(int startLineNo, int endLineNo)
+    {
+    }
+
+    /**
+     * Defines how a document's lines are split into blocks. The default
+     * implementation uses regex patterns to identify block boundaries.
+     */
+    @FunctionalInterface
+    /* package */interface SplittingStrategy
+    {
+        List<LineSpan> split(String[] lines);
+    }
+
+    private static class PatternSplittingStrategy implements SplittingStrategy
     {
         private Pattern startsWith;
         private Pattern endsWith;
+
+        public PatternSplittingStrategy(String startsWith, String endsWith)
+        {
+            this.startsWith = Pattern.compile(Objects.requireNonNull(startsWith));
+
+            if (endsWith != null)
+                this.endsWith = Pattern.compile(endsWith);
+        }
+
+        @Override
+        public List<LineSpan> split(String[] lines)
+        {
+            // first: find the start of the blocks
+            var blockStarts = new ArrayList<Integer>();
+
+            for (int ii = 0; ii < lines.length; ii++)
+            {
+                Matcher matcher = startsWith.matcher(lines[ii]);
+                if (matcher.matches())
+                    blockStarts.add(ii);
+            }
+
+            // second: convert to line spans including using the end block
+            // pattern
+            var spans = new ArrayList<LineSpan>();
+            for (int ii = 0; ii < blockStarts.size(); ii++)
+            {
+                int startLine = blockStarts.get(ii);
+                int endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
+
+                // if an "endsWith" pattern exists, check if the block might end
+                // earlier
+
+                if (endsWith != null)
+                {
+                    endLine = findBlockEnd(lines, startLine, endLine);
+                    if (endLine == -1)
+                        continue;
+                    spans.add(new LineSpan(startLine, endLine));
+                }
+                else
+                {
+                    spans.add(new LineSpan(startLine, endLine));
+                }
+            }
+
+            return spans;
+        }
+
+        private int findBlockEnd(String[] lines, int startLine, int endLine)
+        {
+            for (int lineNo = startLine; lineNo <= endLine; lineNo++)
+            {
+                Matcher matcher = endsWith.matcher(lines[lineNo]);
+                if (matcher.matches())
+                    return lineNo;
+            }
+
+            return -1;
+        }
+    }
+
+    /**
+     * A Block defines a possibly-repeated region containing Sections of
+     * information to be parsed. The start of a Block will be denoted through a
+     * regular expression. The parser will search for occurrences of the Block
+     * line-by-line until the end of the document is reached.
+     */
+    /* package */static class Block
+    {
+        private final SplittingStrategy strategy;
         private int maxSize = -1;
         private Transaction<?> transaction;
 
+        /**
+         * Creates a block that represents the whole file.
+         */
+        public Block()
+        {
+            this(lines -> List.of(new LineSpan(0, lines.length - 1)));
+        }
+
         public Block(String startsWith)
         {
-            this(startsWith, null);
+            this(Objects.requireNonNull(startsWith), null);
         }
 
         public Block(String startsWith, String endsWith)
         {
-            this.startsWith = Pattern.compile(startsWith);
+            this(new PatternSplittingStrategy(startsWith, endsWith));
+        }
 
-            if (endsWith != null)
-                this.endsWith = Pattern.compile(endsWith);
+        public Block(SplittingStrategy strategy)
+        {
+            this.strategy = strategy;
         }
 
         /**
@@ -244,29 +352,12 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public void parse(String filename, DocumentContext documentContext, List<Item> items, String[] lines)
         {
-            List<Integer> blocks = new ArrayList<>();
+            List<LineSpan> blocks = strategy.split(lines);
 
-            for (int ii = 0; ii < lines.length; ii++)
+            for (var block : blocks)
             {
-                Matcher matcher = startsWith.matcher(lines[ii]);
-                if (matcher.matches())
-                    blocks.add(ii);
-            }
-
-            for (int ii = 0; ii < blocks.size(); ii++)
-            {
-                int startLine = blocks.get(ii);
-                int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
-
-                // if an "endsWith" pattern exists, check if the block might end
-                // earlier
-
-                if (endsWith != null)
-                {
-                    endLine = findBlockEnd(lines, startLine, endLine);
-                    if (endLine == -1)
-                        continue;
-                }
+                var startLine = block.startLineNo();
+                var endLine = block.endLineNo();
 
                 if (maxSize >= 0)
                 {
@@ -277,18 +368,6 @@ import name.abuchen.portfolio.model.TypedMap;
 
                 transaction.parse(filename, documentContext, items, lines, startLine, endLine);
             }
-        }
-
-        private int findBlockEnd(String[] lines, int startLine, int endLine)
-        {
-            for (int lineNo = startLine; lineNo <= endLine; lineNo++)
-            {
-                Matcher matcher = endsWith.matcher(lines[lineNo]);
-                if (matcher.matches())
-                    return lineNo;
-            }
-
-            return -1;
         }
     }
 
@@ -696,7 +775,8 @@ import name.abuchen.portfolio.model.TypedMap;
                             }
                         }
 
-                        // enrich extracted values with context values (Optionally)
+                        // enrich extracted values with context values
+                        // (Optionally)
                         if (documentAttributesOptionally != null)
                         {
                             for (String attribute : documentAttributesOptionally)

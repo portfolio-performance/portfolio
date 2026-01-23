@@ -1,0 +1,56 @@
+﻿PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital 
+Vermögensverwaltung GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Scalable Capital Vermögensverw.GmbH Seite 1/1
+München
+Seitzstr. 8 e 01.10.2021
+80538 München
+PrY HZaabwt
+Stamm-Nr.: 3374602    Portfolio: 1
+Konto-Nr.: 8605553655
+IBAN: Nb54 3491 9895 2952 7080 20
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: 45609568
+Referenz-Nr.: 577436051
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 806060
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 31.08.2021 1,00
+06.09.2021 Gutschrift 06.09.2021 2.200,00
+ott eEVyIfz
+Nb54349198952952708020
+BCGkuFo5114
+ETF-Sparen
+Vorgangs-Nr.: 220424894
+07.09.2021 Kauf 09.09.2021 432,57 -
+ISHSIV-SUS.M.EM.MK.SRI DL
+ISIN IE00BYVJRP78
+STK              57
+Vorgangs-Nr.: WWUM 54066861
+07.09.2021 Kauf 09.09.2021 1.314,57 -
+ISHSIV-MSCI WLD.SRI U.EOA
+ISIN IE00BYX2JD69
+STK             145
+Vorgangs-Nr.: WWUM 54067668
+07.09.2021 Kauf 09.09.2021 440,65 -
+ISHSII-MSCI EUR.SRI EOACC
+ISIN IE00B52VJ196
+STK               7
+Vorgangs-Nr.: WWUM 54068840
+Kontostand in EUR am 30.09.2021 13,21
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht München
+USt-IdNr. DE300434774 | www.scalable.capital
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft.
+KKTKK801-040.038

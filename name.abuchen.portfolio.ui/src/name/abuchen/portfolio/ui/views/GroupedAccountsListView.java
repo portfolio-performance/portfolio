@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -72,6 +71,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -87,8 +87,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     private static final String EXPANSION_STATE = GroupedAccountsListView.class.getSimpleName()
                     + "-EXPANSION-DEFINITION"; //$NON-NLS-1$
 
-    @Inject
-    private ExchangeRateProviderFactory factory;
+    private CurrencyConverter converter;
 
     private TreeViewer groupedAccounts;
     private ConfigurationSet filterConfig;
@@ -104,8 +103,10 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     }
 
     @PostConstruct
-    public void setup()
+    public void setup(ExchangeRateProviderFactory factory)
     {
+        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+
         clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
         filterConfig = clientFilterMenu.getfilterConfig();
         items = clientFilterMenu.getModifiableCustomItems();
@@ -114,6 +115,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
     private void setInput()
     {
+        groupedAccountColumns.invalidateCache();
         groupedAccounts.setInput(items);
     }
 
@@ -193,6 +195,14 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        // update currency converter (in case the base currency changes)
+        converter = converter.with(getClient().getBaseCurrency());
+        groupedAccounts.refresh();
+    }
+
+    @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         storeChangedFilter();
@@ -216,7 +226,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                                             groupedAccounts.setExpandedState(newItem, true);
                                             // select the newly created account
                                             groupedAccounts.setSelection(new StructuredSelection(newItem));
-
                                         })))));
     }
 
@@ -295,8 +304,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         column = new Column("volume", Messages.ColumnBalance, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-
             @Override
             public String getText(Object element)
             {
@@ -323,7 +330,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         });
         // add a sorter
         column.setSorter(ColumnViewerSorter.create(o -> {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
             if (o instanceof Portfolio portfolio)
             {
                 PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, LocalDate.now());
@@ -467,10 +473,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         String message = MessageFormat.format(Messages.MenuReportingPeriodDeleteConfirm, filterItem.getLabel());
         if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.MenuReportingPeriodDelete,
                         message))
-        {
             items.remove(filterItem);
-            groupedAccounts.refresh();
-        }
     }
 
     private void deleteElementInFilter(Object element, ClientFilterMenu.Item filterItem)
@@ -481,7 +484,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
             // important step: update UUIDs because this is basic
             // information in settings
             filterItem.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
-            groupedAccounts.refresh();
         }
     }
 
@@ -505,6 +507,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
+        dialog.setViewerComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(getClient().getPortfolios());
@@ -527,7 +530,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                 // important step: update UUIDs because this is
                 // basic information in settings
                 selectedFilterElement.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
-                groupedAccounts.refresh();
             }
         }
     }

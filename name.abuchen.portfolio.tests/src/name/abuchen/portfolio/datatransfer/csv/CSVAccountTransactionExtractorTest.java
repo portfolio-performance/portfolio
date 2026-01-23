@@ -2,11 +2,13 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
@@ -17,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,12 +41,15 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -384,7 +390,7 @@ public class CSVAccountTransactionExtractorTest
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
                         new String[] { "2013-01-01", "", "", "", "", "110", "EUR", "TRANSFER_OUT", "", "", "Notiz", "",
-                                        "", "", "", "", "100", "USD", "1,1" }),
+                                        "", "", "", "", "100", "USD", "1.1" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -426,7 +432,7 @@ public class CSVAccountTransactionExtractorTest
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01", "", "", "", "", "110", "EUR",
-                                        "TRANSFER_IN", "", "", "Notiz", "", "", "", "", "", "100", "USD", "1,1" }),
+                                        "TRANSFER_IN", "", "", "Notiz", "", "", "", "", "", "100", "USD", "1.1" }),
                         buildField2Column(extractor), errors);
 
         assertThat(results.size(), is(1));
@@ -607,11 +613,11 @@ public class CSVAccountTransactionExtractorTest
                         new String[] { //
                                         "2013-01-01", "11:00:00", // Date + Time
                                         "", "", "", // ISIN + TickerSymbol + WKN
-                                        "7,5", "EUR", // Amount + Currency
+                                        "7.5", "EUR", // Amount + Currency
                                         "INTEREST", // Type
                                         "", "", //  Security name + Shares
                                         "Notiz", // Note
-                                        "2,5", "", // Taxes +  Fee
+                                        "2.5", "", // Taxes +  Fee
                                         "", "", "", // account + account2nd + portfolio
                                         "10", "EUR", // Gross + Gross currency
                                         "" }), // Exchange rate
@@ -646,12 +652,12 @@ public class CSVAccountTransactionExtractorTest
                         "DE0007164600", "SAP", "", // ISIN + TickerSymbol + WKN
                         "-100", "EUR", // Amount + Currency
                         "SELL", // Type
-                        "SAP SE", "1,9", // Security name + Shares
+                        "SAP SE", "1.9", // Security name + Shares
                         "Notiz", // Note
                         "12", "", // Taxes + Fee
                         "", "", "", // account + account2nd + portfolio
                         "110", "USD", // Gross + Gross currency
-                        "0,9091" }), // Exchange rate
+                        "0.9091" }), // Exchange rate
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -685,12 +691,12 @@ public class CSVAccountTransactionExtractorTest
                         "LU0419741177", "", "", // ISIN + TickerSymbol + WKN
                         "56", "EUR", // Amount + Currency
                         "BUY", // Type
-                        "", "-0,701124", // Security name + Shares
+                        "", "-0.701124", // Security name + Shares
                         "Notiz", // Note
-                        "", "0,14", // Taxes + Fee
+                        "", "0.14", // Taxes + Fee
                         "", "", "", // account + account2nd + portfolio
                         "", "USD", // Gross + Gross currency
-                        "1,1194" }), // Exchange rate
+                        "1.1194" }), // Exchange rate
                         buildField2Column(extractor), errors);
         
         assertThat(errors, empty());
@@ -741,5 +747,46 @@ public class CSVAccountTransactionExtractorTest
                         hasDate("2015-09-15"), //
                         hasAmount("EUR", 1000.00), //
                         hasForexGrossValue("USD", 1112.00), hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testRoundingOnExchangeRates()
+    {
+        var rawInput = """
+                        Date,Value,Type,Currency,Name,Shares,Portfolio,ExchangeRate,Gross,CurrencyGross,Ticker,Account
+                        2025-06-20,95.26,DIVIDENDS,CAD,iShares MSCI Emerging Markets Min Vol Factor ETF,,THE_CASH_ACCOUNT,1.3795,69.05400507,USD,EEMV,THE_CASH_ACCOUNT
+                        """;
+
+        var csv = rawInput.lines() //
+                        .filter(line -> !line.isBlank()) //
+                        .map(line -> line.split(",", -1)) // keep empty fields
+                        .toList();
+
+        var extractor = new CSVAccountTransactionExtractor(new Client());
+
+        var errors = new ArrayList<Exception>();
+        // the extract method gets only the data rows -> use sub list
+        var results = extractor.extract(1, csv.subList(1, 2), buildField2Column(extractor, csv.get(0)), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertThat(results, hasItem(security( //
+                        hasTicker("EEMV"), //
+                        hasName("iShares MSCI Emerging Markets Min Vol Factor ETF"), //
+                        hasCurrencyCode("CAD"))));
+
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-06-20"), //
+                        hasShares(0), //
+                        hasAmount("CAD", 95.26), //
+                        hasForexGrossValue("USD", 69.05400507), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+
+        var dividendTransaction = results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .map(i -> (AccountTransaction) i.getSubject()).get();
+
+        var status = new CheckForexGrossValueAction().process(dividendTransaction, new Account());
+        assertThat(status.getMessage(), status.getCode(), is(Status.Code.OK));
     }
 }

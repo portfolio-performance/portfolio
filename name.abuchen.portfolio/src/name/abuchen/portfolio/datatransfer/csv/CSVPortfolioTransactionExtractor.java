@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
@@ -17,10 +16,8 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -35,7 +32,7 @@ import name.abuchen.portfolio.money.Money;
     {
         super(client, Messages.CSVDefPortfolioTransactions);
 
-        List<Field> fields = getFields();
+        var fields = getFields();
         fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
         fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
         fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
@@ -71,14 +68,14 @@ import name.abuchen.portfolio.money.Money;
         // of the security to be created
 
         // check if we have a security
-        Security security = getSecurity(rawValues, field2column, s -> {
-            String currency = getText(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
+        var security = getSecurity(rawValues, field2column, s -> {
+            var currency = getText(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
             if (currency == null || currency.isEmpty())
                 currency = getText(Messages.CSVColumn_TransactionCurrency, rawValues, field2column);
 
             if (currency != null)
             {
-                CurrencyUnit unit = CurrencyUnit.getInstance(currency.trim());
+                var unit = CurrencyUnit.getInstance(currency.trim());
                 s.setCurrencyCode(unit == null ? getClient().getBaseCurrency() : unit.getCurrencyCode());
             }
         });
@@ -91,48 +88,40 @@ import name.abuchen.portfolio.money.Money;
                             0);
 
         // check for the transaction amount
-        Money amount = getMoney(rawValues, field2column);
+        var amount = getMoney(rawValues, field2column);
 
         // determine type (if not explicitly given by import)
-        Type type = inferType(rawValues, field2column, amount);
+        var type = inferType(rawValues, field2column, amount);
 
         // determine remaining fields
-        LocalDateTime date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
+        var date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
-        Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
-        Long fees = getAmount(Messages.CSVColumn_Fees, rawValues, field2column);
-        Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
-        String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
+        var shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
+        var fees = getAmount(Messages.CSVColumn_Fees, rawValues, field2column);
+        var taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
+        var note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 
         Optional<Unit> grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
-        Account account = getAccount(getClient(), rawValues, field2column);
-        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
-        Portfolio portfolio2nd = getPortfolio(getClient(), rawValues, field2column, true);
+        var account = getAccount(getClient(), rawValues, field2column);
+        var portfolio = getPortfolio(getClient(), rawValues, field2column);
+        var portfolio2nd = getPortfolio(getClient(), rawValues, field2column, true);
 
-        Extractor.Item item = null;
-
-        switch (type)
+        var item = switch (type)
         {
-            case BUY:
-            case SELL:
-                item = createBuySell(rawValues, field2column, type, security, amount, fees, taxes, date, note, shares,
-                                grossAmount);
-                break;
-            case TRANSFER_IN:
-            case TRANSFER_OUT:
-                item = createTransfer(security, amount, date, note, shares);
-                break;
-            case DELIVERY_INBOUND:
-            case DELIVERY_OUTBOUND:
-                item = createDelivery(rawValues, field2column, type, security, amount, fees, taxes, date, note, shares,
-                                grossAmount);
-                break;
-            default:
+            case BUY, SELL -> //
+                            createBuySell(rawValues, field2column, type, security, amount, fees, taxes, date, note,
+                                            shares, grossAmount);
+            case TRANSFER_IN, TRANSFER_OUT -> //
+                            createTransfer(security, amount, date, note, shares);
+            case DELIVERY_INBOUND, DELIVERY_OUTBOUND -> //
+                            createDelivery(rawValues, field2column, type, security, amount, fees, taxes, date, note,
+                                            shares, grossAmount);
+            default ->
                 throw new IllegalArgumentException(type.toString());
-        }
+        };
 
         item.setAccountPrimary(account);
         item.setPortfolioPrimary(portfolio);
@@ -145,7 +134,7 @@ import name.abuchen.portfolio.money.Money;
                     Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares,
                     Optional<Unit> grossAmount) throws ParseException
     {
-        BuySellEntry entry = new BuySellEntry();
+        var entry = new BuySellEntry();
         entry.setType(type);
         entry.setSecurity(security);
         entry.setDate(date);
@@ -175,7 +164,7 @@ import name.abuchen.portfolio.money.Money;
 
     private Item createTransfer(Security security, Money amount, LocalDateTime date, String note, Long shares)
     {
-        PortfolioTransferEntry entry = new PortfolioTransferEntry();
+        var entry = new PortfolioTransferEntry();
         entry.setSecurity(security);
         entry.setDate(date);
         entry.setAmount(Math.abs(amount.getAmount()));
@@ -190,7 +179,7 @@ import name.abuchen.portfolio.money.Money;
                     Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares,
                     Optional<Unit> grossAmount) throws ParseException
     {
-        PortfolioTransaction t = new PortfolioTransaction();
+        var t = new PortfolioTransaction();
 
         t.setType(type);
         t.setSecurity(security);
@@ -219,7 +208,7 @@ import name.abuchen.portfolio.money.Money;
 
     private Type inferType(String[] rawValues, Map<String, Column> field2column, Money amount) throws ParseException
     {
-        Type type = getEnum(Messages.CSVColumn_Type, PortfolioTransaction.Type.class, rawValues, field2column);
+        var type = getEnum(Messages.CSVColumn_Type, PortfolioTransaction.Type.class, rawValues, field2column);
         if (type == null)
             type = amount.isNegative() ? Type.BUY : Type.SELL;
         return type;

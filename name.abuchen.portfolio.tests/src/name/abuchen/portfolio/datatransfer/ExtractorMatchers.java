@@ -14,12 +14,15 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -223,6 +226,26 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> withFailureMessage(String message, Matcher<Extractor.Item> matcher)
     {
         return new FailureMessageItemMatcher(message, matcher);
+    }
+
+    public static Matcher<Extractor.Item> hasAccount(Account account)
+    {
+        return new PropertyMatcher<>("primary account", account, Item::getAccountPrimary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasSecondaryAccount(Account account)
+    {
+        return new PropertyMatcher<>("secondary account", account, Item::getAccountSecondary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasPortfolio(Portfolio portfolio)
+    {
+        return new PropertyMatcher<>("primary portfolio", portfolio, Item::getPortfolioPrimary); //$NON-NLS-1$
+    }
+
+    public static Matcher<Extractor.Item> hasSecondaryPortfolio(Portfolio portfolio)
+    {
+        return new PropertyMatcher<>("secondary portfolio", portfolio, Item::getPortfolioSecondary); //$NON-NLS-1$
     }
 
     @SafeVarargs

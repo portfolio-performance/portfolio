@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.genobroker;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -24,9 +23,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,16 +38,10 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.GenoBrokerPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
@@ -68,6 +62,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -101,6 +96,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -112,7 +108,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-07-19T08:18"), hasShares(500), //
+                        hasDate("2023-07-19T08:18"), hasShares(500.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Auftragsnummer: 422576/44.00 | Limit 10,00 EUR"), //
                         hasAmount("EUR", 4714.55), hasGrossValue("EUR", 4704.50), //
@@ -134,6 +130,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -145,7 +142,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-03T12:00"), hasShares(2100), //
+                        hasDate("2023-08-03T12:00"), hasShares(2100.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftragsnummer: 896962/04.00"), //
                         hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), //
@@ -175,21 +172,17 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-08-03T12:00"), hasShares(2100), //
+                        hasDate("2023-08-03T12:00"), hasShares(2100.00), //
                         hasSource("Kauf03.txt"), //
                         hasNote("Auftragsnummer: 896962/04.00"), //
                         hasAmount("EUR", 506.62), hasGrossValue("EUR", 506.62), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -207,6 +200,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -218,7 +212,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasDate("2025-06-10T15:33"), hasShares(2000.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
                         hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
@@ -247,21 +241,51 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasDate("2025-06-10T15:33"), hasShares(2000.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
                         hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005552004"), hasWkn("555200"), hasTicker(null), //
+                        hasName("DEUTSCHE POST AG NAMENS-AKTIEN O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-11T16:14"), hasShares(200.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Auftragsnummer: 210741/20.00 | Limit billigst"), //
+                        hasAmount("EUR", 9391.91), hasGrossValue("EUR", 9374.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 17.81 + 0.10))));
     }
 
     @Test
@@ -279,6 +303,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -290,7 +315,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-07-25T16:48"), hasShares(2100), //
+                        hasDate("2023-07-25T16:48"), hasShares(2100.00), //
                         hasSource("Verkauf01.txt"), //
                         hasNote("Auftragsnummer: 433499/69.01 | Limit bestens"), //
                         hasAmount("EUR", 6319.37), hasGrossValue("EUR", 6331.50), //
@@ -312,6 +337,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -323,7 +349,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-09-05T13:10"), hasShares(500), //
+                        hasDate("2023-09-05T13:10"), hasShares(500.00), //
                         hasSource("Verkauf02.txt"), //
                         hasNote("Auftragsnummer: 498470/51.00 | Limit bestens"), //
                         hasAmount("EUR", 4759.31), hasGrossValue("EUR", 4779.50), //
@@ -345,6 +371,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -356,7 +383,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-07-14T00:00"), hasShares(1000), //
+                        hasDate("2023-07-14T00:00"), hasShares(1000.00), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 60007000"), //
                         hasAmount("EUR", 445.94), hasGrossValue("EUR", 615.87), //
@@ -378,6 +405,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -389,7 +417,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-07-10T00:00"), hasShares(2100), //
+                        hasDate("2023-07-10T00:00"), hasShares(2100.00), //
                         hasSource("Dividende02.txt"), //
                         hasNote("Abrechnungsnr.: 000000000"), //
                         hasAmount("EUR", 6107.09), hasGrossValue("EUR", 9475.70), //
@@ -412,6 +440,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -423,7 +452,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-08-29T00:00"), hasShares(600), //
+                        hasDate("2023-08-29T00:00"), hasShares(600.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr.: 74014833940"), //
                         hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
@@ -453,23 +482,17 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-08-29T00:00"), hasShares(600), //
+                        hasDate("2023-08-29T00:00"), hasShares(600.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote("Abrechnungsnr.: 74014833940"), //
                         hasAmount("EUR", 236.34), hasGrossValue("EUR", 486.03), //
-                        hasTaxes("EUR", 121.51 + 121.50 + 6.68), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 121.51 + 121.50 + 6.68), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -487,6 +510,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -498,7 +522,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-13T00:00"), hasShares(23), //
+                        hasDate("2023-09-13T00:00"), hasShares(23.00), //
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr.: 75555439660"), //
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
@@ -528,6 +552,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -537,14 +562,7 @@ public class GenoBrokerPDFExtractorTest
                         hasSource("Dividende04.txt"), //
                         hasNote("Abrechnungsnr.: 75555439660"), //
                         hasAmount("EUR", 24.01), hasGrossValue("EUR", 32.26), //
-                        hasTaxes("EUR", 4.84 + 3.23 + 0.18), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 4.84 + 3.23 + 0.18), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -562,6 +580,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -573,7 +592,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-29T00:00"), hasShares(30), //
+                        hasDate("2023-12-29T00:00"), hasShares(30.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungsnr.: 86249245170"), //
                         hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
@@ -603,23 +622,17 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-29T00:00"), hasShares(30), //
+                        hasDate("2023-12-29T00:00"), hasShares(30.00), //
                         hasSource("Dividende05.txt"), //
                         hasNote("Abrechnungsnr.: 86249245170"), //
                         hasAmount("EUR", 6.03), hasGrossValue("EUR", 7.50), //
-                        hasTaxes("EUR", 1.29 + 0.07 + 0.11), hasFees("EUR", 0.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var account = new Account();
-                            account.setCurrencyCode("EUR");
-                            var s = c.process((AccountTransaction) tx, account);
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 1.29 + 0.07 + 0.11), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -637,6 +650,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -648,7 +662,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(75), //
+                        hasDate("2024-04-30T00:00"), hasShares(75.00), //
                         hasSource("Dividende06.txt"), //
                         hasNote("Abrechnungsnr.: 08172459718"), //
                         hasAmount("EUR", 255.00), hasGrossValue("EUR", 255.00), //
@@ -670,6 +684,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -681,7 +696,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(23), //
+                        hasDate("2024-04-30T00:00"), hasShares(23.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Abrechnungsnr.: 20967773045"), //
                         hasAmount("EUR", 309.07), hasGrossValue("EUR", 345.00 + 216.60), //
@@ -703,6 +718,7 @@ public class GenoBrokerPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(2L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, "EUR");
 

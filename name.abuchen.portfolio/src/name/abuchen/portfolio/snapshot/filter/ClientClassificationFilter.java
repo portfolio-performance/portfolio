@@ -224,7 +224,7 @@ public class ClientClassificationFilter implements ClientFilter
         state.asReadOnly(portfolio).internalAddTransaction(copy.getPortfolioTransaction());
         state.asReadOnly(account).internalAddTransaction(copy.getAccountTransaction());
 
-        // create a deposit or removal if the account has a higher weight
+        // create a deposit or withdrawal if the account has a higher weight
 
         if (accountAmount - commonAmount > 0)
         {
@@ -296,7 +296,7 @@ public class ClientClassificationFilter implements ClientFilter
                     // only if the security is not included (and therefore
                     // buy/sell transactions are handled by the
                     // #adaptPortfolioTransactions method), create a deposit or
-                    // removal in the account
+                    // withdrawal in the account
                     if (!state.isCategorized(t.getSecurity()))
                         state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
                                         t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
@@ -352,7 +352,7 @@ public class ClientClassificationFilter implements ClientFilter
                 case TRANSFER_OUT:
                     // transfer transactions are from the inbound account (see
                     // above); only if the inbound account is not categorized,
-                    // then create a removal transaction
+                    // then create a withdrawal transaction
                     if (!state.isCategorized((Account) t.getCrossEntry().getCrossOwner(t)))
                         state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
                                         t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));

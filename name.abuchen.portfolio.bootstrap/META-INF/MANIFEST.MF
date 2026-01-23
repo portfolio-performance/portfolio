@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance Bootstrap
 Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
-Bundle-Version: 0.80.5.qualifier
+Bundle-Version: 0.81.3.qualifier
 Export-Package: name.abuchen.portfolio.bootstrap
 Import-Package: jakarta.inject
 Bundle-RequiredExecutionEnvironment: JavaSE-21

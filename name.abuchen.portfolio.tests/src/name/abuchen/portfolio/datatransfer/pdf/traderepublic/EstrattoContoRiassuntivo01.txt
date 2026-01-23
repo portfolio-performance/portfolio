@@ -1,0 +1,96 @@
+PDFBox Version: 3.0.5 != 1.8.17
+Portfolio Performance Version: 0.80.3
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, BRANCH ITALY  SPACES GAE AULENTI, PIAZZA GAE AULENTI 1, TORRE B  20154 MILANO (MI)
+DePZbva ilvj DATA 01 set 2025 - 30 set 2025
+HwmQOuFh Sant'Anastasio 335 TPxO IH9xg63676yh60fds067246h211
+95499 VqPVP BIC UluLNHQBCbn
+ESTRATTO CONTO RIASSUNTIVO
+PRODOTTO SALDO INIZIALE IN ENTRATA IN USCITA SALDO FINALE
+Conto corrente 1.303,81 € 3.003,14 € 812,51 € 3.494,44 €
+TRANSAZIONI SUL CONTO
+DATA TIPO DESCRIZIONE IN ENTRATA IN USCITA SALDO
+01 set Pagamento 
+Interest payment 1,75 € 1.305,56 €
+2025 degli interessi
+01 set 
+Bonifico Incoming transfer from eraE IQRKrwr 3.000,00 € 4.305,56 €
+2025
+02 set Savings plan execution LU0908500753 Amundi Index Solutions - Amundi 
+Commercio 1,39 € 4.304,17 €
+2025 Stoxx Europe 600 UCITS ETF Acc, quantity: 0.005285
+02 set 
+Premio Your Saveback payment 1,39 € 4.305,56 €
+2025
+02 set Savings plan execution LU0908500753 Amundi Index Solutions - Amundi 
+Commercio 250,00 € 4.055,56 €
+2025 Stoxx Europe 600 UCITS ETF Acc, quantity: 0.950570
+02 set Savings plan execution IE000716YHJ7 Invesco Markets II plc - Invesco FTSE 
+Commercio 150,00 € 3.905,56 €
+2025 All-World UCITS ETF Acc, quantity: 22.536057
+07 set Transazione 
+TODIS SUPERMERCATO TODIS 29,44 € 3.876,12 €
+2025 con carta
+07 set Transazione 
+SUMUP *GUSTO - SRLS 24,00 € 3.852,12 €
+2025 con carta
+09 set Savings plan execution LU0908500753 Amundi Index Solutions - Amundi 
+Commercio 3,72 € 3.848,40 €
+2025 Stoxx Europe 600 UCITS ETF Acc, quantity: 0.014048
+09 set Transazione 
+C.G.I. C-O ENEL EGEO 1,70 € 3.846,70 €
+2025 con carta
+10 set Transazione 
+C.G.I. C-O ENEL EGEO 2,20 € 3.844,50 €
+2025 con carta
+Trade Republic Bank GmbH, Branch Italy www.traderepublic.it Sede centrale di Trade Republic Bank GmbH Direttore Generale
+Spaces Gae Aulenti, Piazza Gae Aulenti 1, Torre B P. IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlino, Germania Andreas Torner
+20154 Milano (MI) Registro commerciale HRB 244347 B, tribunale Gernot Mittendorfer
+12254730968 Camera di Commercio di MILANO locale di Charlottenburg, Germania Christian Hecker
+Thomas Pischke
+Generato il 27 ott 2025, 10:21:37 Pagina 1 da 3
+TRADE REPUBLIC BANK GMBH, BRANCH ITALY SPACES GAE AULENTI, PIAZZA GAE AULENTI 1, TORRE B 20154 MILANO (MI)
+DATA TIPO DESCRIZIONE IN ENTRATA IN USCITA SALDO
+14 set Transazione 
+2000 EVENTI RISTORAZIONE 18,00 € 3.826,50 €
+2025 con carta
+14 set Transazione 
+PARAD ICE 7,00 € 3.819,50 €
+2025 con carta
+15 set Transazione 
+Glovo 14SEP NT5MYVDKR 34,20 € 3.785,30 €
+2025 con carta
+16 set Savings plan execution LU0908500753 Amundi Index Solutions - Amundi 
+Commercio 7,20 € 3.778,10 €
+2025 Core Stoxx Europe 600 Acc, quantity: 0.027001
+PANORAMICA DEL SALDO
+al 30 set 2025
+CONTI FIDUCIARI SALDO
+HSBC 3.494,44 €
+FONDI DEL MERCATO MONETARIO ISIN UNITÀ PREZZO PER UNITÀ VALORE DI MERCATO IN EURO
+Deutsche Managed Euro Fund IE0008643037 0,00 1,00 € 0,00 €
+Trade Republic Bank GmbH, Branch Italy www.traderepublic.it Sede centrale di Trade Republic Bank GmbH Direttore Generale
+Spaces Gae Aulenti, Piazza Gae Aulenti 1, Torre B P. IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlino, Germania Andreas Torner
+20154 Milano (MI) Registro commerciale HRB 244347 B, tribunale Gernot Mittendorfer
+12254730968 Camera di Commercio di MILANO locale di Charlottenburg, Germania Christian Hecker
+Thomas Pischke
+Generato il 27 ott 2025, 10:21:37 Pagina 2 da 3
+TRADE REPUBLIC BANK GMBH, BRANCH ITALY SPACES GAE AULENTI, PIAZZA GAE AULENTI 1, TORRE B 20154 MILANO (MI)
+NOTE SULL'ESTRATTO CONTO
+Si prega di controllare l'estratto conto, in quanto le contestazioni devono essere fatte valere/presenti immediatamente. Si prega di notare 
+che il saldo del conto indicato non tiene conto della data di valuta delle singole prenotazioni o transazioni, vale a dire che l'importo 
+indicato o l'importo nominale non corrisponde necessariamente al saldo del conto rilevante per il calcolo degli interessi. Un estratto 
+conto si considera approvato se non si sollevano contestazioni entro 6 settimane. Per rispettare il termine è sufficiente inviare un reclamo 
+tramite il nostro servizio clienti (chat). Tutte le chat sono soggette a controlli indipendenti da parte dell'Internal Audit (“Revisione 
+Interna”). In relazione ai contratti sottostanti, questo estratto conto è considerato una fattura ai sensi della legge tedesca sull'IVA (UStG) 
+in base al numero di conto indicato. I depositi presso banche fiduciarie sono coperti dalla garanzia di deposito della banca fiduciaria fino a 
+100.000 euro. Le quote di fondi monetari qualificati (QMMF) sono protette nell'improbabile caso di insolvenza di Trade Republic. Ulteriori 
+informazioni sulla protezione dei vostri fondi sono disponibili sul sito https://support.traderepublic.com.
+Imposta di bollo assolta in modo virtuale. Autorizzazione Agenzia delle Entrate Ufficio di Milano 2 – n. 128691 del 16/04/2025.
+Trade Republic Bank GmbH, Branch Italy www.traderepublic.it Sede centrale di Trade Republic Bank GmbH Direttore Generale
+Spaces Gae Aulenti, Piazza Gae Aulenti 1, Torre B P. IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlino, Germania Andreas Torner
+20154 Milano (MI) Registro commerciale HRB 244347 B, tribunale Gernot Mittendorfer
+12254730968 Camera di Commercio di MILANO locale di Charlottenburg, Germania Christian Hecker
+Thomas Pischke
+Generato il 27 ott 2025, 10:21:37 Pagina 3 da 3

@@ -70,10 +70,18 @@ public class CheckForexGrossValueAction implements ImportAction
         Money unitValue = grossValueUnit.get().getAmount();
         Money calculatedValue = transaction.getGrossValue();
 
-        if (!unitValue.equals(calculatedValue))
+        // if configured gross value and the calculated value differ,
+        // check if the delta is within the range of rounding errors due
+        // to the currency conversion
+
+        if (!unitValue.equals(calculatedValue) //
+                        && !Unit.isWithinRoundingTolerance(calculatedValue, grossValueUnit.get().getForex(),
+                                        grossValueUnit.get().getExchangeRate()))
+        {
             return new Status(Status.Code.ERROR,
                             MessageFormat.format(Messages.MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch,
                                             Values.Money.format(unitValue), Values.Money.format(calculatedValue)));
+        }
 
         return Status.OK_STATUS;
 

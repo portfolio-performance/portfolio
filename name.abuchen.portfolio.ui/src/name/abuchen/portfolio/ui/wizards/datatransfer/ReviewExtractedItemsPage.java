@@ -57,6 +57,7 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.SkippedItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -87,6 +88,7 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
@@ -190,6 +192,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public List<ExtractedEntry> getEntries()
     {
         return allEntries;
+    }
+
+    private Images getStatusImage(Code code)
+    {
+        return switch (code)
+        {
+            case WARNING -> Images.WARNING;
+            case ERROR -> Images.ERROR;
+            case SKIP -> Images.SKIP;
+            case OK -> Images.OK;
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     @Override
@@ -437,21 +451,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public Image getImage(ExtractedEntry entry)
             {
-                Images image = null;
-                switch (entry.getMaxCode())
-                {
-                    case WARNING:
-                        image = Images.WARNING;
-                        break;
-                    case ERROR:
-                        image = Images.ERROR;
-                        break;
-                    case OK:
-                        image = Images.OK;
-                        break;
-                    default:
-                }
-                return image != null ? image.image() : null;
+                return getStatusImage(entry.getMaxCode()).image();
             }
 
             @Override
@@ -662,7 +662,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             // an entry will not be imported if it marked as not to be
             // imported *or* if it has a WARNING code (e.g. is a duplicate)
             atLeastOneNotImported = atLeastOneNotImported
-                            || (!entry.isImported() && (entry.getMaxCode() != Code.ERROR));
+                            || (!entry.isImported() && (entry.getMaxCode() == Code.WARNING));
         }
 
         // provide a hint to the user why the entry is struck out
@@ -672,9 +672,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             entry.getStatus() //
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
-                                Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                                Images.WARNING : Images.ERROR;
-                                manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
+                                Images image = getStatusImage(s.getCode());
+                                manager.add(new LabelOnly(s.getMessage(), image));
                             });
         }
 
@@ -736,7 +735,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         for (T subject : options.get())
         {
-            manager.add(new SimpleAction(subject.getName(), a -> {
+            manager.add(new MenuContribution(subject.getName(), () -> {
                 for (Object element : tableViewer.getStructuredSelection().toList())
                     applier.accept(((ExtractedEntry) element).getItem(), subject);
 
@@ -1034,6 +1033,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             {
                 entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
                 allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
+            }
+            else if (entry.getItem().isSkipped())
+            {
+                entry.addStatus(new ImportAction.Status(Code.SKIP, ((SkippedItem) entry.getItem()).getSkipReason()));
             }
             else
             {

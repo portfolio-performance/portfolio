@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -13,18 +15,19 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ParameterizedColumnLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.util.Interval;
 
-public class DistanceFromAllTimeHighColumn extends Column
+public class DistanceFromAllTimeHighColumn extends Column implements Column.CacheInvalidationListener
 {
     private static final class QuoteReportingPeriodLabelProvider
                     extends ParameterizedColumnLabelProvider<ReportingPeriod>
     {
-        private BiFunction<Object, ReportingPeriod, AllTimeHigh> valueProvider;
+        private final BiFunction<Object, ReportingPeriod, AllTimeHigh> valueProvider;
 
         public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, AllTimeHigh> valueProvider)
         {
@@ -56,6 +59,8 @@ public class DistanceFromAllTimeHighColumn extends Column
         }
     }
 
+    private final Map<CacheKey, AllTimeHigh> cache = new HashMap<>();
+
     public DistanceFromAllTimeHighColumn(Supplier<LocalDate> dateProvider, List<ReportingPeriod> options)
     {
         super("distance-from-ath", Messages.ColumnQuoteDistanceFromAthPercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -67,7 +72,7 @@ public class DistanceFromAllTimeHighColumn extends Column
             if (security == null)
                 return null;
 
-            return new AllTimeHigh(security, interval);
+            return getOrCompute(security, interval);
         };
 
         this.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteDistanceFromAthPercent_Option, options));
@@ -91,5 +96,17 @@ public class DistanceFromAllTimeHighColumn extends Column
 
             return Double.compare(v1.doubleValue(), v2.doubleValue());
         }));
+    }
+
+    private AllTimeHigh getOrCompute(Security security, Interval interval)
+    {
+        var cacheKey = new CacheKey(security, interval);
+        return cache.computeIfAbsent(cacheKey, key -> new AllTimeHigh(security, interval));
+    }
+
+    @Override
+    public void invalidateCache()
+    {
+        cache.clear();
     }
 }

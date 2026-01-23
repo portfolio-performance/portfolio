@@ -271,10 +271,11 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         action.setChecked(selectedRenderer == null);
         manager.add(action);
 
-        manager.add(new LabelOnly(Messages.LabelTTWROR));
+        var twrSubMenuManager = new MenuManager(Messages.LabelTTWROR);
+        manager.add(twrSubMenuManager);
 
         // display the first 10 elements in the menu directly
-        var limit = 10;
+        var limit = 25;
         var reportingPeriods = view.getPart().getClientInput().getReportingPeriods();
         reportingPeriods.stream().limit(limit).forEach(period -> {
             Action byPeriod = new SimpleAction(period.toString(), a -> {
@@ -284,13 +285,13 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
                 treeMap.recolor();
             });
             byPeriod.setChecked(selectedRenderer != null && selectedRenderer.getReportingPeriod().equals(period));
-            manager.add(byPeriod);
+            twrSubMenuManager.add(byPeriod);
         });
 
         if (reportingPeriods.size() > limit)
         {
             var subMenu = new MenuManager(Messages.LabelMore);
-            manager.add(subMenu);
+            twrSubMenuManager.add(subMenu);
             reportingPeriods.stream().skip(limit).forEach(period -> {
                 Action byPeriod = new SimpleAction(period.toString(), a -> {
                     getModel().setColoringStrategy(COLORING_STRATEGY_TTWROR + period.getCode());

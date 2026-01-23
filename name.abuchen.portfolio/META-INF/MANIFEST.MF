@@ -2,13 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.80.5.qualifier
+Bundle-Version: 0.81.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
  name.abuchen.portfolio.datatransfer.actions,
  name.abuchen.portfolio.datatransfer.csv,
+ name.abuchen.portfolio.datatransfer.csv.exporter,
  name.abuchen.portfolio.datatransfer.ibflex,
  name.abuchen.portfolio.datatransfer.pdf,
  name.abuchen.portfolio.events,
@@ -75,8 +76,8 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson,
  org.osgi.service.component,
- name.abuchen.portfolio.pdfbox1;bundle-version="0.80.5",
- name.abuchen.portfolio.pdfbox3;bundle-version="0.80.5"
+ name.abuchen.portfolio.pdfbox1;bundle-version="0.81.3",
+ name.abuchen.portfolio.pdfbox3;bundle-version="0.81.3"
 Automatic-Module-Name: name.abuchen.portfolio
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml

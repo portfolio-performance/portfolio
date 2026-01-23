@@ -74,7 +74,11 @@ import name.abuchen.portfolio.util.Dates;
 
                 Money movingAverageCost = t.getMovingAverageCost();
                 if (movingAverageCost != null && !movingAverageCost.isZero())
-                    rr = t.getGrossValueAmount() / (double) movingAverageCost.getAmount();
+                {
+                    // Use converted amount (in term currency) instead of raw amount (in transaction currency)
+                    // to ensure both values are in the same currency for correct calculation
+                    rr = this.amount.getAmount() / (double) movingAverageCost.getAmount();
+                }
 
                 // check if it is valid (non 0)
                 if (rr == 0)

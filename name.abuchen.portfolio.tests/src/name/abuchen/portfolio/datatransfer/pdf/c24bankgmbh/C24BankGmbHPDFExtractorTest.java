@@ -13,9 +13,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransfers;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countItemsWithFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,6 +50,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -76,6 +78,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -107,6 +110,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -134,6 +138,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
@@ -161,6 +166,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -188,6 +194,7 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(countAccountTransactions(results), is(12L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(12));
         new AssertImportActions().check(results, "EUR");
 
@@ -234,5 +241,85 @@ public class C24BankGmbHPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-01-14"), hasAmount("EUR", 6000.00), //
                         hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+    }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new C24BankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(17L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(17));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-31"), hasAmount("EUR", 3753.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-30"), hasAmount("EUR", 2253.11), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-27"), hasAmount("EUR", 728.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-27"), hasAmount("EUR", 649.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-15"), hasAmount("EUR", 68.97), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-14"), hasAmount("EUR", 6.35), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-11"), hasAmount("EUR", 0.30), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-11"), hasAmount("EUR", 6.93), //
+                        hasSource("Kontoauszug07.txt"), hasNote("MoneySend Zahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-06"), hasAmount("EUR", 407.44), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-06"), hasAmount("EUR", 670.67), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-04"), hasAmount("EUR", 32.51), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Online-Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-03"), hasAmount("EUR", 4286.49), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-10-03"), hasAmount("EUR", 575.42), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Online-Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-03"), hasAmount("EUR", 9444.60), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-02"), hasAmount("EUR", 19.89), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
     }
 }

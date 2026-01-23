@@ -77,7 +77,7 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\– [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);

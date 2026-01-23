@@ -10,10 +10,12 @@ import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,10 +46,12 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -56,6 +60,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.impl.FixedExchangeRateProvider;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.Pair;
@@ -89,18 +94,46 @@ public class IBFlexStatementExtractor implements Extractor
     // Map to store exchange mappings from Interactive Broker to Yahoo
     private Map<String, String> exchanges = new HashMap<>();
 
-    // dateTime attribute formats by tag:
-    // @formatter:off
-    // | Tag             | Format Pattern(s)                       |
-    // |-----------------|-----------------------------------------|
-    // | Trade           | YYYYMMDD;HHMMSS                         |
-    // | FxTransaction   | YYYYMMDD;HHMMSS                         |
-    // | CorporateAction | YYYY-MM-DD, HH:MM:SS OR YYYYMMDD;HHMMSS |
-    // | CashTransaction | YYYY-MM-DD OR YYYYMMDD[;HHMMSS]         |
-    // @formatter:on
+    // Supported date formats (from IB Flex Query configuration):
+    // - yyyyMMdd, yyyy-MM-dd, MM/dd/yyyy, MM/dd/yy, dd/MM/yyyy, dd/MM/yy,
+    // dd-MMM-yy
+    //
+    // Supported time formats:
+    // - HHmmss, HH:mm:ss, HHmmss zzz (with timezone), HH:mm:ss zzz (with
+    // timezone)
+    //
+    // Date and time are separated by semicolon. Time and timezone are optional.
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
-                    createFormatter("yyyyMMdd[;HHmmss]"), //
-                    createFormatter("yyyy-MM-dd[, HH:mm:ss]"), //
+                    // Compact format: yyyyMMdd with optional time and timezone
+                    createFormatter("yyyyMMdd[;HHmmss][ z]"), //
+                    createFormatter("yyyyMMdd[;HH:mm:ss][ z]"), //
+
+                    // ISO format (comma+space separator for backward compat
+                    // with CorporateAction)
+                    createFormatter("yyyy-MM-dd[, HH:mm:ss][ z]"), //
+                    createFormatter("yyyy-MM-dd[;HHmmss][ z]"), //
+                    createFormatter("yyyy-MM-dd[;HH:mm:ss][ z]"), //
+
+                    // US format MM/dd/yyyy (4-digit year first to avoid
+                    // ambiguity)
+                    createFormatter("MM/dd/yyyy[;HHmmss][ z]"), //
+                    createFormatter("MM/dd/yyyy[;HH:mm:ss][ z]"), //
+
+                    // US format MM/dd/yy (2-digit year)
+                    createFormatter("MM/dd/yy[;HHmmss][ z]"), //
+                    createFormatter("MM/dd/yy[;HH:mm:ss][ z]"), //
+
+                    // European format dd/MM/yyyy (4-digit year first)
+                    createFormatter("dd/MM/yyyy[;HHmmss][ z]"), //
+                    createFormatter("dd/MM/yyyy[;HH:mm:ss][ z]"), //
+
+                    // European format dd/MM/yy (2-digit year)
+                    createFormatter("dd/MM/yy[;HHmmss][ z]"), //
+                    createFormatter("dd/MM/yy[;HH:mm:ss][ z]"), //
+
+                    // Month abbreviation format dd-MMM-yy (e.g., 15-Jan-24)
+                    createFormatter("dd-MMM-yy[;HHmmss][ z]"), //
+                    createFormatter("dd-MMM-yy[;HH:mm:ss][ z]"), //
     };
 
     private static DateTimeFormatter createFormatter(String pattern)
@@ -113,8 +146,38 @@ public class IBFlexStatementExtractor implements Extractor
                         .toFormatter(Locale.US);
     }
 
-    // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
-    private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
+    /**
+     * Parses a date/time string using all supported formats.
+     * <p/>
+     * If a timezone is present, it is dropped (not converted).
+     *
+     * @param dateTime
+     *            the date/time string to parse
+     * @return the parsed LocalDateTime, or null if parsing fails
+     */
+    /* package */ static LocalDateTime parseDateTime(String dateTime)
+    {
+        if (dateTime == null || dateTime.isEmpty())
+            return null;
+
+        for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
+        {
+            try
+            {
+                TemporalAccessor parsed = formatter.parseBest(dateTime, ZonedDateTime::from, LocalDateTime::from);
+                if (parsed instanceof ZonedDateTime zdt)
+                    return zdt.toLocalDateTime();
+                return LocalDateTime.from(parsed);
+            }
+            catch (DateTimeParseException ignore)
+            {
+                // try next formatter
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Constructs an IBFlexStatementExtractor with the given client.
@@ -124,7 +187,7 @@ public class IBFlexStatementExtractor implements Extractor
      */
     public IBFlexStatementExtractor(Client client)
     {
-        this.client = new Client();
+        this.client = client;
         allSecurities.addAll(client.getSecurities());
 
         initializeExchangeMappings();
@@ -151,25 +214,80 @@ public class IBFlexStatementExtractor implements Extractor
      */
     private void initializeExchangeMappings()
     {
-        exchanges.put("EBS", "SW");
-        exchanges.put("LSE", "L"); // London Stock Exchange
-        exchanges.put("SWX", "SW"); // Swiss Exchange (SWX)
-        exchanges.put("TSE", "TO"); // TSX Venture
-        exchanges.put("IBIS", "DE"); // XETRA
-        exchanges.put("TGATE", "DE"); // TradeGate
-        exchanges.put("SWB", "SG"); // Stuttgart Stock Exchange
-        exchanges.put("FWB", "F"); // Frankfurt Stock Exchange
+        // --- US & Major Markets – No Suffix ---
+        // AMEX, ARCA, BATS, NASDAQ, NYSE
+
+        // --- Canada ---
+        exchanges.put("TSE", "TO");      // Toronto Stock Exchange
+        exchanges.put("VENTURE", "V");   // TSX Venture Exchange
+
+        // --- United Kingdom & Ireland ---
+        exchanges.put("LSE", "L");       // London Stock Exchange
+        exchanges.put("LSEIOB1", "IL");  // LSE International Order Book
+        exchanges.put("ISED", "IR");     // Euronext Dublin (Irish Stock Exchange)
+
+        // --- Europe: Euronext Group ---
+        exchanges.put("AEB", "AS");      // Euronext Amsterdam
+        exchanges.put("ENEXT.BE", "BR"); // Euronext Brussels
+        exchanges.put("BVL", "LS");      // Euronext Lisbon
+        exchanges.put("SBF", "PA");      // Euronext Paris
+        exchanges.put("BVME", "MI");     // Borsa Italiana (Milan)
+
+        // --- Europe: DACH (Germany, Austria, Switzerland) ---
+        exchanges.put("IBIS", "DE");     // XETRA (Germany)
+        exchanges.put("TGATE", "DE");    // TradeGate (Germany)
+        exchanges.put("FWB", "F");       // Frankfurt Stock Exchange
+        exchanges.put("SWB", "SG");      // Stuttgart Stock Exchange
+        exchanges.put("EBS", "SW");      // SIX Swiss Exchange
+        exchanges.put("SWX", "SW");      // SIX Swiss Exchange
+        exchanges.put("VSE", "VI");      // Vienna Stock Exchange
+
+        // --- Europe: Nordic & Baltic ---
+        exchanges.put("SFB", "ST");      // Nasdaq Stockholm
+        exchanges.put("OSE", "OL");      // Oslo Stock Exchange
+        exchanges.put("OMXNO", "OL");    // Nasdaq OMX Nordic (Usually maps to Oslo for Eq)
+        exchanges.put("CPH", "CO");      // Nasdaq Copenhagen
+        exchanges.put("HEX", "HE");      // Nasdaq Helsinki
+        exchanges.put("N.RIGA", "RG");   // Nasdaq Riga
+        exchanges.put("N.TALLINN", "TL");// Nasdaq Tallinn
+        exchanges.put("N.VILNIUS", "VS");// Nasdaq Vilnius
+
+        // --- Europe: Other ---
+        exchanges.put("BM", "MC");       // Bolsas y Mercados Españoles (Madrid)
+        exchanges.put("WSE", "WA");      // Warsaw Stock Exchange
+        exchanges.put("PRA", "PR");      // Prague Stock Exchange
+        exchanges.put("BUX", "BD");      // Budapest Stock Exchange
+
+        // --- Asia: Greater China & Connect Programs ---
+        exchanges.put("SEHK", "HK");     // Hong Kong Stock Exchange
+        exchanges.put("SEHKNTL", "SS");  // Shanghai-HK Connect (Maps to Shanghai)
+        exchanges.put("SEHKSTAR", "SS"); // Shanghai STAR Market (Maps to Shanghai)
+        exchanges.put("SEHKSZSE", "SZ"); // Shenzhen-HK Connect (Maps to Shenzhen)
+        exchanges.put("CHINEXT", "SZ");  // ChiNext (Maps to Shenzhen)
+        exchanges.put("TWSE", "TW");     // Taiwan Stock Exchange
+
+        // --- Asia: Other ---
+        exchanges.put("TSEJ", "T");      // Tokyo Stock Exchange
+        exchanges.put("SGX", "SI");      // Singapore Exchange
+        exchanges.put("NSE", "NS");      // National Stock Exchange of India
+
+        // --- Rest of World ---
+        exchanges.put("ASX", "AX");      // Australian Securities Exchange
+        exchanges.put("MEXI", "MX");     // Mexican Stock Exchange
+        exchanges.put("BOVESPA", "SA");  // B3 (Brazil)
+        exchanges.put("JSE", "JO");      // Johannesburg Stock Exchange (South Africa)
     }
 
     /**
      * Imports an Interactive Broker Activity Statement from an XML file.
+     * Returns one result per FlexStatement (i.e., per account) in the file.
      *
      * @param f The input stream of the XML file.
-     * @return The result of the extraction process.
+     * @return The list of extraction results, one per account.
      */
-    /* package */ IBFlexStatementExtractorResult importActivityStatement(InputStream f)
+    /* package */ List<IBFlexStatementExtractorResult> importActivityStatement(InputStream f)
     {
-        IBFlexStatementExtractorResult result = new IBFlexStatementExtractorResult();
+        List<IBFlexStatementExtractorResult> results = new ArrayList<>();
 
         try (InputStream fileInputStream = f)
         {
@@ -183,22 +301,35 @@ public class IBFlexStatementExtractor implements Extractor
 
             doc.getDocumentElement().normalize();
 
-            // Parse the document and populate the result
-            result.parseDocument(doc);
+            // Process each FlexStatement separately (one per account)
+            NodeList statements = doc.getElementsByTagName("FlexStatement");
+            for (int i = 0; i < statements.getLength(); i++)
+            {
+                Node node = statements.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE)
+                {
+                    var result = new IBFlexStatementExtractorResult();
+                    result.parseStatement((Element) node);
+                    results.add(result);
+                }
+            }
         }
         catch (ParserConfigurationException | SAXException | IOException e)
         {
-            // Handle exceptions and add errors to the result
+            // Handle exceptions and add errors to a new result
+            var result = new IBFlexStatementExtractorResult();
             result.addError(e);
+            results.add(result);
         }
 
-        return result;
+        return results;
     }
 
     /**
      * @formatter:off
      * The IBFlexStatementExtractorResult class represents the result of importing
-     * an Interactive Broker Activity Statement from an XML file.
+     * a single FlexStatement (i.e., one account) from an Interactive Broker
+     * Activity Statement XML file.
      *
      * Information on the different asset categories
      * --------------------------------------------
@@ -224,10 +355,17 @@ public class IBFlexStatementExtractor implements Extractor
         private static final String ASSETKEY_FUTURE_OPTION = "FOP";
         private static final String ASSETKEY_WARRANTS = "WAR";
 
-        private Document document;
+        private static final FixedExchangeRateProvider FIXED_RATE_PROVIDER = new FixedExchangeRateProvider();
+
+        private Element statement;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
         private String accountCurrency = null;
+        private Map<String, Account> accounts = new HashMap<>();
+        private Portfolio portfolio = null;
+
+        // Map to store currency conversion rates by (date, "fromCurrency-toCurrency")
+        private Map<Pair<String, String>, BigDecimal> conversionRates = new HashMap<>();
 
         /**
          * Processes ConversionRate elements to build currency conversion rate
@@ -250,12 +388,11 @@ public class IBFlexStatementExtractor implements Extractor
 
         /**
          * Builds account information based on the provided XML element. Extracts the currency
-         * attribute from the element, converts it to a currency code, and sets the corresponding
-         * currency unit for the IB account if valid. The resulting information is not returned,
-         * as the primary purpose is to update the 'accountCurrency' field.
+         * and acctAlias attributes from the element. The currency is converted to a currency
+         * code and sets the corresponding currency unit for the IB account if valid. The
+         * acctAlias is matched against client account names to find the corresponding account.
          *
          * @param element The XML element containing account information.
-         * @return Always returns null, as the focus is on updating the currency information.
          */
         private Consumer<Element> buildAccountInformation = element -> {
             String currency = asCurrencyCode(element.getAttribute("currency"));
@@ -264,6 +401,29 @@ public class IBFlexStatementExtractor implements Extractor
                 CurrencyUnit currencyUnit = CurrencyUnit.getInstance(currency);
                 if (currencyUnit != null)
                     accountCurrency = currency;
+            }
+
+            String acctAlias = element.getAttribute("acctAlias");
+            String acctID = element.getAttribute("accountId");
+
+            portfolio = client.getPortfolios().stream()
+                            .filter(p -> p.getName() != null
+                                            && (p.getName().equals(acctAlias) || p.getName().equals(acctID)))
+                            .findFirst() //
+                            .orElse(null);
+
+            if (portfolio != null && portfolio.getReferenceAccount() != null)
+            {
+                Account reference = portfolio.getReferenceAccount();
+
+                // Always add the reference account as a candidate.
+                accounts.put(reference.getCurrencyCode(), reference);
+
+                // Work around the fact that we can't have multiple
+                // reference accounts at the moment by checking for accounts
+                // with the same prefix as the reference account.
+                client.getAccounts().stream().filter(a -> a.getName().startsWith(reference.getName()))
+                                .forEach(a -> accounts.putIfAbsent(a.getCurrencyCode(), a));
             }
         };
 
@@ -352,7 +512,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                results.add(new TransactionItem(accountTransaction));
+                addItem(accountTransaction);
         };
 
         /**
@@ -432,11 +592,11 @@ public class IBFlexStatementExtractor implements Extractor
 
             // set note
             cashTransaction.setNote(extractNote(element));
-            
-            results.add(new AccountTransferItem(cashTransaction, true));
-            
+
+            addItem(cashTransaction);
+
             // check fees
-            
+
             Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), //
                             asAmount(element.getAttribute("ibCommission")));
             if (!fees.isZero())
@@ -449,7 +609,7 @@ public class IBFlexStatementExtractor implements Extractor
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
                                                 : Messages.LabelTransferAccount));
 
-                results.add(new TransactionItem(feesTransaction));
+                addItem(feesTransaction);
             }
             
             // check taxes
@@ -466,7 +626,7 @@ public class IBFlexStatementExtractor implements Extractor
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
                                                 : Messages.LabelTransferAccount));
 
-                results.add(new TransactionItem(taxesTransaction));
+                addItem(taxesTransaction);
             }
         };
 
@@ -516,6 +676,9 @@ public class IBFlexStatementExtractor implements Extractor
             
             portfolioTransaction.setDate(extractDate(element));
 
+            // Set security before amount so that setAmount can detect currency mismatches in all cases
+            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
+
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
             // attribute. If the element contains only the "cost" attribute, the
@@ -523,17 +686,23 @@ public class IBFlexStatementExtractor implements Extractor
             // @formatter:on
             if (element.hasAttribute("netCash"))
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("netCash")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                                asAmount(element.getAttribute("netCash")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                // the account transaction must not carry the gross value unit
+                // for currency conversion
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
             else
             {
-                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("cost")));
+                Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
+                                asAmount(element.getAttribute("cost")));
 
                 setAmount(element, portfolioTransaction.getPortfolioTransaction(), amount);
-                setAmount(element, portfolioTransaction.getAccountTransaction(), amount);
+                // the account transaction must not carry the gross value unit
+                // for currency conversion
+                portfolioTransaction.getAccountTransaction().setMonetaryAmount(amount);
             }
 
             // Set share quantity
@@ -551,8 +720,6 @@ public class IBFlexStatementExtractor implements Extractor
             Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
             portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
 
-            portfolioTransaction.setSecurity(this.getOrCreateSecurity(element, true));
-
             // Set note
             if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
             {
@@ -561,7 +728,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             ExtractorUtils.fixGrossValueBuySell().accept(portfolioTransaction);
 
-            BuySellEntryItem item = new BuySellEntryItem(portfolioTransaction);
+            BuySellEntryItem item = addItem(portfolioTransaction);
 
             if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
@@ -571,8 +738,6 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
             }
-            
-            results.add(item);
         };
 
         /**
@@ -601,8 +766,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                results.add(new BuySellEntryItem(portfolioTransaction));
-
+                addItem(portfolioTransaction);
             }
             else
             {
@@ -625,7 +789,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                results.add(new TransactionItem(portfolioTransaction));
+                addItem(portfolioTransaction);
             }
         };
 
@@ -662,7 +826,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                results.add(new TransactionItem(accountTransaction));
+                addItem(accountTransaction);
         };
 
         /**
@@ -746,22 +910,7 @@ public class IBFlexStatementExtractor implements Extractor
                 dateTime = element.getAttribute("dateTime");
             }
 
-            if (!dateTime.isEmpty())
-            {
-                for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
-                {
-                    try
-                    {
-                        return LocalDateTime.parse(dateTime, formatter);
-                    }
-                    catch (DateTimeParseException ignore)
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            return null;
+            return parseDateTime(dateTime);
         }
 
         /**
@@ -846,12 +995,46 @@ public class IBFlexStatementExtractor implements Extractor
                     return fromRate.divide(toRate, 10, RoundingMode.HALF_DOWN);
             }
 
+            // Check if there's a fixed exchange rate (e.g. GBP/GBX)
+            BigDecimal fixedRate = getWellKnownFixedExchangeRate(fromCurrency, toCurrency);
+            if (fixedRate != null)
+                return fixedRate;
+
+            return null;
+        }
+
+        /**
+         * Returns the exchange rate for currency pairs with a fixed
+         * relationship (e.g. GBX/GBP) using FixedExchangeRateProvider. Handles
+         * both directions.
+         *
+         * @param fromCurrency
+         *            The source currency
+         * @param toCurrency
+         *            The target currency
+         * @return The exchange rate, or null if not a known fixed-rate pair
+         */
+        private BigDecimal getWellKnownFixedExchangeRate(String fromCurrency, String toCurrency)
+        {
+            for (var series : FIXED_RATE_PROVIDER.getAvailableTimeSeries(null))
+            {
+                if (series.getRates() == null || series.getRates().isEmpty())
+                    continue;
+
+                var rate = series.getRates().get(0).getValue();
+
+                if (series.getBaseCurrency().equals(fromCurrency) && series.getTermCurrency().equals(toCurrency))
+                    return rate;
+                else if (series.getBaseCurrency().equals(toCurrency) && series.getTermCurrency().equals(fromCurrency))
+                    return BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_UP);
+            }
+
             return null;
         }
 
         /**
          * @formatter:off
-         * Imports model objects from the document based on the specified type using the provided handling function.
+         * Imports model objects from the statement based on the specified type using the provided handling function.
          *
          * Supported types:
          * - AccountInformation
@@ -866,7 +1049,7 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private void importModelObjects(String type, Consumer<Element> handleNodeFunction)
         {
-            NodeList nList = document.getElementsByTagName(type);
+            NodeList nList = statement.getElementsByTagName(type);
             for (int temp = 0; temp < nList.getLength(); temp++)
             {
                 Node nNode = nList.item(temp);
@@ -886,15 +1069,15 @@ public class IBFlexStatementExtractor implements Extractor
         }
 
         /**
-         * Parses the given XML document and processes various model objects.
+         * Parses a single FlexStatement element and processes its model objects.
          *
-         * @param doc The XML document to parse.
+         * @param statementElement The FlexStatement XML element to parse.
          */
-        public void parseDocument(Document doc)
+        public void parseStatement(Element statementElement)
         {
-            this.document = doc;
+            this.statement = statementElement;
 
-            if (document == null)
+            if (statement == null)
                 return;
 
             // Process conversion rates first
@@ -919,6 +1102,54 @@ public class IBFlexStatementExtractor implements Extractor
             importModelObjects("SalesTax", buildSalesTaxTransaction);
 
             // TODO: Process all FxTransactions
+        }
+
+        /**
+         * Adds an AccountTransaction result and sets an account if possible.
+         */
+        private TransactionItem addItem(AccountTransaction transaction)
+        { 
+            TransactionItem item = new TransactionItem(transaction);
+            item.setAccountPrimary(accounts.get(transaction.getCurrencyCode()));
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds a PortfolioTransaction result and sets a portfolio if possible.
+         */
+        private TransactionItem addItem(PortfolioTransaction transaction)
+        {
+            TransactionItem item = new TransactionItem(transaction);
+            item.setPortfolioPrimary(portfolio);
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds a BuySellEntry result and sets both account and portfolio if
+         * possible.
+         */
+        private BuySellEntryItem addItem(BuySellEntry entry)
+        {
+            BuySellEntryItem item = new BuySellEntryItem(entry);
+            item.setAccountPrimary(accounts.get(entry.getAccountTransaction().getCurrencyCode()));
+            item.setPortfolioPrimary(portfolio);
+            results.add(item);
+            return item;
+        }
+
+        /**
+         * Adds an AccountTransferEntry result and sets both primary and
+         * secondary account if possible.
+         */
+        private AccountTransferItem addItem(AccountTransferEntry entry)
+        {
+            AccountTransferItem item = new AccountTransferItem(entry, true);
+            item.setAccountPrimary(accounts.get(entry.getSourceTransaction().getCurrencyCode()));
+            item.setAccountSecondary(accounts.get(entry.getTargetTransaction().getCurrencyCode()));
+            results.add(item);
+            return item;
         }
 
         public void addError(Exception e)
@@ -1033,8 +1264,7 @@ public class IBFlexStatementExtractor implements Extractor
             allSecurities.add(security);
 
             // Add to result
-            SecurityItem item = new SecurityItem(security);
-            results.add(item);
+            results.add(new SecurityItem(security));
 
             return security;
         }
@@ -1078,9 +1308,13 @@ public class IBFlexStatementExtractor implements Extractor
     {
         try (FileInputStream in = new FileInputStream(inputFile.getFile()))
         {
-            IBFlexStatementExtractorResult result = importActivityStatement(in);
-            errors.addAll(result.getErrors());
-            return result.getResults();
+            List<Item> items = new ArrayList<>();
+            for (var result : importActivityStatement(in))
+            {
+                errors.addAll(result.getErrors());
+                items.addAll(result.getResults());
+            }
+            return items;
         }
         catch (IOException e)
         {

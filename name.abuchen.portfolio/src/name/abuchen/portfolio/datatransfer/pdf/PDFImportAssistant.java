@@ -62,6 +62,7 @@ public class PDFImportAssistant
         extractors.add(new CrowdestorPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DADATBankenhausPDFExtractor(client));
+        extractors.add(new DebitumInvestmentsPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DekaBankPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExtractor(client));
@@ -80,6 +81,7 @@ public class PDFImportAssistant
         extractors.add(new FindependentAGPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new FirstradeSecuritiesIncPDFExtractor(client));
+        extractors.add(new FordMoneyPDFExtractor(client));
         extractors.add(new GenoBrokerPDFExtractor(client));
         extractors.add(new GinmonPDFExtractor(client));
         extractors.add(new GladbacherBankAGPDFExtractor(client));
@@ -118,6 +120,7 @@ public class PDFImportAssistant
         extractors.add(new SberbankEuropeAGPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new ScalableCapitalPDFExtractor(client));
+        extractors.add(new SchelhammerCapitalBankAG(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));

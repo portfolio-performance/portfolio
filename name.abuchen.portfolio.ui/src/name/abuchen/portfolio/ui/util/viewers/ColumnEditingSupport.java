@@ -18,6 +18,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.EditorActivationState;
 
 public abstract class ColumnEditingSupport
@@ -121,7 +123,13 @@ public abstract class ColumnEditingSupport
                 // is *not* pressed because pressing MOD3 copies cell content to
                 // the clipboard (see CopyPasteSupport)
                 if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION)
-                    return !(event.sourceEvent instanceof MouseEvent mouseEvent && mouseEvent.stateMask == SWT.MOD3);
+                {
+                    if (event.sourceEvent instanceof MouseEvent mouseEvent && mouseEvent.stateMask == SWT.MOD3)
+                        return false;
+
+                    return PortfolioPlugin.getDefault().getPreferenceStore()
+                                    .getBoolean(UIConstants.Preferences.DOUBLE_CLICK_CELL_TO_EDIT);
+                }
 
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
                                 || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED

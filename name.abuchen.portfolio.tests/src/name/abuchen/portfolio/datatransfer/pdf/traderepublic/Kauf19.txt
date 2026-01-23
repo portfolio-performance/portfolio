@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann SEITE 1 von 1
+Strasse 1 DATUM 11.08.2025
+12345 Musterstadt AUFTRAG 6630-2b3d
+AUSFÜHRUNG 1369-4eb2
+DEPOT 123456789
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Kauf am 11.08.2025, um 12:06 Uhr (Europe/Berlin) an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION NOMINALE PREIS BETRAG
+Anleihe Sept. 2117 4.000 EUR 60,00 % 2.400,00 EUR
+ISIN: AT0000A1XML2
+GESAMT 2.400,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Stückzinsen -75,25 EUR
+Kapitalertragsteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMT -2.476,25 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE12345678910123456 2025-08-13 -2.476,25 EUR
+Anleihe Sept. 2117 in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich gemäß § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

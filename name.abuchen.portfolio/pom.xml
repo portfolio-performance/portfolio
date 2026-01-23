@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.80.5-SNAPSHOT</version>
+		<version>0.81.3-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -49,7 +49,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -97,6 +97,36 @@
 							<inputDirectories>
 								<include>src</include>
 							</inputDirectories>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<skip>${jarsigner.skip}</skip>
+							<target>
+								<checksum
+									file="${project.basedir}/src/name/abuchen/portfolio/oauth/impl/config.json"
+									algorithm="SHA-256"
+									property="computed.sha256" />
+
+								<condition property="checksum.ok">
+									<equals arg1="${computed.sha256}"
+										arg2="ccea31e6ddb513d5408c062c238b7d485a883a8c62674d539d561da19a96a762" />
+								</condition>
+
+								<fail message="Invalid SHA256 checksum for OAuth config.json"
+									unless="checksum.ok" />
+							</target>
 						</configuration>
 					</execution>
 				</executions>

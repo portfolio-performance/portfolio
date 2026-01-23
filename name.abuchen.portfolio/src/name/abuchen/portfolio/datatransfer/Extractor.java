@@ -103,6 +103,11 @@ public interface Extractor
             return failureMessage != null;
         }
 
+        public boolean isSkipped()
+        {
+            return this instanceof SkippedItem;
+        }
+
         public String getSource()
         {
             return null;
@@ -236,7 +241,12 @@ public interface Extractor
         @Override
         public Money getAmount()
         {
-            return transaction.getMonetaryAmount();
+            var currencyCode = transaction.getCurrencyCode();
+            var amount = transaction.getAmount();
+
+            // if the transaction is not parsed completely, then the
+            // currency code maybe null
+            return currencyCode != null ? Money.of(currencyCode, amount) : null;
         }
 
         @Override
@@ -674,6 +684,128 @@ public interface Extractor
         {
             return action.process(security, price);
         }
+    }
+
+    /**
+     * An item representing transactions that will be displayed to the user but
+     * otherwise get skipped during further processing steps. A typical reason
+     * for an item to get ignored is lack of information found in the document.
+     */
+    static class SkippedItem extends Item
+    {
+        private String skipReason;
+
+        private LocalDateTime dateTime;
+        private Money amount;
+        private String typeInformation;
+        private String source;
+        private Security security;
+        private SkippedSubject subject;
+
+        private class SkippedSubject implements Annotated
+        {
+            private String note;
+
+            @Override
+            public String getNote()
+            {
+                return note;
+            }
+
+            @Override
+            public void setNote(String note)
+            {
+                this.note = note;
+            }
+        }
+
+        /**
+         * Constructs a SkippedItem based on the information found in another
+         * item and assigns a text describing the reason for the skip.
+         *
+         * @param item
+         *            The original item as a data source
+         * @param reason
+         *            Human-readable explanation
+         * @return A new item that will be displayed but otherwise skipped.
+         */
+        public SkippedItem(Item item, String reason)
+        {
+            skipReason = reason;
+            subject = new SkippedSubject();
+
+            // copy basic data from original item
+            dateTime = item.getDate();
+            amount = item.getAmount();
+            typeInformation = item.getTypeInformation();
+            source = item.getSource();
+            security = item.getSecurity();
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return subject;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            this.security = security;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return typeInformation;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return dateTime;
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return amount;
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            subject.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return source;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setSkipReason(String reason)
+        {
+            skipReason = reason;
+        }
+
+        public String getSkipReason()
+        {
+            return skipReason;
+        }
+
     }
 
     /**

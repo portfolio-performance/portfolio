@@ -613,7 +613,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         if (allTransfer)
         {
-            // create action to split transfer action into deposit/removal
+            // create action to split transfer action into deposit/withdrawal
             manager.add(new Separator());
             manager.add(new ConvertTransferToDepositRemovalAction(client, accountTxCollection));
         }

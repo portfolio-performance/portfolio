@@ -817,7 +817,10 @@ import name.abuchen.portfolio.util.TextUtil;
     public void nodeChange(TaxonomyNode node)
     {
         if (!nodeViewer.getTree().isDisposed())
+        {
+            support.invalidateCache();
             nodeViewer.refresh();
+        }
     }
 
     @Override
@@ -893,7 +896,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
             manager.add(sorting);
 
-            if (!node.isRoot())
+            if (!node.isRoot() && !node.getParent().isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
                 manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
@@ -978,7 +981,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
     private void doDeleteClassification(TaxonomyNode node)
     {
-        if (node.isRoot() || node.isUnassignedCategory())
+        if (node.isRoot() || node.isUnassignedCategory() || node.getParent().isRoot())
             return;
 
         node.getParent().removeChild(node);

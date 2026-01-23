@@ -1,12 +1,12 @@
 Translated with the help of
 
 Spanish by [PabloReyes](https://github.com/PabloReyes), Bolzass, Emilio
-Dutch by Mi, Thomas, Dizzy, Caspar, Husch, Idsert
+Dutch by Mi, Thomas, Dizzy, Caspar, Husch, Idsert, Nico
 Portuguese by [iwalucas](https://github.com/iwalucas), Bruno, Paulo Santos, Teppss, David
 Brazilian Portuguese by Rafael
-French by [Skymirrh](https://github.com/Skymirrh), Matthieu, Jérémy
+French by [Skymirrh](https://github.com/Skymirrh), Matthieu, Jérémy, Nico
 Italian by [dfdario](https://github.com/dfdario), Luca, Emanuele, Dario Di Ludovico
-Czech by [drozdikd](https://github.com/drozdikd)
+Czech by [drozdikd](https://github.com/drozdikd), Ales Kabourek
 Russian by Alexander Alyoshin
 Slovak by [Tomáš Vančo](https://github.com/seg-on)
 Polish by Marcin Wichtowski and Arkadiusz Wojtowicz

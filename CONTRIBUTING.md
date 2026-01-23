@@ -58,7 +58,7 @@ Install via Eclipse Marketplace (drag and drop the `Install` button to your work
 
 `Menu` → `Help` → `Install New Software` → Select `Latest Eclipse Simultaneous Release`:
 - **M2E PDE Integration** (under General Purpose Tools)
-- **Eclipse e4 Tools Developer Resources** (under General Purpose Tools)
+- **Eclipse e4 Tools** (under General Purpose Tools)
 
 **Configure Eclipse**
 
@@ -376,16 +376,13 @@ All images and icons must be [Creative Commons CC0](https://creativecommons.org/
 **Sources**
 - Use icons from [iconmonstr.com](https://iconmonstr.com) only
 - Register all images in [Images.java](https://github.com/portfolio-performance/portfolio/blob/master/name.abuchen.portfolio.ui/src/name/abuchen/portfolio/ui/Images.java)
-
-**Format Requirements**
-- **Format**: PNG with transparent background
-- **Sizes**: Create 16x16px and 32x32px versions
-  - `image.png` (16x16px)
-  - `image@2x.png` (32x32px)
+- Use **SVG** format with width and height set to 16px; add a fill color if needed
+- Note: For historical reasons, some icons are still available in PNG format with two resolutions (@1x and @2x). New icons should use SVG format only.
 
 **Color Guidelines**
 - **Passive state**: #393E42 (dark, cool gray)
 - **Active state**: #F18F01 (orange)
+- **Error state**: #D11D1D (dark red)
 
 See [Color Code Reference](#color-code-reference) for exact colors.
 

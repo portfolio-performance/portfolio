@@ -26,6 +26,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSkippedItems;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -435,33 +436,27 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung03.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(6));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
-        // check security
-        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security1.getIsin(), is("LU0322253732"));
-        assertNull(security1.getWkn());
-        assertNull(security1.getTickerSymbol());
-        assertThat(security1.getName(), is("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."));
-        assertThat(security1.getCurrencyCode(), is("EUR"));
+        // check security1
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0322253732"), hasWkn(null), hasTicker(null), //
+                        hasName("Xtrackers MSCI Europe Mid Cap Inhaber-Anteile 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
 
-        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security2.getIsin(), is("DE000A0F5UH1"));
-        assertNull(security2.getWkn());
-        assertNull(security2.getTickerSymbol());
-        assertThat(security2.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
-        assertThat(security2.getCurrencyCode(), is("EUR"));
+        // check security2
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0F5UH1"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
 
-        var security3 = results.stream().filter(SecurityItem.class::isInstance).skip(2).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security3.getIsin(), is("DE000A0D8Q49"));
-        assertNull(security3.getWkn());
-        assertNull(security3.getTickerSymbol());
-        assertThat(security3.getName(), is("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"));
-        assertThat(security3.getCurrencyCode(), is("USD"));
+        // check security3
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A0D8Q49"), hasWkn(null), hasTicker(null), //
+                        hasName("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile"), //
+                        hasCurrencyCode("USD"))));
 
         // check 1st buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -540,7 +535,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung03.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(5));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -628,7 +624,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung04.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "USD");
 
         // check security
@@ -800,7 +797,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung07.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(4));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "USD");
 
         // check security
@@ -991,7 +989,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung09.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(4));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "USD");
 
         // check security
@@ -1555,7 +1554,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung15.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(27));
+        assertThat(results.size(), is(28));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -2046,7 +2046,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung15.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(25));
+        assertThat(results.size(), is(26));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -3112,7 +3113,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung17.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(23));
+        assertThat(results.size(), is(24));
+        assertThat(countSkippedItems(results), is(1L));
 
         // check security
         var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3486,7 +3488,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung17.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(21));
+        assertThat(results.size(), is(22));
+        assertThat(countSkippedItems(results), is(1L));
 
         // check security
         var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4674,7 +4677,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung24.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -4722,7 +4726,8 @@ public class EbasePDFExtractorTest
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung24.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(1));
+        assertThat(results.size(), is(2));
+        assertThat(countSkippedItems(results), is(1L));
         new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
@@ -5062,7 +5067,8 @@ public class EbasePDFExtractorTest
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(3L));
         assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(5));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -5117,7 +5123,8 @@ public class EbasePDFExtractorTest
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(2L));
         assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(6));
+        assertThat(countSkippedItems(results), is(2L));
+        assertThat(results.size(), is(8));
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5282,7 +5289,8 @@ public class EbasePDFExtractorTest
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(10L));
         assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(13));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(14));
 
         assertThat(results, hasItem(security( //
                         hasIsin("LU1854107148"), hasWkn(null), hasTicker(null), //
@@ -5380,7 +5388,8 @@ public class EbasePDFExtractorTest
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(4L));
         assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(7));
+        assertThat(countSkippedItems(results), is(1L));
+        assertThat(results.size(), is(8));
 
         assertThat(results, hasItem(security( //
                         hasIsin("LU1854107148"), hasWkn(null), hasTicker(null), //

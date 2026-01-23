@@ -1,10 +1,9 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import java.time.LocalDateTime;
-import java.util.Iterator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -13,7 +12,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -44,14 +42,14 @@ public class DetectDuplicatesAction implements ImportAction
     public Status process(BuySellEntry entry, Account account, Portfolio portfolio)
     {
         // search for a match in existing investment plan transactions
-        List<InvestmentPlan> plans = client.getPlans();
-        Iterator<InvestmentPlan> i = plans.stream()
+        var plans = client.getPlans();
+        var i = plans.stream() //
                         .filter(p -> p.getSecurity() != null
                                         && p.getSecurity().equals(entry.getPortfolioTransaction().getSecurity()))
                         .iterator();
         while (i.hasNext())
         {
-            List<Transaction> transactions = i.next().getTransactions();
+            var transactions = i.next().getTransactions();
             for (Transaction t : transactions)
             {
                 // use portfolio transaction, because it contains the number of
@@ -92,9 +90,11 @@ public class DetectDuplicatesAction implements ImportAction
 
     private Status check(AccountTransaction subject, List<AccountTransaction> transactions)
     {
+        var equivalentTypes = equivalentTypesOf(subject.getType());
+
         for (AccountTransaction t : transactions)
         {
-            if (subject.getType() != t.getType())
+            if (!equivalentTypes.contains(t.getType()))
                 continue;
 
             if (isPotentialDuplicate(subject, t))
@@ -104,29 +104,25 @@ public class DetectDuplicatesAction implements ImportAction
         return Status.OK_STATUS;
     }
 
+    private static EnumSet<AccountTransaction.Type> equivalentTypesOf(AccountTransaction.Type type)
+    {
+        return switch (type)
+        {
+            case DEPOSIT, TRANSFER_IN -> EnumSet.of(AccountTransaction.Type.DEPOSIT,
+                            AccountTransaction.Type.TRANSFER_IN);
+            case REMOVAL, TRANSFER_OUT -> EnumSet.of(AccountTransaction.Type.REMOVAL,
+                            AccountTransaction.Type.TRANSFER_OUT);
+            default -> EnumSet.of(type);
+        };
+    }
+
     private Status check(PortfolioTransaction subject, List<PortfolioTransaction> transactions)
     {
-        Predicate<PortfolioTransaction> equivalentTypes;
+        var equivalentTypes = equivalentTypesOf(subject.getType());
 
-        switch (subject.getType())
+        for (var t : transactions)
         {
-            case BUY:
-            case DELIVERY_INBOUND:
-                equivalentTypes = t -> t.getType() == PortfolioTransaction.Type.BUY
-                                || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
-                break;
-            case SELL:
-            case DELIVERY_OUTBOUND:
-                equivalentTypes = t -> t.getType() == PortfolioTransaction.Type.SELL
-                                || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-                break;
-            default:
-                equivalentTypes = t -> subject.getType() == t.getType();
-        }
-
-        for (PortfolioTransaction t : transactions)
-        {
-            if (!equivalentTypes.test(t))
+            if (!equivalentTypes.contains(t.getType()))
                 continue;
 
             if (isPotentialDuplicate(subject, t))
@@ -134,6 +130,18 @@ public class DetectDuplicatesAction implements ImportAction
         }
 
         return Status.OK_STATUS;
+    }
+
+    private static EnumSet<PortfolioTransaction.Type> equivalentTypesOf(PortfolioTransaction.Type type)
+    {
+        return switch (type)
+        {
+            case BUY, DELIVERY_INBOUND -> EnumSet.of(PortfolioTransaction.Type.BUY,
+                            PortfolioTransaction.Type.DELIVERY_INBOUND);
+            case SELL, DELIVERY_OUTBOUND -> EnumSet.of(PortfolioTransaction.Type.SELL,
+                            PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            default -> EnumSet.of(type);
+        };
     }
 
     private boolean isPotentialDuplicate(Transaction subject, Transaction other)

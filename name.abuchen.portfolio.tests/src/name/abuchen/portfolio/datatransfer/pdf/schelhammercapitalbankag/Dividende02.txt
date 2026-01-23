@@ -1,0 +1,48 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Schelhammer Capital Bank AG,
+Brandhofg. 24, 8010 Graz (DVR:0043974)
+E-Mail: service@dieplattform.at
+Telefon 0316 80 72 1
+Abrechnung Ereignis
+92880387-6.3.2025
+Depot-Nr.: 123456789
+YCvjECAdF Max, Mag.          
+03/383
+die plattform                      
+Frau
+Mag. LmnzFTndA cpgFGLuLo
+Blumengasse 9
+6685 ZrdB                                                                                                                                                                                        
+Wir haben für Sie am 6.3.2025 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+353,63 Stk
+Titel: IE00BYPHT736  X t r . ( I E ) - i B oxx EUR Cor.Bd Y.P.     
+Registered Shares 1D o.N.          
+Fondsgesellschaft: Xtrackers (IE) Plc
+Ertrag: 0,2071 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: Duesseldorf                        
+Zinsen/Dividenden: 73,24 EUR 
+Zu Gunsten IBAN AT18 7998 8086 9142 7463 73,24 EUR 
+Valuta 6.3.2025
+Extag: 19.2.2025
+Record-Tag: 20.2.2025
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 353,63 Stk
+Anschaffungskurswert: 5.375,89 EUR
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 353,63 Stk
+steuerlicher Anschaffungswert: 5.375,89 EUR
+Anschaffungswertreduzierender Betrag: 73,24 EUR
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 353,63 Stk
+steuerlicher Anschaffungswert: 5.302,65 EUR
+6.3.2025 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+30238 Doknr.: BSG0-045-9777887368

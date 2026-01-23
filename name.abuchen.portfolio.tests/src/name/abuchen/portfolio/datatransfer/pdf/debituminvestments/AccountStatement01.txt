@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.80.5.qualifier
+System: macosx | aarch64 | 21.0.2+13-LTS | Amazon.com Inc.
+-----------------------------------------
+SIA DN Operator
+Registration number: 42103092209
+Dzirnavu iela 67, Riga, Latvia, LV-1050
+https://debitum.investments
+Account holder: John Doe
+Account identifier: 0cf93d00-7026-4cf7-8046-5d3dcee16ab5
+Report date from (inclusive): 2025-11-01
+Report date to (inclusive): 2025-11-30
+ACCOUNT STATEMENT
+Balance on 2025-11-01 12.71
+DEPOSITS during reporting period: 4170.0
+Other balance increases during reporting period: 1.5
+Opening Investments as at 2025-11-01 1819.53
+New investments -3901.12
+Repaid principal 0.0
+Closing Investments as at 2025-11-30 5720.65
+Interest payments during reporting period
+Calculated (accrued) interest* 26.39
+Paid interest** 26.14
+Penalty payments during reporting period
+Calculated (accrued) penalty* 0.0
+Paid penalty** 0.0
+Taxes withheld during reporting period
+Income tax withheld -1.38
+Other balance decreases during reporting 
+period: 0.0
+WITHDRAWALS during reporting period: 2.0
+Balance on 2025-11-30 305.85
+ 
+ 
+* Accrued interest and Accrued penalty is calculated for the reporting period only  
+ 
+** Paid interest and Paid penalty is received within reporting period but might be accrued before 
+reporting period  
+ 
+ 
+Disclaimer: The specific characteristics of the Financial Instrument’s liquidity is provided only on 
+the Debitum platform and the value of Financial Instruments is created only internally in the 
+platform. Financial instruments are not pledged or encumbered and the Client owns the ownership 
+rights to Financial Instruments.The provisions of Directive 2014/65/EU shall apply to all Financial 
+Instruments and the execution of their transactions in the Debitum Platform.

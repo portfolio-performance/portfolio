@@ -1,0 +1,32 @@
+```
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME NACHNAME DATUM 01 Dez. 2025 - 31 Dez. 2025
+Straße 1 IBAN DE00000000000000000000
+12345 Ort BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 10.000,00 € 4,71 € 1.800,00 € 8.204,71 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 
+Dez. Bonus Cash reward allocation 4,71 € 10.004,74 €
+2025
+31 
+Outgoing transfer for Vorname Nachname 
+Dez. Überweisung 1.800,00 € 8.204,71 €
+(DE00000000000000000000)
+2025
+BARMITTELÜBERSICHT
+Zum 31 Dez. 2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 02.01.2026, 08:39:24 Seite 6 von 6
+
+```

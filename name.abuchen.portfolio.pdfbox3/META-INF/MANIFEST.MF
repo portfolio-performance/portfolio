@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio.pdfbox3
-Bundle-Version: 0.80.5.qualifier
+Bundle-Version: 0.81.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: name.abuchen.portfolio.pdfbox3
 Import-Package: org.osgi.framework

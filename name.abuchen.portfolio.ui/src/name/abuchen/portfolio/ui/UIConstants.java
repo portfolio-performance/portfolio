@@ -199,6 +199,12 @@ public interface UIConstants
         String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
 
         /**
+         * @deprecated replaced by the flag experiments
+         */
+        @Deprecated(since = "2025")
+        String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$ //NOSONAR
+        
+        /**
          * Comma-separated list of experimental features that are enabled.
          * Individual features can be toggled via the Experiments preference
          * page.
@@ -206,13 +212,21 @@ public interface UIConstants
         String EXPERIMENTS = "EXPERIMENTS"; //$NON-NLS-1$
 
         /**
-         * Preference key used in 2023 to indicate whether the survey is active.
+         * @deprecated Preference key used in 2023 to indicate whether the survey is active.
          * Do not reuse!
          */
-        @Deprecated
-        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$
+        @Deprecated(since = "2023")
+        String ENABLE_SURVEY_REMINDER = "ENABLE_SURVEY_REMINDER"; //$NON-NLS-1$ //NOSONAR
 
         String ENABLE_SWTCHART_PIECHARTS = "ENABLE_SWTCHART_PIECHARTS"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to activate in-place editing with a double
+         * click. As described in the Eclipse Platform issue
+         * https://github.com/eclipse-platform/eclipse.platform.ui/issues/1069,
+         * on macOS the UI can freeze on multiple double-clicks.
+         */
+        String DOUBLE_CLICK_CELL_TO_EDIT = "DOUBLE_CLICK_CELL_TO_EDIT"; //$NON-NLS-1$
 
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$

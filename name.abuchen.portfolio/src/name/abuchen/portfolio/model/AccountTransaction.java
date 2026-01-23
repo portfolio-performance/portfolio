@@ -75,8 +75,8 @@ public class AccountTransaction extends Transaction
     }
 
     /**
-     * Returns the gross value, i.e. the value including taxes. See
-     * {@link #getGrossValue()}.
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. See {@link #getGrossValue()}.
      */
     public long getGrossValueAmount()
     {
@@ -85,8 +85,8 @@ public class AccountTransaction extends Transaction
     }
 
     /**
-     * Returns the gross value, i.e. the value before taxes are applied. At the
-     * moment, only dividend transactions are supported.
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. At the moment, only dividend transactions are supported.
      */
     @Override
     public Money getGrossValue()

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.ibflex;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAccount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
@@ -9,12 +10,15 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGros
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasPortfolio;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecondaryAccount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundCash;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundCash;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -22,6 +26,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -48,9 +53,11 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -1640,7 +1647,23 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testIBFlexStatementFile10() throws IOException
     {
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        var client = new Client();
+
+        var referenceAccount = new Account("Reference");
+        referenceAccount.setCurrencyCode("EUR");
+        client.addAccount(referenceAccount);
+
+        // The naming convention for multi-currency accounts is that the name
+        // starts with name of the reference account.
+        var accountWithUSD = new Account("Reference USD");
+        accountWithUSD.setCurrencyCode(CurrencyUnit.USD);
+        client.addAccount(accountWithUSD);
+
+        var portfolio = new Portfolio("UXXXXXXX");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile10.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1699,16 +1722,18 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
 
         // check 1st account transfer
-        assertThat(results, hasItem(outboundCash( //
-                        hasDate("2022-12-21T18:06:05"), //
-                        hasNote("Trade-ID: 116815511 | Transaction-ID: 415452010"), //
-                        hasAmount("EUR", 133), hasGrossValue("EUR", 133), //
-                        hasForexGrossValue("USD", 140.9268), //
-                        hasTaxes("EUR", 0), hasFees("EUR", 0))));
-
-        assertThat(results, hasItem(inboundCash( //
-                        hasDate("2022-12-21T18:06:05"), //
-                        hasAmount("USD", 140.9268))));
+        assertThat(results, hasItem(allOf(//
+                        hasAccount(referenceAccount), //
+                        hasSecondaryAccount(accountWithUSD), //
+                        outboundCash( //
+                                        hasDate("2022-12-21T18:06:05"), //
+                                        hasNote("Trade-ID: 116815511 | Transaction-ID: 415452010"), //
+                                        hasAmount("EUR", 133), hasGrossValue("EUR", 133), //
+                                        hasForexGrossValue("USD", 140.9268), //
+                                        hasTaxes("EUR", 0), hasFees("EUR", 0)),
+                        inboundCash( //
+                                        hasDate("2022-12-21T18:06:05"), //
+                                        hasAmount("USD", 140.9268)))));
     }
 
     @Test
@@ -3315,7 +3340,7 @@ public class IBFlexStatementExtractorTest
 
         var euns = new Security("EUNS", "EUR");
         euns.setTickerSymbol("EUNS");
-        client.addSecurity(vwrl);
+        client.addSecurity(euns);
 
         var test = new Security("TEST", "GBP");
         test.setTickerSymbol("TEST");
@@ -3334,7 +3359,7 @@ public class IBFlexStatementExtractorTest
 
         var results = extractor.extract(Collections.singletonList(tempFile), errors);
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(4L));
+        assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(4L));
         new AssertImportActions().check(results, CurrencyUnit.USD, CurrencyUnit.EUR, "GBP");
@@ -3366,5 +3391,245 @@ public class IBFlexStatementExtractorTest
                         hasSecurity(hasTicker("TEST2")), //
                         hasAmount("GBP", 4.47), hasForexGrossValue("EUR", 5.39), //
                         hasTaxes("GBP", 0.00), hasFees("GBP", 0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile26() throws IOException
+    {
+        var client = new Client();
+
+        var euns = new Security("EUNS", "EUR");
+        euns.setTickerSymbol("EUNS");
+        client.addSecurity(euns);
+
+        var net = new Security("Cloudflare", "USD");
+        net.setTickerSymbol("NET");
+        client.addSecurity(net);
+
+        var govs = new Security("GOVS", "EUR");
+        govs.setTickerSymbol("GOVS");
+        client.addSecurity(govs);
+
+        var referenceAccountAwithUSD = new Account("A");
+        referenceAccountAwithUSD.setCurrencyCode("USD");
+        client.addAccount(referenceAccountAwithUSD);
+
+        // name starts with the name of the reference account, but has different
+        // currency. For now, this is the naming convention to support the
+        // multi-currency accounts in the import file
+        var accountAwithEUR = new Account("A EUR");
+        accountAwithEUR.setCurrencyCode("EUR");
+        client.addAccount(accountAwithEUR);
+
+        var referenceAcctountBwithEUR = new Account("B");
+        referenceAcctountBwithEUR.setCurrencyCode("EUR");
+        client.addAccount(referenceAcctountBwithEUR);
+
+        // Match on accountId.
+        var portfolioA = new Portfolio("U1234567");
+        portfolioA.setReferenceAccount(referenceAccountAwithUSD);
+        client.addPortfolio(portfolioA);
+
+        // Match on acctAlias.
+        var portfolioB = new Portfolio("B");
+        portfolioB.setReferenceAccount(referenceAcctountBwithEUR);
+        client.addPortfolio(portfolioB);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile26.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(3L));
+        new AssertImportActions().check(results, CurrencyUnit.USD, CurrencyUnit.EUR, "GBP");
+
+        // NET sale, portfolio A.
+        assertThat(results, hasItem(allOf( //
+                        hasPortfolio(portfolioA), //
+                        hasAccount(referenceAccountAwithUSD), //
+                        sale( //
+                                        hasDate("2025-09-12T09:44:50"), hasShares(1), //
+                                        hasSecurity(hasTicker("NET")), //
+                                        hasAmount("USD", 223.80), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 1.00)))));
+
+        // EUNS dividend, account A.
+        assertThat(results, hasItem(allOf(//
+                        hasAccount(accountAwithEUR), //
+                        dividend( //
+                                        hasDate("2025-07-30"), hasShares(10), //
+                                        hasSecurity(hasTicker("EUNS")), //
+                                        hasAmount("EUR", 13.90), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // EUNS dividend, portfolio B, reference account.
+        assertThat(results, hasItem(allOf( //
+                        hasAccount(referenceAcctountBwithEUR), //
+                        dividend( //
+                                        hasDate("2025-07-30"), hasShares(1), //
+                                        hasSecurity(hasTicker("EUNS")), //
+                                        hasAmount("EUR", 1.39), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+
+        // GOVS dividend, account B.
+        assertThat(results, hasItem(allOf( //
+                        hasAccount(referenceAcctountBwithEUR), //
+                        dividend( //
+                                        hasDate("2025-08-19"), hasShares(100), //
+                                        hasSecurity(hasTicker("GOVS")), //
+                                        hasAmount("EUR", 62.05), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile27() throws IOException
+    {
+        // Test minor unit currency handling: IBKR provides GBP, security is GBX
+        var client = new Client();
+
+        // Create security with GBX currency (minor unit)
+        var eqqq = new Security("INVESCO NASDAQ-100 DIST", "GBX");
+        eqqq.setTickerSymbol("EQQQ.L");
+        eqqq.setIsin("IE0032077012");
+        eqqq.setWkn("35628280");
+        client.addSecurity(eqqq);
+
+        var referenceAccount = new Account("A");
+        referenceAccount.setCurrencyCode("GBP");
+        client.addAccount(referenceAccount);
+
+        var portfolio = new Portfolio("U1234567");
+        portfolio.setReferenceAccount(referenceAccount);
+        client.addPortfolio(portfolio);
+
+        var extractor = new IBFlexStatementExtractor(client);
+
+        var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile27.xml");
+        var tempFile = createTempFile(activityStatement);
+
+        var errors = new ArrayList<Exception>();
+
+        var results = extractor.extract(Collections.singletonList(tempFile), errors);
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L)); // Security already exists
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+
+        // Find the buy transaction
+        BuySellEntry entry = (BuySellEntry) results.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .findFirst() //
+                        .orElseThrow(() -> new AssertionError("Buy transaction not found")) //
+                        .getSubject();
+
+        // Verify transaction currency is GBP (from IBKR)
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is("GBP"));
+        // netCash is -1369.52, but transaction amount should be absolute value
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("GBP", Values.Money.factorize(1369.52))));
+
+        // Verify security currency is GBX
+        assertThat(entry.getPortfolioTransaction().getSecurity().getCurrencyCode(), is("GBX"));
+
+        // Verify GROSS_VALUE unit exists and has correct conversion
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+        assertThat("GROSS_VALUE unit should be present for GBP->GBX conversion", grossValueUnit.isPresent(), is(true));
+
+        var unit = grossValueUnit.get();
+        // GROSS_VALUE unit amount is the gross value before fees
+        // Transaction amount is 1369.52 GBP (netCash), fees are 3.00 GBP
+        // Gross value = 1369.52 - 3.00 = 1366.52 GBP = 136652 (in smallest
+        // unit)
+        assertThat(unit.getAmount().getCurrencyCode(), is("GBP"));
+        assertThat(unit.getAmount().getAmount(), is(1366_52L));
+
+        // Forex amount in GBX: 1369.52 GBP * 100 = 136952 GBX (in smallest
+        // unit)
+        assertThat(unit.getForex().getCurrencyCode(), is("GBX"));
+        assertThat(unit.getForex().getAmount(), is(136952_00L)); // 136952.00 GBX
+
+        // Exchange rate should be 0.01 (GBP to GBX: 1 GBP = 100 GBX, so rate is
+        // 0.01)
+        assertThat(unit.getExchangeRate().compareTo(new java.math.BigDecimal("0.01")), is(0));
+    }
+
+    @Test
+    public void testParseDateTimeFormats()
+    {
+        // Compact format yyyyMMdd - date only
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        // Compact format yyyyMMdd with time HHmmss
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Compact format yyyyMMdd with time HH:mm:ss
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Compact format with timezone (timezone is dropped)
+        assertThat(IBFlexStatementExtractor.parseDateTime("20240115;143052 EST"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // ISO format yyyy-MM-dd - date only
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        // ISO format with comma+space separator (backward compat with
+        // CorporateAction)
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15, 14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // ISO format with semicolon separator
+        assertThat(IBFlexStatementExtractor.parseDateTime("2024-01-15;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // US format MM/dd/yyyy
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/2024;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // US format MM/dd/yy (2-digit year)
+        assertThat(IBFlexStatementExtractor.parseDateTime("01/15/24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // European format dd/MM/yyyy - use day > 12 to avoid ambiguity
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/2024;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // European format dd/MM/yy (2-digit year)
+        assertThat(IBFlexStatementExtractor.parseDateTime("15/01/24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Month abbreviation format dd-MMM-yy
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24"), is(LocalDateTime.of(2024, 1, 15, 0, 0, 0)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;14:30:52"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // With timezone (should be dropped)
+        assertThat(IBFlexStatementExtractor.parseDateTime("15-Jan-24;143052 UTC"),
+                        is(LocalDateTime.of(2024, 1, 15, 14, 30, 52)));
+
+        // Null and empty handling
+        assertThat(IBFlexStatementExtractor.parseDateTime(null), is(nullValue()));
+        assertThat(IBFlexStatementExtractor.parseDateTime(""), is(nullValue()));
+
+        // Invalid format should return null
+        assertThat(IBFlexStatementExtractor.parseDateTime("invalid"), is(nullValue()));
     }
 }

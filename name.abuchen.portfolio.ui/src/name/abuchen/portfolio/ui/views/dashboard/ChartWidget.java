@@ -32,6 +32,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
@@ -80,17 +81,13 @@ public class ChartWidget extends WidgetDelegate<Object>
 
             MenuManager subMenu = new MenuManager(Messages.ClientEditorLabelChart);
 
-            this.configSet.getConfigurations().forEach(c -> {
-                SimpleAction action = new SimpleAction(c.getName(), a -> {
-                    config = c;
-                    delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
+            this.configSet.getConfigurations().forEach(c -> subMenu.add(new MenuContribution(c.getName(), () -> {
+                config = c;
+                delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
 
-                    delegate.update();
-                    delegate.getClient().touch();
-                });
-                action.setChecked(c.equals(config));
-                subMenu.add(action);
-            });
+                delegate.update();
+                delegate.getClient().touch();
+            }, c.equals(config))));
 
             manager.add(subMenu);
         }

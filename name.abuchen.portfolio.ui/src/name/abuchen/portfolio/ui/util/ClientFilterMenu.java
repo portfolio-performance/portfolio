@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -37,6 +36,8 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 
 public final class ClientFilterMenu implements IMenuListener
 {
@@ -148,22 +149,18 @@ public final class ClientFilterMenu implements IMenuListener
     public void menuAboutToShow(IMenuManager manager)
     {
         defaultItems.forEach(item -> {
-            Action action = new SimpleAction(item.label, a -> {
+            manager.add(new MenuContribution(item.label, () -> {
                 selectedItem = item;
                 listeners.forEach(l -> l.accept(item.filter));
-            });
-            action.setChecked(item.equals(selectedItem));
-            manager.add(action);
+            }, item.equals(selectedItem)));
         });
 
         manager.add(new Separator());
         customItems.forEach(item -> {
-            Action action = new SimpleAction(item.label, a -> {
+            manager.add(new MenuContribution(item.label, () -> {
                 selectedItem = item;
                 listeners.forEach(l -> l.accept(item.filter));
-            });
-            action.setChecked(item.equals(selectedItem));
-            manager.add(action);
+            }, item.equals(selectedItem)));
         });
 
         manager.add(new Separator());
@@ -227,6 +224,7 @@ public final class ClientFilterMenu implements IMenuListener
         dialog.setTitle(Messages.LabelClientFilterDialogTitle);
         dialog.setMessage(Messages.LabelClientFilterDialogMessage);
         dialog.setPropertyLabel(Messages.ColumnName);
+        dialog.setViewerComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         List<Object> elements = new ArrayList<>();
         elements.addAll(client.getPortfolios());

@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.views.columns;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -14,17 +16,17 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
-public class DistanceFromMovingAverageColumn extends Column
+public class DistanceFromMovingAverageColumn extends Column implements Column.CacheInvalidationListener
 {
     private static final class SmaPeriodColumnOption implements Column.Options<Integer>
     {
@@ -88,7 +90,7 @@ public class DistanceFromMovingAverageColumn extends Column
 
     private static final class SmaPeriodColumnLabelProvider extends OptionLabelProvider<Integer>
     {
-        private BiFunction<Object, Integer, Double> valueProvider;
+        private final BiFunction<Object, Integer, Double> valueProvider;
 
         public SmaPeriodColumnLabelProvider(BiFunction<Object, Integer, Double> valueProvider)
         {
@@ -135,6 +137,8 @@ public class DistanceFromMovingAverageColumn extends Column
         }
     }
 
+    private final Map<CacheKey, Double> cache = new HashMap<>();
+
     public DistanceFromMovingAverageColumn(Supplier<LocalDate> dateProvider)
     {
         super("distance-from-sma", Messages.ColumnDistanceFromMovingAverage, SWT.RIGHT, 85); //$NON-NLS-1$
@@ -142,17 +146,11 @@ public class DistanceFromMovingAverageColumn extends Column
         List<Integer> smaIntervals = Arrays.asList(5, 20, 30, 38, 50, 90, 100, 200);
         BiFunction<Object, Integer, Double> valueProvider = (element, option) -> {
 
-            Security s = Adaptor.adapt(Security.class, element);
-            if (s == null)
+            var security = Adaptor.adapt(Security.class, element);
+            if (security == null)
                 return null;
 
-            List<SecurityPrice> prices = s.getLatestNPricesOfDate(dateProvider.get(), option);
-            if (prices.size() < option || prices.isEmpty())
-                return null;
-
-            Double sma = SimpleMovingAverage.calculateSma(prices);
-
-            return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
+            return getOrCompute(security, option, dateProvider.get());
         };
 
         setOptions(new SmaPeriodColumnOption(Messages.ColumnDistanceFromMovingAverage_Option, smaIntervals));
@@ -176,5 +174,24 @@ public class DistanceFromMovingAverageColumn extends Column
             return Double.compare(v1.doubleValue(), v2.doubleValue());
         });
         setSorter(sorter);
+    }
+
+    private Double getOrCompute(Security security, Integer smaDays, LocalDate date)
+    {
+        var cacheKey = new CacheKey(security, smaDays, date);
+        return cache.computeIfAbsent(cacheKey, key -> {
+            var prices = security.getLatestNPricesOfDate(date, smaDays);
+            if (prices.size() < smaDays || prices.isEmpty())
+                return null;
+
+            var sma = SimpleMovingAverage.calculateSma(prices);
+            return prices.get(prices.size() - 1).getValue() / Values.Quote.divider() / sma - 1;
+        });
+    }
+
+    @Override
+    public void invalidateCache()
+    {
+        cache.clear();
     }
 }

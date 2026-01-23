@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
-@Deprecated
+@Deprecated(since = "2013")
 /* package */class Category
 {
     private String uuid;
@@ -19,37 +19,44 @@ import java.util.UUID;
     private List<Category> children = new ArrayList<Category>();
     private List<Object> elements = new ArrayList<Object>();
 
+    @Deprecated(since = "2013")
     public String getUUID()
     {
         return uuid;
     }
 
+    @Deprecated(since = "2013")
     /* package */void generateUUID()
     {
         // needed to assign UUIDs when loading older versions from XML
         uuid = UUID.randomUUID().toString();
     }
 
+    @Deprecated(since = "2013")
     public String getName()
     {
         return name;
     }
 
+    @Deprecated(since = "2013")
     public int getPercentage()
     {
         return percentage;
     }
 
+    @Deprecated(since = "2013")
     public List<Category> getChildren()
     {
         return Collections.unmodifiableList(children);
     }
 
+    @Deprecated(since = "2013")
     public List<Object> getElements()
     {
         return elements;
     }
 
+    @Deprecated(since = "2013")
     public List<Category> flatten()
     {
         List<Category> answer = new ArrayList<Category>();
@@ -69,6 +76,7 @@ import java.util.UUID;
     }
 
     @Override
+    @Deprecated(since = "2013")
     public String toString()
     {
         return name;

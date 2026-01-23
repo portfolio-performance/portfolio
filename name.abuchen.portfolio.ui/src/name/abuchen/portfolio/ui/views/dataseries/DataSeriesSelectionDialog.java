@@ -17,7 +17,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -34,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.LocaleSenstiveViewerComparator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
@@ -302,7 +302,7 @@ public class DataSeriesSelectionDialog extends Dialog
         TreeViewerColumn column = new TreeViewerColumn(treeViewer, SWT.None);
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100));
 
-        treeViewer.setLabelProvider(new LabelProvider()
+        var labelProvider = new LabelProvider()
         {
             @Override
             public Image getImage(Object element)
@@ -334,11 +334,13 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 return ((Node) element).label;
             }
-        });
+        };
+
+        treeViewer.setLabelProvider(labelProvider);
         treeViewer.setContentProvider(new NodeContentProvider());
         treeViewer.addFilter(elementFilter);
         treeViewer.setInput(elements);
-        treeViewer.setComparator(new ViewerComparator());
+        treeViewer.setComparator(new LocaleSenstiveViewerComparator(labelProvider));
 
         hookListener();
 

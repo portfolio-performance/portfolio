@@ -37,6 +37,88 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.81.2" date="2026-01-18">
+      <description>
+        <ul>
+          <li>Improvement: Improved PDF importers for flatexDEGIRO, Postbank, Deutsche Bank, and DirectaSIM.</li>
+          <li>Improvement: Interactive Brokers Flex Query (IBFlex) now supports additional date and time formats.</li>
+          <li>Improvement: Added a dedicated submenu for selecting the reporting period when coloring the tree map by performance.</li>
+          <li>Fix: Prevented deletion of the main node in taxonomies.</li>
+          <li>Fix: Fixed an issue with filtering search results for new instruments by currency or type.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für flatexDEGIRO, Postbank, Deutsche Bank und DirectaSIM wurden verbessert.</li>
+          <li xml:lang="de">Verbesserung: Interactive Brokers Flex Query (IBFlex) unterstützt nun zusätzliche Datums- und Zeitformate.</li>
+          <li xml:lang="de">Verbesserung: Dediziertes Untermenü zur Auswahl des Berichtszeitraums, wenn die Tree Map farblich nach Rendite dargestellt wird.</li>
+          <li xml:lang="de">Fehlerbehebung: Das Löschen des Hauptknotens in Klassifikationen wird nun verhindert.</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem beim Filtern nach Währung oder Typ von Suchergebnissen nach neuen Wertpapieren.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.1" date="2026-01-11">
+      <description>
+        <ul>
+          <li>New: Added unit risk line visualization to the returns/volatility chart.</li>
+          <li>New: Added a PDF importer for Bank Norwegian.</li>
+          <li>Improvement: Improved warning messages for transactions that cannot be imported automatically due to missing information such as exchange rates, taxes, or fees.</li>
+          <li>Improvement: Enhanced PDF importers for Renault Bank Direkt, Scalable Capital, flatexDEGIRO, C24 Bank, and Raiffeisenbank Bankgruppe.</li>
+          <li>Improvement: Added a setting to deactivate cell editing on double-click.</li>
+          <li>Improvement: CSV import now supports the yyyy.MM.dd and dd-MMM-yyyy date formats.</li>
+          <li>Improvement: Interactive Brokers Flex Query (IBFlex) now supports multi-account imports with automatic account matching by alias and currency, and handles GBP/GBX currency conversion.</li>
+          <li>Improvement: Accounts and portfolios are now sorted alphabetically in drop-down boxes for in-place editing.</li>
+          <li>Improvement: Improved duplicate transaction detection during imports, enabling cross-account matching between transfers and deposits or withdrawals.</li>
+          <li>Fix: Fixed currency instantiation for locales that specify a region instead of a country.</li>
+          <li>Fix: Fixed grouped accounts not updating their base currency when switching.</li>
+          <li>Fix: Fixed chart ranges when adjusting them by pressing '0' in the historical prices chart.</li>
+          <li>Fix: Fixed taxonomy or filter names containing '@' not displaying correctly in menu items.</li>
+          <li xml:lang="de">Neu: Risikolinie im Rendite-/Volatilitätsdiagramm hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Bank Norwegian hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Warnmeldungen für Buchungen verbessert, die aufgrund fehlender Informationen wie Wechselkurse, Steuern oder Gebühren nicht automatisch importiert werden können.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Renault Bank Direkt, Scalable Capital, flatexDEGIRO, C24 Bank und Raiffeisenbank Bankgruppe verbessert.</li>
+          <li xml:lang="de">Verbesserung: Neue Einstellung hinzugefügt, um die Zellenbearbeitung per Doppelklick zu deaktivieren.</li>
+          <li xml:lang="de">Verbesserung: Der CSV-Import unterstützt nun die Datumsformate yyyy.MM.dd und dd-MMM-yyyy.</li>
+          <li xml:lang="de">Verbesserung: Interactive Brokers Flex Query (IBFlex) unterstützt nun den Import mehrerer Konten mit automatischer Kontozuordnung anhand von Kontoalias und Währung sowie die Währungsumrechnung zwischen GBP und GBX.</li>
+          <li xml:lang="de">Verbesserung: Konten und Depots werden nun alphabetisch in Dropdown-Listen für die In-Place-Bearbeitung sortiert.</li>
+          <li xml:lang="de">Verbesserung: Erkennung doppelter Buchungen beim Import verbessert, sodass Umbuchungen mit Ein- und Auszahlungen kontenübergreifend abgeglichen werden.</li>
+          <li xml:lang="de">Fehlerbehebung: Fehler bei der Ermittlung der Währung für Locales behoben, die eine Region statt eines Landes angeben.</li>
+          <li xml:lang="de">Fehlerbehebung: Beim Wechsel der Berichtswährung werden die Zahlen in den gruppierten Konten nun aktualisiert.</li>
+          <li xml:lang="de">Fehlerbehebung: Fehler im Kursdiagramm behoben, wenn die Y-Achse durch Drücken von '0' neu ausgerichtet wird.</li>
+          <li xml:lang="de">Fehlerbehebung: Klassifikations- oder Filternamen mit '@' werden nun korrekt in Menüeinträgen angezeigt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.81.0" date="2025-12-20">
+      <description>
+        <ul>
+          <li>New: Updated to the Eclipse 2025-12 framework.</li>
+          <li>New: Added a search filter to the Security Performance view.</li>
+          <li>New: Added an option to group trades by taxonomy in the Trades view.</li>
+          <li>New: Added an option for a flat view (disable taxonomy grouping) in the Statement of Assets.</li>
+          <li>New: Added Ford Money, Debitum Investments, and Schelhammer Capital Bank AG PDF importers.</li>
+          <li>New: Added average columns to the Payments view showing monthly, quarterly, or yearly averages.</li>
+          <li>Improvement: The input dialog now presets the transaction date from the last entry.</li>
+          <li>Improvement: CSV import now calculates the exchange rate if not provided for forex gross values.</li>
+          <li>Improvement: Added a CSV import template for Targobank bank account transactions.</li>
+          <li>Improvement: Added an experimental option to enable monitor-specific scaling.</li>
+          <li>Improvement: Extended Interactive Brokers Flex Query (IBFlex) exchange support and improved currency conversion handling.</li>
+          <li>Improvement: Enhanced PDF importers for Suresse Direkt Bank, Schelhammer Capital, Baader Bank, Saxo Bank, comdirect, Deutsche Bank, Consorsbank, Scalable Capital, DKB, easybank, Trade Republic, flatex, DADAT Bank, Deutsche Postbank, Bourse Direct, Tradegate AG, Hypothekarbank Lenzburg, Yuh, and PostFinance.</li>
+          <li>Fix: Fixed dividend rate of return calculations when currencies differ.</li>
+          <li>Fix: Fixed unescaped tooltip labels.</li>
+          <li xml:lang="de">Neu: Aktualisierung auf das Eclipse-Framework 2025-12.</li>
+          <li xml:lang="de">Neu: Suchfilter in der Ansicht „Wertpapier-Performance“ hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option zum Gruppieren von Trades nach Klassifikationen in der Trades-Ansicht hinzugefügt.</li>
+          <li xml:lang="de">Neu: Option für eine flache Ansicht (keine Gruppierung nach einer Klassifikation) in der Vermögensübersicht hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ford Money, Debitum Investments und Schelhammer Capital Bank AG hinzugefügt.</li>
+          <li xml:lang="de">Neu: Neue Spalte mit monatlichen, quartalsweisen oder jährlichen Durchschnittswerten in der Ansicht 'Zahlungen'.</li>
+          <li xml:lang="de">Verbesserung: Im Eingabedialog wird das Transaktionsdatum nun mit dem zuletzt verwendeten Datum vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Beim CSV-Import wird nun der Wechselkurs berechnet, wenn er für den Brutto-Fremdwährungswert nicht angegeben ist.</li>
+          <li xml:lang="de">Verbesserung: CSV-Importvorlage für Targbank-Kontoumsätze hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Experimentelle Option zur Aktivierung einer monitor-spezifischen Skalierung hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Unterstützung der Börsen in Interactive Brokers Flex Query (IBFlex) erweitert und die Behandlung der Währungsumrechnung verbessert.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Suresse Direkt Bank, Schelhammer Capital, Baader Bank, Saxo Bank, comdirect, Deutsche Bank, Consorsbank, Scalable Capital, DKB, easybank, Trade Republic, flatex, DADAT Bank, Deutsche Postbank, Bourse Direct, Tradegate AG, Hypothekarbank Lenzburg, Yuh und PostFinance verbessert.</li>
+          <li xml:lang="de">Fix: Berechnung der Dividendenrendite bei unterschiedlichen Währungen korrigiert.</li>
+          <li xml:lang="de">Fix: Nicht korrekt maskierte Tooltip-Beschriftungen korrigiert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.80.4" date="2025-11-01">
       <description>
           <ul>

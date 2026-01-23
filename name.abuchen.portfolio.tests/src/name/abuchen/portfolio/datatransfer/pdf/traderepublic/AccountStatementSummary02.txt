@@ -1,0 +1,75 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA  C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+RubVb NsqkG PaJBLE FECHA 01 nov 2025 - 30 nov 2025
+SVoyUu kJW de la jevPaD 190- SA 5 IBAN ES1234567891234567891234
+08004 Barcelona BIC TRBKESM2XXX
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta corriente 41.994,59 € 9.228,99 € 5.611,07 € 45.612,51 €
+TRANSACCIONES DE CUENTA
+FECHA TIPO DESCRIPCIÓN ENTRADA DE SALIDA DE BALANCE
+DINERO DINERO
+01 nov 
+Pago de intereses Interest payment 53,33 € 42.047,92 €
+2025
+02 nov 
+Transacción con tarjeta ALIEXPRESS.COM 23,53 € 42.024,39 €
+2025
+02 nov 
+Transacción con tarjeta PAYPAL *URBANSPORTS 19,90 € 42.004,49 €
+2025
+03 nov Transferencia por Sepa Direct Debit transfer to FUNDACION TIERRA DE HOMBRES 
+20,00 € 41.984,49 €
+2025 domiciliación bancaria ESPANA
+03 nov 
+Transacción con tarjeta CAL MAJORAL 108,74 € 41.875,75 €
+2025
+03 nov 
+Recompensa Your Saveback payment 10,12 € 41.885,87 €
+2025
+03 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 175,00 € 41.710,87 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 24.305555
+03 nov Savings plan execution IE000716YHJ7 Invesco Markets II plc - 
+Comercio 12,04 € 41.698,83 €
+2025 Invesco FTSE All-World UCITS ETF Acc, quantity: 1.405555
+06 nov 
+Transacción con tarjeta PAYPAL *ITUNESAPPST APPLE 6,99 € 41.691,84 €
+2025
+07 nov 
+Transacción con tarjeta 3.OCIO 2025 13,90 € 41.677,94 €
+2025
+08 nov 
+Transacción con tarjeta PAYPAL *ITUNESAPPST APPLE 6,99 € 41.684,93 €
+2025
+RESUMEN DEL BALANCE
+a 30 nov 2025
+CUENTAS COLECTIVAS SALDO
+Crédit Agricole 45.612,51 €
+NOTAS SOBRE EL EXTRACTO DE CUENTA
+Por favor, compruebe su extracto de cuenta, cualquier objeción deberá ser planteada inmediatamente. Tenga en cuenta que el saldo de 
+la cuenta indicado no tiene en cuenta la fecha de valor de las reservas o transacciones individuales, es decir, el importe indicado no se 
+corresponde necesariamente con el saldo de la cuenta relevante para el cálculo de los intereses. Se considerará que el extracto de 
+cuenta periódico ha sido aprobado si no se presentan objeciones en un plazo de 6 semanas. Para cumplir con el plazo, basta con 
+presentar una objeción a través de nuestro servicio de atención al cliente (chat). Todos los chats son objeto de revisiones independientes 
+por parte del departamento de auditoría interna. En relación con los contratos subyacentes, este extracto de cuenta se considera una 
+factura bajo la Ley alemana del IVA (UStG) de acuerdo con el número de cuenta indicado. Los saldos mantenidos en bancos custodios 
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 4 de 5
+TRADE REPUBLIC BANK GMBH, SUCURSAL EN ESPAÑA C/ VELAZQUEZ 50 - PLANTA 5, MADRID 28001 - MADRID
+están protegidos hasta 100.000 € por el sistema de protección de depósitos del banco custodio. Las acciones de fondos del mercado 
+monetario cualificados (QMMF) están protegidas en el improbable caso de insolvencia de Trade Republic. Puede encontrar más 
+información sobre la protección de sus fondos en https://support.traderepublic.com.
+Trade Republic Bank GmbH, Sucursal en España www.traderepublic.es Domicilio social: Trade Republic Bank GmbH Directores generales
+C/ Velazquez 50 - Planta 5 NIF-IVA DE307510626 Brunnenstrasse 19-21, 10119 Berlín, Alemania Andreas Torner
+28001, Madrid, Madrid Registrada en el Registro Mercantil del juzgado local de Gernot Mittendorfer
+NIF: W0322893I Charlottenburg con el número HRB 244347 B, Alemania Christian Hecker
+Thomas Pischke
+Creado en 2 dic 2025, 15:28:08 Página 5 de 5

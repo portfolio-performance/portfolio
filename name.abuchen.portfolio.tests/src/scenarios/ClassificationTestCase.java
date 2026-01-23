@@ -116,7 +116,7 @@ public class ClassificationTestCase
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60)))))));
 
-        // check that other purchase transactions are converted into removals
+        // check that other purchase transactions are converted into withdrawals
 
         assertThat(txa, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
@@ -601,7 +601,7 @@ public class ClassificationTestCase
         List<AccountTransaction> txa = categoryClient.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .collect(Collectors.toList());
 
-        // check that dividends are included + removal to reflect the 30%
+        // check that dividends are included + withdrawal to reflect the 30%
         // assignment of the account
 
         assertThat(txa, hasItem(allOf( //
@@ -683,7 +683,7 @@ public class ClassificationTestCase
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(688.36 * 0.3)))))));
 
-        // check that dividends are included + removal to reflect the 30%
+        // check that dividends are included + withdrawal to reflect the 30%
         // assignment of the account
 
         assertThat(txa, hasItem(allOf( //

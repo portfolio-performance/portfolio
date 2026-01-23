@@ -92,7 +92,7 @@ class CrosshairTool implements ChartTool
 
     private void drawCrosshairValueTextbox(PaintEvent e, Spot spot, Point p)
     {
-        String yText = chart.getToolTip().getDefaultValueFormat().format(spot.valueYRightAxis());
+        String yText = chart.getToolTip().getDefaultValueFormat().format(spot.valueYAxis());
 
         // Add margin to text
         Point txtYExtend = e.gc.textExtent(yText);
@@ -124,15 +124,15 @@ class CrosshairTool implements ChartTool
 
     private void drawCrosshairValueSecondAxisTextbox(PaintEvent e, Spot spot, Point p)
     {
-        IAxis axis = chart.getAxisSet().getYAxis(2);
-        if (!axis.getTick().isVisible())
+        IAxis percentageAxis = chart.getAxisSet().getYAxis(2);
+        if (percentageAxis == null || !percentageAxis.getTick().isVisible())
             return;
 
-        var axisFormat = axis.getTick().getFormat();
+        var axisFormat = percentageAxis.getTick().getFormat();
         String yText = ""; //$NON-NLS-1$
         if (axisFormat != null)
         {
-            yText = axisFormat.format(spot.valueYLeftAxis());
+            yText = axisFormat.format(spot.valueYPercentageAxis());
         }
 
         // Add margin to text

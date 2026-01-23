@@ -12,9 +12,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 
-import name.abuchen.portfolio.datatransfer.csv.AktienfreundeNetExporter;
-import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
-import name.abuchen.portfolio.datatransfer.csv.VINISExporter;
+import name.abuchen.portfolio.datatransfer.csv.exporter.CSVExporter;
+import name.abuchen.portfolio.datatransfer.csv.exporter.VINISExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -92,7 +91,8 @@ public class ExportWizard extends Wizard
             }
             else if (exportClass == AccountTransaction.class)
             {
-                new CSVExporter().exportAccountTransactions(file, (Account) exportItem);
+                var accountItem = (Account) exportItem;
+                new CSVExporter().exportTransactions(file, accountItem.getTransactions());
             }
 
             // portfolio transactions
@@ -102,7 +102,8 @@ public class ExportWizard extends Wizard
             }
             else if (exportClass == PortfolioTransaction.class)
             {
-                new CSVExporter().exportPortfolioTransactions(file, (Portfolio) exportItem);
+                var portfolioItem = (Portfolio) exportItem;
+                new CSVExporter().exportTransactions(file, portfolioItem.getTransactions());
             }
 
             // master data
@@ -118,8 +119,6 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportSecurityMasterData(file, client.getSecurities());
                 else if (Messages.ExportWizardMergedSecurityPrices.equals(exportItem))
                     new CSVExporter().exportMergedSecurityPrices(converter, file, client.getSecurities());
-                else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
-                    new AktienfreundeNetExporter().exportAllTransactions(file, client);
                 else if (Messages.ExportWizardVINISApp.equals(exportItem))
                     new VINISExporter().exportAllValues(file, client, factory);
             }

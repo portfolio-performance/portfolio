@@ -230,6 +230,7 @@ public class SecurityTransferModel extends AbstractModel
         firePropertyChange(Properties.targetPortfolio.name(), this.targetPortfolio, this.targetPortfolio = portfolio); // NOSONAR
     }
 
+    @Override
     public LocalDate getDate()
     {
         return date;

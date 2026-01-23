@@ -432,7 +432,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("note").optional()
                 .match("^.*(?<note>Wiederanlage).* [\\w]{3} [\\.,\\d]+.*$")
-                .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                 .wrap(t -> {
                     if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)

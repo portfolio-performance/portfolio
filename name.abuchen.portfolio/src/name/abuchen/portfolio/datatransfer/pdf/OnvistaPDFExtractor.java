@@ -19,6 +19,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String SKIP_TRANSACTION = "skipTransaction";
+
     public OnvistaPDFExtractor(Client client)
     {
         super(client);
@@ -311,14 +313,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Zwangsabfindung gem.ß Hauptversammlungsbeschluss .*) Der .bertragungsbeschluss .*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Stückzinsaufwand EUR 82,55
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>St.ckzinsaufwand [A-Z]{3} [\\.,\\d]+)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -742,7 +744,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .find("Ertragsthesaurierung .*") //
                                                         .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            type.getCurrentContext().putBoolean("skipTransaction", true);
+                                                            type.getCurrentContext().put(SKIP_TRANSACTION,
+                                                                            Messages.PDFSkipNotImportable);
 
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -876,21 +879,21 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Ertrag f.r [\\d]{4}(\\/[\\d]{2,4})?).*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Kapitalrückzahlung:
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Kapitalr.ckzahlung):.*$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))),
                                         // @formatter:off
                                         // Storno unserer Dividendengutschrift Nr. 67390000 vom 15.05.2020.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^(?<note>Storno unserer Dividendengutschrift Nr\\. .*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | "))))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
@@ -906,8 +909,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
 
-                            if (type.getCurrentContext().getBoolean("skipTransaction"))
-                                return null;
+                            if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
+                                return new SkippedItem(item, type.getCurrentContext().get(SKIP_TRANSACTION));
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1169,7 +1172,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^F.r die (?<note>Registrierung der Namens\\-Aktien) .*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(t -> {
                             // If we have multiple entries in the document, with

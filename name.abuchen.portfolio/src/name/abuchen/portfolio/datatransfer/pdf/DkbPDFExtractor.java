@@ -292,7 +292,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>(Limit|R.ckzahlungskurs) [\\.,\\d]+ ([\\w]{3}|%)).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap((t, ctx) -> {
                             var item = new BuySellEntryItem(t);
@@ -453,7 +453,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         // @formatter:off
                         // Kapitalrückzahlung
@@ -529,7 +529,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Depotkonto\\-Nr\\. .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
                         .wrap(BuySellEntryItem::new);
     }
@@ -1092,6 +1092,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|sonstige Buchung" //
                                         + "|Eingang Inst\\.Paym\\." //
                                         + "|Eingang Echtzeit.berw" //
+                                        + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
                                         + "|Basislastschrift" //
@@ -1155,6 +1156,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 06.02.2025 Kartenzahlung onl              -460,00
         //  1 7.02.2025 Kartenzahlung               -44,00
         // 08.04.2025 Kartenzahlung / Wert: 07.04.2025               -13,20
+        // 06.11.2025 Echtzeitüberweisung               -50,00
         // @formatter:on
         var depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format02);
@@ -1178,6 +1180,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Eingang Inst\\.Paym\\." //
                                         + "|Eingang Echtzeit.berw"
                                         + "|Eingang Echtzeit.bw\\." //
+                                        + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
                                         + "|Basislastschrift" //
@@ -1252,6 +1255,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|sonstige Buchung" //
                         + "|Eingang Inst\\.Paym\\." //
                         + "|Eingang Echtzeit.berw" //
+                        + "|Echtzeit.berweisung" //
                         + "|.berweisung" //
                         + "|Dauerauftrag" //
                         + "|Basislastschrift" //
@@ -1282,6 +1286,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|sonstige Buchung" //
                                         + "|Eingang Inst\\.Paym\\." //
                                         + "|Eingang Echtzeit.berw" //
+                                        + "|Echtzeit.berweisung" //
                                         + "|.berweisung" //
                                         + "|Dauerauftrag" //
                                         + "|Basislastschrift" //

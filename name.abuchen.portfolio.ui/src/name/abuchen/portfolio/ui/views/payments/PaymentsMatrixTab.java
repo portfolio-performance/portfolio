@@ -74,6 +74,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
     protected IPreferenceStore preferences;
 
     protected boolean columnsInReverseOrder = false;
+    protected boolean showAverageColumn = false;
 
     protected Font boldFont;
     protected TableColumnLayout tableLayout;
@@ -92,6 +93,12 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         return this.getClass().getSimpleName() + "-columnsInReverseOrder"; //$NON-NLS-1$
     }
 
+    private String getKeyForShowAverage()
+    {
+        // Separate keys for sub-classes
+        return this.getClass().getSimpleName() + "-showAverages"; //$NON-NLS-1$
+    }
+
     protected void addReverseColumnAction(IMenuManager manager)
     {
         Action action = new SimpleAction(Messages.LabelColumnsInReverseOrder, a -> {
@@ -100,6 +107,18 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             preferences.setValue(getKeyForReverseOrder(), columnsInReverseOrder);
         });
         action.setChecked(columnsInReverseOrder);
+        manager.add(action);
+    }
+
+    protected void addAverageColumnAction(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelShowAverage, a -> {
+            showAverageColumn = !showAverageColumn;
+            preferences.setValue(getKeyForShowAverage(), showAverageColumn);
+
+            model.fireUpdateChange();
+        });
+        action.setChecked(showAverageColumn);
         manager.add(action);
     }
 
@@ -136,6 +155,7 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         Composite container = new Composite(parent, SWT.NONE);
 
         columnsInReverseOrder = preferences.getBoolean(getKeyForReverseOrder());
+        showAverageColumn = preferences.getBoolean(getKeyForShowAverage());
 
         tableLayout = new TableColumnLayout();
         container.setLayout(tableLayout);

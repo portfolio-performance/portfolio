@@ -5,13 +5,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.80.5-SNAPSHOT</version>
+	<version>0.81.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>5.0.0</tycho-version>
+		<tycho-version>5.0.1</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -429,7 +429,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.3.1</version>
+					<version>3.4.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -539,7 +539,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>12.1.2</version>
+							<version>13.0.0</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -563,7 +563,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.3.0.6276</version>
+					<version>5.5.0.6356</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
@@ -573,7 +573,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.6.2</version>
+					<version>3.6.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>

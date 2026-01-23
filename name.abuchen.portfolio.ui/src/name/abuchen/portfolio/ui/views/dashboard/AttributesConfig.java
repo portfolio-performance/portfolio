@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.action.MenuContribution;
 
 public class AttributesConfig implements WidgetConfig
 {
@@ -63,18 +64,12 @@ public class AttributesConfig implements WidgetConfig
 
         for (AttributeType type : availableTypes)
         {
-            Action action = new SimpleAction(type.getName(), a -> {
+            subMenu.add(new MenuContribution(type.getName(), () -> {
                 selectedType = type;
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.ATTRIBUTE_UUID.name(), type.getId());
                 delegate.update();
                 delegate.getClient().touch();
-
-            });
-
-            if (type.equals(selectedType))
-                action.setChecked(true);
-
-            subMenu.add(action);
+            }, type.equals(selectedType)));
         }
 
         manager.add(subMenu);
