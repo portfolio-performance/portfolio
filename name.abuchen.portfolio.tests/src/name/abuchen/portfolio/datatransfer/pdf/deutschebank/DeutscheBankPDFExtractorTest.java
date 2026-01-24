@@ -422,7 +422,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0006501554"), hasWkn("650155"), hasTicker(null), //
                         hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
-                        hasCurrencyCode("EUR") /* impossible to tell from doc, isPercentageQuoted(true) */)));
+                        hasCurrencyCode("EUR") /* TODO: recognize as isPercentageQuoted(true) */)));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -626,7 +626,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("XS2722190795"), hasWkn("A3511H"), hasTicker(null), //
                         hasName("4% DEUTSCHE BAHN AG MTN.23 23.11. 43"), //
-                        hasCurrencyCode("EUR") /* cannot tell from doc, isPercentageQuoted(true)*/)));
+                        hasCurrencyCode("EUR") /* TODO: recognize as isPercentageQuoted(true)*/)));
 
         // check dividends (here: interest) transaction
         assertThat(results, hasItem(dividend( //
