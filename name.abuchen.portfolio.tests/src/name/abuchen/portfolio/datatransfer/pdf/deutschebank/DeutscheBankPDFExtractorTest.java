@@ -1053,6 +1053,48 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf10WithLegacyInstrument()
+    {
+        // Old portfolios may have percentage-quoted securities stored with
+        // absolute values still. We will keep them untouched and continue to
+        // work around
+        // through a division of the number by 100.
+        var security = new Security("6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36", "USD");
+        security.setIsin("US900123AY60");
+        security.setWkn("A0GLU5");
+        security.setPercentageQuoted(false);
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new DeutscheBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // the security shall remain untouched
+        assertThat(security.isPercentageQuoted(), is(false));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-08-21T16:37"), hasShares(5000.0 / 100), //
+                        hasSource("Kauf10.txt"), //
+                        hasNote("Belegnummer 1234567890 / 123456789 | Zinsen für 158 Zinstage: 150,86 USD"), //
+                        hasAmount("USD", 5232.20), hasGrossValue("USD", 5153.86), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 68.32 + 5.22 + 4.80))));
+    }
+
+    @Test
     public void testWertpapierKauf11()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());
