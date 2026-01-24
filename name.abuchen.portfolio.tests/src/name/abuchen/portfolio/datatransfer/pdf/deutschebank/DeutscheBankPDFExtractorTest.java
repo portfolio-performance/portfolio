@@ -422,7 +422,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("DE0006501554"), hasWkn("650155"), hasTicker(null), //
                         hasName("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR."), //
-                        hasCurrencyCode("EUR") /* TODO: recognize as isPercentageQuoted(true) */)));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(true))));
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -626,7 +626,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(results, hasItem(security( //
                         hasIsin("XS2722190795"), hasWkn("A3511H"), hasTicker(null), //
                         hasName("4% DEUTSCHE BAHN AG MTN.23 23.11. 43"), //
-                        hasCurrencyCode("EUR") /* TODO: recognize as isPercentageQuoted(true)*/)));
+                        hasCurrencyCode("EUR"), isPercentageQuoted(true))));
 
         // check dividends (here: interest) transaction
         assertThat(results, hasItem(dividend( //
@@ -1057,8 +1057,7 @@ public class DeutscheBankPDFExtractorTest
     {
         // Old portfolios may have percentage-quoted securities stored with
         // absolute values still. We will keep them untouched and continue to
-        // work around
-        // through a division of the number by 100.
+        // work around through a division of the number by 100.
         var security = new Security("6,875% TÜRKEI, REPUBLIK NT.06 17.M/S 03.36", "USD");
         security.setIsin("US900123AY60");
         security.setWkn("A0GLU5");
