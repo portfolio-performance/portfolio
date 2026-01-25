@@ -105,7 +105,7 @@ import name.abuchen.portfolio.money.Money;
                 }
                 else
                 {
-                    entry.setAmount(Math.abs(amount.getAmount()));
+                    entry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
                     entry.setCurrencyCode(amount.getCurrencyCode());
                 }
                 entry.setDate(date);
@@ -125,8 +125,8 @@ import name.abuchen.portfolio.money.Money;
 
                 var buySellEntry = new BuySellEntry();
                 buySellEntry.setType(PortfolioTransaction.Type.valueOf(type.name()));
-                buySellEntry.setAmount(Math.abs(amount.getAmount()));
-                buySellEntry.setShares(Math.abs(shares));
+                buySellEntry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
+                buySellEntry.setShares(NegativeValue.maybeAbs(shares));
                 buySellEntry.setCurrencyCode(amount.getCurrencyCode());
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
@@ -137,11 +137,11 @@ import name.abuchen.portfolio.money.Money;
 
                 if (taxes != null && taxes.longValue() != 0)
                     buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money
-                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(taxes))));
+                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
 
                 if (fees != null && fees.longValue() != 0)
                     buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money
-                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(fees))));
+                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), NegativeValue.maybeAbs(fees))));
 
                 if (!grossAmount.isPresent())
                     createGrossValueIfNecessary(rawValues, field2column, buySellEntry.getPortfolioTransaction());
@@ -175,7 +175,7 @@ import name.abuchen.portfolio.money.Money;
             case INTEREST, INTEREST_CHARGE:
                 var t = new AccountTransaction();
                 t.setType(type);
-                t.setAmount(Math.abs(amount.getAmount()));
+                t.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
                 if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES
                                 || type == Type.FEES_REFUND)
@@ -186,18 +186,18 @@ import name.abuchen.portfolio.money.Money;
                 if (type == Type.DIVIDENDS)
                 {
                     if (shares != null)
-                        t.setShares(Math.abs(shares));
+                        t.setShares(NegativeValue.maybeAbs(shares));
 
                     if (taxes != null && taxes.longValue() != 0)
-                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
 
                     if (fees != null && fees.longValue() != 0)
-                        t.addUnit(new Unit(Unit.Type.FEE, Money.of(t.getCurrencyCode(), Math.abs(fees))));
+                        t.addUnit(new Unit(Unit.Type.FEE, Money.of(t.getCurrencyCode(), NegativeValue.maybeAbs(fees))));
                 }
 
                 if (type == Type.INTEREST && taxes != null && taxes.longValue() != 0)
                 {
-                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
                 }
 
                 if (security != null && grossAmount.isPresent())

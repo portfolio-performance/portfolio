@@ -79,6 +79,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
-        return new SecurityPrice(date.toLocalDate(), Math.abs(amount));
+        return new SecurityPrice(date.toLocalDate(), NegativeValue.maybeAbs(amount));
     }
 }

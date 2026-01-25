@@ -138,7 +138,7 @@ import name.abuchen.portfolio.money.Money;
         entry.setType(type);
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(Math.abs(amount.getAmount()));
+        entry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
         entry.setCurrencyCode(amount.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);
@@ -148,11 +148,11 @@ import name.abuchen.portfolio.money.Money;
 
         if (fees != null && fees.longValue() != 0)
             entry.getPortfolioTransaction()
-                            .addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), Math.abs(fees))));
+                            .addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(fees))));
 
         if (taxes != null && taxes.longValue() != 0)
             entry.getPortfolioTransaction()
-                            .addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
+                            .addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
 
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
@@ -167,7 +167,7 @@ import name.abuchen.portfolio.money.Money;
         var entry = new PortfolioTransferEntry();
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(Math.abs(amount.getAmount()));
+        entry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
         entry.setCurrencyCode(amount.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);
@@ -184,7 +184,7 @@ import name.abuchen.portfolio.money.Money;
         t.setType(type);
         t.setSecurity(security);
         t.setDateTime(date);
-        t.setAmount(Math.abs(amount.getAmount()));
+        t.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
         t.setCurrencyCode(amount.getCurrencyCode());
         t.setShares(shares);
         t.setNote(note);
@@ -193,10 +193,10 @@ import name.abuchen.portfolio.money.Money;
             t.addUnit(grossAmount.get());
 
         if (fees != null && fees.longValue() != 0)
-            t.addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), Math.abs(fees))));
+            t.addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(fees))));
 
         if (taxes != null && taxes.longValue() != 0)
-            t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
+            t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
 
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, t);
