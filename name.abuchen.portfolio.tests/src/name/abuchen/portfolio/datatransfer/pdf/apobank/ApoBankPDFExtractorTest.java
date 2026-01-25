@@ -42,40 +42,6 @@ import name.abuchen.portfolio.model.Client;
 public class ApoBankPDFExtractorTest
 {
     @Test
-    public void testDividende01()
-    {
-        var extractor = new ApoBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(countAccountTransfers(results), is(0L));
-        assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(countSkippedItems(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("IE00BGPP6473"), hasWkn("A2PDTT"), hasTicker(null), //
-                        hasName("iShs VII-$ Trsy Bd 3-7yr U.ETF Registered Shs EUR DIS.Hgd o.N"), //
-                        hasCurrencyCode("EUR"))));
-
-        // assert transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2025-08-27"), hasShares(0.707), //
-                        hasSource("Dividende01.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.06), //
-                        hasTaxes("EUR", 0.02), hasFees("EUR", 0.00))));
-    }
-
-    @Test
     public void testKauf01()
     {
         var extractor = new ApoBankPDFExtractor(new Client());
@@ -104,7 +70,7 @@ public class ApoBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2022-10-06"), hasShares(189), //
                         hasSource("Kauf01.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 7323959947"), //
                         hasAmount("EUR", 847.44), hasGrossValue("EUR", 847.44), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -138,9 +104,42 @@ public class ApoBankPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2025-12-23"), hasShares(0.236), //
                         hasSource("Verkauf01.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 1347237221"), //
                         hasAmount("EUR", 5.63), hasGrossValue("EUR", 5.63), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new ApoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BGPP6473"), hasWkn("A2PDTT"), hasTicker(null), //
+                        hasName("iShs VII-$ Trsy Bd 3-7yr U.ETF Registered Shs EUR DIS.Hgd o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // assert transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-08-27"), hasShares(0.707), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Ref.-Nr.: 6968008518"), //
+                        hasAmount("EUR", 0.04), hasGrossValue("EUR", 0.06), //
+                        hasTaxes("EUR", 0.02), hasFees("EUR", 0.00))));
+    }
 }
