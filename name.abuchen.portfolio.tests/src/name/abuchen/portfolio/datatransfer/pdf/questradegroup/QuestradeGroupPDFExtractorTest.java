@@ -135,7 +135,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-09-22"), hasShares(76.0), //
+            hasDate("2023-09-22T00:00"), hasShares(76.00), //
             hasSource("Buy03.txt"), //
             hasNote(null), //
             hasAmount("CAD", 1973.96), hasGrossValue("CAD", 1973.96), //
@@ -168,7 +168,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-09-22"), hasShares(76.0), //
+            hasDate("2023-09-22T00:00"), hasShares(76.00), //
             hasSource("Buy04.txt"), //
             hasNote(null), //
             hasAmount("CAD", 1973.23), hasGrossValue("CAD", 1972.96), //
@@ -201,7 +201,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-01-17"), hasShares(19.0), //
+            hasDate("2023-01-17T00:00"), hasShares(19.00), //
             hasSource("Buy05.txt"), //
             hasNote(null), //
             hasAmount("CAD", 481.08), hasGrossValue("CAD", 481.08), //
@@ -234,7 +234,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-02-24"), hasShares(30.0), //
+            hasDate("2023-02-24T00:00"), hasShares(30.00), //
             hasSource("Buy06.txt"), //
             hasNote(null), //
             hasAmount("CAD", 756.40), hasGrossValue("CAD", 756.40), //
@@ -301,7 +301,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-            hasDate("2023-09-29"), hasShares(95.0), //
+            hasDate("2023-09-29T00:00"), hasShares(95.00), //
             hasSource("Dividend02.txt"), //
             hasNote("REC 09/26/23"), //
             hasAmount("CAD", 23.55), hasGrossValue("CAD", 23.55), //
@@ -334,7 +334,7 @@ public class QuestradeGroupPDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-            hasDate("2023-03-31"), hasShares(19.0), 
+            hasDate("2023-03-31T00:00"), hasShares(19.00), 
             hasSource("Dividend03.txt"), //
             hasNote("REC 03/23/23"), //
             hasAmount("CAD", 1.67), hasGrossValue("CAD", 1.67), //
@@ -361,7 +361,7 @@ public class QuestradeGroupPDFExtractorTest
         new AssertImportActions().check(results, "CAD");
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-04-09"), hasAmount("CAD", 10000.00),
+        assertThat(results, hasItem(deposit(hasDate("2025-04-09T00:00"), hasAmount("CAD", 10000.00),
                         hasSource("AccountStatement01.txt"), hasNote(null))));
     }
 }
