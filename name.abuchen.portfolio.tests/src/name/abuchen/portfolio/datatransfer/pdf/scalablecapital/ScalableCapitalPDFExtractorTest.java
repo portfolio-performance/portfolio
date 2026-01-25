@@ -765,6 +765,74 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testSparplanausfuehrung08()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ56RN96"), hasWkn(null), hasTicker(null), //
+                        hasName("WisdomTree Global Quality Dividend Growth (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-02T11:53:21"), hasShares(2.99625400), //
+                        hasSource("Sparplanausfuehrung08.txt"), //
+                        hasNote("Ord.-Nr.: SCALwDS3fsFjX2E"), //
+                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung09()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core MSCI World (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-16T11:33:02"), hasShares(3.525858), //
+                        hasSource("Sparplanausfuehrung09.txt"), //
+                        hasNote("Ord.-Nr.: SCALfGmqAstsgrF"), //
+                        hasAmount("EUR", 404.98), hasGrossValue("EUR", 404.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSavingsplan01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -928,7 +996,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-17"), hasShares(0.284285), //
+                        hasDate("2025-06-17T00:00"), hasShares(0.284285), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.20), //
@@ -963,7 +1031,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-17"), hasShares(0.284285), //
+                        hasDate("2025-06-17T00:00"), hasShares(0.284285), //
                         hasSource("Dividende02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.15), hasGrossValue("EUR", 0.20), //
@@ -997,7 +1065,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-23"), hasShares(3.00), //
+                        hasDate("2025-06-23T00:00"), hasShares(3.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 7.31), hasGrossValue("EUR", 9.93), //
@@ -1031,7 +1099,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-17"), hasShares(1.907523), //
+                        hasDate("2025-09-17T00:00"), hasShares(1.907523), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.69), hasGrossValue("EUR", 0.91), //
@@ -1066,7 +1134,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-17"), hasShares(1.907523), //
+                        hasDate("2025-09-17T00:00"), hasShares(1.907523), //
                         hasSource("Dividende04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.69), hasGrossValue("EUR", 0.91), //
@@ -1100,7 +1168,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-18"), hasShares(0.489446), //
+                        hasDate("2025-09-18T00:00"), hasShares(0.489446), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
@@ -1135,7 +1203,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-18"), hasShares(0.489446), //
+                        hasDate("2025-09-18T00:00"), hasShares(0.489446), //
                         hasSource("Dividende05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.41), hasGrossValue("EUR", 0.56), //
@@ -1169,7 +1237,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-12"), hasShares(5.940872), //
+                        hasDate("2025-09-12T00:00"), hasShares(5.940872), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.82), hasGrossValue("EUR", 0.82), //
@@ -1204,7 +1272,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-09-12"), hasShares(5.940872), //
+                        hasDate("2025-09-12T00:00"), hasShares(5.940872), //
                         hasSource("Dividende06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.82), hasGrossValue("EUR", 0.82), //
@@ -1238,7 +1306,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-31"), hasShares(20.43685), //
+                        hasDate("2025-12-31T00:00"), hasShares(20.43685), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 0.12), hasGrossValue("EUR", 0.17), //
@@ -1272,7 +1340,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2026-01-09"), hasShares(1.588739), //
+                        hasDate("2026-01-09T00:00"), hasShares(1.588739), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.42), hasGrossValue("EUR", 1.93), //
@@ -1306,7 +1374,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-12-31"), hasShares(6.0), //
+                        hasDate("2025-12-31T00:00"), hasShares(6.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 3.30), hasGrossValue("EUR", 4.58), //
@@ -1314,13 +1382,13 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
-    public void testDividend01()
+    public void testDividende10()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1340,8 +1408,8 @@ public class ScalableCapitalPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-06-11"), hasShares(2.769834), //
-                        hasSource("Dividend01.txt"), //
+                        hasDate("2025-06-11T00:00"), hasShares(2.769834), //
+                        hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2.12), hasGrossValue("EUR", 2.49), //
                         hasTaxes("EUR", 0.37), hasFees("EUR", 0.00))));
