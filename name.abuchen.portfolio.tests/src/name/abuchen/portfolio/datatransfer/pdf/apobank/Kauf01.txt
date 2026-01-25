@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Filiale fOoTmZgQYDxF
+Telefon +49 441923970
+apoBank | 40540 Düsseldorf Telefax +49 4419239780
+fOoTmZgQYDxFfOoTmZgQYDxF
+www.apobank.de
+Zentrale Postanschrift
+apoBank
+SRof 40540 Düsseldorf
+ps. qSjdf YHOKvwJgDt
+fOoTmZgQYDxF. 50 Ihr(e) Ansprechpartner(in)
+69368 FmJdAnZrobz wpKojOo JrqJxGN
+fOoTmZgQYDxF
+Telefon +67 3202734084
+Kunden-Nr. Konto-Nr. / IBAN Referenz-Nr. Datum Seite
+2239131 57629810 / AB12345678912345678912 7323959947 28.01.2023 1 / 1
+Wertpapierabrechnung
+Depot 85425166
+Transaktion: Kauf
+Am 06.10.2022 haben wir für Sie folgende Transaktion ausgeführt:
+Schlusstag: 06.10.2022
+Valuta: 10.10.2022
+Wertpapierbezeichnung: iShsII-EO Corp Bd ESG U.ETF Registered Shares o.N.
+ISIN: IE00BYZTVT56
+WKN: A142NT
+Markt/Börse: Bloomberg Trading Facility B.V.
+Nominal / Stück: 189
+Ausführungspreis: EUR 4,48
+Verwahrart: Wertpapierrechnung
+Lagerland: Vereinigtes Königreich Grossbritannien und Nordirland
+Kurswert: EUR -847,44
+Ausmachender Betrag: EUR -847,44
+Belastung - EUR apoVV SMART Konto 76161273 EUR -847,44
+Ihre Vermögensverwaltung führte diesen Umsatz für Sie durch.
+Sofern keine Umsatzsteuer ausgewiesenwird, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Dieses Dokument ist maschinell erstellt und wird nicht unterschrieben.
+Deutsche Apotheker- und Ärztebank eG Vorsitzender des Aufsichtsrats: Dr. med. dent. Karl-Georg Pochhammer BLZ: 300 606 01 | BIC: DAAEDEDDXXX
+Richard-Oskar-Mattern-Straße 6 Vorstand: Matthias Schellenberg (Vorsitzender), Alexander Müller, Sitz der Bank: Düsseldorf | Ust.-ID: DE119260415
+40547 Düsseldorf Thomas Runge, Holger Wessling, Sylvia Wilhelm Eintragung: Amtsgericht Düsseldorf GnR 410

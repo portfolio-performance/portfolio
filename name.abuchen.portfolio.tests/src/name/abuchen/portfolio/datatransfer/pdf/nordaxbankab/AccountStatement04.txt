@@ -1,4 +1,3 @@
-```
 PDFBox Version: 3.0.6
 Portfolio Performance Version: 0.81.1.qualifier
 System: linux | x86_64 | 25.0.1+8-LTS-27 | Oracle Corporation
@@ -27,5 +26,3 @@ Postboks 110, 1325 Lysaker, Norge
 Telefon 0800 7 238470
 E-Mail post@banknorwegian.de
 Webseite banknorwegian.de
-
-```

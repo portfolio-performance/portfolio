@@ -29,6 +29,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addInterestTransaction();
         addAccountStatementTransaction();
+        addTaxAdjustmentTransaction();
     }
 
     @Override
@@ -39,19 +40,21 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale )");
+        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^(f.r|voor|per) " //
+        var firstRelevantLine = new Block("^((f.r|voor|per) " //
                         + "(Kundenauftrag" //
                         + "|Sparplanausf.hrung" //
                         + "|savings plan order" //
                         + "|client order" //
                         + "|Auftrag" //
                         + "|beleggingsplanorder" //
-                        + "|l.ordine del piano di accumulo).*$");
+                        + "|l.ordine del piano di accumulo)" //
+                        + "|" //
+                        + "(Sparplan \\/ Automatische Wiederanlage)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -66,7 +69,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Verkauf" change from BUY to SELL
                         // Is type --> "Sell" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell)) .* [\\.,\\d]+ (Stk|pc)\\..*$") //
+                        .match("^(?<type>(Kauf|Sparplan|Buy|Kopen|Acquisto|Verkauf|Sell)).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -155,7 +158,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Esecuzione 25.08.2025 11:07:44 ID di scambio 0782210
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^(Ausf.hrung|Execution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
+                        .match("^(Ausf.hrung|Execution|Uitvoering|Esecuzione) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -212,8 +215,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend)", //
-                        "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell)");
+        final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
+                        "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -240,18 +243,22 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^Effect met recht (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Krediet [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Krediet [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Berechtigtes Wertpapier AGNC Investment Corp.
                                         // ISIN US00123Q1040
                                         // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        //
+                                        // BerechtigtesWertpapier PepsiCo Inc.
+                                        // ISIN US7134481081
+                                        // 09.01.2026 09.01.2026 Gutschrift 1,42 USD 1,588739 1,93 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^Berechtigtes Wertpapier (?<name>.*)$") //
+                                                        .match("^Berechtigtes[\\s]*Wertpapier (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -276,14 +283,14 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) Krediet [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Krediet [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}.*$")
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -306,7 +313,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "baseCurrency", "exchangeRate", "gross") //
-                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ (?<gross>[\\.,\\d]+) [A-Z]{3}.*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ (?<gross>[\\.,\\d]+) [A-Z]{3}.*$") //
                                                         .match("^(?<termCurrency>[A-Z]{3}) \\/ (?<baseCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
@@ -400,7 +407,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount", "currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(.berweisung" //
-                                        + "|Lastschrift"
+                                        + "|Lastschrift" //
                                         + "|Direct debit)) " //
                                         + "\\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
@@ -426,7 +433,9 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(Prime\\-Abonnementgeb.hr)) \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Prime\\-Abonnementgeb.hr)) " //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -504,6 +513,45 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         }));
+    }
+
+    private void addTaxAdjustmentTransaction()
+    {
+        final var type = new DocumentType("Steuerneuberechnung");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^.*Seite 1 \\/ [\\d]$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Der Betrag wurde am 10.01.2026 auf Ihrem Verrechnungskonto gebucht.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Der Betrag wurde am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Gutschrift 3,65 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Gutschrift (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})\\s?$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

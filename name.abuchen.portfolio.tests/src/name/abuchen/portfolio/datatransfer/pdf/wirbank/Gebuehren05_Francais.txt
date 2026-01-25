@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.6
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Courriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Suisse
+Bâle, 02.05.2019
+Commission
+Nous avons débité en date du 30.04.2019 la commission suivante:
+Commission de gestion VIAC: 0.52% p.a.
+Capital de prévoyance moyen: CHF 14'224.73
+Dont à déduire solde en compte 3a (liquidités): CHF 6'978.68
+Base de calcul: Mois avril CHF 7'246.06
+Commission de gestion effective VIAC: 0.26% p.a. CHF -3.10
+Montant débité: Valeur 30.04.2019 CHF -3.10
+S. E. & O.
+Remarque: dans la mesure du possible, la Fondation Terzo prend à sa charge les frais de gestion (placements indiciels). Les ETF donnent lieu à des 
+frais de gestion externes qui sont répercutés directement sur les placements. Les frais de gestion externes sont débités directement sur les 
+placements opérés (ETF) et se montent à 0.10% par année, compte tenu de la stratégie actuelle. VIAC ne reçoit aucune ristourne ni rétrocession.
+Meilleures salutations
+Terzo Vorsorgestiftung der WIR Bank
+Avis sans signature

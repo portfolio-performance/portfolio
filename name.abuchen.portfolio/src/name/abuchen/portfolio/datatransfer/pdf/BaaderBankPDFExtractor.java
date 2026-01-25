@@ -1172,20 +1172,37 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Zinsberechnung: Betrag in EUR
-                        // Gesamtsumme: 1,46
-                        //
-                        // Calculation of Interest: Amount in EUR
-                        // Total Amount: 112.45
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
-                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Zinsberechnung: Betrag in EUR
+                                        // Gesamtsumme: 1,46
+                                        //
+                                        // Calculation of Interest: Amount in EUR
+                                        // Total Amount: 112.45
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zinsberechnung: Betrag in EUR
+                                        // Sollzinsen aus geduldeten Überziehungen (ÜZ) 5,64 -
+                                        // Gesamtsumme: 5,64 -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[A-Z]{3})$") //
+                                                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         .optionalOneOf( //
                                         // @formatter:off

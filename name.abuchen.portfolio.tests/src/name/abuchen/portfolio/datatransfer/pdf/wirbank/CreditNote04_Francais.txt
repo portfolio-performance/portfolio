@@ -1,0 +1,23 @@
+PDFBox Version: 3.0.6
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Courriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Suisse
+Bâle, 27.12.2018
+Avis de versement 3a
+Bonification du 27.12.2018:
+Mode de versement: Versement BVRB
+Numéro de référence: 12 12345 12345 12345 12345 12345
+Versement: Montant CHF 6'768.00
+Montant crédité: Valeur 27.12.2018 CHF 6'768.00
+S. E. & O.
+Meilleures salutations
+Terzo Vorsorgestiftung der WIR Bank
+Avis sans signature
