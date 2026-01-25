@@ -94,7 +94,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
         {
-            StringToCurrencyConverter converter = new StringToCurrencyConverter(values);
+            StringToCurrencyConverter converter = new StringToCurrencyConverter(values, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
             UpdateValueStrategy<String, Long> strategy = new UpdateValueStrategy<>();
             strategy.setAfterGetValidator(converter);
             strategy.setConverter(converter);

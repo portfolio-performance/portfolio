@@ -266,7 +266,7 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         });
         column.setEditingSupport(new ColumnEditingSupport()
         {
-            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount);
+            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
 
             @Override
             public void setValue(Object element, Object value) throws Exception
