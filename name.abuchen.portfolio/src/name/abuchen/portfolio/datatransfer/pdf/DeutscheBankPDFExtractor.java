@@ -125,8 +125,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            if (t.getSecurity().isPercentageQuoted())
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                            else
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share
+                                                                                .factorize(shares.doubleValue() / 100));
+                                                            }
                                                         }))
                         // @formatter:off
                         // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93

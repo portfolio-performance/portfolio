@@ -1127,7 +1127,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-08-21T16:37"), hasShares(5000.0 / 100), //
+                        hasDate("2025-08-21T16:37"), hasShares(5000.0), //
                         hasSource("Kauf10.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456789 | Zinsen für 158 Zinstage: 150,86 USD"), //
                         hasAmount("USD", 5232.20), hasGrossValue("USD", 5153.86), //
@@ -1201,7 +1201,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2025-08-19T00:00"), hasShares(1000.0 / 100), //
+                        hasDate("2025-08-19T00:00"), hasShares(1000.0), //
                         hasSource("Kauf11.txt"), //
                         hasNote("Belegnummer 1234567890 / 1234567"), //
                         hasAmount("EUR", 1010.00), hasGrossValue("EUR", 1010.00), //
