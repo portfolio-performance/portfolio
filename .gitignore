@@ -3,6 +3,7 @@ workspace
 .metadata/*
 .recommenders/*
 .DS_Store
+.tycho-consumer-pom.xml
 
 ### IntelliJ IDEA ###
 .idea
