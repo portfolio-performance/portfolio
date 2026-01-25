@@ -353,7 +353,7 @@ public class AccountTransferModel extends AbstractModel
         if (fxAmount != 0)
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxAmount), 10,
-                            RoundingMode.HALF_UP);
+                            RoundingMode.HALF_UP).abs();
             BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());

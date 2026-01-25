@@ -555,7 +555,7 @@ public class AccountTransactionModel extends AbstractModel
         if (fxGrossAmount != 0)
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxGrossAmount), 10,
-                            RoundingMode.HALF_UP);
+                            RoundingMode.HALF_UP).abs();
             BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate); // NOSONAR
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
