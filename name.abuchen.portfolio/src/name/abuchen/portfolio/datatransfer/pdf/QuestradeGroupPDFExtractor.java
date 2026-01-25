@@ -73,36 +73,64 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
                         // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF
-                        // @formatter:on
-                        .section("tickerSymbol", "name") //
-                        .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.+?)(?:[\\s]*PORTFOLIO.*|\\|PORTFOLIO ETF.*)$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
-                        // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
-                        // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF
+                        // 01-17-2023 01-19-2023 Buy .XEQT UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\..*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.US)))
 
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Matches lines like:
+                                        // 01-17-2023 01-19-2023 Buy .XEQT UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes( "tickerSymbol") //
+                                                        .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS\\|WE ACTED AS AGENT\\|AVG PRICE - ASK .*$") //
+                                                        .documentContext("currency") //
+                                                        .assign((t, v) -> {
+                                                            // The security name cannot be null (causes error in the UI otherwise)
+                                                            v.put("name", "");
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+
+                                        // @formatter:off
+                                        // Matches lines like:
+                                        // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
+                                        // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF
+                                        // 02-24-2023 02-28-2023 Buy .XEQT ISHARES CORE EQUITY ETF|PORTFOLIO 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes( "tickerSymbol", "name") //
+                                                        .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.+?)(?:\\|?[\\s]*PORTFOLIO.*|\\|PORTFOLIO ETF.*)$") //
+                                                        .documentContext("currency") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+
+                        
+
+
                         // @formatter:off
                         // ETF UNIT  WE ACTED AS AGENT 50.0000 40.930 (2,046.50) - (2,046.50) - - - -
                         // UNIT|WE ACTED AS AGENT 50.0000 40.930 (2,046.50) (0.10) (2,046.60) - - - -
+                        // UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                         // @formatter:on
                         .section("shares") //
-                        .match("^.*WE ACTED AS AGENT (?<shares>[\\.,\\d]+).*$") //
+                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE - ASK)? (?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //
                                         // @formatter:off
                                         // ETF UNIT  WE ACTED AS AGENT 50.0000 40.930 (2,046.50) - (2,046.50) - - - -
+                                        // UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^.*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\- \\((?<amount>[\\.,\\d]+)\\).*$") //
+                                                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE - ASK)? [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\- \\((?<amount>[\\.,\\d]+)\\).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -138,7 +166,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNIT DIST.*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -151,32 +179,40 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // 09-29-2023 09-29-2023    .XEQT UNITS DIST      ON     95 SHS REC 09/26/23 - - - - 23.55 - - - -
+                        // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("tickerSymbol") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNIT DIST.*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?( |\\|)DIST.*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // 09-29-2023 09-29-2023    .XEQT UNITS DIST      ON     95 SHS REC 09/26/23 - - - - 23.55 - - - -
+                        // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("date") //
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNIT DIST.*$") //
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?( |\\|)DIST.*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), Locale.US)))
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // 09-29-2023 09-29-2023    .XEQT UNITS DIST      ON     95 SHS REC 09/26/23 - - - - 23.55 - - - -
+                        // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("shares") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNIT DIST.* (?<shares>[\\.,\\d]+) SHS REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}.*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* (?<shares>[\\.,\\d]+) SHS( |\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // 09-29-2023 09-29-2023    .XEQT UNITS DIST      ON     95 SHS REC 09/26/23 - - - - 23.55 - - - -
+                        // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNIT DIST.* [\\.,\\d]+ SHS REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} PAY [\\s\\-]* (?<amount>[\\.,\\d]+) [\\s\\-]*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* [\\.,\\d]+ SHS( |\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}( PAY)? [\\s\\-]* (?<amount>[\\.,\\d]+) [\\s\\-]*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -184,9 +220,11 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
+                        // 09-29-2023 09-29-2023    .XEQT UNITS DIST      ON     95 SHS REC 09/26/23 - - - - 23.55 - - - -
+                        // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("note") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNIT DIST.* [\\.,\\d]+ SHS (?<note>REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) PAY .*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* [\\.,\\d]+ SHS( |\\|)(?<note>REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2})( PAY)? .*$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
 
                         .wrap(TransactionItem::new);

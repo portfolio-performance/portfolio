@@ -110,6 +110,138 @@ public class QuestradeGroupPDFExtractorTest
     }
 
     @Test
+    public void testBuy03()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName("ISHARES CORE EQUITY ETF"), //
+            hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+            hasDate("2023-09-22"), hasShares(76.0), //
+            hasSource("Buy03.txt"), //
+            hasNote(null), //
+            hasAmount("CAD", 1973.96), hasGrossValue("CAD", 1973.96), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
+    public void testBuy04()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName("ISHARES CORE EQUITY ETF"), //
+            hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+            hasDate("2023-09-22"), hasShares(76.0), //
+            hasSource("Buy04.txt"), //
+            hasNote(null), //
+            hasAmount("CAD", 1973.23), hasGrossValue("CAD", 1972.96), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.27))));
+    }
+
+    @Test
+    public void testBuy05()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName(""), //
+            hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+            hasDate("2023-01-17"), hasShares(19.0), //
+            hasSource("Buy05.txt"), //
+            hasNote(null), //
+            hasAmount("CAD", 481.08), hasGrossValue("CAD", 481.08), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
+    public void testBuy06()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName("ISHARES CORE EQUITY ETF"), //
+            hasCurrencyCode("CAD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+            hasDate("2023-02-24"), hasShares(30.0), //
+            hasSource("Buy06.txt"), //
+            hasNote(null), //
+            hasAmount("CAD", 756.40), hasGrossValue("CAD", 756.40), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
     public void testDividend01()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
@@ -141,6 +273,72 @@ public class QuestradeGroupPDFExtractorTest
                         hasNote("REC 12/30/24"), //
                         hasAmount("CAD", 20.69), hasGrossValue("CAD", 20.69), //
                         hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
+    public void testDividend02()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName(null), //
+            hasCurrencyCode("CAD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+            hasDate("2023-09-29"), hasShares(95.0), //
+            hasSource("Dividend02.txt"), //
+            hasNote("REC 09/26/23"), //
+            hasAmount("CAD", 23.55), hasGrossValue("CAD", 23.55), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+    }
+
+    @Test
+    public void testDividend03()
+    {
+        var extractor = new QuestradeGroupPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CAD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+            hasName(null), //
+            hasCurrencyCode("CAD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+            hasDate("2023-03-31"), hasShares(19.0), 
+            hasSource("Dividend03.txt"), //
+            hasNote("REC 03/23/23"), //
+            hasAmount("CAD", 1.67), hasGrossValue("CAD", 1.67), //
+            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
