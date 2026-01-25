@@ -39,8 +39,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("biw AG");
         addBankIdentifier("FinTech Group Bank AG");
         addBankIdentifier("flatex Bank AG");
-        addBankIdentifier("flatexDEGIRO Bank AG");
-        addBankIdentifier("ﬂatexDEGIRO Bank AG");
+        addBankIdentifier("flatexDEGIRO Bank SE");
+        addBankIdentifier("ﬂatexDEGIRO Bank SE");
 
         addBuySellTransaction();
         addBuySellCryptoTransaction();
