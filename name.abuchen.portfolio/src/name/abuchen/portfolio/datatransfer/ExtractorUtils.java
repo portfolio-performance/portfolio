@@ -386,7 +386,7 @@ public class ExtractorUtils
 
         try
         {
-            return Math.abs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
+            return NegativeValue.maybeAbs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
         }
         catch (ParseException e)
         {

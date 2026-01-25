@@ -188,7 +188,7 @@ public abstract class CSVExtractor implements Extractor
         var value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
-        return Math.abs(value);
+        return NegativeValue.maybeAbs(value);
     }
 
     @SuppressWarnings("unchecked")

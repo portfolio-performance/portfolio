@@ -1710,7 +1710,7 @@ public class ClientFactory
             else
             {
                 plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
-                plan.setAmount(Math.abs(plan.getAmount()));
+                plan.setAmount(NegativeValue.maybeAbs(plan.getAmount()));
             }
         }
     }
