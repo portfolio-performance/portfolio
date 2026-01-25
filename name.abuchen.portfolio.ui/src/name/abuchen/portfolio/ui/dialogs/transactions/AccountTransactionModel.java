@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -667,6 +668,10 @@ public class AccountTransactionModel extends AbstractModel
     {
         long totalFees = fees + Math.round(exchangeRate.doubleValue() * fxFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
+        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        {
+            return grossAmount - totalTaxes - totalFees;
+        }
         return Math.max(0, grossAmount - totalTaxes - totalFees);
     }
 
