@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -639,6 +640,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             case BUY:
             case DELIVERY_INBOUND:
+                if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+                {
+                    return total - feesAndTaxes;
+                }
                 return Math.max(0, total - feesAndTaxes);
             case SELL:
             case DELIVERY_OUTBOUND:
@@ -659,6 +664,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 return convertedGrossValue + feesAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
+                if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+                {
+                    return convertedGrossValue - feesAndTaxes;
+                }
                 return Math.max(0, convertedGrossValue - feesAndTaxes);
             default:
                 throw new UnsupportedOperationException();
