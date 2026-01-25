@@ -380,10 +380,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            var shares = asBigDecimal(v.get("shares"));
-                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            if (t.getSecurity().isPercentageQuoted())
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                            else
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
                                                         }))
-
                         // @formatter:off
                         // Gutschrift mit Wert 15.12.2014 64,88 EUR
                         // @formatter:on

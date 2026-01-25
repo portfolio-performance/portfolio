@@ -426,7 +426,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-09-05T00:00"), hasShares(60.00), //
+                        hasDate("2023-09-05T00:00"), hasShares(6000.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
@@ -668,6 +668,47 @@ public class DeutscheBankPDFExtractorTest
                         hasIsin("XS2722190795"), hasWkn("A3511H"), hasTicker(null), //
                         hasName("4% DEUTSCHE BAHN AG MTN.23 23.11. 43"), //
                         hasCurrencyCode("EUR"), isPercentageQuoted(true))));
+
+        // check dividends (here: interest) transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-11-24T00:00"), hasShares(1000.00), //
+                        hasSource("Kupon01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 33.46), hasGrossValue("EUR", 40.00), //
+                        hasTaxes("EUR", 6.20 + 0.34), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testKupon01WithLegacySecurity()
+    {
+        // Old portfolios may have percentage-quoted securities stored with
+        // absolute values still. We will keep them untouched and continue to
+        // work around through a division of the number by 100.
+        var security = new Security("4% DEUTSCHE BAHN AG MTN.23 23.11. 43", "EUR");
+        security.setIsin("XS2722190795");
+        security.setWkn("A3511H");
+        security.setPercentageQuoted(false);
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new DeutscheBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kupon01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // the security shall remain untouched
+        assertThat(security.isPercentageQuoted(), is(false));
 
         // check dividends (here: interest) transaction
         assertThat(results, hasItem(dividend( //
