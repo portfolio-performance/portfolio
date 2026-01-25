@@ -234,6 +234,30 @@ public abstract class AbstractPDFExtractor implements Extractor
     }
 
     /**
+     * Creates a new percentage-quoted {@link Security} object or fetches an
+     * already registered Security from the internal cache in case there is one
+     * for the specified security already.
+     * <p>
+     * For the reason of backward compatibility with older portfolios,
+     * pre-existing securities will be fetched and return unaltered even if they
+     * do not have {@link Security#isPercentageQuoted()} set to true.
+     *
+     * @param values
+     *            Map of key/value pairs for the identification and construction
+     *            of the Security object.
+     * @return New or cached Security
+     * @see #getOrCreateSecurity(Map)
+     */
+    protected Security getOrCreatePercentageQuotedSecurity(Map<String, String> values)
+    {
+        return getOrCreateSecurity(values, () -> {
+            Security security = new Security(null, asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+            security.setPercentageQuoted(true);
+            return security;
+        });
+    }
+
+    /**
      * Cryptos are identified a) by the coin tickerSymbol (BTC, ETH) or directly
      * by name. Missing crypto currencies are created for use with coin gecko
      * quote feed

@@ -434,6 +434,47 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende07WithLegacySecurity()
+    {
+        // Old portfolios may have percentage-quoted securities stored with
+        // absolute values still. We will keep them untouched and continue to
+        // work around through a division of the number by 100.
+        var security = new Security("6% MAGNUM AG GENUßSCHEINE 99/UNBEGR.", "EUR");
+        security.setIsin("DE0006501554");
+        security.setWkn("650155");
+        security.setPercentageQuoted(false);
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new DeutscheBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // the security shall remain untouched
+        assertThat(security.isPercentageQuoted(), is(false));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-05T00:00"), hasShares(60.00), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 259.22), hasGrossValue("EUR", 360.00), //
+                        hasTaxes("EUR", 88.02 + 4.84 + 7.92), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende08()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());

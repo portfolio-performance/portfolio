@@ -359,12 +359,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "wkn", "isin", "name") //
                                                         .match("^[\\.,\\d]+ (?<currency>[A-Z]{3}) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .match("^(?<name>.*)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                            t.getSecurity().setPercentageQuoted(true);
-                                                        }))
-
+                                                        .match("^(?<name>.*)$")
+                                                        .assign((t, v) -> t.setSecurity(
+                                                                        getOrCreatePercentageQuotedSecurity(v))))
                         .oneOf( //
                                         // @formatter:off
                                         // 380,000000 878841 US17275R1023
