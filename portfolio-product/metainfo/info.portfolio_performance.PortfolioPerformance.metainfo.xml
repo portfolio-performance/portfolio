@@ -37,6 +37,18 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.81.3" date="2026-01-25">
+      <description>
+        <ul>
+          <li>New: Added PDF importers for Questrade, apoBank, and Volkswagen Bank.</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital, WIR Bank, and Audi Bank.</li>
+          <li>Improvement: Reduced flickering when refreshing flare and pie charts.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Questrade, apoBank und die Volkswagen Bank hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital, WIR Bank und Audi Bank verbessert.</li>
+          <li xml:lang="de">Verbesserung: Flackern beim Aktualisieren von Flare- und Kreisdiagrammen reduziert.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.81.2" date="2026-01-18">
       <description>
         <ul>
