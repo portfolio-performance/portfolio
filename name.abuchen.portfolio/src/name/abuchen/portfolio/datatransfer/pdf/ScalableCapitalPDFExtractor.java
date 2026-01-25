@@ -70,20 +70,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .optionalOneOf(//
-                                       // Is type --> "Verkauf" change from BUY
-                                       // to SELL
-                                       // Is type --> "Sell" change from BUY to
-                                       // SELL
+                                       // Is type --> "Verkauf" change from BUY to SELL
+                                       // Is type --> "Sell" change from BUY to SELL
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>(Kauf|Sparplan|Buy|Kopen|Acquisto|Verkauf|Sell)).*$") //
                                                         .assign((t, v) -> {
-                                                            if ("Verkauf".equals(v.get("type"))
-                                                                            || "Sell".equals(v.get("type"))) //
+                                                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
                                                                 t.setType(PortfolioTransaction.Type.SELL);
                                                         }),
-                                        // Is type --> "Laufzeitende" change
-                                        // from BUY to SELL
+                                        // Is type --> "Laufzeitende" change from BUY to SELL
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>Laufzeitende)[\\s]*$") //
