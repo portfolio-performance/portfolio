@@ -182,11 +182,23 @@ public class AccountTransferModel extends AbstractModel
         long upper = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (amount < lower || amount > upper)
-            return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        {
+            if (amount >= 0 && (amount < lower || amount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+            if (amount < 0 && (-amount < lower || -amount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
+        else
+        {
+            if (amount < lower || amount > upper)
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
 
+        /* allow grossAmount to be zero in case of fees/taxes only transactions
         if (amount == 0L || fxAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
+        */
 
         return ValidationStatus.ok();
     }
