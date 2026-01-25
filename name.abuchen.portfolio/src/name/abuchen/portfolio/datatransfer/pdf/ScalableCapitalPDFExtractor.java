@@ -86,7 +86,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // from BUY to SELL
                                         section -> section //
                                                         .attributes("type") //
-                                                        .match("^(?<type>Laufzeitende)\\s?$") //
+                                                        .match("^(?<type>Laufzeitende)[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             if ("Laufzeitende".equals(v.get("type"))) //
                                                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -100,8 +100,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Acquisto (?<name>.*) [\\.,\\d]+ unit. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Acquisto (?<name>.*) [\\.,\\d]+ unit. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Kopen IncomeShares S&P 500 Options 0.935016 stk. 5.3475 EUR 5.00 EUR
@@ -109,8 +109,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Kopen (?<name>.*) [\\.,\\d]+ stk\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Kopen (?<name>.*) [\\.,\\d]+ stk\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Kauf Vngrd Fds-ESG Dv.As-Pc Al ETF 3,00 Stk. 6,168 EUR 18,50 EUR
@@ -121,8 +121,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(Kauf|Verkauf) (?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(Kauf|Verkauf) (?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
@@ -133,8 +133,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(Buy|Sell) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(Buy|Sell) (?<name>.*) [\\.,\\d]+ pc\\. [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
 
                                         // @formatter:off
@@ -145,8 +145,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^Berechtigtes Wertpapier (?<name>.*)$") //
-                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) $") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} $") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -208,7 +208,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} $")
+                                                        .match("^(?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift .*$")
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         )
