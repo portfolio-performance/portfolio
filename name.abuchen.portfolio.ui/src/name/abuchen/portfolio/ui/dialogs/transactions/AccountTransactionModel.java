@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -292,11 +291,23 @@ public class AccountTransactionModel extends AbstractModel
         long upper = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (grossAmount < lower || grossAmount > upper)
-            return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        {
+            if (grossAmount >= 0 && (grossAmount < lower || grossAmount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+            if (grossAmount < 0 && (-grossAmount < lower || -grossAmount > upper))
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
+        else
+        {
+            if (grossAmount < lower || grossAmount > upper)
+                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+        }
 
+        /* allow grossAmount to be zero in case of fees/taxes only transactions
         if (grossAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
+        */
 
         return ValidationStatus.ok();
     }
