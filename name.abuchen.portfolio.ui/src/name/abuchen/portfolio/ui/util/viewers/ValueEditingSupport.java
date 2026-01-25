@@ -34,7 +34,7 @@ public class ValueEditingSupport extends PropertyEditingSupport
             throw new UnsupportedOperationException(String.format(
                             "Property %s needs to be of type long or int to serve as decimal", attributeName)); //$NON-NLS-1$
 
-        this.stringToLong = new StringToCurrencyConverter(valueType);
+        this.stringToLong = new StringToCurrencyConverter(valueType, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
         this.longToString = new CurrencyToStringConverter(valueType);
     }
 

@@ -410,7 +410,7 @@ public class BindingHelper
 
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(type);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
 
         UpdateValueStrategy<String, Long> input2model = new UpdateValueStrategy<>();
         input2model.setAfterGetValidator(converter);
