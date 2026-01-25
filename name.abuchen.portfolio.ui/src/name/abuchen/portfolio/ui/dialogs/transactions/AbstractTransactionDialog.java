@@ -102,7 +102,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             if (isMandatory)
             {
                 strategy.setAfterConvertValidator(
-                                convertedValue -> convertedValue != null && convertedValue.longValue() > 0
+                                convertedValue -> convertedValue != null && (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE || convertedValue.longValue() > 0)
                                                 ? ValidationStatus.ok()
                                                 : ValidationStatus.error(MessageFormat
                                                                 .format(Messages.MsgDialogInputRequired, description)));

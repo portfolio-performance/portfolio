@@ -645,7 +645,7 @@ public class AccountTransactionModel extends AbstractModel
 
     protected BigDecimal calculateDividendAmount()
     {
-        if (shares > 0)
+        if (shares > 0 || NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
             return BigDecimal.valueOf(
                             (fxGrossAmount * Values.Share.factor()) / (double) shares / Values.Amount.divider());
         else
