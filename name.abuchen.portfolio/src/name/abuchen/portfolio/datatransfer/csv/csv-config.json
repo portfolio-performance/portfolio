@@ -440,11 +440,11 @@
         {
             "field": "date",
             "format": "yyyy-MM-dd",
-            "label": "﻿Date"
+            "label": "Date"
         },
         {
             "field": "type",
-            "format": "DEPOSIT=Deposit;FEES=Flat-rate administrative fee;BUY=Buy;SELL=Sell;DIVIDENDS=Dividend",
+            "format": "DEPOSIT=Deposit|Transfer;REMOVAL=Entnahme;INTEREST=Interests;INTEREST_CHARGE=Zinsbelastung;DIVIDENDS=Dividend|Liquidation distribution;FEES=Flat-rate administrative fee;FEES_REFUND=Gebührenerstattung;TAXES=Steuern;TAX_REFUND=Steuerrückerstattung;BUY=Buy;SELL=Sell;TRANSFER_IN=Umbuchung (Eingang);TRANSFER_OUT=Umbuchung (Ausgang)",
             "label": "Category"
         },
         {
