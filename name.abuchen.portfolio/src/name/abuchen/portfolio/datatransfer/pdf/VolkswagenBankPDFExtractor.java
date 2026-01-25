@@ -28,13 +28,13 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug / Saldenmitteilung", //
+        final var type = new DocumentType("Kontoauszug / Saldenmitteilung", //
                         documentContext -> documentContext //
-                        // @formatter:off
+                                        // @formatter:off
                                         // Alter Kontostand in EUR: 1.001,29
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Alter Kontostand in (?<currency>[\\w]{3}):.*$") //
+                                        .match("^Alter Kontostand in (?<currency>[A-Z]{3}):.*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -43,13 +43,12 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
         // 1 11.03.2022 Gutschrift 11.03.2022 500,00
         // 1 06.01.2026 Gutschrift Echtzeit 05.01.2026 50,00
         // @formatter:on
-        Block depositBlock = new Block(
-                        "^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift (Echtzeit )?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift (Echtzeit )?[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -69,13 +68,12 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
         // 1 21.08.2023 Telebanking Belastung 22.08.2023 -1,00
         // 3 23.08.2023 Belastung 23.08.2023 -1,00
         // @formatter:on
-        Block removalBlock = new Block(
-                        "^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Telebanking )?Belastung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+$");
+        var removalBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Telebanking )?Belastung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -97,13 +95,12 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
         // 3 23.12.2021 Kirchensteuer 25.12.2021 -0,01
         // 4 23.12.2021 Abgeltungsteuer 25.12.2021 -0,20
         // @formatter:on
-        Block interestBlock = new Block(
-                        "^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -121,7 +118,7 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Abgeltungsteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -131,7 +128,7 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Solidarit.tszuschlag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -141,7 +138,7 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kirchensteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
