@@ -26,11 +26,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Scalable Capital Bank GmbH");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addInterestTransaction();
         addAccountStatementTransaction();
         addTaxAdjustmentTransaction();
-        addAdvancedTaxTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
                         "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung)");
@@ -555,7 +555,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addAdvancedTaxTransaction()
+    private void addAdvanceTaxTransaction()
     {
         final var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
@@ -598,9 +598,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
                         // @formatter:on
-                        .section("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ (?<currency>[A-Z]{3})[\\s]*$") //
+                        .section("amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                         .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
@@ -612,8 +613,6 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
