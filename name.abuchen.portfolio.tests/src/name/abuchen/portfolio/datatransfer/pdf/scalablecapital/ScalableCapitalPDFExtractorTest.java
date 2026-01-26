@@ -493,6 +493,39 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000GUOATN7"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsV-iBds Dec 2025 Te.EO Co."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-07"), hasShares(53.928), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
+                        hasTaxes("EUR", 2.74), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSecuritySell01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
