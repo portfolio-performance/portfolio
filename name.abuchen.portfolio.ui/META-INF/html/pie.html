@@ -20,7 +20,6 @@ pp.onResizeEnd(function() {
 
 var thePieChart = {
 
-    isInitialized: false,
     toPercent: d3.format("0.2%"),
 
     build: function () {
@@ -86,62 +85,45 @@ var thePieChart = {
         }
 
         this.path = pathGroup.selectAll("path.pie")
-            .data(this.piedata, function(d) { return d.data.uuid; });
+            .data(this.piedata);
 
-        // Enter: create new paths
         this.path.enter()
             .append("path")
             .attr("class", "pie")
-            .attr("stroke", "#ffffff")
-            .attr("fill", function(d) { return d.data.color; })
+            .attr("line", "#ffffff")
+            .attr("fill", function(d) { return d.data.color })
             .attr("d", this.arc)
             .on("mouseover", function(d) { that.mouseover(d); })
             .on("mousemove", function(d) { that.mousemove(d); })
             .on("mouseout", function(d) { that.mouseout(d); })
-            .on("click", function(d) { that.click(d); });
+            .on("click", function(d) { that.click(d); })
+            .transition();
 
-        // Update: update existing paths to new values
-        var pathUpdate = this.isInitialized ? this.path.transition().duration(300) : this.path;
-        pathUpdate
-            .attr("d", this.arc)
-            .attr("fill", function(d) { return d.data.color; });
-
-        // Exit: remove old paths
         this.path.exit()
             .transition()
-            .duration(300)
-            .style("opacity", 0)
             .remove();
 
         this.addLabels();
         this.addPercentageLabels();
-        this.isInitialized = true;
     },
 
     addLabels: function() {
         var that = this;
 
-        var labelGroup = this.svg.select("g.labels");
-        if (labelGroup.empty()) {
+        var labelGroup = this.svg.select("g.labels")
+        if (labelGroup.empty() ) {
             labelGroup = this.svg.append("g").attr("class", "labels");
         }
 
-        // Filter data to only include items above threshold
-        var labelData = this.piedata
-            .filter(function(d) { return d.data.value / total > 0.001; })
-            .sort(function(p1, p2) { return p1.startAngle - p2.startAngle; });
-
         var labels = labelGroup.selectAll("text")
-            .data(labelData, function(d) { return d.data.uuid; });
-
-        // Enter: create new labels
+            .data(this.piedata.sort(function(p1,p2) { return p1.startAngle - p2.startAngle;}));
         labels.enter()
             .append("text")
+            .filter(function(d) { return d.data.value / total > 0.001 })
             .attr("text-anchor", "start")
             .attr("visibility", "hidden");
-
-        // Exit: remove old labels
-        labels.exit().remove();
+        labels.exit()
+            .remove();
 
         // label positioning algorithm (if we want to call it that):
         // on the right side, if it conflicts, move it below
@@ -149,17 +131,17 @@ var thePieChart = {
 
         var previous;
 
-        // Update: position all labels (both new and existing)
         labels
-            .text(function(d) { return d.data.label; })
-            .each(function(d, i) {
+            .filter(function(d) { return d.data.value / total > 0.001 })
+            .text(function (d) { return d.data.label; })
+            .each(function (d, i) {
                 var a = (d.startAngle + d.endAngle) / 2;
                 var bbox = this.getBBox();
                 var labelRadius = that.radius - 40;
 
                 var isRight = (a >= 0 && a <= Math.PI) || (a >= 2 * Math.PI);
 
-                d.cx = Math.sin(a) * (labelRadius);
+                d.cx =  Math.sin(a) * (labelRadius);
                 d.cy = -Math.cos(a) * (labelRadius);
 
                 if (isRight) {
@@ -189,53 +171,39 @@ var thePieChart = {
                 }
 
                 previous = d;
-            });
-
-        // Apply transition only on updates, not on initial render
-        var labelUpdate = this.isInitialized ? labels.transition().duration(300) : labels;
-        labelUpdate
-            .attr("x", function(d) { return d.x; })
-            .attr("y", function(d) { return d.y; })
+            })
+            .transition() //we can use transitions now!
+            .attr("x", function (d) { return d.x; })
+            .attr("y", function (d) { return d.y; })
             .attr("visibility", "visible");
     },
 
     addPercentageLabels: function() {
         var that = this;
 
-        var labelGroup = this.svg.select("g.values");
-        if (labelGroup.empty()) {
+        var labelGroup = this.svg.select("g.values")
+        if (labelGroup.empty() ) {
             labelGroup = this.svg.append("g").attr("class", "values");
         }
 
-        // Filter data to only include items above threshold
-        var valueData = this.piedata
-            .filter(function(d) { return d.data.value / total > 0.015; })
-            .sort(function(p1, p2) { return p1.startAngle - p2.startAngle; });
-
         this.valueLabels = labelGroup.selectAll("text")
-            .data(valueData, function(d) { return d.data.uuid; });
+            .data(this.piedata.sort(function(p1,p2) { return p1.startAngle - p2.startAngle;}));
 
-        // Enter: create new value labels
         this.valueLabels.enter()
             .append("text")
+            .filter(function(d) { return d.data.value / total > 0.015 })
+            .attr("transform", this.transformValueLabels)
             .attr("dy", ".35em")
             .attr("text-anchor", "middle")
+            .style("fill", function(d) { return brightness(d3.rgb(d.data.color)) < 125 ? "#eee" : "#000"; })
+            .text(function(d) { return d.data.valueLabel; })
             .on("mouseover", function(d) { that.mouseover(d); })
             .on("mousemove", function(d) { that.mousemove(d); })
             .on("mouseout", function(d) { that.mouseout(d); })
             .on("click", function(d) { that.click(d); });
 
-        // Exit: remove old value labels
-        this.valueLabels.exit().remove();
-
-        // Update: update all value labels (both new and existing)
-        this.valueLabels
-            .text(function(d) { return d.data.valueLabel; })
-            .style("fill", function(d) { return brightness(d3.rgb(d.data.color)) < 125 ? "#eee" : "#000"; });
-
-        // Apply transition only on updates, not on initial render
-        var valueUpdate = this.isInitialized ? this.valueLabels.transition().duration(300) : this.valueLabels;
-        valueUpdate.attr("transform", this.transformValueLabels);
+        this.valueLabels.exit()
+            .remove();
     },
 
     transformValueLabels: function(d) {
@@ -277,13 +245,6 @@ var thePieChart = {
 
 thePieChart.build();
 thePieChart.update(data);
-
-// expose global update function for external calls
-window.updateChart = function() {
-    var newData = JSON.parse(loadData());
-    total = d3.sum(newData, function(d) { return d.value; });
-    thePieChart.update(newData);
-};
 
 // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
 function brightness(rgb) {
