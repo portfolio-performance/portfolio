@@ -196,7 +196,7 @@ public class QuestradeGroupPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-                        hasName(""), //
+                        hasName(null), //
                         hasCurrencyCode("CAD"))));
 
         // check buy sell transaction
