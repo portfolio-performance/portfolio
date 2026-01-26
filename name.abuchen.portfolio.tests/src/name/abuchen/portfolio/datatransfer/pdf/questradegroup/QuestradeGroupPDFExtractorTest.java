@@ -110,7 +110,7 @@ public class QuestradeGroupPDFExtractorTest
     }
 
     @Test
-    public void testBuy03()
+    public void testSecurityBuy03()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
 
@@ -129,21 +129,21 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName("ISHARES CORE EQUITY ETF"), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName("ISHARES CORE EQUITY ETF"), //
+                        hasCurrencyCode("CAD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-09-22T00:00"), hasShares(76.00), //
-            hasSource("Buy03.txt"), //
-            hasNote(null), //
-            hasAmount("CAD", 1973.96), hasGrossValue("CAD", 1973.96), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+                        hasDate("2023-09-22T00:00"), hasShares(76.00), //
+                        hasSource("Buy03.txt"), //
+                        hasNote(null), //
+                        hasAmount("CAD", 1973.96), hasGrossValue("CAD", 1973.96), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
-    public void testBuy04()
+    public void testSecurityBuy04()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
 
@@ -162,21 +162,21 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName("ISHARES CORE EQUITY ETF"), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName("ISHARES CORE EQUITY ETF"), //
+                        hasCurrencyCode("CAD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-09-22T00:00"), hasShares(76.00), //
-            hasSource("Buy04.txt"), //
-            hasNote(null), //
-            hasAmount("CAD", 1973.23), hasGrossValue("CAD", 1972.96), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.27))));
+                        hasDate("2023-09-22T00:00"), hasShares(76.00), //
+                        hasSource("Buy04.txt"), //
+                        hasNote(null), //
+                        hasAmount("CAD", 1973.23), hasGrossValue("CAD", 1972.96), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.27))));
     }
 
     @Test
-    public void testBuy05()
+    public void testSecurityBuy05()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
 
@@ -195,21 +195,21 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName(""), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName(""), //
+                        hasCurrencyCode("CAD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-01-17T00:00"), hasShares(19.00), //
-            hasSource("Buy05.txt"), //
-            hasNote(null), //
-            hasAmount("CAD", 481.08), hasGrossValue("CAD", 481.08), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+                        hasDate("2023-01-17T00:00"), hasShares(19.00), //
+                        hasSource("Buy05.txt"), //
+                        hasNote(null), //
+                        hasAmount("CAD", 481.08), hasGrossValue("CAD", 481.08), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
-    public void testBuy06()
+    public void testSecurityBuy06()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
 
@@ -228,17 +228,17 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName("ISHARES CORE EQUITY ETF"), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName("ISHARES CORE EQUITY ETF"), //
+                        hasCurrencyCode("CAD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-            hasDate("2023-02-24T00:00"), hasShares(30.00), //
-            hasSource("Buy06.txt"), //
-            hasNote(null), //
-            hasAmount("CAD", 756.40), hasGrossValue("CAD", 756.40), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+                        hasDate("2023-02-24T00:00"), hasShares(30.00), //
+                        hasSource("Buy06.txt"), //
+                        hasNote(null), //
+                        hasAmount("CAD", 756.40), hasGrossValue("CAD", 756.40), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
@@ -295,17 +295,17 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName(null), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName(null), //
+                        hasCurrencyCode("CAD"))));
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-            hasDate("2023-09-29T00:00"), hasShares(95.00), //
-            hasSource("Dividend02.txt"), //
-            hasNote("REC 09/26/23"), //
-            hasAmount("CAD", 23.55), hasGrossValue("CAD", 23.55), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+                        hasDate("2023-09-29T00:00"), hasShares(95.00), //
+                        hasSource("Dividend02.txt"), //
+                        hasNote("REC 09/26/23"), //
+                        hasAmount("CAD", 23.55), hasGrossValue("CAD", 23.55), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
@@ -328,17 +328,17 @@ public class QuestradeGroupPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-            hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
-            hasName(null), //
-            hasCurrencyCode("CAD"))));
+                        hasIsin(null), hasWkn(null), hasTicker("XEQT"), //
+                        hasName(null), //
+                        hasCurrencyCode("CAD"))));
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-            hasDate("2023-03-31T00:00"), hasShares(19.00), 
-            hasSource("Dividend03.txt"), //
-            hasNote("REC 03/23/23"), //
-            hasAmount("CAD", 1.67), hasGrossValue("CAD", 1.67), //
-            hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
+                        hasDate("2023-03-31T00:00"), hasShares(19.00), 
+                        hasSource("Dividend03.txt"), //
+                        hasNote("REC 03/23/23"), //
+                        hasAmount("CAD", 1.67), hasGrossValue("CAD", 1.67), //
+                        hasTaxes("CAD", 0.00), hasFees("CAD", 0.00))));
     }
 
     @Test
