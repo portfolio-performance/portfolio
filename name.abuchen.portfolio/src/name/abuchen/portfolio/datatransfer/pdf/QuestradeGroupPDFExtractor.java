@@ -81,22 +81,14 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
-                                        // Matches lines like:
                                         // 01-17-2023 01-19-2023 Buy .XEQT UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                                         // @formatter:on
                                         section -> section //
                                                         .attributes( "tickerSymbol") //
-                                                        .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS\\|WE ACTED AS AGENT\\|AVG PRICE - ASK .*$") //
+                                                        .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS\\|WE ACTED AS AGENT\\|AVG PRICE - ASK.*$") //
                                                         .documentContext("currency") //
-                                                        .assign((t, v) -> {
-                                                            // The security name cannot be null (causes error in the UI otherwise)
-                                                            v.put("name", "");
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
-                                        // Matches lines like:
                                         // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
                                         // 01-16-2023 01-18-2023 Buy .VEQT VANGUARD ALL-EQUITY ETF|PORTFOLIO ETF
                                         // 02-24-2023 02-28-2023 Buy .XEQT ISHARES CORE EQUITY ETF|PORTFOLIO 
@@ -105,9 +97,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                                         .attributes( "tickerSymbol", "name") //
                                                         .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.+?)(?:\\|?[\\s]*PORTFOLIO.*|\\|PORTFOLIO ETF.*)$") //
                                                         .documentContext("currency") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
 
                         
