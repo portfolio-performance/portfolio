@@ -26,10 +26,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Scalable Capital Bank GmbH");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addInterestTransaction();
         addAccountStatementTransaction();
         addTaxAdjustmentTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -262,7 +263,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
                         "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung|Laufzeitende)");
@@ -601,6 +602,66 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final var type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block();
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // für iShs3-M.Wld SC CTBEnh.ESG UETF (IE000T9EOCL3) 
+                        // @formatter:on
+                        .section("name", "isin") //
+                        .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\) $") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Berechtigte Anzahl 1 Angefallen im
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                        // @formatter:on
+                        .section("date") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Steuerabbuchung .*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
