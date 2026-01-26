@@ -10,7 +10,7 @@
 <script>
 window.addEventListener('load', createFlare);
 
-function createFlare(){
+function createFlare(){	
 pp.onResizeEnd(function() {
   width = pp.getInnerWidth();
   height = pp.getInnerHeight();
@@ -22,8 +22,7 @@ pp.onResizeEnd(function() {
 
   svg.attr("transform", "translate(" + width / 2 + "," + (height / 2) + ")");
 
-  y.range([0, radius]);
-  flare.zoomTo(node);
+  flare.click(node);
 });
 
 var width = pp.getInitialWidth(),
@@ -48,7 +47,7 @@ var svg = d3.select("body").append("svg")
 
 var partition = d3.layout.partition()
     .sort(null)
-    .value(function(d) { return d.value; });
+    .value(function(d) { return 1; });
 
 var arc = d3.svg.arc()
     .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -58,165 +57,57 @@ var arc = d3.svg.arc()
 
 // Keep track of the node that is currently being displayed as the root.
 var node;
-var nodeUuid = null;
-var root;
 
 var flare = {
-
-  isInitialized: false,
-
-  update: function(content) {
-    var that = this;
+  setContent: function(content) {
     root = JSON.parse(content);
+    node = root;
 
-    // Compute partition layout
-    var nodes = partition.nodes(root);
-
-    // If we have a drilled-into node, try to find it in the new data
-    if (nodeUuid !== null) {
-      var foundNode = findNodeByUuid(root, nodeUuid);
-      if (foundNode) {
-        node = foundNode;
-      } else {
-        // Node no longer exists, reset to root
-        node = root;
-        nodeUuid = null;
-      }
-    } else {
-      node = root;
-    }
-
-    // Bind data using uuid as key
-    this.path = svg.selectAll("path")
-      .data(nodes, function(d) { return d.uuid; });
-
-    // Exit: remove old paths first (before enter, to avoid conflicts)
-    if (this.isInitialized) {
-      this.path.exit().transition().duration(300).style("opacity", 0).remove();
-    } else {
-      this.path.exit().remove();
-    }
-
-    // Enter: create new paths
-    this.path.enter()
+    this.path = svg.datum(root).selectAll("path")
+      .data(partition.value(function(d) { return d.value; }).nodes)
+      .enter()
       .append("path")
-      .on("click", function(d) { that.click(d); })
+      .attr("d", arc)
+      .style("fill", function(d) { return d.color })
+      .on("click", this.click)
       .on("mouseover", this.mouseover)
       .on("mousemove", this.mousemove)
       .on("mouseout", this.mouseout)
       .each(stash);
 
-    // Rebind data to get a fresh selection with all elements properly bound
-    this.path = svg.selectAll("path").data(nodes, function(d) { return d.uuid; });
+    this.text = svg.datum(root)
+      .selectAll("text")
+      .data(partition.value(function(d) { return d.value; }).nodes)
 
-    // Set fill immediately on all paths (no transition for colors)
-    this.path.style("fill", function(d) { return d.color; });
-
-    // Update: animate arc shapes
-    if (this.isInitialized) {
-      this.path.transition().duration(300)
-        .attrTween("d", arcTweenData);
-    } else {
-      this.path
-        .attr("d", arc)
-        .each(stash);
-    }
-
-    // Handle text labels
-    this.text = svg.selectAll("text")
-      .data(nodes, function(d) { return d.uuid; });
-
-    // Exit: remove old text elements first
-    if (this.isInitialized) {
-      this.text.exit().transition().duration(300).style("opacity", 0).remove();
-    } else {
-      this.text.exit().remove();
-    }
-
-    // Enter: create new text elements
     var textEnter = this.text.enter().append("text")
+      .style("fill-opacity", 1)
+      .style("fill", function(d) {
+        return brightness(d3.rgb(d.color)) < 125 ? "#eee" : "#000";
+      })
+      .attr("text-anchor", function(d) {
+        return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+      })
       .attr("dy", ".2em")
-      .on("click", function(d) { that.click(d); })
+      .attr("transform", function(d) {
+        var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+        return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+      })
+      .on("click", this.click)
       .on("mouseover", this.mouseover)
       .on("mousemove", this.mousemove)
       .on("mouseout", this.mouseout);
 
     textEnter.append("tspan")
-      .attr("x", 0);
-
-    // Rebind data to get a fresh selection with all elements properly bound
-    this.text = svg.selectAll("text").data(nodes, function(d) { return d.uuid; });
-
-    // Set fill immediately on all text elements (no transition for colors)
-    this.text
-      .style("fill", function(d) {
-        return brightness(d3.rgb(d.color)) < 125 ? "#eee" : "#000";
-      })
-      .style("fill-opacity", function(d) { return isParentOf(node, d) ? 1 : 1e-6; });
-
-    // Update: animate position attributes
-    var textUpdateAttrs = function(selection) {
-      selection
-        .attr("text-anchor", function(d) {
-          return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-        })
-        .attr("transform", function(d) {
-          var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
-          return "rotate(" + angle + ")translate(" + (y(d.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-        });
-    };
-
-    if (this.isInitialized) {
-      textUpdateAttrs(this.text.transition().duration(300));
-    } else {
-      textUpdateAttrs(this.text);
-    }
-
-    this.text.select("tspan")
-      .attr("visibility", function(d) { return isBigEnough(d) && isParentOf(node, d) ? null : "hidden"; })
-      .text(cropped);
-
-    // Apply current zoom state if we have a drilled-into node
-    if (node !== root) {
-      this.zoomTo(node);
-    }
-
-    this.isInitialized = true;
-  },
-
-  zoomTo: function(d) {
-    // Set scales to match the target node
-    x.domain([d.x, d.x + d.dx]);
-    y.domain([d.y, 1]).range([d.y ? 20 : 0, radius]);
-
-    // Update all paths immediately
-    this.path.attr("d", arc);
-
-    // Update all text elements
-    this.text
-      .style("visibility", function(e) {
-        return isBigEnough(e) && isParentOf(d, e) ? null : "hidden";
-      })
-      .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
-      .attr("text-anchor", function(e) {
-        return x(e.x + e.dx / 2) > Math.PI ? "end" : "start";
-      })
-      .attr("transform", function(e) {
-        var angle = x(e.x + e.dx / 2) * 180 / Math.PI - 90;
-        return "rotate(" + angle + ")translate(" + (y(e.y) + 5) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-      });
-
-    this.text.select("tspan")
-      .attr("visibility", function(e) { return isBigEnough(e) && isParentOf(d, e) ? null : "hidden"; })
+      .attr("x", 0)
+      .attr("visibility", function(d) { return isBigEnough(d) ? null : "hidden" })
       .text(cropped);
   },
 
   click: function(d) {
-    if (!d.caption)
-      return;
+	if (!d.caption)
+	    return;
 
     node = d;
-    nodeUuid = d.uuid;
 
     if (typeof onItemSelected === 'function') {
       onItemSelected(d.uuid);
@@ -247,7 +138,7 @@ var flare = {
       .each("end", function(e) {
           d3.select(this)
             .style("visibility", isBigEnough(e) && isParentOf(d, e) ? null : "hidden")
-            .select("tspan").text(cropped(e));
+            .text(cropped(e));
       });
   },
 
@@ -265,8 +156,8 @@ var flare = {
   },
 
   mousemove: function(d) {
-    if (!d.caption)
-      return;
+	if (!d.caption)
+	    return;
 
     tooltip
         .style("left", (d3.event.pageX + 6) + "px")
@@ -278,21 +169,6 @@ var flare = {
       .duration(250)
       .style("opacity", 0);
   }
-}
-
-function findNodeByUuid(node, uuid) {
-  if (node.uuid === uuid) {
-    return node;
-  }
-  if (node.children) {
-    for (var ii = 0; ii < node.children.length; ii++) {
-      var found = findNodeByUuid(node.children[ii], uuid);
-      if (found) {
-        return found;
-      }
-    }
-  }
-  return null;
 }
 
 function cropped(d) {
@@ -312,28 +188,21 @@ function isBigEnough(d) {
   return d.depth && (endAngle - startAngle) > (2 * Math.PI / 100);
 }
 
-// Setup for switching data: stash the old values on the DOM element for transition.
+// Setup for switching data: stash the old values for transition.
 function stash(d) {
-  this._x0 = d.x;
-  this._dx0 = d.dx;
+  d.x0 = d.x;
+  d.dx0 = d.dx;
 }
 
 // When switching data: interpolate the arcs in data space.
-// Values are stored on DOM element (this) to persist across data rebinding.
-function arcTweenData(d, i) {
-  var el = this;
-  // Use stashed values from DOM element, or current values if not yet stashed
-  var x0 = (el._x0 !== undefined) ? el._x0 : d.x;
-  var dx0 = (el._dx0 !== undefined) ? el._dx0 : d.dx;
-  var oi = d3.interpolate({x: x0, dx: dx0}, d);
-
+function arcTweenData(a, i) {
+  var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
   function tween(t) {
     var b = oi(t);
-    el._x0 = b.x;
-    el._dx0 = b.dx;
+    a.x0 = b.x;
+    a.dx0 = b.dx;
     return arc(b);
   }
-
   if (i == 0) {
    // If we are on the first arc, adjust the x domain to match the root node
    // at the current zoom level. (We only need to do this once.)
@@ -374,12 +243,7 @@ function brightness(rgb) {
   return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
 }
 
-flare.update(loadData());
-
-// expose global update function for external calls
-window.updateChart = function() {
-  flare.update(loadData());
-};
+flare.setContent(loadData());
 }
 </script>
 </body>
