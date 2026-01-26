@@ -559,7 +559,6 @@ public class ScalableCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
-    @Test
     public void testSparplanausfuehrung01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -2021,4 +2020,75 @@ public class ScalableCapitalPDFExtractorTest
                         hasAmount("EUR", 333.50), hasGrossValue("EUR", 333.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testVorabpauschale04()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK5BQT80"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE All-World U.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(4.090761), //
+                        hasSource("Vorabpauschale04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.93), hasGrossValue("EUR", 0.93), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2903252349"), hasWkn(null), hasTicker(null), //
+                        hasName("Scalable MSCI AC Wld Xtrackers"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        taxes( //
+                                        hasDate("2026-01-02"), hasShares(430), //
+                                        hasSource("Vorabpauschale05.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
 }

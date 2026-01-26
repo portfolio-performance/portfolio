@@ -641,22 +641,47 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        .oneOf( //
                         // @formatter:off
-                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
-                        // @formatter:on
-                        .section("date") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Steuerabbuchung .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Steuerabbuchung .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
 
+                                        // @formatter:off
+                                        // Ex-Tag 02.01.2026 Kalenderjahr 
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ex-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        )
+
+                        .oneOf( //
                         // @formatter:off
-                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                                        // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+
+                                        // @formatter:off
+                                        // Zu versteuern 0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Zu versteuern (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        })
+                        )
 
                         .wrap(t -> {
                             var item = new TransactionItem(t);
