@@ -5066,6 +5066,40 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroVerkauf08()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0005190003"), hasWkn("519000"), hasTicker(null), //
+                        hasName("BAYERISCHE MOTOREN WERKE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-22T16:52"), hasShares(200.00), //
+                        hasSource("FlatExDegiroVerkauf08.txt"), //
+                        hasNote("Transaktion-Nr.: 4732792019"), //
+                        hasAmount("EUR", 17500.12), hasGrossValue("EUR", 17524.00), //
+                        hasTaxes("EUR", 15.15 + 0.83), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
     public void testCryptoVerkauf01()
     {
         List<Exception> errors = new ArrayList<>();
