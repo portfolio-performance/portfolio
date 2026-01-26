@@ -456,6 +456,76 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf11()
+    {
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("ES0113900J37"), hasWkn("817651"), hasTicker(null), //
+                        hasName("Registered Shs Banco Santander SA Nom."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-12T00:00"), hasShares(46.00), //
+                        hasSource("Kauf11.txt"), //
+                        hasNote("Transaktion 87724268-0144"), //
+                        hasAmount("CHF", 424.23), hasGrossValue("CHF", 423.60), //
+                        hasForexGrossValue("EUR", 454.06), //
+                        hasTaxes("CHF", 0.63), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf11WithSecurityInCHF()
+    {
+        var security = new Security("Registered Shs Banco Santander SA Nom.", "CHF");
+        security.setIsin("ES0113900J37");
+        security.setWkn("817651");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-12-12T00:00"), hasShares(46.00), //
+                        hasSource("Kauf11.txt"), //
+                        hasNote("Transaktion 87724268-0144"), //
+                        hasAmount("CHF", 424.23), hasGrossValue("CHF", 423.60), //
+                        hasTaxes("CHF", 0.63), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
