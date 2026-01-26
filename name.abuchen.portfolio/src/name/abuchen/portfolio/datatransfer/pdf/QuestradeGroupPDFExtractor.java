@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.util.Locale;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -46,14 +47,22 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransaction()
     {
-        final var type = new DocumentType("[\\d]{2}\\. ACTIVITY DETAILS", //
-                        documentContext -> documentContext //
+        // Detect top-level sections (e.g., 04. ACTIVITY DETAILS)
+        var sectionRange = new Block("\\d{2}\\. .+") //
+                        .asRange(section -> section //
+                                        .attributes("section") //
+                                        .match(".*(?<section>\\d{2}\\. [A-Z\\s]+[A-Z]).*"));
+
+        // Detect the base currency via "Combined in ..."
+        var currencyRange = new Block("^.Combined in (?<currency>[A-Z]{3})$")
+                    .asRange(section -> section //
                                         // @formatter:off
                                         // ¹Combined in CAD
                                         // @formatter:on
-                                        .section("currency") //
-                                        .match("^.Combined in (?<currency>[A-Z]{3})$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .attributes("currency") //
+                                        .match("^.Combined in (?<currency>[A-Z]{3})$"));
+
+        final var type = new DocumentType("[\\d]{2}\\. ACTIVITY DETAILS", sectionRange, currencyRange);        
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -76,8 +85,18 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // 01-17-2023 01-19-2023 Buy .XEQT UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                         // @formatter:on
                         .section("date") //
+                        .documentRange("section")
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Buy \\..*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.US)))
+                        .assign((t, v) -> {
+                            String section = v.get("section");
+
+                            if (section == null || !section.equals("04. ACTIVITY DETAILS"))
+                            {
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            }
+
+                            t.setDate(asDate(v.get("date"), Locale.US));
+                        })
 
                         .oneOf( //
                                         // @formatter:off
@@ -86,7 +105,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes( "tickerSymbol") //
                                                         .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS\\|WE ACTED AS AGENT\\|AVG PRICE - ASK.*$") //
-                                                        .documentContext("currency") //
+                                                        .documentRange("currency") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 04-10-2025 04-11-2025 Buy .VEQT VANGUARD ALL-EQUITY ETF  PORTFOLIO
@@ -96,7 +115,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes( "tickerSymbol", "name") //
                                                         .match("^.* Buy \\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.+?)(?:\\|?[\\s]*PORTFOLIO.*|\\|PORTFOLIO ETF.*)$") //
-                                                        .documentContext("currency") //
+                                                        .documentRange("currency") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
 
@@ -119,7 +138,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
-                                                        .documentContext("currency") //
+                                                        .documentRange("currency") //
                                                         .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE \\- ASK)? [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\- \\((?<amount>[\\.,\\d]+)\\).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
@@ -130,14 +149,21 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
-                                                        .documentContext("currency") //
+                                                        .documentRange("currency") //
                                                         .match(".*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\([\\.,\\d]+\\) \\((?<amount>[\\.,\\d]+)\\).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap((t, ctx) -> {
+                            var item = new BuySellEntryItem(t);
+
+                            if (ctx.containsKey(FAILURE))
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
@@ -266,7 +292,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // UNIT|WE ACTED AS AGENT 29 33.600 (974.40) (0.10) (974.50) - - - -
                         // @formatter:on
                         .section("fee").optional() //
-                        .documentContext("currency") //
+                        .documentRange("currency") //
                         .match("^.*WE ACTED AS AGENT [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\((?<fee>[\\.,\\d]+)\\).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
