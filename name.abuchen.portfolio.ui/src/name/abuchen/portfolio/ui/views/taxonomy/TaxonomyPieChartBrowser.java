@@ -44,7 +44,7 @@ public class TaxonomyPieChartBrowser implements IPieChart
     @Override
     public void refresh(ClientSnapshot snapshot)
     {
-        browser.execute("updateChart();"); //$NON-NLS-1$
+        browser.refresh();
     }
 
     private final class LoadDataFunction extends BrowserFunction
