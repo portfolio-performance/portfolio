@@ -38,7 +38,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Hypothekarbank Lenzburg AG");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
     }
 
     @Override
@@ -111,7 +111,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
-                                                        .match("^[\s]*[\\.,'\\d]+ .* [A-Z]{3} (?<name>.*) Depotstelle.*$") //
+                                                        .match("^[\\s]*[\\.,'\\d]+ .* [A-Z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.,'\\d]+ Kurs (?<currency>[A-Z]{3})[\\s]{1,}[\\.,'\\d]+[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -215,26 +215,50 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .optionalOneOf( //
-                                        // @formatter:off
-                                        // USD  165.40
-                                        // Devisenkurs  0.9206 CHF  152.25
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency", "gross") //
-                                                        .match("^(?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,'\\d]+)$") //
-                                                        .match("^Devisenkurs[\\s]+(?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})[\\s]+(?<gross>[\\.,'\\d]+)$") //
-                                                        .assign((t, v) -> {
-                                                            var exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                            var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                            // @formatter:off
+                                            // Brutto zu USD 920.67 USD  4'603.35
+                                            // USD  4'603.35
+                                            // Devisenkurs 0.8099 CHF  3'728.25
+                                            // @formatter:on
+                                            section -> section //
+                                                            .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency", "gross") //
+                                                            .find("Brutto zu .*") //
+                                                            .match("^(?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,'\\d]+)$") //
+                                                            .match("^Devisenkurs[\\s]+(?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})[\\s]+(?<gross>[\\.,'\\d]+)$") //
+                                                            .assign((t, v) -> {
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                                                            var rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
-                                                            type.getCurrentContext().putType(rate);
+                                                                var rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
+                                                                type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
+                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
 
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }))
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            }),
+                                            // @formatter:off
+                                            // Menge  19 Kurs USD 8.705 USD  165.40
+                                            // USD  165.40
+                                            // Devisenkurs  0.9206 CHF  152.25
+                                            // @formatter:on
+                                            section -> section //
+                                                            .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency", "gross") //
+                                                            .find("Menge.*Kurs.*") //
+                                                            .match("^(?<termCurrency>[A-Z]{3})[\\s]+(?<fxGross>[\\.,'\\d]+)$") //
+                                                            .match("^Devisenkurs[\\s]+(?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[A-Z]{3})[\\s]+(?<gross>[\\.,'\\d]+)$") //
+                                                            .assign((t, v) -> {
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var rate = new ExtrExchangeRate(inverseRate, v.get("baseCurrency"), v.get("termCurrency"));
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                var fxGross = Money.of(asCurrencyCode(v.get("termCurrency")), asAmount(v.get("fxGross")));
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            }))
 
                         // @formatter:off
                         // Transaktion 61327806-0002
@@ -244,15 +268,13 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Transaktion .*)$") //
                         .assign((t, v) -> t.setNote(trim(replaceMultipleBlanks(v.get("note")))))
 
-                        .conclude(ExtractorUtils.fixGrossValueBuySell())
-
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         var type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
         this.addDocumentTyp(type);
