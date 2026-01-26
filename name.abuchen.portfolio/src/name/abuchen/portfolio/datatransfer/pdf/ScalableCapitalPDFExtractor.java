@@ -41,23 +41,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale|Laufzeitende)");
+        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale|Laufzeitende|Knock Out)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^((f.r|voor|per) " //
-                        + "(Kundenauftrag" //
-                        + "|Sparplanausf.hrung" //
-                        + "|savings plan order" //
-                        + "|client order" //
-                        + "|Auftrag" //
-                        + "|beleggingsplanorder" //
-                        + "|l.ordine del piano di accumulo)" //
-                        + "|" //
-                        + "(Sparplan \\/ Automatische Wiederanlage" //
-                        + "|Berechtigtes Wertpapier)" //
-                        + ").*$");
+        var firstRelevantLine = new Block("^.*(Seite|Pagina|Page) 1 \\/ [\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -69,25 +58,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        .optionalOneOf(//
-                                       // Is type --> "Verkauf" change from BUY to SELL
-                                       // Is type --> "Sell" change from BUY to SELL
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>(Kauf|Sparplan|Buy|Kopen|Acquisto|Verkauf|Sell)).*$") //
-                                                        .assign((t, v) -> {
-                                                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type"))) //
-                                                                t.setType(PortfolioTransaction.Type.SELL);
-                                                        }),
-                                        // Is type --> "Laufzeitende" change from BUY to SELL
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>Laufzeitende)[\\s]*$") //
-                                                        .assign((t, v) -> {
-                                                            if ("Laufzeitende".equals(v.get("type"))) //
-                                                                t.setType(PortfolioTransaction.Type.SELL);
-                                                        })
-                        )
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Sell" change from BUY to SELL
+                        // Is type --> "Laufzeitende" change from BUY to SELL
+                        // Is type --> "Knock Out" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^(?<type>(Kauf|Sparplan|Buy|Kopen|Acquisto|Verkauf|Sell|Laufzeitende|Knock Out)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")) || "Sell".equals(v.get("type")) || "Laufzeitende".equals(v.get("type")) || "Knock Out".equals(v.get("type"))) //
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
                         .oneOf( //
                                         // @formatter:off
@@ -135,14 +115,17 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                                         // @formatter:off
                                         // Berechtigtes Wertpapier iShsV-iBds Dec 2025 Te.EO Co.
+                                        // Berechtigtes Wertpapier HSBC Trinkaus & Burkhardt GmbH 
                                         // ISIN IE000GUOATN7
+                                        // ISIN DE000HT9GWR5 
                                         // 07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR
+                                        // 14.01.2026 31.12.2025 Gutschrift 0,00 EUR 1.327 1,33 EUR 
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^Berechtigtes Wertpapier (?<name>.*)$") //
+                                                        .match("^Berechtigtes Wertpapier (?<name>.*)[\\s]*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -183,7 +166,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) $") //
+                                                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+)[\\s]*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -265,7 +248,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     private void addDividendTransaction()
     {
         final var type = new DocumentType("(Dividende|Zinszahlung|Dividend|Kapitalr.ckzahlung)", //
-                        "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung|Laufzeitende)");
+                        "(Kauf|Buy|Kopen|Acquisto|Verkauf|Sell|Sparplan|Sparplanausf.hrung|Laufzeitende|Knock Out)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -631,7 +614,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // für iShs3-M.Wld SC CTBEnh.ESG UETF (IE000T9EOCL3)
                         // @formatter:on
                         .section("name", "isin") //
-                        .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\) $") //
+                        .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)[\\s]*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
