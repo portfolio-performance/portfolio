@@ -119,7 +119,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // UNITS|WE ACTED AS AGENT|AVG PRICE - ASK 19 25.320 (481.08) - (481.08) - - - -
                         // @formatter:on
                         .section("shares") //
-                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE - ASK)? (?<shares>[\\.,\\d]+).*$") //
+                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE \\- ASK)? (?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //
@@ -130,7 +130,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE - ASK)? [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\- \\((?<amount>[\\.,\\d]+)\\).*$") //
+                                                        .match("^.*WE ACTED AS AGENT(?:\\|AVG PRICE \\- ASK)? [\\.,\\d]+ [\\.,\\d]+ \\([\\.,\\d]+\\) \\- \\((?<amount>[\\.,\\d]+)\\).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -166,7 +166,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?([\\s]|\\|)DIST.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -184,7 +184,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tickerSymbol") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?( |\\|)DIST.*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?([\\s]|\\|)DIST.*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -193,7 +193,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("date") //
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?( |\\|)DIST.*$") //
+                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?([\\s]|\\|)DIST.*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), Locale.US)))
 
                         // @formatter:off
@@ -202,7 +202,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("shares") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* (?<shares>[\\.,\\d]+) SHS( |\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}.*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?([\\s]|\\|)DIST.* (?<shares>[\\.,\\d]+) SHS([\\s]|\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -212,7 +212,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* [\\.,\\d]+ SHS( |\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}( PAY)? [\\s\\-]* (?<amount>[\\.,\\d]+) [\\s\\-]*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?([\\s]|\\|)DIST.* [\\.,\\d]+ SHS([\\s]|\\|)REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2}( PAY)? [\\s\\-]* (?<amount>[\\.,\\d]+) [\\s\\-]*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -224,7 +224,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // 03-31-2023 03-31-2023    .XEQT UNITS|DIST      ON     19 SHS|REC 03/23/23 - - - - 1.67 - - - -
                         // @formatter:on
                         .section("note") //
-                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?( |\\|)DIST.* [\\.,\\d]+ SHS( |\\|)(?<note>REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2})( PAY)? .*$") //
+                        .match("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})? UNITS?([\\s]|\\|)DIST.* [\\.,\\d]+ SHS([\\s]|\\|)(?<note>REC [\\d]{2}\\/[\\d]{2}\\/[\\d]{2})( PAY)? .*$") //
                         .assign((t, v) -> t.setNote(v.get("note")))
 
                         .wrap(TransactionItem::new);
