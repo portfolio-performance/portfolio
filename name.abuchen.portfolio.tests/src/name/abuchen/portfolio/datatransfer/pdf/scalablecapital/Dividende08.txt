@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland
+LrvPTL JdUVXYd
+mpMNjz
+lb iEh osLoPWWmTKu 37 fNebV 09.01.2026
+54707 XGDVnudyI bf PKRbE Seite 1 / 2
+Deutschland
+Dividende
+Für 01.01.2025 - 31.12.2025
+BerechtigtesWertpapier PepsiCo Inc.
+ISIN US7134481081
+Berechtigte Anzahl 1,588739
+Ex Tag 05.12.2025
+Verrechnungskonto sm90337005369548163163 (XXXXDEFFXXX)
+Kontobewegung
+Buchung Wertstellung Typ Betrag / Stk. BerechtigteAnzahl Gesamt
+Wechselkurs
+09.01.2026 09.01.2026 Gutschrift 1,42 USD 1,588739 1,93 EUR
+USD / EUR 1,1683
+Ausländische Quellensteuer -0,29 EUR
+Steuern -0,22 EUR
+Gesamtbetrag 1,42 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig.
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender)
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Dividende
+Ermittlung steuerrelevante Erträge
+Typ Betrag
+Gewinn oder Verlust 1,93 EUR
+Verrechnung anrechenbarer Quellensteuer -1,16 EUR
+Zu versteuern 0,77 EUR
+Anfallende Steuern
+Typ Betrag
+Kapitalertragsteuer 0,19 EUR
+Solidaritätszuschlag 0,01 EUR
+Kirchensteuer 0,02 EUR
+Anfallende
+0,22 EUR
+Steuern
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender)
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2

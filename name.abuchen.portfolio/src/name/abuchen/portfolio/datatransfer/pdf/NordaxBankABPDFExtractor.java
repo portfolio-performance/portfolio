@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -113,6 +114,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
         // @formatter:on
         var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zahlung an|Bezahlung von) [\\.,\\d]+$");
         type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.setMaxSize(3);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -121,10 +123,9 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "type", "amount", "note") //
+                        .section("date", "type", "amount") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
-                        .match("(?<note>.*)")
                         .assign((t, v) -> {
                             // @formatter:off
                             // When "Zahlung an" change from DEPOSIT to REMOVAL
@@ -135,17 +136,37 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
                         })
 
-                        .section("note2").optional() //
-                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*$")
-                        .match("^.*$") //
-                        .match("^(?<note2>.*)$") //
-                        .assign((t, v) -> {
-                            if (!v.get("note2").startsWith("Bank Norwegian, "))
-                                t.setNote(concatenate(t.getNote(), v.get("note2"), " "));
-                        })
+                        // @formatter:off
+                        // 12.05.2025 12.05.2025 Zahlung an 1.000,00
+                        // DEXXX
+                        // 17290216 Übertrag Tagesgeld
+                        // @formatter:on
+                        .section("note").optional() //
+                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                        .match("^(?<note>.*)$")
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 12.05.2025 12.05.2025 Zahlung an 1.000,00
+                                        // DEXXX
+                                        // 17290216 Übertrag Tagesgeld
+                                        //
+                                        // 14.01.2025 14.01.2025 Bezahlung von 1.020,00
+                                        // DE92500617410200574015
+                                        // Bank Norwegian, en filial av NOBA Bank Group AB (publ)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .find("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                                        .match("^.*$") //
+                                                        .match("^(?<note>.*)$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("note").startsWith("Bank Norwegian"))
+                                                                t.setNote(concatenate(t.getNote(), v.get("note")," "));
+                                                        }))
 
                         .wrap(TransactionItem::new));
     }
