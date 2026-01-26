@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+peXhKgGfj PVgH mYQac UakUs
+wtKXOZjLo 21 
+01327 tCXgqtp Datum 16.01.2026
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+Sparplan / Automatische Wiederanlage 
+Typ LIMIT Order SCALqEQ8at1rFGj
+Ausführung 16.01.2026 11:57:00 Geschäft 42891Q1GBv020260
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 8452184573 Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Symrise 0,678058 Stk. 73,74 EUR 50,00 EUR
+DE000SYM9999
+Belastung 50,00 EUR
+Der Betrag wird mit dem Verrechnungskonto zJ31647560137692800506 (Valuta: 20.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

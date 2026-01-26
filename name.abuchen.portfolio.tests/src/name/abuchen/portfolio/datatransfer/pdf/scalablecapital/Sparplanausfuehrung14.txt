@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: linux | x86_64 | 21.0.9 | Flathub
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+Peter Müller
+Müllerstraße 153 
+43165 Müllerhausen Datum 19.01.2026
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+Sparplan / Automatische Wiederanlage 
+Typ LIMIT Order SCALVwY7XHC1KBb
+Ausführung 19.01.2026 12:02:31 Geschäft 84765Q1JC2V20260
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot 1111119111 Verwahrart Wertpapierrechnung
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Old Republic International 0,886117 Stk. 36,88 EUR 32,68 EUR
+US6802231042
+Belastung 32,68 EUR
+Der Betrag wird mit dem Verrechnungskonto DE11111110700111680111 (Valuta: 21.01.2026) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

@@ -41,8 +41,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final var type = new DocumentType(
-                        "(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale|Laufzeitende)");
+        final var type = new DocumentType("(Wertpapierabrechnung|Contract note|Transactiebevestiging|Nota contrattuale|Laufzeitende)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -135,12 +134,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
 
                                         // @formatter:off
-                                        // Berechtigtes Wertpapier iShsV-iBds Dec 2025 Te.EO Co. 
-                                        // ISIN IE000GUOATN7 
-                                        // 07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR 
+                                        // Berechtigtes Wertpapier iShsV-iBds Dec 2025 Te.EO Co.
+                                        // ISIN IE000GUOATN7
+                                        // 07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "currency", "isin") //
+                                                        .attributes("name", "isin", "currency") //
                                                         .match("^Berechtigtes Wertpapier (?<name>.*)$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*$") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3}[\\s]*$") //
@@ -180,7 +179,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         asShares(v.get("shares"), "en", "US"))),
 
                                         // @formatter:off
-                                        // Berechtigte Anzahl 53,928 
+                                        // Berechtigte Anzahl 53,928
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
@@ -201,7 +200,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         .setDate(asDate(v.get("date"), v.get("time")))),
 
                                         // @formatter:off
-                                        // 07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR 
+                                        // 07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
@@ -606,12 +605,17 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        final var type = new DocumentType("Vorabpauschale");
+        final var type = new DocumentType("Vorabpauschale", //
+                        "(Wertpapierabrechnung" //
+                        + "|Contract note" //
+                        + "|Transactiebevestiging" //
+                        + "|Nota contrattuale" //
+                        + "|Laufzeitende)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block();
+        var firstRelevantLine = new Block("^.*(Seite|Pagina) 1 \\/ [\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -624,7 +628,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // für iShs3-M.Wld SC CTBEnh.ESG UETF (IE000T9EOCL3) 
+                        // für iShs3-M.Wld SC CTBEnh.ESG UETF (IE000T9EOCL3)
                         // @formatter:on
                         .section("name", "isin") //
                         .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\) $") //
