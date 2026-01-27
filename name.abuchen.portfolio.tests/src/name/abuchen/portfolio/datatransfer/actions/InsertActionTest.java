@@ -127,7 +127,8 @@ public class InsertActionTest
         assertThat(properties, hasItem("note"));
         assertThat(properties, hasItem("source"));
         assertThat(properties, hasItem("updatedAt"));
+        assertThat(properties, hasItem("originalTransaction"));
 
-        assertThat(properties.size(), is(10));
+        assertThat(properties.size(), is(11));
     }
 }

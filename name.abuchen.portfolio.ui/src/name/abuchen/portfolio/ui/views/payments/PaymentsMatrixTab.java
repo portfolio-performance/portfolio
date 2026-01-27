@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -336,6 +337,8 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
     {
         try
         {
+            var selection = (Line) records.getStructuredSelection().getFirstElement();
+
             // first add, then remove columns
             // (otherwise rendering of first column is broken)
             records.getTable().setRedraw(false);
@@ -353,6 +356,16 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
 
             for (TableColumn c : records.getTable().getColumns())
                 c.pack();
+
+            if (selection != null)
+            {
+                model.getLines().stream().filter(l -> {
+                    var left = l.getVehicle() instanceof ReadOnlyAccount a ? a.unwrap() : l.getVehicle();
+                    var right = selection.getVehicle() instanceof ReadOnlyAccount a ? a.unwrap()
+                                    : selection.getVehicle();
+                    return left == right;
+                }).findAny().ifPresent(element -> records.setSelection(new StructuredSelection(element)));
+            }
         }
         finally
         {
