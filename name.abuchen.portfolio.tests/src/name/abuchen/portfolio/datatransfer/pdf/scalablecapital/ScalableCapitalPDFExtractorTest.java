@@ -493,6 +493,39 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000GUOATN7"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsV-iBds Dec 2025 Te.EO Co."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-07"), hasShares(53.928), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
+                        hasTaxes("EUR", 2.74), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSecuritySell01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
@@ -829,6 +862,244 @@ public class ScalableCapitalPDFExtractorTest
                         hasSource("Sparplanausfuehrung09.txt"), //
                         hasNote("Ord.-Nr.: SCALfGmqAstsgrF"), //
                         hasAmount("EUR", 404.98), hasGrossValue("EUR", 404.98), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung10()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B652H904"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Emerging Markets Dividend (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-03T11:15:34"), hasShares(10.033444), //
+                        hasSource("Sparplanausfuehrung10.txt"), //
+                        hasNote("Ord.-Nr.: SCALUorEqfzeYUb"), //
+                        hasAmount("EUR", 150.00), hasGrossValue("EUR", 150.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung11()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4T88"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Asia Pacific Dividend (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-03T11:17:32"), hasShares(6.293266), //
+                        hasSource("Sparplanausfuehrung11.txt"), //
+                        hasNote("Ord.-Nr.: SCALHGMBev2MRUh"), //
+                        hasAmount("EUR", 150.00), hasGrossValue("EUR", 150.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung12()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn(null), hasTicker(null), //
+                        hasName("VanEck Morningstar Developed Markets Dividend Leaders (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-11-03T11:34:56"), hasShares(4.416563), //
+                        hasSource("Sparplanausfuehrung12.txt"), //
+                        hasNote("Ord.-Nr.: SCALFbcxeMLYUbj"), //
+                        hasAmount("EUR", 200.00), hasGrossValue("EUR", 200.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung13()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B8GKDB10"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE All-World High Dividend Yield (Dist)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-02T11:50:13"), hasShares(2.142557), //
+                        hasSource("Sparplanausfuehrung13.txt"), //
+                        hasNote("Ord.-Nr.: XXX"), //
+                        hasAmount("EUR", 150.00), hasGrossValue("EUR", 150.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung14()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6802231042"), hasWkn(null), hasTicker(null), //
+                        hasName("Old Republic International"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-19T12:02:31"), hasShares(0.886117), //
+                        hasSource("Sparplanausfuehrung14.txt"), //
+                        hasNote("Ord.-Nr.: SCALVwY7XHC1KBb"), //
+                        hasAmount("EUR", 32.68), hasGrossValue("EUR", 32.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung15()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SYM9999"), hasWkn(null), hasTicker(null), //
+                        hasName("Symrise"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-16T11:57:00"), hasShares(0.678058), //
+                        hasSource("Sparplanausfuehrung15.txt"), //
+                        hasNote("Ord.-Nr.: SCALqEQ8at1rFGj"), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSparplanausfuehrung16()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplanausfuehrung16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares Core MSCI Emerging Markets IMI (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-16T11:31:41"), hasShares(12.213292), //
+                        hasSource("Sparplanausfuehrung16.txt"), //
+                        hasNote("Ord.-Nr.: xuFglxJGCAH3g26"), //
+                        hasAmount("EUR", 500.00), hasGrossValue("EUR", 500.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -1647,5 +1918,107 @@ public class ScalableCapitalPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2026-01-10"), hasAmount("EUR", 3.65), //
                         hasSource("Steuererstattung01.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testVorabpauschale01()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000T9EOCL3"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs3-M.Wld SC CTBEnh.ESG UETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(1.00), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(973.053429), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 4.35), hasGrossValue("EUR", 4.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-Core MSCI World U.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(997.899037), //
+                        hasSource("Vorabpauschale03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 333.50), hasGrossValue("EUR", 333.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

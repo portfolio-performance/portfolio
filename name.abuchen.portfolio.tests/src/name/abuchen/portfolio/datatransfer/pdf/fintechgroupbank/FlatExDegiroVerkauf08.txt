@@ -1,0 +1,69 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank SE
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank SE -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0303502000005611586560
+uZHBMZ iruuRihBQMd
+W-x-Str. 1
+66219 GQMFNEtbTe
+          Frankfurt, 23.01.2026
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 3386966636
+Depotinhaber:     hxpMho QACQtxqtbES
+Nr.306010725/1    Verkauf       BAYERISCHE MOTOREN WERKE (DE0005190003/519000)
+Ordervolumen  : 200,00 St.              Handelsplatz  :         Lang & Schwarz
+davon ausgef. : 200,00 St.              Schlusstag    :  22.01.2026, 16:52 Uhr
+Kurs          : 87,6200 EUR             Kurswert      :          17.524,00 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :               2,00 EUR
+Lagerstelle   : Clearstream Nat.
+Lagerland     : CEU-Deutschland         Bemessungs-
+Gewinn/Verlust: 332,00 EUR              grundlage     :             308,30 EUR
+Valuta        : 26.01.2026            **Einbeh. Steuer:              15,98 EUR
+                                        Endbetrag     :          17.500,12 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,00 EUR
+                                Schlussnoten            :             0,00 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                Kapitalertragsteuer   :              15,15 EUR
+                                Solidaritätszuschlag  :               0,83 EUR
+                                Kirchensteuer         :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    4732792019.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 2921351153
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000005611586560 0113303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000005611586560

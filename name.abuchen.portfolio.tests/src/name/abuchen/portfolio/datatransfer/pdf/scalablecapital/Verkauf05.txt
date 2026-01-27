@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+VjNVXUWb mssVw UVdHBZTPt
+yD OlXCngnzTVS 27 
+29006 nCiO Datum 07.01.2026
+Deutschland Seite 1 / 2
+Laufzeitende 
+Berechtigtes Wertpapier iShsV-iBds Dec 2025 Te.EO Co. 
+ISIN IE000GUOATN7 
+Berechtigte Anzahl 53,928 
+Verrechnungskonto Dt16433254253269864936 (FKBvfoIKgHA)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+07.01.2026 08.01.2026 Gutschrift 5,42 EUR 53,928 292,17 EUR 
+Steuern -2,74 EUR
+Gesamtbetrag 289,43 EUR
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV. Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind
+einkommensteuerpflichtig. 
+Ermittlung steuerrelevante Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust 12,17 EUR
+Vorabpauschale Bereits bezahlt -2,38 EUR
+Zu versteuern 9,79 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Laufzeitende
+Anfallende Steuern 
+Typ Betrag
+Kapitalertragsteuer 2,40 EUR
+Solidaritätszuschlag 0,13 EUR
+Kirchensteuer 0,21 EUR
+Anfallende
+2,74 EUR
+Steuern 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2
