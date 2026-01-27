@@ -108,9 +108,6 @@ public enum Images
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
     SKIP("skip.svg"), //$NON-NLS-1$
 
-    RED_ARROW("red_arrow.png"), //$NON-NLS-1$
-    GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
-
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$
 
