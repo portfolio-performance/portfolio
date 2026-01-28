@@ -29,7 +29,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Saxo Bank");
 
         addBuySellTransaction();
-        addDividendeTransaction();
+        addDividendTransaction();
         addInterestTransaction();
         addDepositTransaction();
         addAccountStatementTransaction();
@@ -335,7 +335,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("Corporate Action Detail Report", //
                         documentContext -> documentContext //

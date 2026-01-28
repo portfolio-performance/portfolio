@@ -63,6 +63,8 @@ public class ExtractorUtils
                     createFormatter("dd-MM-yyyy", Locale.GERMANY), //
                     createFormatter("d-MMM-yyyy", Locale.GERMANY), //
                     createFormatter("dd-MMM-yyyy", Locale.GERMANY), //
+                    createFormatter("d-LLL-yyyy", Locale.GERMANY), //
+                    createFormatter("dd-LLL-yyyy", Locale.GERMANY),//
                     createFormatter("d MMMM yy", Locale.GERMANY), //
                     createFormatter("dd MMMM yy", Locale.GERMANY), //
                     createFormatter("d. MMMM yy", Locale.GERMANY), //
