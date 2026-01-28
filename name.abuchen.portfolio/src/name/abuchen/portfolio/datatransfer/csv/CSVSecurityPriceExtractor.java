@@ -11,6 +11,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -79,6 +80,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
-        return new SecurityPrice(date.toLocalDate(), Math.abs(amount));
+        return new SecurityPrice(date.toLocalDate(), NegativeValue.maybeAbs(amount));
     }
 }

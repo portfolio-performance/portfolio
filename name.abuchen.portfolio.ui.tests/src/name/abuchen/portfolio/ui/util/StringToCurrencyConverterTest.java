@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -56,7 +57,7 @@ public class StringToCurrencyConverterTest
     public void testValidShareDE()
     {
         Locale.setDefault(Locale.GERMANY);
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Share);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Share, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
         assertThat(converter.convert("1,234"), is(Values.Share.factorize(1.234)));
         assertThat(converter.convert("0,585"), is(Values.Share.factorize(0.585)));
     }
@@ -105,7 +106,7 @@ public class StringToCurrencyConverterTest
     public void testValidBENLAmount()
     {
         Locale.setDefault(Locale.forLanguageTag("nl-BE"));
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
         assertThat(converter.convert("12,34"), is(1234l));
         assertThat(converter.convert(",34"), is(34l));
         assertThat(converter.convert("12.34"), is(1234l));
@@ -117,7 +118,7 @@ public class StringToCurrencyConverterTest
     public void testValidBEFRAmount()
     {
         Locale.setDefault(Locale.forLanguageTag("fr-BE"));
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
         assertThat(converter.convert("12,34"), is(1234l));
         assertThat(converter.convert("12.34"), is(1234l));
         assertThat(converter.convert("1 234,56"), is(123456l));
@@ -127,7 +128,7 @@ public class StringToCurrencyConverterTest
     public void testValidBEFRAmountWithNBSP()
     {
         Locale.setDefault(Locale.forLanguageTag("fr-BE"));
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
 
         // Belgian locale has changed between Java 11 and 17
 
@@ -168,7 +169,7 @@ public class StringToCurrencyConverterTest
     public void testInvalidArithmetic()
     {
         Locale.setDefault(Locale.GERMANY);
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
         converter.convert("1234,56-+0,44");
     }
 

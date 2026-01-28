@@ -17,6 +17,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -188,7 +189,7 @@ public abstract class CSVExtractor implements Extractor
         var value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
-        return Math.abs(value);
+        return NegativeValue.maybeAbs(value);
     }
 
     @SuppressWarnings("unchecked")

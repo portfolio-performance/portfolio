@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -347,9 +348,9 @@ public class InvestmentPlanModel extends AbstractModel
 
         long newGrossAmount = switch (planType)
         {
-            case PURCHASE_OR_DELIVERY -> Math.abs(amount - fees - taxes);
-            case INTEREST -> Math.abs(amount + taxes);
-            case DEPOSIT, REMOVAL -> Math.abs(amount);
+            case PURCHASE_OR_DELIVERY -> NegativeValue.maybeAbs(amount - fees - taxes);
+            case INTEREST -> NegativeValue.maybeAbs(amount + taxes);
+            case DEPOSIT, REMOVAL -> NegativeValue.maybeAbs(amount);
             default -> throw new IllegalArgumentException();
         };
 
@@ -412,7 +413,7 @@ public class InvestmentPlanModel extends AbstractModel
         return switch (planType)
         {
             case PURCHASE_OR_DELIVERY -> grossAmount + fees + taxes;
-            case INTEREST -> Math.abs(grossAmount - taxes);
+            case INTEREST -> NegativeValue.maybeAbs(grossAmount - taxes);
             case DEPOSIT, REMOVAL -> grossAmount;
             default -> throw new IllegalArgumentException();
         };

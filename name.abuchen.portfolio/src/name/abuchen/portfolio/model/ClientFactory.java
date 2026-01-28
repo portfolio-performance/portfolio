@@ -74,6 +74,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -1710,7 +1711,7 @@ public class ClientFactory
             else
             {
                 plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
-                plan.setAmount(Math.abs(plan.getAmount()));
+                plan.setAmount(NegativeValue.maybeAbs(plan.getAmount()));
             }
         }
     }

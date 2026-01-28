@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Transaction;
@@ -386,7 +387,7 @@ public class ExtractorUtils
 
         try
         {
-            return Math.abs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
+            return NegativeValue.maybeAbs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
         }
         catch (ParseException e)
         {

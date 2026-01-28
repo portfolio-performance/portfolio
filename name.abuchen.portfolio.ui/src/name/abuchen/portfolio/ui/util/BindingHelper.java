@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
@@ -410,7 +411,7 @@ public class BindingHelper
 
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(type);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
 
         UpdateValueStrategy<String, Long> input2model = new UpdateValueStrategy<>();
         input2model.setAfterGetValidator(converter);

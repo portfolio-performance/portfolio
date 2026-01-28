@@ -49,6 +49,7 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -94,14 +95,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
         {
-            StringToCurrencyConverter converter = new StringToCurrencyConverter(values);
+            StringToCurrencyConverter converter = new StringToCurrencyConverter(values, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
             UpdateValueStrategy<String, Long> strategy = new UpdateValueStrategy<>();
             strategy.setAfterGetValidator(converter);
             strategy.setConverter(converter);
             if (isMandatory)
             {
                 strategy.setAfterConvertValidator(
-                                convertedValue -> convertedValue != null && convertedValue.longValue() > 0
+                                convertedValue -> convertedValue != null && (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE || convertedValue.longValue() > 0)
                                                 ? ValidationStatus.ok()
                                                 : ValidationStatus.error(MessageFormat
                                                                 .format(Messages.MsgDialogInputRequired, description)));

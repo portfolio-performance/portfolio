@@ -22,6 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -179,7 +180,7 @@ import name.abuchen.portfolio.money.Money;
         if (date == null)
             date = LocalDate.now().atStartOfDay();
 
-        return Optional.of(new SecurityPrice(date.toLocalDate(), Math.abs(amount)));
+        return Optional.of(new SecurityPrice(date.toLocalDate(), NegativeValue.maybeAbs(amount)));
     }
 
     protected Optional<Unit> extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
@@ -204,7 +205,7 @@ import name.abuchen.portfolio.money.Money;
             // if no exchange rate is available, try to calculate given the
             // amount
 
-            var forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
+            var forex = Money.of(currencyCode, NegativeValue.maybeAbs(grossAmount.longValue()));
             var converted = Money.of(amount.getCurrencyCode(), amount.getAmount());
             var calcluatedRate = BigDecimal.valueOf((double)amount.getAmount() / forex.getAmount());
 
@@ -214,7 +215,7 @@ import name.abuchen.portfolio.money.Money;
         {
             // create the unit out of given amount, currency, and exchange rate
 
-            Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
+            Money forex = Money.of(currencyCode, NegativeValue.maybeAbs(grossAmount.longValue()));
             BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
             Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
 

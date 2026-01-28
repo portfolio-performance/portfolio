@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.money.Money;
@@ -266,7 +267,7 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         });
         column.setEditingSupport(new ColumnEditingSupport()
         {
-            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount);
+            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
 
             @Override
             public void setValue(Object element, Object value) throws Exception
