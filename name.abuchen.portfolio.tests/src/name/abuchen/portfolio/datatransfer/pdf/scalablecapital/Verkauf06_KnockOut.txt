@@ -1,0 +1,26 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+DuAVPbC FBeSpd
+IqCrTLLatUI 8 
+67731 Edkok Datum 14.01.2026
+Deutschland Seite 1 / 1
+Knock Out 
+Berechtigtes Wertpapier HSBC Trinkaus & Burkhardt GmbH 
+ISIN DE000HT9GWR5 
+Berechtigte Anzahl 1.327 
+Verrechnungskonto Cw36628166474061275231 (DEUTDEFFXXX)
+Kontobewegung 
+Buchung Wertstellung Typ Betrag / Stk. Berechtigte Anzahl Gesamt 
+14.01.2026 31.12.2025 Gutschrift 0,00 EUR 1.327 1,33 EUR 
+Gesamtbetrag 1,33 EUR
+Ermittlung steuerrelevante Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust -1.524,72 EUR
+Verlusttopf allgemein 10.078,16 EUR → 11.748,31 EUR +1.524,72 EUR
+Zu versteuern 0,00 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 1

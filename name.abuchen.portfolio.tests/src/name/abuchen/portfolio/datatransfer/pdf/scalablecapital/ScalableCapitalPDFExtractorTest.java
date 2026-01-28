@@ -507,6 +507,7 @@ public class ScalableCapitalPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -523,6 +524,40 @@ public class ScalableCapitalPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
                         hasTaxes("EUR", 2.74), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf06()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06_KnockOut.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000HT9GWR5"), hasWkn(null), hasTicker(null), //
+                        hasName("HSBC Trinkaus & Burkhardt GmbH"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-14"), hasShares(1.327), //
+                        hasSource("Verkauf06_KnockOut.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.33), hasGrossValue("EUR", 1.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
