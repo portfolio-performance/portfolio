@@ -1292,6 +1292,40 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf13()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000HLB2DM0"), hasWkn("HLB2DM"), hasTicker(null), //
+                        hasName("LB.HESSEN-THÜRINGEN GZ NACHR.ANLEIHE V.15(25)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-11-18T00:00"), hasShares(50.00), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("Auftragsnummer CERZ 9504228500 | Rückzahlungskurs 100 %"), //
+                        hasAmount("EUR", 4976.27), hasGrossValue("EUR", 5000.00), //
+                        hasTaxes("EUR", 22.50 + 1.23), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkaufStorno01()
     {
         var extractor = new DkbPDFExtractor(new Client());
@@ -2810,6 +2844,40 @@ public class DkbPDFExtractorTest
                                         hasNote("Abrechnungsnr. 123456789"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0533033667"), hasWkn("LYX0GP"), hasTicker(null), //
+                        hasName("MUL AMUNDI MSCI WORLD INF TECH UCITS ETF INH.ANTEILE ACC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(5.00), //
+                        hasSource("Vorabpauschale03.txt"), //
+                        hasNote("Abrechnungsnr. 51511993430"), //
+                        hasAmount("EUR", 5.28), hasGrossValue("EUR", 5.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5264,6 +5332,30 @@ public class DkbPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-11-06"), hasAmount("EUR", 50.00), //
                         hasSource("GiroKontoauszug34.txt"), hasNote("Echtzeitüberweisung"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug35()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug35.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-12-22"), hasAmount("EUR", 20.71), //
+                        hasSource("GiroKontoauszug35.txt"), hasNote("Rückbuchung"))));
     }
 
     @Test
