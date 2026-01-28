@@ -49,10 +49,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addSummaryStatementBuySellTransaction();
         addSellTransaction();
         addSellForOptionsTransaction();
-        addDividendeTransaction();
-        addDividendeWithNegativeAmountTransaction();
-        addStockDividendeTransaction();
-        addDividendeReinvestFeesTransaction();
+        addDividendTransaction();
+        addDividendWithNegativeAmountTransaction();
+        addStockDividendTransaction();
+        addDividendReinvestFeesTransaction();
         addDepotStatementTransaction();
         addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
@@ -923,7 +923,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeTransaction()
+    private void addDividendTransaction()
     {
         final var type = new DocumentType("(Dividendengutschrift" //
                         + "|(Storno )?Ertragsmitteilung" //
@@ -1227,7 +1227,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addDividendeWithNegativeAmountTransaction()
+    private void addDividendWithNegativeAmountTransaction()
     {
         final var type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds");
         this.addDocumentTyp(type);
@@ -1408,7 +1408,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addStockDividendeTransaction()
+    private void addStockDividendTransaction()
     {
         final var type = new DocumentType("Stockdividende");
         this.addDocumentTyp(type);
@@ -1687,7 +1687,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(BuySellEntryItem::new);
     }
 
-    private void addDividendeReinvestFeesTransaction()
+    private void addDividendReinvestFeesTransaction()
     {
         final var type = new DocumentType("Stamp Duty aus Dividenden\\-Reinvestment");
         this.addDocumentTyp(type);
