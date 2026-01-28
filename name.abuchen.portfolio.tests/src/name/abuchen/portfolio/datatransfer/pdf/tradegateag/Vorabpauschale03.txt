@@ -1,0 +1,55 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.2
+System: win32 | x86_64 | 25.0.1+8-27 | Oracle Corporation
+-----------------------------------------
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Datum 21.01.2026
+FBHqU Kundennummer 00960086
+dXaGp OhKkVPfe IBAN DE54 9971 5296 7647 9588 59
+a Trading-Depot 01654993.051
+VXXYXEhYwfqFAXN 4 S Order-/Ref.nr. 20061070
+12823 yVZo E-Mail support@tradegate.direct
+Seite 1 von 2
+Vorabpauschale
+Wertpapier HSBC ETFS-H.Hang Seng Tech Reg. Shs HKD Acc. oN
+ISIN IE00BMWXKN31
+WKN A2QHV0
+Verwahrart Wertpapierrechnung
+Lagerland Vereinigtes Königreich
+Nominal/Stück 1.550 Stück
+Ex-Datum 02.01.2026
+Vorabpauschale 0,10458286 EUR pro Stück
+Abrechnung
+Abgeführte Kapitalertragsteuer -9,71 EUR
+Abgeführter Solidaritätszuschlag -0,53 EUR
+Abgeführte Kirchensteuer -0,87 EUR
+Ausmachender Betrag -11,11 EUR
+Die jährliche Vorabpauschale gem. § 18 Investmentsteuergesetz (InvStG) stellt die Berechnungsgrundlage für die
+Ermittlung und Abführung der Kapitalertragsteuer dar. Bei unterjähriger Anschaffung im Vorjahr vermindert sich die
+Vorabpauschale um ein Zwölftel für jeden Monat.
+Der Abrechnungsbetrag wird Ihrem o. g. Verrechnungskonto mit Valuta 02.01.2026 belastet.
+Erträge aus ausländischen Wertpapieren von über 50.000,00 EUR sind nach §§ 67 ff. Außenwirtschaftsverordnung
+(AWV) meldepflichtig.
+Etwaige Einwendungen wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte unverzüglich an tradegate.direct,
+Kurfürstendamm 129d, 10711 Berlin oder an beschwerdemanagement@tradegate.direct.
+Bitte beachten Sie, dass dieser Beleg keine Steuerbescheinigung darstellt.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
+Seite 2 von 2
+Steuerliche Informationen - Vorabpauschale
+Vorabpauschale gem. § 18 InvStG EUR 56,72
+Zu berücksichtigende Teilfreistellung (im Privatvermögen) EUR -17,01
+Steuerpflichtiger Betrag nach Teilfreistellung (im Privatvermögen) EUR 39,71
+Bemessungsgrundlage für Kapitalertragsteuer EUR 39,71
+Kapitalertragsteuer EUR -9,71
+Solidaritätszuschlag EUR -0,53
+Kirchensteuer EUR -0,87
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen

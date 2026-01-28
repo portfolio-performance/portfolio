@@ -498,6 +498,74 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
+    public void testVorabpauschale02()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn("A111X9"), hasTicker(null), //
+                        hasName("iShs Core MSCI EM IMI U.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(159.00), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote("Order-/Ref.nr. 53370313"), //
+                        hasAmount("EUR", 18.28), hasGrossValue("EUR", 18.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        var extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BMWXKN31"), hasWkn("A2QHV0"), hasTicker(null), //
+                        hasName("HSBC ETFS-H.Hang Seng Tech Reg. Shs HKD Acc. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(1550.00), //
+                        hasSource("Vorabpauschale03.txt"), //
+                        hasNote("Order-/Ref.nr. 20061070"), //
+                        hasAmount("EUR", 11.11), hasGrossValue("EUR", 11.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSteuerausgleichsrechnung01()
     {
         var extractor = new TradegateAGPDFExtractor(new Client());
