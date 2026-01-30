@@ -156,6 +156,8 @@ import name.abuchen.portfolio.money.Money;
             if (newSecurity.hasTargetCurrencyCode())
                 security.setTargetCurrencyCode(newSecurity.getTargetCurrencyCode());
 
+            security.setPercentageQuoted(newSecurity.getIsPercentageQuoted());
+
             if (newSecurity.hasNote())
                 security.setNote(newSecurity.getNote());
 
@@ -893,6 +895,8 @@ import name.abuchen.portfolio.money.Money;
                 newSecurity.setCurrencyCode(security.getCurrencyCode());
             if (security.getTargetCurrencyCode() != null)
                 newSecurity.setTargetCurrencyCode(security.getTargetCurrencyCode());
+
+            newSecurity.setIsPercentageQuoted(security.isPercentageQuoted());
 
             if (security.getNote() != null)
                 newSecurity.setNote(security.getNote());
