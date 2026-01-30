@@ -35,8 +35,13 @@ import name.abuchen.portfolio.money.Values;
         copy.setShares(value(t.getShares(), weight));
         copy.setAmount(value(t.getAmount(), weight));
 
-        sourcePortfolio.internalAddTransaction(copy.getSourceTransaction());
-        targetPortfolio.internalAddTransaction(copy.getTargetTransaction());
+        var newSourceTx = copy.getSourceTransaction();
+        newSourceTx.setOriginalTransaction(transferEntry.getSourceTransaction());
+        sourcePortfolio.internalAddTransaction(newSourceTx);
+
+        var newTargetTx = copy.getTargetTransaction();
+        newTargetTx.setOriginalTransaction(transferEntry.getTargetTransaction());
+        targetPortfolio.internalAddTransaction(newTargetTx);
     }
 
     /* package */ static void recreateTransfer(AccountTransferEntry transferEntry, ReadOnlyAccount sourceAccount,
@@ -49,11 +54,13 @@ import name.abuchen.portfolio.money.Values;
         copy.setDate(t.getDateTime());
         copy.setNote(t.getNote());
 
+        copy.getSourceTransaction().setOriginalTransaction(t);
         copy.getSourceTransaction().setCurrencyCode(t.getCurrencyCode());
         copy.getSourceTransaction().setAmount(t.getAmount());
         copy.getSourceTransaction().addUnits(t.getUnits());
 
         AccountTransaction tt = transferEntry.getTargetTransaction();
+        copy.getTargetTransaction().setOriginalTransaction(tt);
         copy.getTargetTransaction().setCurrencyCode(tt.getCurrencyCode());
         copy.getTargetTransaction().setAmount(tt.getAmount());
 
@@ -67,8 +74,7 @@ import name.abuchen.portfolio.money.Values;
             return value;
         else
             return BigDecimal.valueOf(value) //
-                            .multiply(weight, Values.MC)
-                            .divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
+                            .multiply(weight, Values.MC).divide(Classification.ONE_HUNDRED_PERCENT_BD, Values.MC)
                             .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
 }
