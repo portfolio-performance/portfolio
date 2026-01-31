@@ -163,6 +163,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // An den  Ausführungszeit   13:59 Häusern 5
                         // ZZZZ ZZ Ausführungszeit    17:30 Uhr.
                         // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // Ausführungszeit    17:30 Uhr
                         // @formatter:on
                         .section("time").optional() //
                         .match("^.*Ausf.hrungszeit[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}).*$") //
@@ -172,6 +173,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Max Mustermann Schlusstag        03.12.2015o
                         // ZZZZZ ZZZZ Handelstag         10.04.2019xan
                         // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // Handelstag         30.01.2026
                         // @formatter:on
                         .section("date") //
                         .match("^.*(Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
@@ -2652,7 +2654,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
                         // @formatter:on
                         .section("date") //
-                        .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^.*(Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                                 t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -2886,7 +2888,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
                         // @formatter:on
                         .section("date") //
-                        .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .match("^.*(Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                                 t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
