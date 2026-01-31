@@ -1,0 +1,58 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Norddeutsche Landesbank Girozentrale · Friedrichswall 10 · 30159 Hannover  Seite 1
+Depotnummer
+ 123456789
+ Kundennummer 12345
+ ZDZIBUm bQOpd CRr Dkp pqBOf
+Abrechnungsnr. 39001696226
+Frau Datum 13.03.2025
+anjCxQN PDxwZ jdg fZN vkYip Ihre Beraterin Frau hlhYfkwv fALZQU
+Moritz-Str. 7B Telefon 7635 6101864 
+29860 eZIuQuacL Telefax 5332 7437633 
+ 
+  
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 140 NOVARTIS AG CH0012005267 (904278)
+NAMENS-AKTIEN SF 0,49
+Zahlbarkeitstag 13.03.2025 Dividende pro Stück 3,50 CHF
+Bestandsstichtag 10.03.2025 Herkunftsland Schweiz
+Ex-Tag 11.03.2025
+Geschäftsjahr 01.01.2024 - 31.12.2024
+Devisenkurs EUR / CHF 0,9628
+Devisenkursdatum 13.03.2025
+Dividendengutschrift 490,00 CHF 508,93+ EUR
+Umrechnung in EUR 508,93 EUR
+Einbehaltene Quellensteuer 35 % auf 490,00 CHF 178,13- EUR
+Anrechenbare Quellensteuer 15 % auf 508,93 EUR 76,34 EUR
+Kapitalertragsteuerpflichtige Dividende 508,93 EUR
+Eingebuchte sonstige negative Kapitalerträge 508,93 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 330,80+ EUR
+20 % rückforderbare Quellensteuer 98,00 CHF
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 17.03.2025 zu Gunsten des Kontos 8220092118 (IBAN Ex76 3069 2250 0086
+8929 19), BLZ 250 500 00 (BIC NOLADE2HXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0123.01234567.012345678901
+
+Seite 2
+Depotnummer 1234567
+Kundennummer 12345
+Abrechnungsnr. 09953026367
+Datum 13.03.2025
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 1234,84 0,00 12,34 0,00
+Ertrag 0,00 123,45- 0,00 12,34 0,00
+Nachher 0,00 12.345,67 0,00 123,45 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0123.01234567.012345678901

@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Norddeutsche Landesbank Girozentrale · Friedrichswall 10 · 30159 Hannover  
+Depotnummer
+ 123456
+ Kundennummer 12345
+ pKeKxRm OmVnw Fhc gSk LiIjk
+Abrechnungsnr. 96563694585
+TMmh Datum 19.05.2025
+FPhkEvk RfciO mYf oiV iTypQ Ihre Beraterin aAUO xwPjfuKm HFhYiq
+x-Str. 7b Telefon 1234 1632598 
+85456 fgdfgdfg Telefax 4450 8989277 
+ 
+  
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 232 E.ON SE DE000ENAG999 (ENAG99)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 20.05.2025 Dividende pro Stück 0,55 EUR
+Bestandsstichtag 15.05.2025
+Ex-Tag 16.05.2025
+Geschäftsjahr 01.01.2024 - 31.12.2024
+Dividendengutschrift 127,60+ EUR
+Kapitalertragsteuerpflichtige Dividende 127,60 EUR
+Eingebuchte sonstige negative Kapitalerträge 127,60 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 127,60+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 20.05.2025 zu Gunsten des Kontos 5633164749 (IBAN JK49 7406 3752 6410
+0081 19), BLZ 250 500 00 (BIC NOLADE2HXXX). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 1234,49 0,00 123,91 0,00
+Ertrag 0,00 123,60- 0,00 0,00 0,00
+Nachher 0,00 1234,89 0,00 123,91 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0123.01234567.012345678910
