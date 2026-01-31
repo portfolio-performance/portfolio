@@ -62,7 +62,7 @@ public class FordMoneyPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("sign"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -86,7 +86,7 @@ public class FordMoneyPDFExtractor extends AbstractPDFExtractor
                         .section("note", "date") //
                         .match("^Zinsen vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) Steuern vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setNote(v.get("note"));
                         })
 

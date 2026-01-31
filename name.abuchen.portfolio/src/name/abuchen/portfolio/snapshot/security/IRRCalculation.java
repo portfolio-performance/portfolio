@@ -53,13 +53,13 @@ import name.abuchen.portfolio.money.Values;
                 // single security
                 break;
             case FEES:
-                dates.add(t.getDateTime().toLocalDate());
-                values.add(-converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount()
+                dates.add(t.getDateTimeValue().toLocalDate());
+                values.add(-converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount()
                                 / Values.Amount.divider());
                 break;
             case FEES_REFUND:
-                dates.add(t.getDateTime().toLocalDate());
-                values.add(converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount()
+                dates.add(t.getDateTimeValue().toLocalDate());
+                values.add(converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount()
                                 / Values.Amount.divider());
                 break;
             default:
@@ -69,7 +69,7 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
-        dates.add(t.getDateTime().toLocalDate());
+        dates.add(t.getDateTimeValue().toLocalDate());
         long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
         long amount = t.getMonetaryAmount(converter).getAmount();
         switch (t.getType())

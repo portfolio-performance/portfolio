@@ -205,7 +205,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}.\\d{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Zu Gunsten IBAN IBAN-NR 7,51 EUR
@@ -413,7 +413,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i).* ZINSERTRAG[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -432,7 +432,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i).* Zinsen\\/Dividenden[\\s]{1,}(\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -540,7 +540,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i).*KEST[\\s]{1,}\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -557,7 +557,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i).*Kapitalertragsteuer[\\s]{1,}\\-[\\.,\\d]+ (?<currency>[\\w]{3})$")
                                                         .assign((t, v) -> {
                                                             v.put("name", replaceMultipleBlanks(v.get("name")));
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setShares(asShares(v.get("shares")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
@@ -649,7 +649,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         .match("^(?i).*(KEST|Kapitalertragsteuer)[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             v.put("name", replaceMultipleBlanks(v.get("name")));
-                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                             t.setShares(0L);
 
                             t.setSecurity(getOrCreateSecurity(v));
@@ -719,7 +719,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .find("^(?i)(?<note>Sollzinsen)$") //
                                                         .match("^(?i)AB [\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2}[\\s]{1,}[\\.,\\d]+%[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -734,7 +734,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
                                                         .match("^(?i)(?<note>Sollzinsen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -795,7 +795,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
                                                         .match("^(?i)(?<note>Kontof.hrungsgeb.hr)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -810,7 +810,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) Abschluss [\\d]{1,2}\\.[\\d]{1,2} [\\.,\\d]+\\-$") //
                                                         .match("^(?i)(?<note>Spesen)[\\s]{1,}(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -823,7 +823,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("currency") //
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Depotgeb.hrenabrechnung per [\\d]{1,2}\\.[\\d]{1,2}.[\\d]{4})[\\s]{1,}(?<year>[\\d]{4})[\\d]+[\\s]{1,}[\\d]+ [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -883,7 +883,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>(?!(UMBUCHUNG|Sollzins ab|Information gem.ß)).*) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
                                                         .match("^(?i)(IBAN: .*|Transfer)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -896,7 +896,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("year", "currency") //
                                                         .match("^(?i)(?<date>[\\d]{1,2}\\.[\\d]{1,2}) (?<note>Werbebonus) [\\d]{1,2}\\.[\\d]{1,2} (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -916,7 +916,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + "." + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));

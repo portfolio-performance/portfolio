@@ -61,7 +61,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                                         + "|SEPA Gutschrift( Bank)?)) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -105,7 +105,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                             if (v.get("type") != null && v.get("type").matches("Geb.hren"))
                                 t.setType(Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -135,7 +135,7 @@ public class AkfBankPDFExtractor extends AbstractPDFExtractor
                         .match("^v\\. (?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) b\\. (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .match("^Zinsen zu[\\s]{1,}(?<note3>[\\.,\\d]+).*$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note1") + " - " + v.get("note2") + " (" + v.get("note3") + " %)");

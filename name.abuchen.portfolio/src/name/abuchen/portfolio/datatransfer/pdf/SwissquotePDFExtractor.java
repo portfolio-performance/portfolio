@@ -364,7 +364,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -500,7 +500,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -565,7 +565,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // IBAN : CH3308781000123456700 - Währung : CHF
@@ -623,7 +623,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(\\-)?[\\.'\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -656,7 +656,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(\\-)?[\\.'\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -730,7 +730,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Derivatetransaktion: Verfall Unsere Referenz: 549183576

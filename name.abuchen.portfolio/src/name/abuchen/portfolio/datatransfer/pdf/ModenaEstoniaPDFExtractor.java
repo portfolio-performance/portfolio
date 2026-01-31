@@ -97,7 +97,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                                         + ") " //
                                         + "(?<currency>\\p{Sc})(\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));

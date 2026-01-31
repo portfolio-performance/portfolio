@@ -98,7 +98,7 @@ public class InsertActionTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
         assertThat(t.getNote(), is("note"));
         assertThat(t.getSource(), is("source"));
-        assertThat(t.getDateTime(), is(transactionDate));
+        assertThat(t.getDateTimeValue(), is(transactionDate));
         assertThat(t.getShares(), is(99L));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
@@ -122,12 +122,13 @@ public class InsertActionTest
         assertThat(properties, hasItem("currencyCode"));
         assertThat(properties, hasItem("amount"));
         assertThat(properties, hasItem("shares"));
-        assertThat(properties, hasItem("dateTime"));
+        assertThat(properties, hasItem("dateTimeValue"));
+        assertThat(properties, hasItem("dateTimeBooking"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
         assertThat(properties, hasItem("source"));
         assertThat(properties, hasItem("updatedAt"));
 
-        assertThat(properties.size(), is(10));
+        assertThat(properties.size(), is(11));
     }
 }

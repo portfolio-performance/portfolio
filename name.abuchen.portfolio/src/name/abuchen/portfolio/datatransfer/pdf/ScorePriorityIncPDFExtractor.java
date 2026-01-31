@@ -138,7 +138,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -156,7 +156,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -192,7 +192,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -231,7 +231,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             else
                                 t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -270,7 +270,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -302,7 +302,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -332,7 +332,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

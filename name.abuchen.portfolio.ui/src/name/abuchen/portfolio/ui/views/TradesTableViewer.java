@@ -369,7 +369,7 @@ public class TradesTableViewer
             return new TabularDataSource(Messages.LabelTrades, builder -> {
                 builder.addColumns(new TabularDataSource.Column(Messages.ColumnDate, SWT.LEFT, 100) //
                                 .withFormatter(o -> Values.DateTime
-                                                .format(((TransactionPair<?>) o).getTransaction().getDateTime())), //
+                                                .format(((TransactionPair<?>) o).getTransaction().getDateTimeValue())), //
                                 new TabularDataSource.Column(Messages.ColumnTransactionType, SWT.LEFT), //
                                 new TabularDataSource.Column(Messages.ColumnShares) //
                                                 .withFormatter(o -> Values.Share.formatNonZero((Long) o)), //
@@ -650,7 +650,7 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("latesttrade", Messages.ColumnLatestTrade, SWT.None, 80); //$NON-NLS-1$
-        var latestTradeDate = tradeValue(trade -> trade.getLastTransaction().getTransaction().getDateTime());
+        var latestTradeDate = tradeValue(trade -> trade.getLastTransaction().getTransaction().getDateTimeValue());
         column.setLabelProvider(withBoldFont(new DateTimeLabelProvider(latestTradeDate)));
         column.setSorter(ColumnViewerSorter.create(toComparable(latestTradeDate)));
         column.setVisible(false);

@@ -27,7 +27,7 @@ public class AccountTest
         account.setCurrencyCode(CurrencyUnit.EUR);
 
         this.transaction = new AccountTransaction();
-        transaction.setDateTime(LocalDate.of(2024, 03, 12).atStartOfDay());
+        transaction.setDateTimeValue(LocalDate.of(2024, 03, 12).atStartOfDay());
         transaction.setType(AccountTransaction.Type.DEPOSIT);
         transaction.setAmount(10000);
         transaction.setCurrencyCode(CurrencyUnit.EUR);

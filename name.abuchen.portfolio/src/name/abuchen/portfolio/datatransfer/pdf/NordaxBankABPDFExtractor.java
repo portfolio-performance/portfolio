@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.secondDiffers;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -63,7 +64,7 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("currency") //
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Zinsbuchung (?<amount>[\\.,\\d]+) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -72,11 +73,14 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                                         // 31.12.2024 01.01.2025 Interest 24,40
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "amount") //
+                                                        .attributes("dateBooking", "dateValuta", "amount") //
                                                         .documentContext("currency") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Interest (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<dateBooking>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<dateValuta>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Interest (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeBooking(
+                                                                            asDate(secondDiffers(v.get("dateValuta"),
+                                                                                            v.get("dateBooking"))));
+                                                            t.setDateTimeValue(asDate(v.get("dateValuta")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         })
@@ -123,9 +127,9 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "type", "amount") //
+                        .section("dateBooking", "dateValuta", "type", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<dateBooking>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<dateValuta>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<type>(Zahlung an|Bezahlung von)) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // When "Zahlung an" change from DEPOSIT to REMOVAL
@@ -133,7 +137,8 @@ public class NordaxBankABPDFExtractor extends AbstractPDFExtractor
                             if ("Zahlung an".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeBooking(asDate(secondDiffers(v.get("dateValuta"), v.get("dateBooking"))));
+                            t.setDateTimeValue(asDate(v.get("dateValuta")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })

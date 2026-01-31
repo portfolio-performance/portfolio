@@ -213,7 +213,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag + 7,44 EUR
@@ -301,14 +301,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Die angefallenen Steuern werden am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zahltag 02.01.2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahltag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Summe Steuern 8,81 EUR
@@ -385,7 +385,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -407,7 +407,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -456,7 +456,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
 

@@ -258,17 +258,17 @@ public class EarningsListWidget extends WidgetDelegate<Model>
                     if (!earningsType.isIncluded(tx))
                         continue;
 
-                    if (!interval.contains(tx.getDateTime()))
+                    if (!interval.contains(tx.getDateTimeValue()))
                         continue;
 
-                    int monthOfYear = tx.getDateTime().getMonthValue();
+                    int monthOfYear = tx.getDateTimeValue().getMonthValue();
                     final MonthData monthData = months.get(monthOfYear - 1);
 
                     Money value = grossNetType == GrossNetType.GROSS ? tx.getGrossValue() : tx.getMonetaryAmount();
 
                     monthData.sum = tx.getType().isCredit()
-                                    ? monthData.sum.add(value.with(converter.at(tx.getDateTime())))
-                                    : monthData.sum.subtract(value.with(converter.at(tx.getDateTime())));
+                                    ? monthData.sum.add(value.with(converter.at(tx.getDateTimeValue())))
+                                    : monthData.sum.subtract(value.with(converter.at(tx.getDateTimeValue())));
 
                     monthData.transactions.add(new TransactionPair<>(account, tx));
                 }

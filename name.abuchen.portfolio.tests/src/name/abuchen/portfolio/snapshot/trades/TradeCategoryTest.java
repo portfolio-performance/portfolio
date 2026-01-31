@@ -259,9 +259,9 @@ public class TradeCategoryTest
 
         for (TransactionPair<PortfolioTransaction> txPair : trade.getTransactions())
         {
-            LocalDate date = txPair.getTransaction().getDateTime().toLocalDate();
+            LocalDate date = txPair.getTransaction().getDateTimeValue().toLocalDate();
             double amount = txPair.getTransaction().getMonetaryAmount()
-                            .with(securityCurrencyConverter.at(txPair.getTransaction().getDateTime())).getAmount()
+                            .with(securityCurrencyConverter.at(txPair.getTransaction().getDateTimeValue())).getAmount()
                             / Values.Amount.divider();
 
             if (txPair.getTransaction().getType().isPurchase() == trade.isLong())

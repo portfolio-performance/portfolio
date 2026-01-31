@@ -191,8 +191,8 @@ public class JTransaction
         else if (owner instanceof Portfolio)
             fillFromPortfolioTransaction((TransactionPair<PortfolioTransaction>) transaction, jtx);
 
-        jtx.setDate(transaction.getTransaction().getDateTime().toLocalDate());
-        LocalTime time = transaction.getTransaction().getDateTime().toLocalTime();
+        jtx.setDate(transaction.getTransaction().getDateTimeValue().toLocalDate());
+        LocalTime time = transaction.getTransaction().getDateTimeValue().toLocalTime();
         if (!time.equals(LocalTime.MIDNIGHT))
             jtx.setTime(time);
 

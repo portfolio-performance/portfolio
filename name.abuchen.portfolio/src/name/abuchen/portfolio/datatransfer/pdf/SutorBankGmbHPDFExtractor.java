@@ -363,7 +363,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag EUR 12,15
@@ -431,7 +431,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Tag des Zuflusses (?<date>[\\d]{1,2} .* [\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €34,25
@@ -807,7 +807,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(0L);
 
                                                             t.setCurrencyCode("EUR");
@@ -836,7 +836,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(0L);
 
                                                             t.setCurrencyCode("EUR");
@@ -878,7 +878,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -896,7 +896,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>(Zulage [\\d]{4}|automatischer Lastschrifteinzug))" //
                                                                         + "(: .*)?$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -920,7 +920,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             if ("Auszahlung".equals(trim(v.get("type"))) || "Überweisung".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -956,7 +956,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         + "\\- .*" //
                                         + "\\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
 
                             t.setCurrencyCode("EUR");
                             t.setAmount(asAmount(v.get("amount")));
@@ -1003,7 +1003,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Kontof.hrungsgeb.hr))" //
                                                                         + ".*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1025,7 +1025,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Kontof.hrungsgeb.hr)).* " //
                                                                         + "\\- \\-(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1040,7 +1040,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>Umbuchung Geld) " //
                                                                         + "\\- \\-(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1065,7 +1065,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setCurrencyCode("EUR");
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1101,7 +1101,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "[\\.,\\d]+$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\w]{2}\\p{Sc}|[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -1175,7 +1175,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Ex Datum \\- Tag (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Verhältnis Neu/ Alt 1 : 3,00

@@ -95,7 +95,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T16:53:45")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T16:53:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf01.txt"));
         assertThat(entry.getPortfolioTransaction().getNote(), is("Auftragsnummer 000000/00.00 | Limit billigst"));
@@ -145,7 +145,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T16:38:35")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T16:38:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Kauf02.txt"));
         assertThat(entry.getPortfolioTransaction().getNote(), is("Auftragsnummer 000000/00.00 | Limit billigst"));
@@ -194,7 +194,7 @@ public class SantanderConsumerBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -240,7 +240,7 @@ public class SantanderConsumerBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -291,7 +291,7 @@ public class SantanderConsumerBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 0000000000"));

@@ -104,7 +104,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         this.security = transaction.getSecurity();
 
-        LocalDateTime transactionDate = transaction.getDateTime();
+        LocalDateTime transactionDate = transaction.getDateTimeValue();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
 

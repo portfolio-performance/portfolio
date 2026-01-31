@@ -102,7 +102,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T13:45:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T13:45:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 11441163"));
@@ -152,7 +152,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-09T09:58:45")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-11-09T09:58:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 338500/63.00 | Limit billigst"));
@@ -202,7 +202,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-12T16:42:58")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-12T16:42:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 12345678"));
@@ -252,7 +252,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-19T15:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-19T15:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 12345678"));
@@ -304,7 +304,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-19T15:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-19T15:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 12345678"));
@@ -354,7 +354,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-24T12:20:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-24T12:20:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 44083824"));
@@ -404,7 +404,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-06T10:46:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-06T10:46:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 41601727"));
@@ -660,7 +660,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 21112411"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-07T11:17:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-07T11:17:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4500)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -710,7 +710,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 183260/06.00 | Limit bestens"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-06T11:39:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-06T11:39:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(110)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -760,7 +760,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 554374/09.00 | Limit bestens"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T11:23:39")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T11:23:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -810,7 +810,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 47199493"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -857,7 +857,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-04-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -902,7 +902,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-12-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 85127406360 | Quartalsdividende"));
@@ -948,7 +948,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-12-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 85127406360 | Quartalsdividende"));
@@ -999,7 +999,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 88888888888 | Quartalsdividende"));
@@ -1046,7 +1046,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 88888888888 | Quartalsdividende"));
@@ -1098,7 +1098,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 80642931040 | Quartalsdividende"));
@@ -1145,7 +1145,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 80642931040 | Quartalsdividende"));
@@ -1197,7 +1197,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(221)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1243,7 +1243,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(221)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1295,7 +1295,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(70)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1341,7 +1341,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(111)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 66666666666"));
@@ -1670,7 +1670,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(42.13))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1680,7 +1680,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.01))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1690,7 +1690,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(79.58))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1700,7 +1700,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -1710,7 +1710,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(60.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1720,7 +1720,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(500.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("EURO-Überweisung"));
@@ -1730,7 +1730,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1740,7 +1740,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(119.06))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("EURO-Überweisung"));
@@ -1750,7 +1750,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(123.34))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("EURO-Überweisung"));
@@ -1760,7 +1760,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-07T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(35.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("EURO-Überweisung"));
@@ -1770,7 +1770,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1780,7 +1780,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(85.65))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gutschrift"));
@@ -1790,7 +1790,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(70.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gutschrift"));
@@ -1800,7 +1800,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(34.62))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1810,7 +1810,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1097.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Einnahmen"));
@@ -1820,7 +1820,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.00 + 1.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Entgelte vom 01.12.2020 - 31.12.2020"));
@@ -1831,7 +1831,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.95))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Abschluss vom 01.10.2020 bis 31.12.2020"));
@@ -1866,7 +1866,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -1876,7 +1876,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1886,7 +1886,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1896,7 +1896,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1906,7 +1906,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -1916,7 +1916,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(30.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1926,7 +1926,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(60.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -1936,7 +1936,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1946,7 +1946,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1956,7 +1956,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(40.94))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -1966,7 +1966,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(30.20))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -1976,7 +1976,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.70))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -1986,7 +1986,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(15.16))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -1996,7 +1996,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(25.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2006,7 +2006,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(80.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2016,7 +2016,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.58))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2026,7 +2026,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2036,7 +2036,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2046,7 +2046,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.60))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2056,7 +2056,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2066,7 +2066,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2076,7 +2076,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2086,7 +2086,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-19T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2096,7 +2096,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.01))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2106,7 +2106,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.68))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2116,7 +2116,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-26T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.99))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2126,7 +2126,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.08))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2136,7 +2136,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Kartenzahlung"));
@@ -2146,7 +2146,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Auszahlung"));
@@ -2157,7 +2157,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1200.00))));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-30T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Lohn/Gehalt"));
 
@@ -2166,7 +2166,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.95))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Abschluss vom 30.07.2021 bis 31.08.2021"));
@@ -2201,7 +2201,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-11-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(136.00))));
         assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2211,7 +2211,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-11-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(133.29))));
         assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2221,7 +2221,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-11-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(139.00))));
         assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2231,7 +2231,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-11-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(35.19))));
         assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2266,7 +2266,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-08T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.00))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung SEPA"));
@@ -2276,7 +2276,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(700.00))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung SEPA"));
@@ -2286,7 +2286,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-22T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(36.99))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Basislastschrift"));
@@ -2296,7 +2296,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-25T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1870.70))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Lohn/Gehalt"));
@@ -2650,7 +2650,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2023-03-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(433)));
         assertThat(entry.getSource(), is("Umtausch01.txt"));
         assertThat(entry.getNote(), is("Abrechnungsnummer: 46711492"));
@@ -2666,7 +2666,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2023-03-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2023-03-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(433)));
         assertThat(entry.getSource(), is("Umtausch01.txt"));
         assertThat(entry.getNote(), is("Abrechnungsnummer: 45664992 | Verhältnis: 1 : 1"));
@@ -2686,7 +2686,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2023-03-10T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(433)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Umtausch01.txt"));
@@ -2711,7 +2711,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2023-03-10T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(433)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Umtausch01.txt"));

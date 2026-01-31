@@ -133,7 +133,7 @@ public class TransactionPair<T extends Transaction> implements Adaptable
     public String toString()
     {
         return String.format("%s %10s Stk. %-10s %s  %s", //$NON-NLS-1$
-                        Values.DateTime.format(transaction.getDateTime()), //
+                        Values.DateTime.format(transaction.getDateTimeValue()), //
                         Values.Share.format(transaction.getShares()), //
                         getTypeString(), //
                         Values.Money.format(transaction.getMonetaryAmount()), //

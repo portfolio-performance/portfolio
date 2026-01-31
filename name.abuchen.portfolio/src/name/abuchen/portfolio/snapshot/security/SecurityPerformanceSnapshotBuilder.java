@@ -115,7 +115,7 @@ import name.abuchen.portfolio.util.Interval;
             if (t.getSecurity() == null)
                 continue;
 
-            if (!interval.contains(t.getDateTime()))
+            if (!interval.contains(t.getDateTimeValue()))
                 continue;
 
             switch (t.getType())
@@ -136,7 +136,7 @@ import name.abuchen.portfolio.util.Interval;
                     Map<Security, T> records)
     {
         portfolio.getTransactions().stream() //
-                        .filter(t -> interval.contains(t.getDateTime())) //
+                        .filter(t -> interval.contains(t.getDateTimeValue())) //
                         .forEach(t -> records.computeIfAbsent(t.getSecurity(), s -> {
 
                             // must not happen because the records map is filled

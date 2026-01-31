@@ -119,7 +119,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-13T12:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-05-13T12:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Order: dead-beef | Ausführung: ab12-c3de"));
@@ -169,7 +169,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-13T13:59")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-05-13T13:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Order: 1234-abcd | Ausführung: a1b2-3456"));
@@ -219,7 +219,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-17T12:27")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-17T12:27")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Order: fd98-0283 | Ausführung: 51cb-50a8"));
@@ -269,7 +269,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-05T15:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-05T15:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Order: a1b2-3456 | Ausführung: 1234-56bb"));
@@ -319,7 +319,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-21T15:57")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-21T15:57")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertThat(entry.getNote(), is("Order: xxxx-xxxx | Ausführung: xxxx-xxxx"));
@@ -369,7 +369,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-02-15T17:39")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-02-15T17:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertNull(entry.getNote());
@@ -419,7 +419,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-02T21:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-02T21:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertThat(entry.getNote(), is("Order: 01f6-b7cc | Ausführung: a952-e304"));
@@ -469,7 +469,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-14T16:48")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-14T16:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
         assertNull(entry.getNote());
@@ -1481,7 +1481,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3773)));
         assertThat(entry.getSource(), is("Achat01.txt"));
         assertThat(entry.getNote(), is("Programmé : eea2-4c8b | Exécution : cee1-2d00"));
@@ -1694,7 +1694,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-04-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(150.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertNull(transaction.getNote());
@@ -1704,7 +1704,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-04-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertNull(transaction.getNote());
@@ -1714,7 +1714,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertNull(transaction.getNote());
@@ -1724,7 +1724,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertNull(transaction.getNote());
@@ -1734,7 +1734,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
         assertNull(transaction.getNote());
@@ -1768,7 +1768,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(299.96))));
         assertThat(transaction.getSource(), is("Kontoauszug02.txt"));
         assertNull(transaction.getNote());
@@ -1802,7 +1802,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.20))));
         assertThat(transaction.getSource(), is("Kontoauszug03.txt"));
         assertNull(transaction.getNote());
@@ -1836,7 +1836,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(123.45))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertNull(transaction.getNote());
@@ -1846,7 +1846,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(123.45))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertNull(transaction.getNote());
@@ -1856,7 +1856,7 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(123.45))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertNull(transaction.getNote());
@@ -5258,7 +5258,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Steuerabrechnung01.txt"));
         assertNull(transaction.getNote());
@@ -5489,7 +5489,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-11-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-11-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(38.4597)));
         assertThat(transaction.getSource(), is("Steuerkorrektur01.txt"));
         assertNull(transaction.getNote());
@@ -5618,7 +5618,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-18T17:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-18T17:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Order: 55a8-39ad | Ausführung: 051a-e65e"));
@@ -5668,7 +5668,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-10T11:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T11:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(500)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Order: 1234-1234 | Ausführung: 1234-1234"));
@@ -5688,7 +5688,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-10T11:42")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T11:42")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Verkauf02.txt"));
         assertNull(transaction.getNote());
@@ -5734,7 +5734,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-21T09:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-21T09:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Order: c17d-baea | Ausführung: 6415-fd77"));
@@ -5754,7 +5754,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-21T09:30")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-07-21T09:30")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
         assertThat(transaction.getSource(), is("Verkauf03.txt"));
         assertNull(transaction.getNote());
@@ -5800,7 +5800,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-12T12:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-12T12:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0068)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Order: 36de-8883 | Ausführung: f439-3735"));
@@ -5849,7 +5849,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-26T11:44")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-26T11:44")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3632)));
         assertThat(entry.getSource(), is("Verkauf05.txt"));
         assertNull(entry.getNote());
@@ -5898,7 +5898,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-25T11:32")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-25T11:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
         assertThat(entry.getSource(), is("Verkauf06.txt"));
         assertNull(entry.getNote());
@@ -5917,7 +5917,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-25T11:32")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-25T11:32")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(transaction.getSource(), is("Verkauf06.txt"));
         assertNull(transaction.getNote());
@@ -5963,7 +5963,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-23T21:10")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-23T21:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
         assertThat(entry.getNote(), is("Order: 5a93-03d1 | Ausführung: b11c-12c4"));
@@ -5983,7 +5983,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-23T21:10")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-23T21:10")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9)));
         assertThat(transaction.getSource(), is("Verkauf07.txt"));
         assertNull(transaction.getNote());
@@ -6029,7 +6029,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-03T16:49")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T16:49")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getSource(), is("Verkauf08.txt"));
         assertThat(entry.getNote(), is("Order: 886a-ffff | Ausführung: dcd2-ffff"));
@@ -6049,7 +6049,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T16:49")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T16:49")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Verkauf08.txt"));
         assertNull(transaction.getNote());
@@ -6335,7 +6335,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(700)));
         assertThat(entry.getSource(), is("Tilgung01.txt"));
         assertNull(entry.getNote());
@@ -6354,7 +6354,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-10-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(700)));
         assertThat(transaction.getSource(), is("Tilgung01.txt"));
         assertNull(transaction.getNote());
@@ -6400,7 +6400,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getSource(), is("Tilgung02.txt"));
         assertNull(entry.getNote());
@@ -6579,7 +6579,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2021-05-25T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(79)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno02.txt"));
@@ -6669,7 +6669,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -6714,7 +6714,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -6765,7 +6765,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -6811,7 +6811,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -6863,7 +6863,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -6909,7 +6909,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -6961,7 +6961,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -7006,7 +7006,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(142)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -7051,7 +7051,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(142)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -7102,7 +7102,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -7148,7 +7148,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -7200,7 +7200,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3.3272)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertNull(transaction.getNote());
@@ -7245,7 +7245,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3.3272)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertNull(transaction.getNote());
@@ -7296,7 +7296,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(124.0903)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -7341,7 +7341,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(124.0903)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -7392,7 +7392,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(4.3521)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertNull(transaction.getNote());
@@ -7437,7 +7437,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertNull(transaction.getNote());
@@ -7483,7 +7483,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertNull(transaction.getNote());
@@ -7528,7 +7528,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(699)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -7548,7 +7548,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Dividende12.txt"));
         assertNull(entry.getPortfolioTransaction().getNote());
@@ -7594,7 +7594,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(699)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -7611,7 +7611,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getPortfolioTransaction().getSource(), is("Dividende12.txt"));
         assertNull(entry.getPortfolioTransaction().getNote());
@@ -7666,7 +7666,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-10-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -7711,7 +7711,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.214744)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -7756,7 +7756,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.214744)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -9354,7 +9354,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.4226)));
         assertThat(transaction.getSource(), is("Kapitalreduktion01.txt"));
         assertNull(transaction.getNote());
@@ -9399,7 +9399,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.4226)));
         assertThat(transaction.getSource(), is("Kapitalreduktion01.txt"));
         assertNull(transaction.getNote());
@@ -9631,7 +9631,7 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(173.3905)));
         assertThat(transaction.getSource(), is("Vorabpauschale01.txt"));
         assertNull(transaction.getNote());
@@ -9815,7 +9815,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.4534)));
         assertThat(entry.getSource(), is("Sparplan01.txt"));
         assertThat(entry.getNote(), is("Sparplan: 123-123 | Ausführung: ff2f-1254"));
@@ -9865,7 +9865,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9261)));
         assertThat(entry.getSource(), is("Sparplan02.txt"));
         assertThat(entry.getNote(), is("Sparplan: xxxx-xxxx | Ausführung: xxxx-xxxx"));
@@ -9915,7 +9915,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5520)));
         assertThat(entry.getSource(), is("Sparplan03.txt"));
         assertThat(entry.getNote(), is("Sparplan: 77c8-1b0c | Ausführung: 8eac-25ab"));
@@ -9965,7 +9965,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.0028)));
         assertThat(entry.getSource(), is("Sparplan04.txt"));
         assertThat(entry.getNote(), is("Sparplan: 98a0-1d15 | Ausführung: 3609-6874"));
@@ -10015,7 +10015,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0358)));
         assertThat(entry.getSource(), is("Sparplan05.txt"));
         assertThat(entry.getNote(), is("Sparplan: af97-c4b1 | Ausführung: fc69-6fc3"));

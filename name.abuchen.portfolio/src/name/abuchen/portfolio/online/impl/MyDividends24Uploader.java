@@ -63,7 +63,7 @@ public class MyDividends24Uploader
         List<JSONObject> resultTransactions = stream.filter(item -> item.getSecurity().getIsin() != null).map(item -> {
             double quantity = item.getShares() / Values.Share.divider();
             double buyingprice = item.getGrossValueAmount() / Values.Amount.divider() / quantity;
-            String purchasedate = item.getDateTime().toString();
+            String purchasedate = item.getDateTimeValue().toString();
             String isin = item.getSecurity().getIsin();
             String type = item.getType().isPurchase() ? "buy" : "sell"; //$NON-NLS-1$ //$NON-NLS-2$
 

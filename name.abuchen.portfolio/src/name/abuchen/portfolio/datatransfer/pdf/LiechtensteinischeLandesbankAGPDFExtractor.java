@@ -207,7 +207,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         // @formatter:on
                         .section("date") //
                         .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
@@ -284,7 +284,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         .match("^[\\d]{2}\\.[\\d]{2}. Gutschrift (?<date>[\\d]{2}\\.[\\d]{2}.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
                         .match("^(?<note>Auftragsnummer: .*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -313,7 +313,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         .match("^Abrechnungsperiode (?<note1>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})\\-(?<note2>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .match("^Habenzins (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " - " + v.get("note2"));

@@ -80,7 +80,7 @@ public class ConvertDeliveryToBuySellAction extends Action
                             ? PortfolioTransaction.Type.BUY
                             : PortfolioTransaction.Type.SELL);
 
-            entry.setDate(deliveryTransaction.getDateTime());
+            entry.setDate(deliveryTransaction.getDateTimeValue());
             entry.setMonetaryAmount(deliveryTransaction.getMonetaryAmount());
             entry.setSecurity(deliveryTransaction.getSecurity());
             entry.setNote(deliveryTransaction.getNote());

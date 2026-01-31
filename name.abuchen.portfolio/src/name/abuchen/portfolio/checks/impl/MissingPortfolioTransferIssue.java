@@ -59,7 +59,7 @@ import name.abuchen.portfolio.money.Values;
             }
 
             PortfolioTransferEntry entry = new PortfolioTransferEntry(from, to);
-            entry.setDate(transaction.getDateTime());
+            entry.setDate(transaction.getDateTimeValue());
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
             entry.setAmount(transaction.getAmount());

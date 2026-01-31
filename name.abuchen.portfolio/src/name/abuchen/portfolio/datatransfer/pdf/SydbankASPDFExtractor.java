@@ -166,7 +166,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Afkast i alt kr\\. [\\.,\\d]+ inds.ttes den (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Afkast i alt kr. 104,50 indsættes den 07.02.2025 på konto 4375-6141965465.

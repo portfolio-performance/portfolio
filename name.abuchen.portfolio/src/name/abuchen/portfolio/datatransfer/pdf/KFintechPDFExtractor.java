@@ -113,7 +113,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
                             var tx = t.getPortfolioTransaction();
 
-                            if (date.equals(tx.getDateTime()) && tax > 0 && tx.getAmount() > tax)
+                            if (date.equals(tx.getDateTimeValue()) && tax > 0 && tx.getAmount() > tax)
                             {
                                 tx.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
                                 t.setAmount(tx.getAmount() + tax);
@@ -243,7 +243,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
                             var tx = t.getPortfolioTransaction();
 
-                            if (date.equals(tx.getDateTime()) && tax > 0 && tx.getAmount() > tax)
+                            if (date.equals(tx.getDateTimeValue()) && tax > 0 && tx.getAmount() > tax)
                             {
                                 tx.addUnit(new Unit(Unit.Type.FEE, Money.of(INR, tax)));
                                 t.setAmount(tx.getAmount() - tax);
@@ -295,7 +295,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
                             var tx = t.getPortfolioTransaction();
 
-                            if (date.equals(tx.getDateTime()) && tax > 0 && tx.getAmount() > tax)
+                            if (date.equals(tx.getDateTimeValue()) && tax > 0 && tx.getAmount() > tax)
                             {
                                 tx.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
                                 t.setAmount(tx.getAmount() + tax);
@@ -329,7 +329,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
 
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDateTime(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
+                            t.setDateTimeValue(LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay());
                             t.setCurrencyCode(INR);
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -344,7 +344,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
                             var date = LocalDate.parse(v.get("date"), DATE_FORMAT).atStartOfDay();
                             var tax = asAmount(v.get("tax"));
 
-                            if (date.equals(t.getDateTime()) && tax > 0 && t.getAmount() > tax)
+                            if (date.equals(t.getDateTimeValue()) && tax > 0 && t.getAmount() > tax)
                             {
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(INR, tax)));
                                 t.setAmount(t.getAmount() - tax);

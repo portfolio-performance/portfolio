@@ -46,8 +46,8 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
                 return;
 
             LocalDate now = LocalDate.now();
-            LocalDate start = tx.get(0).getDateTime().toLocalDate();
-            LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
+            LocalDate start = tx.get(0).getDateTimeValue().toLocalDate();
+            LocalDate end = tx.get(tx.size() - 1).getDateTimeValue().toLocalDate();
 
             CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory,
                             account.getCurrencyCode());

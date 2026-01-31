@@ -99,7 +99,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 TrailRecord trail = TrailRecord.ofTransaction(t);
                 if (!getTermCurrency().equals(t.getCurrencyCode()))
                     trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
-                                    converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+                                    converter.getRate(t.getDateTimeValue(), t.getCurrencyCode()));
 
                 fifo.add(new LineItem(item.getOwner(), t.getShares(), grossAmount, netAmount, trail));
                 movingRelativeCost += grossAmount;
@@ -150,7 +150,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     // FIXME Oops. More sold than bought.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                                    Values.DateTime.format(t.getDateTimeValue())));
                 }
 
                 break;
@@ -209,7 +209,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     // FIXME Oops. More moved than available.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(moved), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                                    Values.DateTime.format(t.getDateTimeValue())));
                 }
 
                 break;
@@ -228,16 +228,16 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         switch (t.getType())
         {
             case TAXES:
-                taxes += converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                taxes += converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 break;
             case TAX_REFUND:
-                taxes -= converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                taxes -= converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 break;
             case FEES:
-                fees += converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                fees += converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 break;
             case FEES_REFUND:
-                fees -= converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                fees -= converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 break;
             default:
         }

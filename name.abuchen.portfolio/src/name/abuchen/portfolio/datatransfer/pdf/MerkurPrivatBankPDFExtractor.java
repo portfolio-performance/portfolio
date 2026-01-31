@@ -168,7 +168,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 42,35+ EUR
@@ -252,7 +252,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                             if ("S".equals(v.get("type")))
                                 t.setType(Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
@@ -305,7 +305,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .section("currency", "amount") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //

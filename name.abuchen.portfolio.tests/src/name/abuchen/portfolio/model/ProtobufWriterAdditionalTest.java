@@ -122,7 +122,7 @@ public class ProtobufWriterAdditionalTest
         // exist in old files)
         var dividend = new AccountTransaction();
         dividend.setType(AccountTransaction.Type.DIVIDENDS);
-        dividend.setDateTime(LocalDateTime.now());
+        dividend.setDateTimeValue(LocalDateTime.now());
         dividend.setCurrencyCode(CurrencyUnit.EUR);
         dividend.setAmount(Values.Amount.factorize(100));
         dividend.setSecurity(null); // explicitly no security

@@ -394,21 +394,21 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Belastung mit Wert 17.05.2024 31,42 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Gutschrift mit Wert 16.01.2023 309,23 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -571,7 +571,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "currency", "amount").optional() //
                         .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -621,7 +621,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>(SEPA .berweisung|D Gut SEPA|Gutschr\\.SEPA)).* \\+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
@@ -660,7 +660,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)(\\/|[\\s]*)[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA (.berw\\. Einzel|Lastschrifteinzug|.berweisung)).* \\- (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 

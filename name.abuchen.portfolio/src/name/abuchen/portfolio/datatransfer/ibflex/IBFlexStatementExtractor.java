@@ -433,7 +433,7 @@ public class IBFlexStatementExtractor implements Extractor
         private Consumer<Element> buildAccountTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
 
-            accountTransaction.setDateTime(extractDate(element));
+            accountTransaction.setDateTimeValue(extractDate(element));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")),
@@ -603,7 +603,7 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 AccountTransaction feesTransaction = new AccountTransaction();
                 feesTransaction.setType(AccountTransaction.Type.FEES);
-                feesTransaction.setDateTime(cashTransaction.getSourceTransaction().getDateTime());
+                feesTransaction.setDateTimeValue(cashTransaction.getSourceTransaction().getDateTimeValue());
                 feesTransaction.setMonetaryAmount(fees);
                 feesTransaction.setNote(MessageFormat.format("Commission paid for {0}",
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
@@ -620,7 +620,7 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 AccountTransaction taxesTransaction = new AccountTransaction();
                 taxesTransaction.setType(AccountTransaction.Type.TAXES);
-                taxesTransaction.setDateTime(cashTransaction.getSourceTransaction().getDateTime());
+                taxesTransaction.setDateTimeValue(cashTransaction.getSourceTransaction().getDateTimeValue());
                 taxesTransaction.setMonetaryAmount(taxes);
                 taxesTransaction.setNote(MessageFormat.format("Taxes paid for {0}",
                                 cashTransaction.getNote() != null ? cashTransaction.getNote()
@@ -778,7 +778,7 @@ public class IBFlexStatementExtractor implements Extractor
                 else
                     portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-                portfolioTransaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("reportDate")));
+                portfolioTransaction.setDateTimeValue(ExtractorUtils.asDate(element.getAttribute("reportDate")));
 
                 // Set share quantity
                 Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
@@ -803,7 +803,7 @@ public class IBFlexStatementExtractor implements Extractor
             accountTransaction.setType(AccountTransaction.Type.TAXES);
 
             // Set date
-            accountTransaction.setDateTime(ExtractorUtils.asDate(element.getAttribute("date")));
+            accountTransaction.setDateTimeValue(ExtractorUtils.asDate(element.getAttribute("date")));
 
             // Set amount
             Money amount = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("salesTax")));

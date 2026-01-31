@@ -408,7 +408,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
         for (TransactionPair<?> pair : transactions) // NOSONAR
         {
-            if (!interval.contains(pair.getTransaction().getDateTime()))
+            if (!interval.contains(pair.getTransaction().getDateTimeValue()))
                 continue;
 
             Optional<TransactionPair<PortfolioTransaction>> tx = pair.withPortfolioTransaction();
@@ -419,8 +419,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             if (type != tx.get().getTransaction().getType())
                 continue;
 
-            int indexOf = this.isAggregateByYear() ? years.indexOf(Year.from(tx.get().getTransaction().getDateTime()))
-                            : yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
+            int indexOf = this.isAggregateByYear() ? years.indexOf(Year.from(tx.get().getTransaction().getDateTimeValue()))
+                            : yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTimeValue()));
             if (indexOf >= 0)
             {
                 switch (chartType)

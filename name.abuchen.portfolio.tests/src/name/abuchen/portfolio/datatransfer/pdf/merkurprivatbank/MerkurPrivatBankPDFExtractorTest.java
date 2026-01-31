@@ -92,7 +92,7 @@ public class MerkurPrivatBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-05-02T09:34:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-05-02T09:34:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125.3258)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 284722/61.00"));
@@ -141,7 +141,7 @@ public class MerkurPrivatBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-05-09T09:26:37")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-05-09T09:26:37")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(600.0)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 166647/10.00"));
@@ -224,7 +224,7 @@ public class MerkurPrivatBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-05-09T09:44:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-05-09T09:44:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(500.0)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 306589/61.00"));
@@ -273,7 +273,7 @@ public class MerkurPrivatBankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-03-22T20:15:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2024-03-22T20:15:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3260.0)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 749922/41.00"));

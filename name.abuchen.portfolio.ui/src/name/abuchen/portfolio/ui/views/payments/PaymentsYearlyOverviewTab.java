@@ -176,7 +176,7 @@ public class PaymentsYearlyOverviewTab implements PaymentsTab
     {
         builder.addColumns(new Column(Messages.ColumnDate, SWT.LEFT, 100) //
                         .withFormatter(o -> Values.DateTime
-                                        .format(((TransactionPair<?>) o).getTransaction().getDateTime())), //
+                                        .format(((TransactionPair<?>) o).getTransaction().getDateTimeValue())), //
                         new Column(Messages.ColumnTransactionType, SWT.LEFT), //
                         new Column(Messages.ColumnSecurity, SWT.LEFT, 220) //
                                         .withFormatter(o -> o instanceof Security s ? s.getName() : null).withLogo(), //
@@ -197,8 +197,8 @@ public class PaymentsYearlyOverviewTab implements PaymentsTab
                                         .withFormatter(o -> o instanceof Named n ? n.getName() : null).withLogo());
 
         model.getTransactions().stream()
-                        .filter(pair -> pair.getTransaction().getDateTime().getYear() == month.getYear()
-                                        && pair.getTransaction().getDateTime().getMonth() == month.getMonth())
+                        .filter(pair -> pair.getTransaction().getDateTimeValue().getYear() == month.getYear()
+                                        && pair.getTransaction().getDateTimeValue().getMonth() == month.getMonth())
                         .forEach(pair -> {
 
                             Object[] row = new Object[9];

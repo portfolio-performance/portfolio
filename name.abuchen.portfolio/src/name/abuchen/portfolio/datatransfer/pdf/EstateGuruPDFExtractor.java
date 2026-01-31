@@ -67,7 +67,7 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                                         + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -106,7 +106,7 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                                         + "\\((?<currency>\\p{Sc}) \\-(?<amount>[\\.,\\d]+)\\) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -158,7 +158,7 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                                         + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));
@@ -202,7 +202,7 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
                                         + "\\((?<currency>\\p{Sc}) \\-(?<amount>[\\.,\\d]+)\\) " //
                                         + "\\p{Sc} [\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));

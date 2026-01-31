@@ -504,7 +504,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("date")
                 .match("^.*Abrechnungstag: (?<date>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
-                .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date")))))
+                .assign((t, v) -> t.setDateTimeValue(asDate(stripBlanks(v.get("date")))))
 
                 // @formatter:off
                 // Ausschüttung EUR 0,14 Kurs Bestand alt: 0,739
@@ -603,7 +603,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 // @formatter:on
                 .section("date")
                 .match("^.*Abrechnungstag: (?<date>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
-                .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date")))))
+                .assign((t, v) -> t.setDateTimeValue(asDate(stripBlanks(v.get("date")))))
 
                 // @formatter:off
                 // ISIN: LU0348413815 Unterdepot: 00 Auftragsnummer: 8101 8357
@@ -950,19 +950,19 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                         // Formatting some notes
                                         if ("Depotpreis".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Vertragsgebühr".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Schädliche Verwendung".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Entgelt Auflösung".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Vertragspreis".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
                                     })
                             ,
                             // @formatter:off
@@ -1058,10 +1058,10 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
 
                                         // Formatting some notes
                                         if ("Depotpreis".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Vertragsgebühr".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
 
                                         if ("Schädliche Verwendung".equals(trim(v.get("note"))))
                                             t.setNote(trim(v.get("note")));
@@ -1070,7 +1070,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             t.setNote(trim(v.get("note")));
 
                                         if ("Vertragspreis".equals(trim(v.get("note"))))
-                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTime().getYear());
+                                            t.setNote(trim(v.get("note")) + " " + t.getPortfolioTransaction().getDateTimeValue().getYear());
                                     })
                     )
 
@@ -1147,7 +1147,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
 
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setDateTimeValue(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
@@ -1205,7 +1205,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
 
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setDateTimeValue(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
@@ -1250,7 +1250,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
 
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setDateTimeValue(asDate(v.get("date")));
                                         t.setShares(asShares(v.get("shares")));
                                         t.setAmount(0L);
                                         t.setCurrencyCode(CurrencyUnit.EUR);
@@ -1353,7 +1353,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
 
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setDateTimeValue(asDate(v.get("date")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
                                     })
@@ -1422,7 +1422,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         }
 
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date")));
+                                        t.setDateTimeValue(asDate(v.get("date")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setCurrencyCode(CurrencyUnit.EUR);
                                     })
@@ -1474,7 +1474,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((t, v) -> {
                                             Map<String, String> context = type.getCurrentContext();
 
-                                            t.setDateTime(asDate(context.get("documentDate")));
+                                            t.setDateTimeValue(asDate(context.get("documentDate")));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                             t.setNote(trim(v.get("note")));
@@ -1483,7 +1483,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             if (t.getNote().startsWith("Abschluss"))
                                                 t.setNote("Abschluss-/ Vertriebskosten");
 
-                                            t.setNote(t.getNote() + " " + t.getDateTime().getYear());
+                                            t.setNote(t.getNote() + " " + t.getDateTimeValue().getYear());
                                         })
                                 ,
                                 // @formatter:off
@@ -1500,14 +1500,14 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                                         + "[\\.,\\d]+ [\\-\\+\\s]+[\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$")
                                         .assign((t, v) -> {
-                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setDateTimeValue(asDate(v.get("date")));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                             t.setNote(trim(v.get("note")));
 
                                             // Formatting some note
                                             if ("Vertragspreis".equals(trim(v.get("note"))))
-                                                t.setNote(trim(v.get("note")) + " " + t.getDateTime().getYear());
+                                                t.setNote(trim(v.get("note")) + " " + t.getDateTimeValue().getYear());
                                         })
                                 ,
                                 // @formatter:off
@@ -1520,13 +1520,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             if (context.get("contractFeeDate") != null && "Vertragsgebühr".equals(v.get("note")))
-                                                t.setDateTime(asDate(context.get("contractFeeDate")));
+                                                t.setDateTimeValue(asDate(context.get("contractFeeDate")));
                                             else
-                                                t.setDateTime(asDate(context.get("documentDate")));
+                                                t.setDateTimeValue(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
-                                            t.setNote(v.get("note") + " " + t.getDateTime().getYear());
+                                            t.setNote(v.get("note") + " " + t.getDateTimeValue().getYear());
                                         })
                                 ,
                                 // @formatter:off
@@ -1540,13 +1540,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             if (context.get("depotFeeDate") != null)
-                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                                t.setDateTimeValue(asDate(context.get("depotFeeDate")));
                                             else
-                                                t.setDateTime(asDate(context.get("documentDate")));
+                                                t.setDateTimeValue(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(CurrencyUnit.EUR);
-                                            t.setNote(v.get("note") + " " + t.getDateTime().getYear());
+                                            t.setNote(v.get("note") + " " + t.getDateTimeValue().getYear());
                                         })
                                 ,
                                 // @formatter:off
@@ -1563,13 +1563,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             if (context.get("depotFeeDate") != null)
-                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                                t.setDateTimeValue(asDate(context.get("depotFeeDate")));
                                             else
-                                                t.setDateTime(asDate(context.get("documentDate")));
+                                                t.setDateTimeValue(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setNote(v.get("note") + " " + t.getDateTime().getYear());
+                                            t.setNote(v.get("note") + " " + t.getDateTimeValue().getYear());
                                         })
                                 ,
                                 // @formatter:off
@@ -1592,13 +1592,13 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             Map<String, String> context = type.getCurrentContext();
 
                                             if (context.get("depotFeeDate") != null)
-                                                t.setDateTime(asDate(context.get("depotFeeDate")));
+                                                t.setDateTimeValue(asDate(context.get("depotFeeDate")));
                                             else
-                                                t.setDateTime(asDate(context.get("documentDate")));
+                                                t.setDateTimeValue(asDate(context.get("documentDate")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setNote(trim(stripBlanks(v.get("note"))) + " " + t.getDateTime().getYear());
+                                            t.setNote(trim(stripBlanks(v.get("note"))) + " " + t.getDateTimeValue().getYear());
                                         })
                         )
 
@@ -1669,7 +1669,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             // @formatter:on
             .section("date")
             .match("^.*Abrechnungstag: (?<date>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+)$")
-            .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date")))))
+            .assign((t, v) -> t.setDateTimeValue(asDate(stripBlanks(v.get("date")))))
 
             // @formatter:off
             // Ausschüttung EUR 78,81 Kurs/Kaufpreis Bestand alt: 33,823

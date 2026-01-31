@@ -87,7 +87,7 @@ public class LGTBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00:02")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-14T09:00:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 262697612 | Valorennummer 906020"));
@@ -137,7 +137,7 @@ public class LGTBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-14T09:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-14T09:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(180)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 323232609 | Valorennummer 23159222"));
@@ -390,7 +390,7 @@ public class LGTBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(551)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 256401138 | Ordentliche Dividende"));

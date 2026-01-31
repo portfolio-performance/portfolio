@@ -106,7 +106,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(158)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Limit 63,00 EUR"));
@@ -127,7 +127,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-04T08:00:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Limit 43,00 EUR"));
@@ -177,7 +177,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36.7701)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 242816/24.00"));
@@ -227,7 +227,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.4085)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 123456/26.00"));
@@ -277,7 +277,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1700)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 69123/22.01 | Limit 0,84 GBP"));
@@ -329,7 +329,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-29T17:35:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1700)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 69123/22.01 | Limit 0,84 GBP"));
@@ -453,7 +453,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-11T16:34:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-11T16:34:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(137)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 724152/50.00 | Limit 23,15 EUR"));
@@ -503,7 +503,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-13T10:35:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-12-13T10:35:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 12345678999/50.00 | Limit bestens"));
@@ -553,7 +553,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 12345678/32.00 | Barabfindung wegen Fusion"));
@@ -605,7 +605,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-12-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 12345678/32.00 | Barabfindung wegen Fusion"));
@@ -661,7 +661,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-14T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7918)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 123456/37.00"));
@@ -744,7 +744,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.6027)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 189617/56.00"));
@@ -765,7 +765,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.6892)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 189663/67.00"));
@@ -786,7 +786,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.2308)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 189751/60.00"));
@@ -807,7 +807,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.6693)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 189908/99.00"));
@@ -828,7 +828,7 @@ public class PostbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.9897)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer 190945/98.00"));
@@ -879,7 +879,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678999 | Quartalsdividende"));
@@ -925,7 +925,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678999 | Quartalsdividende"));
@@ -978,7 +978,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 56024913320"));
@@ -1025,7 +1025,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-04-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(114)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
@@ -1072,7 +1072,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-04-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 64628421310"));
@@ -1119,7 +1119,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 55626672580"));
@@ -1165,7 +1165,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 55626672580"));
@@ -1218,7 +1218,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-01-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111111"));
@@ -1264,7 +1264,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-01-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11111111111"));
@@ -1317,7 +1317,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1430)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 72953370000"));
@@ -1364,7 +1364,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1430)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 72953370000"));
@@ -1418,7 +1418,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11223344550"));
@@ -1464,7 +1464,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11223344550"));
@@ -1517,7 +1517,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 77122332030 | Zinsschein 365 Tag(e)"));
@@ -1565,7 +1565,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(190)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 75805627080 | Zinsschein 180 Tag(e)"));
@@ -1612,7 +1612,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(190)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 75805627080 | Zinsschein 180 Tag(e)"));
@@ -1666,7 +1666,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.3024)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 83904157190"));
@@ -1712,7 +1712,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.3024)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 83904157190"));
@@ -1765,7 +1765,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(160)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -1812,7 +1812,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -1858,7 +1858,7 @@ public class PostbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -2041,7 +2041,7 @@ public class PostbankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-01T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.70)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2052,7 +2052,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-01T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1100.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2063,7 +2063,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-01T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(600.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungsgutschrift"));
@@ -2074,7 +2074,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-07T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-07T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(300.90)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungsgutschrift"));
@@ -2085,7 +2085,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-02T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.70)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2096,7 +2096,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-02T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1100.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2107,7 +2107,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-26T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungsgutschrift"));
@@ -2118,7 +2118,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-26T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2500.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungsgutschrift"));
@@ -2129,7 +2129,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-10-01T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(960.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2140,7 +2140,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-10-01T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.40)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Dauerauftrag"));
@@ -2151,7 +2151,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-06T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(250.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungslastschrift"));
@@ -2162,7 +2162,7 @@ public class PostbankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-06T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(49.10)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("SEPA Überweisungslastschrift"));

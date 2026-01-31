@@ -921,7 +921,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
                                         + "(,)? (um|at|alle|.|a las) (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
                         // GESAMT 0,34 EUR
@@ -1476,21 +1476,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         //
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // DE98502109007017811111 16/05/2024 0,38 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1732,14 +1732,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\-[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // hxTZALjiAGgX. 6 DATUM 15.01.2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^.*DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // VERRECHNUNGSKONTO VALUTA BETRAG
@@ -1832,7 +1832,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^.*DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // KOSTEN DES WERTPAPIERVERKAUFS BETRAG
@@ -1904,7 +1904,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|Einzahlung akzeptiert" //
                                         + "|Customer .* inpayed net):.* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -1929,7 +1929,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) Auszahlung an Referenzkonto \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -1954,7 +1954,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -1979,7 +1979,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Your interest payment (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -2094,7 +2094,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "year", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) .berweisung Einzahlung .* auf (?<year>[\\d]{4}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -2117,7 +2117,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             if ("PayOut".equals(v.get("type")) || "Outgoing".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2129,7 +2129,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) Transfer Deposit .* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -2143,7 +2143,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -2156,7 +2156,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2182,7 +2182,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2226,7 +2226,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2264,7 +2264,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2292,7 +2292,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2322,7 +2322,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2356,7 +2356,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2400,7 +2400,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2446,7 +2446,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2464,7 +2464,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Einzahlung akzeptiert: .*$") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -2508,7 +2508,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2561,7 +2561,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Reembolso)" //
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2588,7 +2588,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|Reembolso)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -2621,7 +2621,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2649,7 +2649,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2704,7 +2704,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2756,7 +2756,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + ".*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2772,7 +2772,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "(SEPA Echtzeit.berweisung|.berweisung) (?<note>Einzahlung akzeptiert:.*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setNote(trim(v.get("note")));
@@ -2804,7 +2804,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note0") + v.get("note1"));
@@ -2832,7 +2832,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2850,7 +2850,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2875,7 +2875,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -2910,7 +2910,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.DEPOSIT);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note0") + v.get("note1"));
@@ -2933,7 +2933,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note0") + v.get("note1"));
@@ -2968,7 +2968,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.REMOVAL);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currencyAfter")));
                                                             t.setAmount(asAmount(v.get("amountAfter")));
                                                             t.setNote(trim(v.get("note")));
@@ -2989,7 +2989,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -3011,7 +3011,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
@@ -3033,7 +3033,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<note1>.*)$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note0") + v.get("note1"));
@@ -3070,7 +3070,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<year>[\\d]{4}) .* (?<note>Trade Republic Card) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -3102,7 +3102,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .* (?<note>Trade Republic Card) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -3134,7 +3134,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} ([\\p{L}]{3,4}([\\.]{1})?) [\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3182,7 +3182,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement|Pagamento).*)?$")
                                                         .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3202,7 +3202,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts|degli interessi)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3222,7 +3222,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Zinszahlung|intereses|d.int.r.ts)$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3246,7 +3246,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Zinszahlung|intereses|d.int.r.ts|Pago de intereses|Pagamento|Zinsen) (Your interest payment|Interest payment) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3285,7 +3285,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Zinszahlung|intereses|d.int.r.ts) (Your interest|Interest) payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3305,7 +3305,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Zinszahlung|intereses|d.int.r.ts)$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
@@ -3343,7 +3343,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
                                                         .match("^(?<year>[\\d]{4}) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -3402,7 +3402,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                     t.setType(AccountTransaction.Type.TAXES);
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -3522,7 +3522,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("VERRECHNUNGSKONTO (DATUM DER ZAHLUNG|WERTSTELLUNG) BETRAG") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s|\\-]{1,}[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // VERRECHNUNGSKONTO VALUTA BETRAG
                                         // DE00000000000000000000 23.11.2020 4,26
@@ -3531,7 +3531,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("VERRECHNUNGSKONTO VALUTA BETRAG") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s|\\-]{1,}[\\.,\\d]+$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3646,7 +3646,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^DATUM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3707,7 +3707,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("BETRAG GEB.HR STATUS .BERWEISUNGSDATUM TYP REFERENZ") //
                                                         .match("^[\\.,\\d]+ \\p{Sc} .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // BETRAG STATUS ÜBERWEISUNGSDATUM TYP REFERENZ
                                         // 6.400,00 € Ausgeführt 01.04.2025 SEPA Überweisung
@@ -3716,7 +3716,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("BETRAG STATUS .BERWEISUNGSDATUM TYP REFERENZ") //
                                                         .match("^[\\.,\\d]+ \\p{Sc} .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
                                         // DEXXxxxxxxxxxxXXXXXXXXX 07.01.2024 49,00 EUR
@@ -3725,7 +3725,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("VERRECHNUNGSKONTO WERTSTELLUNG BETRAG") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG
                                         // DE27100999999999999301 01.09.2025 25,00 €
@@ -3734,7 +3734,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("VERRECHNUNGSKONTO WERTSTELLUNG GESAMTBETRAG") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // COMPTE-ESPÈCES DATE DE VALEUR MONTANT
                                         // DE13502109007011547146 24/05/2023 1000,00 EUR
@@ -3743,7 +3743,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find("COMPTE\\-ESP.CES DATE DE VALEUR MONTANT") //
                                                         .match("^.* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -3879,7 +3879,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .find("^ABRECHNUNG(?: - (ZINSEN|DIVIDENDE))?$")
                                                         .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -3892,7 +3892,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .find("IBAN .*") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -3905,7 +3905,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .find("IBAN .*") //
                                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -3949,7 +3949,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .find("IBAN.*") //
                                                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -3962,7 +3962,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .find("IBAN.*") //
                                                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -3999,7 +3999,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .find("VERRECHNUNGSKONTO.*") //
                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -4035,7 +4035,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .find("POSITION COMMAND. LE QUANTIT.") //
                         .match("^Carte Trade Republic (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Total -50,00 €
@@ -4137,7 +4137,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             else
                                                                 v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -4159,7 +4159,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (?<currency>[A-Z]{3})$")
                                                         .match("^Bezugsrechte: (?<shares>[\\.,\\d]+) Stk\\.$")
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -4424,14 +4424,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
                                                                         + "(,)? (um|at|alle|.|a las) (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex.cution de l.investissement programm. .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Esecuzione Saveback del 03.02.2025 su Lang und Schwarz Exchange.
                                         // Esecuzione Round Up il 17.02.2025 su Lang und Schwarz Exchange.
@@ -4439,14 +4439,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Esecuzione (Saveback del|Round Up il) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Esecuzione del piano d.accumulo il (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
@@ -4462,7 +4462,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "|(Savings plan|Saveback) execution) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
                                         // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
@@ -4472,14 +4472,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Ausf.hrung von (Round up|Saveback) .* "
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // DE40110101001234567890 06.08.2021 0,44 GBP
                                         // DE71100123450999999601 30.07.2024 2.05 EUR
                                         // @formatter:on
                                         section -> section.attributes("date") //
                                                         .match("^[\\w]+ (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) [\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // GESAMT 3.615,63 EUR
@@ -4765,21 +4765,21 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         //
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // DE98502109007017811111 16/05/2024 0,38 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^[\\w]+ (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (\\-)?[\\.,\\d]+ [A-Z]{3}$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // DE99012345670123456789 10.01.2024 68,74 EUR

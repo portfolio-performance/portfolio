@@ -61,13 +61,13 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<Transaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
+                        .filter(t -> t.getDateTimeValue().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
                         .collect(Collectors.toList());
 
         assertThat(tx.size(), is(15));
 
         tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2016 && t.getDateTimeValue().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
@@ -80,24 +80,24 @@ public class InvestmentPlanTest
         assertThat(tx.get(0), instanceOf(PortfolioTransaction.class));
         assertThat(tx.get(1), instanceOf(PortfolioTransaction.class));
 
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-05-02T00:00")));
         assertThat(((PortfolioTransaction) tx.get(0)).getType(), is(PortfolioTransaction.Type.BUY));
 
-        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
+        assertThat(tx.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-05-31T00:00")));
         assertThat(((PortfolioTransaction) tx.get(1)).getType(), is(PortfolioTransaction.Type.BUY));
 
         // check that delta generation of transactions also takes into account
         // the transaction "spilled over" into the next month
 
         investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().isAfter(LocalDateTime.parse("2016-05-10T00:00")))
+                        .filter(t -> t.getDateTimeValue().isAfter(LocalDateTime.parse("2016-05-10T00:00")))
                         .collect(Collectors.toList())
                         .forEach(t -> investmentPlan.removeTransaction((PortfolioTransaction) t));
 
         List<TransactionPair<?>> newlyGenerated = investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(newlyGenerated.isEmpty(), is(false));
         assertThat(newlyGenerated.get(0).getTransaction(), instanceOf(PortfolioTransaction.class));
-        assertThat(newlyGenerated.get(0).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
+        assertThat(newlyGenerated.get(0).getTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-05-31T00:00")));
     }
 
     @Test
@@ -114,13 +114,13 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<Transaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
+                        .filter(t -> t.getDateTimeValue().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
                         .collect(Collectors.toList());
 
         assertThat(tx.size(), is(15));
 
         tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2016 && t.getDateTimeValue().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
@@ -131,10 +131,10 @@ public class InvestmentPlanTest
 
         assertThat(tx.size(), is(2));
         assertThat(tx.get(0), instanceOf(PortfolioTransaction.class));
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-05-02T00:00")));
         assertThat(((PortfolioTransaction) tx.get(0)).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(tx.get(1), instanceOf(PortfolioTransaction.class));
-        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
+        assertThat(tx.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-05-31T00:00")));
         assertThat(((PortfolioTransaction) tx.get(1)).getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
     }
 
@@ -149,13 +149,13 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<Transaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
+                        .filter(t -> t.getDateTimeValue().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
                         .collect(Collectors.toList());
 
         assertThat(tx.size(), is(15));
 
         tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2016 && t.getDateTimeValue().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.DEPOSIT));
@@ -168,11 +168,11 @@ public class InvestmentPlanTest
         assertThat(tx.size(), is(2));
 
         assertThat(tx.get(0), instanceOf(AccountTransaction.class));
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-05-02T00:00")));
         assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.DEPOSIT));
 
         assertThat(tx.get(1), instanceOf(AccountTransaction.class));
-        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
+        assertThat(tx.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-05-31T00:00")));
         assertThat(((AccountTransaction) tx.get(1)).getType(), is(AccountTransaction.Type.DEPOSIT));
     }
 
@@ -189,7 +189,7 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<Transaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2022 && t.getDateTimeValue().getMonth() == Month.MARCH)
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.REMOVAL));
@@ -198,7 +198,7 @@ public class InvestmentPlanTest
         assertThat(tx.size(), is(1));
 
         assertThat(tx.get(0), instanceOf(AccountTransaction.class));
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
@@ -218,7 +218,7 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<Transaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2022 && t.getDateTimeValue().getMonth() == Month.MARCH)
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.INTEREST));
@@ -227,7 +227,7 @@ public class InvestmentPlanTest
         assertThat(tx.size(), is(1));
 
         assertThat(tx.get(0), instanceOf(AccountTransaction.class));
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200))));
@@ -263,7 +263,7 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount + 2));
 
-        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime()
+        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTimeValue()
                         .toLocalDate();
 
         // if resume date is on a bank holiday, move the resume date to the next
@@ -306,7 +306,7 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         var june2016 = LocalDateTime.parse("2016-06-01T00:00");
-        assertThat(investmentPlan.getTransactions().stream().filter(t -> t.getDateTime().isBefore(june2016)).count(),
+        assertThat(investmentPlan.getTransactions().stream().filter(t -> t.getDateTimeValue().isBefore(june2016)).count(),
                         is(22L));
 
         // Friday 1st January 2016 is a holiday : all transaction shall be on
@@ -314,49 +314,49 @@ public class InvestmentPlanTest
         // The real first transaction is Monday 4 January 2016
         var tx = investmentPlan.getTransactions().stream().toList();
         assertThat(tx.get(0), instanceOf(PortfolioTransaction.class));
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(((PortfolioTransaction) tx.get(0)).getType(), is(PortfolioTransaction.Type.BUY));
 
         // check that the second date is reverted back to Friday
-        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-01-08T00:00")));
+        assertThat(tx.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-01-08T00:00")));
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
 
         // March 2016 has Friday 25 and Monday 28 as holidays :
         // the March 25th transaction should happen on March 29th
         var txMarch = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MARCH)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2016 && t.getDateTimeValue().getMonth() == Month.MARCH)
                         .toList();
         assertThat(txMarch.size(), is(4));
-        assertThat(txMarch.get(0).getDateTime(), is(LocalDateTime.parse("2016-03-04T00:00")));
-        assertThat(txMarch.get(1).getDateTime(), is(LocalDateTime.parse("2016-03-11T00:00")));
-        assertThat(txMarch.get(2).getDateTime(), is(LocalDateTime.parse("2016-03-18T00:00")));
-        assertThat(txMarch.get(3).getDateTime(), is(LocalDateTime.parse("2016-03-29T00:00")));
+        assertThat(txMarch.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-03-04T00:00")));
+        assertThat(txMarch.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-03-11T00:00")));
+        assertThat(txMarch.get(2).getDateTimeValue(), is(LocalDateTime.parse("2016-03-18T00:00")));
+        assertThat(txMarch.get(3).getDateTimeValue(), is(LocalDateTime.parse("2016-03-29T00:00")));
 
         // There are 5 Fridays in April 2016 : April should have 5 transaction.
         // Check that the weekly plan is back on Friday 1st April 2016 after the
         // Tuesday 29 March 2016 transaction.
         var txApril = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.APRIL)
+                        .filter(t -> t.getDateTimeValue().getYear() == 2016 && t.getDateTimeValue().getMonth() == Month.APRIL)
                         .toList();
         assertThat(txApril.size(), is(5));
-        assertThat(txApril.get(0).getDateTime(), is(LocalDateTime.parse("2016-04-01T00:00")));
-        assertThat(txApril.get(1).getDateTime(), is(LocalDateTime.parse("2016-04-08T00:00")));
-        assertThat(txApril.get(2).getDateTime(), is(LocalDateTime.parse("2016-04-15T00:00")));
-        assertThat(txApril.get(3).getDateTime(), is(LocalDateTime.parse("2016-04-22T00:00")));
-        assertThat(txApril.get(4).getDateTime(), is(LocalDateTime.parse("2016-04-29T00:00")));
+        assertThat(txApril.get(0).getDateTimeValue(), is(LocalDateTime.parse("2016-04-01T00:00")));
+        assertThat(txApril.get(1).getDateTimeValue(), is(LocalDateTime.parse("2016-04-08T00:00")));
+        assertThat(txApril.get(2).getDateTimeValue(), is(LocalDateTime.parse("2016-04-15T00:00")));
+        assertThat(txApril.get(3).getDateTimeValue(), is(LocalDateTime.parse("2016-04-22T00:00")));
+        assertThat(txApril.get(4).getDateTimeValue(), is(LocalDateTime.parse("2016-04-29T00:00")));
 
         // check that generation of transactions also takes into account
         // the Calendar even when regenerated
         investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDateTime().isAfter(LocalDateTime.parse("2016-03-20T00:00"))).toList()
+                        .filter(t -> t.getDateTimeValue().isAfter(LocalDateTime.parse("2016-03-20T00:00"))).toList()
                         .forEach(t -> investmentPlan.removeTransaction((PortfolioTransaction) t));
 
         List<TransactionPair<?>> newlyGenerated = investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(newlyGenerated.isEmpty(), is(false));
-        assertThat(newlyGenerated.get(0).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-03-29T00:00")));
-        assertThat(newlyGenerated.get(1).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-01T00:00")));
-        assertThat(newlyGenerated.get(2).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-08T00:00")));
+        assertThat(newlyGenerated.get(0).getTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-03-29T00:00")));
+        assertThat(newlyGenerated.get(1).getTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-04-01T00:00")));
+        assertThat(newlyGenerated.get(2).getTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-04-08T00:00")));
     }
 
     @Test
@@ -374,10 +374,10 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         var tx = investmentPlan.getTransactions().stream().toList();
-        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2024-03-18T00:00")));
-        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2024-03-25T00:00")));
-        assertThat(tx.get(2).getDateTime(), is(LocalDateTime.parse("2024-04-02T00:00")));
-        assertThat(tx.get(3).getDateTime(), is(LocalDateTime.parse("2024-04-08T00:00")));
+        assertThat(tx.get(0).getDateTimeValue(), is(LocalDateTime.parse("2024-03-18T00:00")));
+        assertThat(tx.get(1).getDateTimeValue(), is(LocalDateTime.parse("2024-03-25T00:00")));
+        assertThat(tx.get(2).getDateTimeValue(), is(LocalDateTime.parse("2024-04-02T00:00")));
+        assertThat(tx.get(3).getDateTimeValue(), is(LocalDateTime.parse("2024-04-08T00:00")));
     }
 
 }

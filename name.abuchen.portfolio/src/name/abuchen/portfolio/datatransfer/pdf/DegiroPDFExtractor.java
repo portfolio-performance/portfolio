@@ -85,7 +85,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                 // Dividend date (Pay date): 2020-06-22
                 .section("date")
                 .match("^Dividend date \\(Pay date\\): (?<date>[\\d]{4}-[\\d]{2}-[\\d]{2})$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                 // @formatter:off
                 // Number of shares Amount of dividend Gross amount of Amount of tax Net amount ofper share dividend withheld dividend Wäh.
@@ -351,7 +351,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -403,7 +403,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -538,7 +538,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                         + "(\\-)?[\\.,'\\d\\s]+$")
                                         .assign((t, v) -> {
                                             DocumentContext context = type.getCurrentContext();
-                                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                             t.setSecurity(getOrCreateSecurity(v));
 
                                             // Dividend refund
@@ -553,7 +553,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                 .orElseGet(ExchangeRateHelper::new);
 
                                                 Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
-                                                                t.getDateTime().toLocalDate());
+                                                                t.getDateTimeValue().toLocalDate());
 
                                                 // @formatter:off
                                                 // If no exchange rate is found,
@@ -621,7 +621,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                 + "(\\-)?[\\.,'\\d\\s]+$")
                                                 .assign((t, v) -> {
                                                     DocumentContext context = type.getCurrentContext();
-                                                    t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                                    t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                                     t.setSecurity(getOrCreateSecurity(v));
 
                                                     Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -632,7 +632,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                         .orElseGet(ExchangeRateHelper::new);
 
                                                         Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
-                                                                        t.getDateTime().toLocalDate());
+                                                                        t.getDateTimeValue().toLocalDate());
 
                                                         if (item.isPresent())
                                                         {
@@ -840,7 +840,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
                             DocumentContext context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setNote(v.get("note") + ": " + v.get("isin"));
 
@@ -857,7 +857,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:on
 
                             DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
-                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+                            Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getIsin());
 
                             if (!dividendTransaction.isPresent())
                             {
@@ -869,7 +869,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     .orElseGet(ExchangeRateHelper::new);
 
                                     Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
-                                                    t.getDateTime().toLocalDate());
+                                                    t.getDateTimeValue().toLocalDate());
 
                                     if (item.isPresent())
                                     {
@@ -956,7 +956,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -1007,7 +1007,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -1089,7 +1089,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     .match("^(?<note2>Handelsmodalit.ten)$")
                                     .match("^(?<note3>[\\d]{4})$")
                                     .assign((t, v) -> {
-                                        t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                        t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note1") + " " + v.get("note2") + " " + v.get("note3"));
@@ -1113,7 +1113,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "(\\-)?[\\.,'\\d\\s]+$")
                                     .match("^(?<note2>[\\d]{4} \\(.*\\)).*$")
                                     .assign((t, v) -> {
-                                        t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                        t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note1") + " " + v.get("note2"));
@@ -1136,7 +1136,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                     + "[\\w]{3} "
                                                     + "(\\-)?[\\.,'\\d\\s]+$")
                                     .assign((t, v) -> {
-                                        t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                        t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                         t.setAmount(asAmount(v.get("amount")));
                                         t.setNote(v.get("note"));
@@ -1158,7 +1158,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     .assign((t, v) -> {
                                         DocumentContext context = type.getCurrentContext();
                                         t.setSecurity(getOrCreateSecurity(v));
-                                        t.setDateTime(asDate(v.get("date"), v.get("time")));
+                                        t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                                         t.setNote(t.getSecurity().getIsin() + ": " + v.get("note"));
 
                                         if ("-".equals(trim(v.get("type"))))
@@ -1174,7 +1174,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
 
                                         DividendTransactionHelper dividendTransactionHelper = context.getType(DividendTransactionHelper.class).orElseGet(DividendTransactionHelper::new);
-                                        Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getIsin());
+                                        Optional<DividendeTransactionsItem> dividendTransaction = dividendTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getIsin());
 
                                         if (!dividendTransaction.isPresent())
                                         {
@@ -1186,7 +1186,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                                 .orElseGet(ExchangeRateHelper::new);
 
                                                 Optional<CurrencyExchangeItem> item = exchangeRateHelper.findItem(v.getStartLineNumber(), money,
-                                                                t.getDateTime().toLocalDate());
+                                                                t.getDateTimeValue().toLocalDate());
 
                                                 if (item.isPresent())
                                                 {
@@ -1264,7 +1264,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1313,7 +1313,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         + "[\\w]{3} "
                                         + "(\\-)?[\\.,'\\d\\s]+$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));

@@ -180,7 +180,7 @@ import name.abuchen.portfolio.money.Money;
                 if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES
                                 || type == Type.FEES_REFUND)
                     t.setSecurity(security);
-                t.setDateTime(date);
+                t.setDateTimeValue(date);
                 t.setNote(note);
 
                 if (type == Type.DIVIDENDS)
@@ -225,7 +225,7 @@ import name.abuchen.portfolio.money.Money;
     {
         var delivery = new PortfolioTransaction();
         delivery.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-        delivery.setDateTime(tx.getDateTime());
+        delivery.setDateTimeValue(tx.getDateTimeValue());
         delivery.setAmount(tx.getAmount());
         delivery.setCurrencyCode(tx.getCurrencyCode());
         delivery.setShares(tx.getShares());

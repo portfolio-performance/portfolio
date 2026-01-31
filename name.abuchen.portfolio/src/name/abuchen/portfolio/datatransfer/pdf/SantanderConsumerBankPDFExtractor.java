@@ -164,7 +164,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 2,07+ EUR
@@ -248,7 +248,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Kapitalertragsteuer.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
@@ -272,7 +272,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+ Zinsgutschrift (?<note>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -297,7 +297,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+ Einzahlung (?<note>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -322,7 +322,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<amount>[\\.,\\d]+) [\\.,\\d]+ Auszahlung (?<note>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -369,7 +369,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("year", "currency") //
                         .match("^.*[\\s]*(?<date>[\\d][\\s]?[\\d][\\s]?\\.[\\d][\\s]?[\\d][\\s]?\\.)[\\s]*(?<amount>[\\.,\\d]+)[\\s]*(?<note>.BERWEISUNG).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date")) + v.get("year")));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date")) + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(stripBlanks(v.get("note")));
@@ -394,7 +394,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("year", "currency") //
                         .match("^.*[\\s]*(?<date>[\\d][\\s]?[\\d][\\s]?\\.[\\d][\\s]?[\\d][\\s]?\\.)[\\s]*(?<amount>[\\.,\\d]+)[\\s]*(?<note>Ha[\\s]?benzinsen).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date")) + v.get("year")));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date")) + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(stripBlanks(v.get("note")));

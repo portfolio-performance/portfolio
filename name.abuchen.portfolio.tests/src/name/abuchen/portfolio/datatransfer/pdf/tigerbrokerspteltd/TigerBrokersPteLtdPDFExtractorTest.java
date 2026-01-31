@@ -103,7 +103,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T01:52:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T01:52:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(48)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -124,7 +124,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-14T22:27:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-14T22:27:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -145,7 +145,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T04:56:41")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T04:56:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -166,7 +166,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-14T22:30:09")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-14T22:30:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -187,7 +187,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T02:02:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T02:02:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(69)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -207,7 +207,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(68)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -223,7 +223,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -242,7 +242,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(30000.00))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertThat(transaction.getNote(), is("DR-3649942"));
@@ -252,7 +252,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(4000.00))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertThat(transaction.getNote(), is("DR-3791377"));
@@ -308,7 +308,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(69)));
         assertThat(transaction.getSource(), is("AccountStatement02.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -324,7 +324,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("AccountStatement02.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -340,7 +340,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(52)));
         assertThat(transaction.getSource(), is("AccountStatement02.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -386,7 +386,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-06T03:33:08")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-01-06T03:33:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("AccountStatement03.txt"));
         assertNull(entry.getNote());
@@ -451,7 +451,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(68)));
         assertThat(transaction.getSource(), is("AccountStatement04.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -467,7 +467,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertThat(transaction.getSource(), is("AccountStatement04.txt"));
         assertThat(transaction.getNote(), is("Ordinary Dividend"));
@@ -484,7 +484,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T01:52:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T01:52:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(48)));
         assertThat(entry.getSource(), is("AccountStatement04.txt"));
         assertNull(entry.getNote());
@@ -505,7 +505,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-14T22:27:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-14T22:27:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("AccountStatement04.txt"));
         assertNull(entry.getNote());
@@ -526,7 +526,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T04:56:41")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T04:56:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
         assertThat(entry.getSource(), is("AccountStatement04.txt"));
         assertNull(entry.getNote());
@@ -547,7 +547,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-14T22:30:09")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-14T22:30:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("AccountStatement04.txt"));
         assertNull(entry.getNote());
@@ -568,7 +568,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-10T02:02:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-10T02:02:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(69)));
         assertThat(entry.getSource(), is("AccountStatement04.txt"));
         assertNull(entry.getNote());

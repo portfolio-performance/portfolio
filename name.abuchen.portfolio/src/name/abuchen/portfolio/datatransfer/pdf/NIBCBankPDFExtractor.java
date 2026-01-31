@@ -158,7 +158,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 // Den Betrag buchen wir mit Wertstellung 31.12.2019 zu Gunsten des Kontos 8000000000 (IBAN DE12 0000 0000 8000
                 .section("date")
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
-                .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                 // Ausmachender Betrag 24,03+ EUR
                 .section("amount", "currency")
@@ -214,7 +214,7 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                 .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> {
-                    t.setDateTime(asDate(v.get("date")));
+                    t.setDateTimeValue(asDate(v.get("date")));
                     t.setShares(Long.parseLong(context.get("shares")));
                     t.setSecurity(getOrCreateSecurity(context));
 

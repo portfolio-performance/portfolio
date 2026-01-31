@@ -57,7 +57,7 @@ public class QuoteFromTransactionExtractor
             {
                 // get date and quote and build a price from it
                 Quote q = pt.getGrossPricePerShare();
-                LocalDate d = pt.getDateTime().toLocalDate();
+                LocalDate d = pt.getDateTimeValue().toLocalDate();
                 
                 // check if currency conversion is needed
                 if (!q.getCurrencyCode().equals(security.getCurrencyCode()))

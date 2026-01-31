@@ -218,7 +218,7 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Betaaldatum: (?<date>[\\d]{1,2}/[\\d]{1,2}/[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Netto afrekening op BE12 7740 1745 3286 door afhaling van: -2.047,36 EUR

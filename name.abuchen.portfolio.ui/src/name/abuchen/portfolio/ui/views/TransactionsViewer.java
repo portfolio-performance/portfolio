@@ -248,7 +248,7 @@ public final class TransactionsViewer implements ModificationListener
         TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
 
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTimeValue())
         {
             @Override
             public Color getForeground(Object element)
@@ -264,7 +264,7 @@ public final class TransactionsViewer implements ModificationListener
         });
 
         ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
-        new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
+        new DateTimeEditingSupport(Transaction.class, "dateTimeValue").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$

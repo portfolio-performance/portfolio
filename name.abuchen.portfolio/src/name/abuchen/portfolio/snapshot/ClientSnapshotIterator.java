@@ -122,7 +122,7 @@ import name.abuchen.portfolio.money.Values;
             {
                 // try to fallback to the price of the last // transaction
                 PortfolioTransaction last = position.transactions.get(position.transactions.size() - 1);
-                price = new SecurityPrice(last.getDateTime().toLocalDate(),
+                price = new SecurityPrice(last.getDateTimeValue().toLocalDate(),
                                 last.getGrossPricePerShare(converter.with(position.security.getCurrencyCode()))
                                                 .getAmount());
 
@@ -154,7 +154,7 @@ import name.abuchen.portfolio.money.Values;
         {
             var tx = portfolioTransactions.get(portfolioTransactionIndex);
 
-            if (!tx.getDateTime().toLocalDate().isAfter(date))
+            if (!tx.getDateTimeValue().toLocalDate().isAfter(date))
             {
                 var s = securities.computeIfAbsent(tx.getSecurity(), SecurityPosition::new);
                 s.transactions.add(tx);
@@ -181,7 +181,7 @@ import name.abuchen.portfolio.money.Values;
             {
                 var tx = account.transactions.get(account.index);
 
-                if (!tx.getDateTime().toLocalDate().isAfter(date))
+                if (!tx.getDateTimeValue().toLocalDate().isAfter(date))
                 {
                     if (tx.getType().isCredit())
                         account.funds += tx.getAmount();

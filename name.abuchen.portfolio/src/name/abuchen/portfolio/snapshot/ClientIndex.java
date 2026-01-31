@@ -124,10 +124,10 @@ import name.abuchen.portfolio.util.Interval;
         {
             account.getTransactions() //
                             .stream() //
-                            .filter(t -> !t.getDateTime().toLocalDate().isBefore(interval.getStart())
-                                            && !t.getDateTime().toLocalDate().isAfter(interval.getEnd()))
+                            .filter(t -> !t.getDateTimeValue().toLocalDate().isBefore(interval.getStart())
+                                            && !t.getDateTimeValue().toLocalDate().isAfter(interval.getEnd()))
                             .forEach(t -> { // NOSONAR
-                                LocalDate d = t.getDateTime().toLocalDate();
+                                LocalDate d = t.getDateTimeValue().toLocalDate();
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
@@ -176,10 +176,10 @@ import name.abuchen.portfolio.util.Interval;
         {
             portfolio.getTransactions() //
                             .stream() //
-                            .filter(t -> !t.getDateTime().toLocalDate().isBefore(interval.getStart())
-                                            && !t.getDateTime().toLocalDate().isAfter(interval.getEnd()))
+                            .filter(t -> !t.getDateTimeValue().toLocalDate().isBefore(interval.getStart())
+                                            && !t.getDateTimeValue().toLocalDate().isAfter(interval.getEnd()))
                             .forEach(t -> {
-                                LocalDate d = t.getDateTime().toLocalDate();
+                                LocalDate d = t.getDateTimeValue().toLocalDate();
                                 // collect taxes
                                 addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(), //
                                                 interval, d);

@@ -161,7 +161,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                         view.getPreferenceStore(), transactions, layout);
 
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new DateTimeLabelProvider(e -> ((AccountTransaction) e).getDateTime())
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((AccountTransaction) e).getDateTimeValue())
         {
             @Override
             public Color getForeground(Object element)
@@ -170,7 +170,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
         });
         ColumnViewerSorter.create(Transaction.BY_DATE).attachTo(column, SWT.DOWN);
-        new DateTimeEditingSupport(AccountTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
+        new DateTimeEditingSupport(AccountTransaction.class, "dateTimeValue").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         column = new Column("1", Messages.ColumnTransactionType, SWT.None, 100); //$NON-NLS-1$

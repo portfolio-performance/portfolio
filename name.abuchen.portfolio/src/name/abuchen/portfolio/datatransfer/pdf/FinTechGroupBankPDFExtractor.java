@@ -1043,14 +1043,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Valuta[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zahlungsdatum: 13. Feb 2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahlungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1282,7 +1282,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valuta[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Valuta          :    21.01.2020       *Einbeh. Steuer     :         8,26 EUR
@@ -1460,7 +1460,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
                         .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1551,7 +1551,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
                         .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // WKN     ISIN          Wertpapierbezeichnung           Anzahl
@@ -1729,7 +1729,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Diese wurde Ihrem Konto mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
@@ -1819,7 +1819,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1861,7 +1861,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>Depotgeb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}),[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -1884,7 +1884,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "[\\s]{1,}" //
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1904,7 +1904,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .match("^[\\s]{1,}(?<note2>Ertr.gnisaufstellung).*") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")));
@@ -1923,7 +1923,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+)\\-$") //
                                                         .match("^.*(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(concatenate(v.get("note"), v.get("isin"), " "));
@@ -1967,7 +1967,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             if ("+".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.INTEREST);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -1990,7 +1990,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             if ("+".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.INTEREST);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -2033,7 +2033,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // Set transaction cancellation
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(replaceMultipleBlanks(v.get("note")));
@@ -2074,7 +2074,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.TAXES);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
@@ -2094,7 +2094,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.TAXES);
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
@@ -2351,7 +2351,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("Datum[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
                                         // Fälligkeitstag                                                  25.06.2021
@@ -2359,7 +2359,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^F.lligkeitstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -2463,7 +2463,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.*Buchungsdatum[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         //                                  ** Einbeh. Steuer                    4,69 EUR
@@ -2536,7 +2536,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         //  die ausländische Lagerstelle hat eine Depotservicegebühr aus ISIN US09075V1026
@@ -2655,9 +2655,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
-                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                t.setDateTimeValue(asDate(v.get("date"), type.getCurrentContext().get("time")));
                             else
-                                t.setDateTime(asDate(v.get("date")));
+                                t.setDateTimeValue(asDate(v.get("date")));
                         })
 
                         // If the currency of the tax differs from the amount,
@@ -2889,9 +2889,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
-                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                t.setDateTimeValue(asDate(v.get("date"), type.getCurrentContext().get("time")));
                             else
-                                t.setDateTime(asDate(v.get("date")));
+                                t.setDateTimeValue(asDate(v.get("date")));
                         })
 
                         .oneOf( //
@@ -2999,7 +2999,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "time").optional() //
                         .match("^.* Schlusstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), v.get("time"))))
 
                         // If the currency of the tax differs from the amount,
                         // it will be converted and reset.
@@ -3123,7 +3123,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "time").optional() //
                         .match("^.* Schlusstag[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), v.get("time"))))
 
                         // If the currency of the fee differs from the amount,
                         // it will be converted and reset.
@@ -3496,7 +3496,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date").optional() //
                         .match("^(F.lligkeitstag|Datum)[:\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
@@ -3588,7 +3588,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -3611,7 +3611,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 

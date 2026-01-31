@@ -136,7 +136,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .section("date", "currency", "amount") //
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), Locale.UK));
+                            t.setDateTimeValue(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

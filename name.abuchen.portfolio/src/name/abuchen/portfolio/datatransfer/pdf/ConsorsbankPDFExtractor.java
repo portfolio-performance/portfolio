@@ -468,14 +468,14 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(?i)WERT (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Valuta 09.01.2018 BIC CSDBDE71XXX
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(?i)Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -803,7 +803,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Netto zulasten IBAN DE73 7603 0080 0123 4567 89 0,73 EUR
@@ -854,7 +854,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("[\\s]*Den Steuerausgleich buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Erstattung/Belastung (-) von Steuern
@@ -958,7 +958,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("year", "currency") //
                         .match("^(?<note>GUTSCHRIFT|D\\-GUTSCHRIFT|EURO\\-UEBERW\\.).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
@@ -999,7 +999,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("year", "currency") //
                         .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG)).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
@@ -1040,11 +1040,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            if (v.containsKey("tax") && t.getDateTime().equals(asDate(v.get("taxDate"))))
+                            if (v.containsKey("tax") && t.getDateTimeValue().equals(asDate(v.get("taxDate"))))
                             {
                                 var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
@@ -1082,7 +1082,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             if ("S".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
@@ -1147,7 +1147,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -1173,7 +1173,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                             .assign((t, v) -> {
                                                                 v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                                                                t.setDateTime(asDate(v.get("date")));
+                                                                t.setDateTimeValue(asDate(v.get("date")));
                                                                 t.setShares(asShares(v.get("shares")));
                                                                 t.setSecurity(getOrCreateSecurity(v));
 

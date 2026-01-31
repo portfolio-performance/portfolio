@@ -125,7 +125,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateCryptoCurrency(v));
 
                             t.setShares(asShares(v.get("shares")));
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -173,7 +173,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         .find("(Einzahlung|Auszahlung)") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) [\\-|\\+] (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -226,7 +226,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Tag des Zuflusses (?<date>[\\d]{1,2} .* [\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €0,89

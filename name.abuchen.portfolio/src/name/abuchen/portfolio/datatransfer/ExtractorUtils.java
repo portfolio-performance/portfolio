@@ -451,6 +451,9 @@ public class ExtractorUtils
 
     public static LocalDateTime asDate(String value, Locale... hints)
     {
+        if (value == null)
+            return null;
+
         // starting with Java 8, the abbreviation Mrz is not supported out of
         // the box anymore
         value = value.replaceAll("(?i)\\bMrz\\b", "Mär");

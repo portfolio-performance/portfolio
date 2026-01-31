@@ -73,7 +73,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.929)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertNull(entry.getNote());
@@ -123,7 +123,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-10-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.826)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertNull(entry.getNote());
@@ -173,7 +173,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.639)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertNull(entry.getNote());
@@ -225,7 +225,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.639)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertNull(entry.getNote());
@@ -281,7 +281,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-03-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-03-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.563)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertNull(entry.getNote());
@@ -331,7 +331,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.104)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Veräußerungsverlust 3,00- EUR"));
@@ -351,7 +351,7 @@ public class MLPBankingAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.104)));
         assertThat(transaction.getSource(), is("Verkauf01.txt"));
         assertNull(transaction.getNote());
@@ -397,7 +397,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-02-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-02-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(163.269)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertNull(entry.getNote());
@@ -449,7 +449,7 @@ public class MLPBankingAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-02-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-02-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(163.269)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertNull(entry.getNote());
@@ -504,7 +504,7 @@ public class MLPBankingAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.942)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -550,7 +550,7 @@ public class MLPBankingAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.942)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -601,7 +601,7 @@ public class MLPBankingAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-04-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-04-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(80.043)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -641,7 +641,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-01-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(500.00))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -651,7 +651,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-02-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(500.00))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -661,7 +661,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(500.00))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -671,7 +671,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-01-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.90))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Depotpreis Q4/2021"));
@@ -681,7 +681,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-01-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(73.78))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Verwaltungsentgeld Q4/2021"));
@@ -716,7 +716,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-07-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -726,7 +726,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-08-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-08-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -736,7 +736,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-09-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-09-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -746,7 +746,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-07-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.27))));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Vermögensdepot Q2/2016"));
@@ -757,7 +757,7 @@ public class MLPBankingAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.57))));
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-07-04T00:00")));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Vermögensdepot Q2/2016"));
     }
@@ -791,7 +791,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-01-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-01-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -801,7 +801,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-02-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-02-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -811,7 +811,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-03-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-03-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -846,7 +846,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-07-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(300.00))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -856,7 +856,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-08-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(300.00))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -866,7 +866,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(300.00))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Lastschrifteinr."));
@@ -876,7 +876,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-07-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(13.11))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Erstattung Vertriebsfolgeprovision Q2/2022"));
@@ -886,7 +886,7 @@ public class MLPBankingAGPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-07-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(37.25))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Depotentgelt Q2/2022"));

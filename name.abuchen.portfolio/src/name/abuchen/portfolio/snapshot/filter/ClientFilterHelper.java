@@ -28,7 +28,7 @@ import name.abuchen.portfolio.money.Values;
         PortfolioTransaction t = transferEntry.getSourceTransaction();
 
         PortfolioTransferEntry copy = new PortfolioTransferEntry(sourcePortfolio, targetPortfolio);
-        copy.setDate(t.getDateTime());
+        copy.setDate(t.getDateTimeValue());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
         copy.setNote(t.getNote());
@@ -46,7 +46,7 @@ import name.abuchen.portfolio.money.Values;
 
         AccountTransferEntry copy = new AccountTransferEntry(sourceAccount, targetAccount);
 
-        copy.setDate(t.getDateTime());
+        copy.setDate(t.getDateTimeValue());
         copy.setNote(t.getNote());
 
         copy.getSourceTransaction().setCurrencyCode(t.getCurrencyCode());

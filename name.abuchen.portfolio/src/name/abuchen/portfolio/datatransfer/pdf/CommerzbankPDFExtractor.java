@@ -255,7 +255,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^z[\\s]*a[\\s]*h[\\s]*l[\\s]*b[\\s]*a[\\s]*r[\\s]*a[\\s]*b[\\s]{1,}(?<date>[\\d\\s]+\\.[\\d\\s]+\\.[\\d\\s]+).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date")))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(stripBlanks(v.get("date")))))
 
                         // @formatter:off
                         // DE12 3456 7890 1234 5678 01 EUR 2 2 . 0 6 . 2 0 1 5 EUR 1 2 3 , 4 5
@@ -410,7 +410,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Steuerliche Behandlung: .* vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off

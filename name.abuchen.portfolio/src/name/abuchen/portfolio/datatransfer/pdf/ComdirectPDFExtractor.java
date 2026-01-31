@@ -593,9 +593,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("^Gesch.ftstag[\\s]{1,}: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
-                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                t.setDateTimeValue(asDate(v.get("date"), type.getCurrentContext().get("time")));
                             else
-                                t.setDateTime(asDate(v.get("date")));
+                                t.setDateTimeValue(asDate(v.get("date")));
                         })
 
                         .optionalOneOf( //
@@ -829,7 +829,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("date") //
                                                         .find(".*Zu Ihren Gunsten.*") //
                                                         .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}[A-Z]{3}[\\s]{1,}[\\.,\\d]+.*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // p e r   3 1. 0  8 . 2 01 7                          Ly  x o r  F T S E A T  HE  X  L a . C ap   U.  ET  F           L Y X 0 BF
                                         // EUR 0,00       Thesaurierung pro Stück für Geschäftsjahr    01.09.16 bis 31.08.17
@@ -839,7 +839,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\s]*p[\\s]*e[\\s]*r[\s]{1,}(?<date>[\\.,\\d\\s]+)[\\s]{1,}.*[\\s]{1,}(?:[A-Z0-9][\\s]*){6}$") //
                                                         .match("^[\\s]*S[\\s]*T[\\s]*K[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}.*[\\s]{1,}[A-Z0-9\\s]+$") //
                                                         .match("^[A-Z]{3} [\\.,\\d]+[\\s]{1,}Thesaurierung pro St.ck.*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date"))))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(stripBlanks(v.get("date"))))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1102,28 +1102,28 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Steuerliche Behandlung: (Wertpapierkauf|Verkauf|Wertpapierverkauf) .* (?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Die Gutschrift erfolgt mit Valuta 10.02.2020 auf Konto EUR mit der IBAN DE36 9902 2167 9152 6272 27
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Die Gutschrift erfolgt mit Valuta (?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Die Belastung erfolgt mit Valuta 14.01.2020 auf Konto EUR mit der IBAN XXXXXX
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Die Belastung erfolgt mit Valuta (?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Steuerliche Behandlung: Vorabpauschale Ausland vom 04.01.2021
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Steuerliche Behandlung: Vorabpauschale .* (?<date>[\\d]{2}.[\\d]{2}.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -1474,7 +1474,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.*Verwahrentgelt (?<name>.*), WKN [A-Z0-9]{6} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Die Buchung von 0,01 Euro für den vorherigen Monat erfolgte über das Abrechnungskonto für
@@ -1617,7 +1617,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
 
@@ -1692,7 +1692,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
 
@@ -1765,7 +1765,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
 
@@ -1794,7 +1794,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "(?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            t.setDateTime(asDate(context.get("accountingBillDate")));
+                            t.setDateTimeValue(asDate(context.get("accountingBillDate")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setNote(v.get("note"));
@@ -1836,7 +1836,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                             t.setNote(v.get("note"));
@@ -1895,7 +1895,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAXES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(context.get("currency"));
                             t.setNote("Steuerverrechnung");

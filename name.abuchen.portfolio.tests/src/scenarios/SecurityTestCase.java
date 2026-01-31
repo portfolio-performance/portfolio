@@ -43,7 +43,7 @@ public class SecurityTestCase
         PortfolioTransaction delivery = client.getPortfolios().get(0).getTransactions().get(0);
 
         assertThat("delivery transaction must be before earliest historical quote",
-                        delivery.getDateTime().toLocalDate(), lessThan(security.getPrices().get(0).getDate()));
+                        delivery.getDateTimeValue().toLocalDate(), lessThan(security.getPrices().get(0).getDate()));
 
         Interval period = Interval.of(LocalDate.parse("2013-12-04"), LocalDate.parse("2014-12-04"));
         TestCurrencyConverter converter = new TestCurrencyConverter();

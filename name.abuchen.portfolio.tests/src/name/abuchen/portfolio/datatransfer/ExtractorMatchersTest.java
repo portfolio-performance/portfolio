@@ -64,7 +64,7 @@ public class ExtractorMatchersTest
                         Money.of(CurrencyUnit.USD, Values.Amount.factorize(260)), BigDecimal.valueOf(0.5)));
         tx.setNote("test");
         tx.setShares(Values.Share.factorize(123));
-        tx.setDateTime(LocalDateTime.parse("2023-04-30T12:45"));
+        tx.setDateTimeValue(LocalDateTime.parse("2023-04-30T12:45"));
         tx.setSecurity(s);
 
         someTransactionItem = new TransactionItem(tx);

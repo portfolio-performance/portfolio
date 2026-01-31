@@ -171,7 +171,7 @@ message PTransaction {
   optional string otherUuid = 7;
   optional google.protobuf.Timestamp otherUpdatedAt = 8;
 	
-  google.protobuf.Timestamp date = 9;
+  google.protobuf.Timestamp dateValue = 9;
 	
   string currencyCode = 10;
   int64 amount = 11;
@@ -184,6 +184,7 @@ message PTransaction {
   google.protobuf.Timestamp updatedAt = 16;
   
   optional string source = 17;
+  optional google.protobuf.Timestamp dateBooking = 18;
 }
 
 message PInvestmentPlan {

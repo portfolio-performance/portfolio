@@ -43,8 +43,8 @@ public class TradeCollector
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            var dt1 = t1.getTransaction().getDateTime();
-            var dt2 = t2.getTransaction().getDateTime();
+            var dt1 = t1.getTransaction().getDateTimeValue();
+            var dt2 = t2.getTransaction().getDateTimeValue();
 
             // the date differs, just sort by date (no need to check types)
             if (dt1.getYear() != dt2.getYear() || dt1.getMonth() != dt2.getMonth()
@@ -163,7 +163,7 @@ public class TradeCollector
             long shares = position.stream().mapToLong(p -> p.getTransaction().getShares()).sum();
 
             Trade newTrade = new Trade(security, entry.getKey(), shares);
-            newTrade.setStart(position.get(0).getTransaction().getDateTime());
+            newTrade.setStart(position.get(0).getTransaction().getDateTimeValue());
             newTrade.getTransactions().addAll(position);
 
             trades.add(newTrade);
@@ -197,7 +197,7 @@ public class TradeCollector
                 break;
 
             if (newTrade.getStart() == null)
-                newTrade.setStart(candidate.getTransaction().getDateTime());
+                newTrade.setStart(candidate.getTransaction().getDateTimeValue());
 
             if (sharesToDistribute >= candidate.getTransaction().getShares())
             {
@@ -226,7 +226,7 @@ public class TradeCollector
         }
 
         newTrade.getTransactions().add(pair);
-        newTrade.setEnd(pair.getTransaction().getDateTime());
+        newTrade.setEnd(pair.getTransaction().getDateTimeValue());
 
         return newTrade;
     }
@@ -306,7 +306,7 @@ public class TradeCollector
         copy.setPortfolio(portfolio);
         copy.setAccount(entry.getAccount());
 
-        copy.setDate(t.getDateTime());
+        copy.setDate(t.getDateTimeValue());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
         copy.setType(t.getType());
@@ -325,7 +325,7 @@ public class TradeCollector
     {
         PortfolioTransaction newTransaction = new PortfolioTransaction();
         newTransaction.setType(transaction.getType());
-        newTransaction.setDateTime(transaction.getDateTime());
+        newTransaction.setDateTimeValue(transaction.getDateTimeValue());
         newTransaction.setSecurity(transaction.getSecurity());
         newTransaction.setCurrencyCode(transaction.getCurrencyCode());
         newTransaction.setNote(transaction.getNote());

@@ -145,7 +145,7 @@ public class AccountTransferModel extends AbstractModel
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
         this.targetAccount = (Account) entry.getOwner(entry.getTargetTransaction());
 
-        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
+        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTimeValue();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
         this.note = entry.getSourceTransaction().getNote();

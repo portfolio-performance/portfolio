@@ -372,7 +372,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.* Zahlbar Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Gutschrift 351.413.308 Valuta 26.06.2024 CHF  116.96

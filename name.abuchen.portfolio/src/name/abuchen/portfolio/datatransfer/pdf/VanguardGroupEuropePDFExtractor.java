@@ -186,7 +186,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Der Abrechnungsbetrag wird mit Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag EUR 26,91

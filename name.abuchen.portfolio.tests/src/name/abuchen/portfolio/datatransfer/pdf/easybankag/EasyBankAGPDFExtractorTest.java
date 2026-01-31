@@ -98,7 +98,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.94)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 00000000-3.5.2017"));
@@ -148,7 +148,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(73.84)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -198,7 +198,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:05")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.75)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -248,7 +248,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.855)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -298,7 +298,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(78.80)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -348,7 +348,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60.75)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -398,7 +398,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.67)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -448,7 +448,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.373)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -498,7 +498,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -548,7 +548,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(110.20)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -598,7 +598,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90.68)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -648,7 +648,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.622)));
         assertThat(entry.getSource(), is("Kauf12.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -698,7 +698,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-13T09:04:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-13T09:04:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.04)));
         assertThat(entry.getSource(), is("Kauf13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -748,7 +748,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-25T09:00:07")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-25T09:00:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80.00)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36978407-25.7.2022"));
@@ -798,7 +798,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-05T09:04:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-05T09:04:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100.00)));
         assertThat(entry.getSource(), is("Kauf15.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25095540 | Limit: 42,500000"));
@@ -848,7 +848,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-27T09:11:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-12-27T09:11:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(27)));
         assertThat(entry.getSource(), is("Kauf16.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25484466 | Limit: 73,400000"));
@@ -898,7 +898,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-10-27T12:21:47")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-10-27T12:21:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
         assertThat(entry.getSource(), is("Kauf17.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25456794 | Limit: 59,150000"));
@@ -948,7 +948,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.617)));
         assertThat(entry.getSource(), is("Kauf18.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -998,7 +998,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(86)));
         assertThat(entry.getSource(), is("Kauf19.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1048,7 +1048,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.05)));
         assertThat(entry.getSource(), is("Kauf20.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1098,7 +1098,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23.954)));
         assertThat(entry.getSource(), is("Kauf21.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1148,7 +1148,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.065)));
         assertThat(entry.getSource(), is("Kauf22.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1198,7 +1198,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(99.98)));
         assertThat(entry.getSource(), is("Kauf23.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1248,7 +1248,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.98)));
         assertThat(entry.getSource(), is("Kauf24.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1298,7 +1298,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.76)));
         assertThat(entry.getSource(), is("Kauf25.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1348,7 +1348,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(118)));
         assertThat(entry.getSource(), is("Kauf26.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1398,7 +1398,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.89)));
         assertThat(entry.getSource(), is("Kauf27.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1448,7 +1448,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(173)));
         assertThat(entry.getSource(), is("Kauf28.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1498,7 +1498,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(128.1618)));
         assertThat(entry.getSource(), is("Kauf29.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1548,7 +1548,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.67)));
         assertThat(entry.getSource(), is("Kauf30.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36338031-3.5.2017"));
@@ -1598,7 +1598,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-29T13:01:06")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-12-29T13:01:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(750)));
         assertThat(entry.getSource(), is("Kauf31.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 36075607-29.12.2022"));
@@ -1785,7 +1785,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-04T13:12:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-04T13:12:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25866072 | Limit: 51,520000"));
@@ -1835,7 +1835,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-10-27T11:15:57")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-10-27T11:15:57")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(27)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25058391 | Limit: 83,100000"));
@@ -1885,7 +1885,7 @@ public class EasyBankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-22T09:04:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-22T09:04:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 25521770 | Stoplimit: 2.725,000000"));
@@ -2137,7 +2137,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(115)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -2182,7 +2182,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1250)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertNull(transaction.getNote());
@@ -2227,7 +2227,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1204.86)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -2272,7 +2272,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1204.86)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -2323,7 +2323,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -2369,7 +2369,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -2421,7 +2421,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -2466,7 +2466,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3568.5778)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -2511,7 +2511,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3568.5778)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -2562,7 +2562,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertNull(transaction.getNote());
@@ -2607,7 +2607,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(115)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -2652,7 +2652,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1250)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertNull(transaction.getNote());
@@ -2697,7 +2697,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1204.86)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertNull(transaction.getNote());
@@ -2742,7 +2742,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1204.86)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertNull(transaction.getNote());
@@ -2793,7 +2793,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertNull(transaction.getNote());
@@ -2838,7 +2838,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3568.5778)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -2883,7 +2883,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3568.5778)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -2934,7 +2934,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-07T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1200)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -2979,7 +2979,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -3024,7 +3024,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
         assertNull(transaction.getNote());
@@ -3070,7 +3070,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
         assertNull(transaction.getNote());
@@ -3122,7 +3122,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(966.48)));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
         assertNull(transaction.getNote());
@@ -3167,7 +3167,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(750)));
         assertThat(transaction.getSource(), is("Dividende17.txt"));
         assertNull(transaction.getNote());
@@ -3212,7 +3212,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(374.95)));
         assertThat(transaction.getSource(), is("Dividende18.txt"));
         assertNull(transaction.getNote());
@@ -3257,7 +3257,7 @@ public class EasyBankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende19.txt"));
         assertThat(transaction.getNote(), is("2,5 % von 25.2.2022 bis 24.2.2023"));
@@ -3884,7 +3884,7 @@ public class EasyBankAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-28T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2000.00))));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("REF: 38000220627-5336530-0000561"));
@@ -3919,7 +3919,7 @@ public class EasyBankAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("REF: 38000221017-1648514-0002320"));
@@ -3954,7 +3954,7 @@ public class EasyBankAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-29T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10000.00))));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("REF: 38000221128-0294080-0002067"));
@@ -3989,7 +3989,7 @@ public class EasyBankAGPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.50))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));

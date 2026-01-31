@@ -118,25 +118,25 @@ public class WithoutTaxesFilterTest
 
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(100 - 5)) //
                         .findAny().isPresent(), is(true));
 
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-02T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-02T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(200 + 10)) //
                         .findAny().isPresent(), is(true));
 
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-01T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-03-01T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(500 - 4)) //
                         .findAny().isPresent(), is(true));
 
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-02T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-03-02T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(250 + 3)) //
                         .findAny().isPresent(), is(true));
 
@@ -168,13 +168,13 @@ public class WithoutTaxesFilterTest
         Portfolio portfolio = result.getPortfolios().get(0);
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(100 - 5)) //
                         .findAny().isPresent(), is(true));
 
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-                        .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-02T00:00"))) //
+                        .filter(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-03-02T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(250 + 3)) //
                         .findAny().isPresent(), is(true));
     }

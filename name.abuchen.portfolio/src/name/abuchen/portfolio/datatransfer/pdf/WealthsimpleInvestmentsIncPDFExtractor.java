@@ -160,7 +160,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     if ("Out".equals(v.get("type")))
                         t.setType(AccountTransaction.Type.REMOVAL);
 
-                    t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                    t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                 })
@@ -264,14 +264,14 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
 
                                             t.setSecurity(getOrCreateSecurity(v));
-                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                                             t.setShares(asShares(v.get("shares")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);
-                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getTickerSymbol());
+                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getTickerSymbol());
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
@@ -310,7 +310,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
 
                                             t.setSecurity(getOrCreateSecurity(v));
-                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                                             t.setShares(asShares(v.get("shares")));
 
                                             t.setAmount(asAmount(v.get("amount")));
@@ -320,7 +320,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             type.getCurrentContext().putType(rate);
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);
-                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getTickerSymbol());
+                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getTickerSymbol());
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
@@ -357,7 +357,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             v.put("baseCurrency", asCurrencyCode(v.get("fxCurrency")));
 
                                             t.setSecurity(getOrCreateSecurity(v));
-                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                                             t.setShares(asShares(v.get("shares")));
 
                                             t.setAmount(asAmount(v.get("amount")));
@@ -367,7 +367,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             type.getCurrentContext().putType(rate);
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);
-                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getTickerSymbol());
+                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getTickerSymbol());
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
@@ -396,14 +396,14 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                             v.put("currency", asCurrencyCode(context.get("currency")));
 
                                             t.setSecurity(getOrCreateSecurity(v));
-                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                                            t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                                             t.setShares(asShares(v.get("shares")));
 
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                                             DividendTaxTransactionHelper dividendTaxTransactionHelper = context.getType(DividendTaxTransactionHelper.class).orElseGet(DividendTaxTransactionHelper::new);
-                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTime(), t.getSecurity().getTickerSymbol());
+                                            Optional<DividendTaxTransactionsItem> dividendTaxTransaction = dividendTaxTransactionHelper.findItem(t.getDateTimeValue(), t.getSecurity().getTickerSymbol());
                                             if (dividendTaxTransaction.isPresent() && v.get("tickerSymbol").equalsIgnoreCase(t.getSecurity().getTickerSymbol()))
                                             {
                                                 Money tax = Money.of(asCurrencyCode(dividendTaxTransaction.get().currency), dividendTaxTransaction.get().tax);
@@ -460,7 +460,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
 
                     v.getTransactionContext().put(FAILURE, MessageFormat.format(Messages.MsgMissingTickerSymbol, trim(v.get("name"))));
 
-                    t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                    t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                     t.setShares(asShares(v.get("shares")));
 
                     t.setAmount(asAmount(v.get("amount")));
@@ -491,7 +491,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     DocumentContext context = type.getCurrentContext();
 
-                    t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
+                    t.setDateTimeValue(asDate(v.get("day") + " " + v.get("month") + " " + context.get("year")));
                     t.setAmount(asAmount(v.get("amount")));
                     t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                     t.setNote("Management fee to Wealthsimple");
@@ -499,7 +499,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     // Calculation of total fees:
                     // Fee = gross + taxes - fee refund
                     FeeRefundTransactionHelper feeRefundTransactionHelper = context.getType(FeeRefundTransactionHelper.class).orElseGet(FeeRefundTransactionHelper::new);
-                    Optional<FeeRefundTransactionsItem> feeRefundTransaction = feeRefundTransactionHelper.findItem(t.getDateTime());
+                    Optional<FeeRefundTransactionsItem> feeRefundTransaction = feeRefundTransactionHelper.findItem(t.getDateTimeValue());
                     if (feeRefundTransaction.isPresent())
                     {
                         Money feeRefund = Money.of(t.getCurrencyCode(), feeRefundTransaction.get().feeRefund);
@@ -507,7 +507,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                     }
 
                     FeeTaxTransactionHelper feeTaxTransactionHelper = context.getType(FeeTaxTransactionHelper.class).orElseGet(FeeTaxTransactionHelper::new);
-                    Optional<FeeTaxTransactionsItem> feeTaxTransaction = feeTaxTransactionHelper.findItem(t.getDateTime());
+                    Optional<FeeTaxTransactionsItem> feeTaxTransaction = feeTaxTransactionHelper.findItem(t.getDateTimeValue());
                     if (feeTaxTransaction.isPresent())
                     {
                         Money tax = Money.of(t.getCurrencyCode(), feeTaxTransaction.get().tax);

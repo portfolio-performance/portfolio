@@ -188,7 +188,7 @@ public class PortfolioClientFilter implements ClientFilter
 
         BuySellEntry copy = new BuySellEntry(readOnlyPortfolio, readOnlyAccount);
 
-        copy.setDate(t.getDateTime());
+        copy.setDate(t.getDateTimeValue());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
         copy.setType(t.getType());
@@ -226,7 +226,7 @@ public class PortfolioClientFilter implements ClientFilter
                     if (!processedDividendTx.contains(t))
                     {
                         pseudoAccount.internalAddTransaction(t);
-                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTimeValue(),
                                         t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                         processedDividendTx.add(t);
                     }
@@ -236,7 +236,7 @@ public class PortfolioClientFilter implements ClientFilter
                     if (!processedDividendTx.contains(t))
                     {
                         pseudoAccount.internalAddTransaction(t);
-                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTimeValue(),
                                         t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                         processedDividendTx.add(t);
                     }
@@ -319,7 +319,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         PortfolioTransaction clone = new PortfolioTransaction();
         clone.setType(type);
-        clone.setDateTime(t.getDateTime());
+        clone.setDateTimeValue(t.getDateTimeValue());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(t.getSecurity());
         clone.setAmount(t.getAmount());
@@ -332,7 +332,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         AccountTransaction clone = new AccountTransaction();
         clone.setType(type);
-        clone.setDateTime(t.getDateTime());
+        clone.setDateTimeValue(t.getDateTimeValue());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null); // no security for REMOVAL or DEPOSIT
         clone.setAmount(t.getAmount());

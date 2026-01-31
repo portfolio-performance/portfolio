@@ -215,7 +215,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlbar (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -329,14 +329,14 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Schlusstag \\/ Handelszeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Schlusstag 10.01.2020
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Belastung Ihres Kontos NUMMER mit Wertstellung zum 24. Juni 2020.
                                         // Belastung Ihres Kontos 536011111111 mit Wertstellung zum 1. Oktober 2020.
@@ -344,7 +344,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Belastung Ihres Kontos .* (?<date>[\\d]{1,2}\\. .* [\\d]{4})\\.$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Only use for dividend transactions, when the pay date is missing
                                         // Ex-Tag 11.06.2020
@@ -352,7 +352,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex-Tag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off

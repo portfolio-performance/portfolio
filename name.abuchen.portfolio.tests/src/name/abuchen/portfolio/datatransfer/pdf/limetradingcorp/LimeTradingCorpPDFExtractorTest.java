@@ -118,7 +118,7 @@ public class LimeTradingCorpPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -139,7 +139,7 @@ public class LimeTradingCorpPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(42)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -160,7 +160,7 @@ public class LimeTradingCorpPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -181,7 +181,7 @@ public class LimeTradingCorpPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(21)));
         assertThat(entry.getSource(), is("AccountStatement01.txt"));
         assertNull(entry.getNote());
@@ -201,7 +201,7 @@ public class LimeTradingCorpPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -217,7 +217,7 @@ public class LimeTradingCorpPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(24)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -233,7 +233,7 @@ public class LimeTradingCorpPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -249,7 +249,7 @@ public class LimeTradingCorpPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -268,7 +268,7 @@ public class LimeTradingCorpPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(9000.00))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -278,7 +278,7 @@ public class LimeTradingCorpPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(0.19))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());

@@ -98,7 +98,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-17T20:49:54")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-17T20:49:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr.: 45247499"));
@@ -235,7 +235,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(2.91)));
@@ -267,7 +267,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0.57)));
@@ -299,7 +299,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0.28)));
@@ -331,7 +331,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(1.43)));
@@ -363,7 +363,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0.55)));
@@ -395,7 +395,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0.35)));
@@ -427,7 +427,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0.46)));
@@ -491,7 +491,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.22)));
         assertThat(entry.getSource(), is("Kontoauszug01.txt"));
         assertNull(entry.getNote());
@@ -512,7 +512,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.68)));
         assertThat(entry.getSource(), is("Kontoauszug01.txt"));
         assertNull(entry.getNote());
@@ -562,7 +562,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry.getSource(), is("Kontoauszug02.txt"));
         assertNull(entry.getNote());
@@ -612,7 +612,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Kontoauszug03.txt"));
         assertNull(entry.getNote());
@@ -663,7 +663,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Kontoauszug03.txt"));
         assertNull(entry.getNote());
@@ -719,7 +719,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Kontoauszug04.txt"));
         assertNull(entry.getNote());
@@ -770,7 +770,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Kontoauszug04.txt"));
         assertNull(entry.getNote());
@@ -825,7 +825,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-07-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45)));
         assertThat(transaction.getSource(), is("Kontoauszug05.txt"));
         assertNull(transaction.getNote());
@@ -878,7 +878,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
         assertNull(transaction.getNote());
@@ -897,7 +897,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
         assertNull(transaction.getNote());
@@ -947,7 +947,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
         assertNull(transaction.getNote());
@@ -963,7 +963,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-08-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-08-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getSource(), is("Kontoauszug06.txt"));
         assertNull(transaction.getNote());
@@ -1015,7 +1015,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.22)));
         assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
         assertNull(transaction.getNote());
@@ -1060,7 +1060,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.22)));
         assertThat(transaction.getSource(), is("Kontoauszug07.txt"));
         assertNull(transaction.getNote());
@@ -1111,7 +1111,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.05)));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
         assertNull(transaction.getNote());
@@ -1156,7 +1156,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.05)));
         assertThat(transaction.getSource(), is("Kontoauszug08.txt"));
         assertNull(transaction.getNote());
@@ -1201,7 +1201,7 @@ public class DADATBankenhausPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(4.76))));
         assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
         assertThat(transaction.getNote(), is("Sollzinsen"));
@@ -1211,7 +1211,7 @@ public class DADATBankenhausPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.50))));
         assertThat(transaction.getSource(), is("Kontoauszug09.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
@@ -1245,7 +1245,7 @@ public class DADATBankenhausPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-07T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-07T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(63.68))));
         assertThat(transaction.getSource(), is("Kontoauszug10.txt"));
         assertThat(transaction.getNote(), is("Depotgebührenabrechnung per 31.12.2020"));
@@ -1279,7 +1279,7 @@ public class DADATBankenhausPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-06-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
         assertThat(transaction.getSource(), is("Kontoauszug11.txt"));
         assertThat(transaction.getNote(), is("Max Muster"));
@@ -1336,7 +1336,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43)));
         assertThat(entry.getSource(), is("Kontoauszug12.txt"));
         assertNull(entry.getNote());
@@ -1357,7 +1357,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
         assertThat(entry.getSource(), is("Kontoauszug12.txt"));
         assertNull(entry.getNote());
@@ -1378,7 +1378,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getSource(), is("Kontoauszug12.txt"));
         assertNull(entry.getNote());
@@ -1443,7 +1443,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(134)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1462,7 +1462,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(184)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1481,7 +1481,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1534,7 +1534,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(134)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1550,7 +1550,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(184)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1566,7 +1566,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45)));
         assertThat(transaction.getSource(), is("Kontoauszug13.txt"));
         assertNull(transaction.getNote());
@@ -1608,7 +1608,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-12-31T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug14.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
 
@@ -1643,7 +1643,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-31T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug15.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
 
@@ -1678,7 +1678,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-30T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug16.txt"));
         assertThat(transaction.getNote(), is("Spesen"));
 
@@ -1713,7 +1713,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-10-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-10-31T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug17.txt"));
         assertThat(transaction.getNote(), is("Werbebonus"));
 
@@ -1748,7 +1748,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-06-18T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug18.txt"));
         assertThat(transaction.getNote(), is("Max Muster"));
 
@@ -1783,7 +1783,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-03-18T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug19.txt"));
         assertThat(transaction.getNote(), is("Max Muster"));
 
@@ -1818,7 +1818,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-09-30T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug20.txt"));
         assertThat(transaction.getNote(), is("Sollzinsen"));
 
@@ -1833,7 +1833,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-09-30T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug20.txt"));
         assertThat(transaction.getNote(), is("Spesen"));
 
@@ -1886,7 +1886,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(110)));
         assertThat(entry.getSource(), is("Kontoauszug21.txt"));
         assertNull(entry.getNote());
@@ -1907,7 +1907,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Kontoauszug21.txt"));
         assertNull(entry.getNote());
@@ -1927,7 +1927,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-10-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-10-15T00:00")));
         assertThat(transaction.getSource(), is("Kontoauszug21.txt"));
         assertThat(transaction.getNote(), is("KESt-Verlustausgleich"));
 
@@ -1998,7 +1998,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getSource(), is("Kontoauszug23.txt"));
         assertNull(entry.getNote());
@@ -2047,7 +2047,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(68.809)));
         assertThat(transaction.getSource(), is("Kontoauszug24.txt"));
         assertNull(transaction.getNote());
@@ -2063,7 +2063,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-11-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35369)));
         assertThat(transaction.getSource(), is("Kontoauszug24.txt"));
         assertNull(transaction.getNote());
@@ -2359,7 +2359,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("R.-Nr.: 45970540"));
@@ -2404,7 +2404,7 @@ public class DADATBankenhausPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("R.-Nr.: 45970540"));

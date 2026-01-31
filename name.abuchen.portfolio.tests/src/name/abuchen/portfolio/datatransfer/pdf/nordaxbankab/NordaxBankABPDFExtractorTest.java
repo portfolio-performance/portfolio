@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.nordaxbankab;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDateBooking;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
@@ -114,6 +115,7 @@ public class NordaxBankABPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2025-01-01"), //
+                        hasDateBooking("2024-12-31"),
                         hasSource("AccountStatement02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 24.40), hasGrossValue("EUR", 24.40), //
@@ -144,56 +146,70 @@ public class NordaxBankABPDFExtractorTest
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-02-14"), hasAmount("EUR", 1020.00), //
+        assertThat(results,
+                        hasItem(deposit(hasDate("2025-02-14"), hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-03-28"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-03-28"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-04-30"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-04-30"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-06-02"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-06-02"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-06-30"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-06-30"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-07-31"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-07-31"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-09-01"), hasAmount("EUR", 1020.00), //
-                        hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
+        assertThat(results,
+                        hasItem(deposit(hasDate("2025-09-01"), hasAmount("EUR", 1020.00), //
+                                        hasSource("AccountStatement03.txt"),
+                                        hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-09-30"), hasAmount("EUR", 1020.00), //
-                        hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
+                        hasSource("AccountStatement03.txt"),
+                        hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-10-31"), hasAmount("EUR", 1020.00), //
-                        hasSource("AccountStatement03.txt"), hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
+                        hasSource("AccountStatement03.txt"),
+                        hasNote("DE92500617410200574015 xyz PKW Abschlag"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-12-01"), hasAmount("EUR", 1020.00), //
-                        hasSource("AccountStatement03.txt"), hasNote("DE22513900000075401501 xyz PKW Abschlag"))));
+                        hasSource("AccountStatement03.txt"),
+                        hasNote("DE22513900000075401501 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2025-12-22"), hasAmount("EUR", 20.00), //
+        assertThat(results,
+                        hasItem(removal(hasDate("2025-12-22"), hasAmount("EUR", 20.00), //
                         hasSource("AccountStatement03.txt"),
                         hasNote("DE92500617410200574015 19026490 Auszahlung BN 001"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-12-30"), hasAmount("EUR", 1020.00), //
+        assertThat(results, hasItem(deposit(hasDate("2025-12-30"),
+                        hasAmount("EUR", 1020.00), //
                         hasSource("AccountStatement03.txt"), hasNote("DE22513900000075401501 xyz PKW Abschlag"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 129.70), //
+        assertThat(results,
+                        hasItem(interest(hasDate("2026-01-01"), hasDateBooking("2025-12-31"), hasAmount("EUR", 129.70), //
                         hasSource("AccountStatement03.txt"), hasNote(null))));
     }
 
@@ -222,7 +238,8 @@ public class NordaxBankABPDFExtractorTest
                         hasNote("DE22513900000075401501 Einzahlung 01 BankNorwegian"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2026-01-01"), hasAmount("EUR", 34.77), //
+        assertThat(results,
+                        hasItem(interest(hasDate("2026-01-01"), hasDateBooking("2025-12-31"), hasAmount("EUR", 34.77), //
                         hasSource("AccountStatement04.txt"), hasNote(null))));
 
     }

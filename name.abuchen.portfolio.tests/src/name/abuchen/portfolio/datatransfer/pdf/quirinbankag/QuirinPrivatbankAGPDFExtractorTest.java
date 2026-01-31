@@ -100,7 +100,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-30T12:46:28")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-12-30T12:46:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 28522373"));
@@ -150,7 +150,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-02-10T17:08:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-02-10T17:08:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(515)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000481758:1"));
@@ -200,7 +200,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000745405:1"));
@@ -251,7 +251,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T15:46:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000745405:1"));
@@ -383,7 +383,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-12-06T16:52:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-12-06T16:52:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 123452676"));
@@ -433,7 +433,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T11:00:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-23T11:00:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000409887:1"));
@@ -483,7 +483,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-05-07T16:20:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-05-07T16:20:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(515)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000591758:1"));
@@ -533,7 +533,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(378.362)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000409894:1"));
@@ -584,7 +584,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(378.362)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: O:000409894:1"));
@@ -714,7 +714,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(700)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12345858"));
@@ -759,7 +759,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-01-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-01-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(52)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: DZ:255990"));
@@ -804,7 +804,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: DZ:368384"));
@@ -850,7 +850,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: DZ:368384"));
@@ -1077,7 +1077,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-28T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3000.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Kontoübertrag 1197537 | Ref.-Nr.: 86991330"));
@@ -1088,7 +1088,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-19T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5000.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Sammelgutschrift | Ref.-Nr.: 105892216"));
@@ -1099,7 +1099,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-31T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.84)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Interne Buchung | Ref.-Nr.: 110934428"));
@@ -1110,7 +1110,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-27T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.00)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Überweisungsgutschrift Inland | Ref.-Nr.: 106509889"));
@@ -1121,7 +1121,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-19T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5002.84)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Rücküberweisung Inland | Ref.-Nr.: 106317528"));
@@ -1132,7 +1132,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-12T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(36.82)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Steueroptimierung | Ref.-Nr.: 135435928"));
@@ -1143,7 +1143,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-03T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.40)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Steueroptimierung | Ref.-Nr.: 107410183"));
@@ -1154,7 +1154,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-31T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.75)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 94613532"));
@@ -1165,7 +1165,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-09-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.98)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 97492689"));
@@ -1201,7 +1201,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-31T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.70)));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Vermögensverwaltungshonorar | Ref.-Nr.: 123458336"));
@@ -1237,7 +1237,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-06-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.28)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0139925023"));
@@ -1248,7 +1248,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-06-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(75.00)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Flatrate Gebühren 01.06.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816662"));
@@ -1259,7 +1259,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-06-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(29.55)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Volumen Fee Gebühren 01.04.2010 - 30.06.2010 | Ref.-Nr.: KA-0139816664"));
@@ -1270,7 +1270,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-06-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.61)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Haben-Zinsen Kontoabschluss | Ref.-Nr.: KA-0139907281"));
@@ -1306,7 +1306,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144748177"));
@@ -1317,7 +1317,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.77)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144754954"));
@@ -1328,7 +1328,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.59)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144767171"));
@@ -1339,7 +1339,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.28)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144772794"));
@@ -1350,7 +1350,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144774420"));
@@ -1361,7 +1361,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.33)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144775628"));
@@ -1372,7 +1372,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.19)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144776788"));
@@ -1383,7 +1383,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.65)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144794566"));
@@ -1394,7 +1394,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.52)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144796585"));
@@ -1405,7 +1405,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.39)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144798144"));
@@ -1416,7 +1416,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.19)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802453"));
@@ -1427,7 +1427,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.20)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144802618"));
@@ -1438,7 +1438,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.57)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144827860"));
@@ -1449,7 +1449,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.07)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144835278"));
@@ -1460,7 +1460,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.52)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144836892"));
@@ -1471,7 +1471,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.35)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144976464"));
@@ -1482,7 +1482,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.56)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144989517"));
@@ -1493,7 +1493,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.73)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144994720"));
@@ -1504,7 +1504,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.24)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996297"));
@@ -1515,7 +1515,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.26)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144996479"));
@@ -1526,7 +1526,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.72)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Steuerbuchung Abgeltungsteuer | Ref.-Nr.: H-0144999672"));
@@ -1537,7 +1537,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(75.00)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Flatrate Gebühren 01.07.2010 - 30.07.2010 | Ref.-Nr.: KA-0144715444"));
@@ -1548,7 +1548,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.63)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA -0144680022"));
@@ -1559,7 +1559,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.03)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144683460"));
@@ -1570,7 +1570,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.02)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144689194"));
@@ -1581,7 +1581,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.85)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144691722"));
@@ -1592,7 +1592,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.90)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144692430"));
@@ -1603,7 +1603,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(3.12)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144692886"));
@@ -1614,7 +1614,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.78)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144693436"));
@@ -1625,7 +1625,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.10)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144700356"));
@@ -1636,7 +1636,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.59)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-0144701132"));
@@ -1647,7 +1647,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.88)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144701836"));
@@ -1658,7 +1658,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.93)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-01 44703846"));
@@ -1669,7 +1669,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.98)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovisio n LU0075056555 | Ref.-Nr.: KA-0144703918"));
@@ -1680,7 +1680,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.89)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144717889"));
@@ -1691,7 +1691,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.94)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144723419"));
@@ -1702,7 +1702,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.83)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0052750758 | Ref.-Nr.: KA-0144724147"));
@@ -1713,7 +1713,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.85)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0121747215 | Ref.-Nr.: KA-0144726719"));
@@ -1724,7 +1724,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.05)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0303756539 | Ref.-Nr.: KA-0144732844"));
@@ -1735,7 +1735,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.61)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision DE0008490822 | Ref.-Nr.: KA-0144735471"));
@@ -1746,7 +1746,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.86)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0066902890 | Ref.-Nr.: KA-0144736296"));
@@ -1757,7 +1757,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.94)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0075056555 | Ref.-Nr.: KA-0144736391"));
@@ -1768,7 +1768,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-30T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.58)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Bestandsprovision LU0140363002 | Ref.-Nr.: KA-01 44738244"));

@@ -214,7 +214,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 68,87+ EUR
@@ -287,7 +287,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                             if ("S".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -323,7 +323,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -356,7 +356,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -402,7 +402,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -449,7 +449,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -489,7 +489,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(Long.parseLong(context.get("shares")));
                             t.setSecurity(getOrCreateSecurity(context));
 

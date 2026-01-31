@@ -29,7 +29,7 @@ public class PortfolioTransactionTest
         security.setCurrencyCode(CurrencyUnit.USD);
 
         transaction = new PortfolioTransaction();
-        transaction.setDateTime(LocalDateTime.parse("2015-01-15T00:00")); //$NON-NLS-1$
+        transaction.setDateTimeValue(LocalDateTime.parse("2015-01-15T00:00")); //$NON-NLS-1$
         transaction.setSecurity(security);
         transaction.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
         transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(900)),
@@ -47,7 +47,7 @@ public class PortfolioTransactionTest
         // assert that exchange rate is different from the transaction exchange
         // rate as we want to test that the transaction exchange rate is used
 
-        assertThat(converter.getRate(transaction.getDateTime(), CurrencyUnit.EUR).getValue(), is(not(transaction
+        assertThat(converter.getRate(transaction.getDateTimeValue(), CurrencyUnit.EUR).getValue(), is(not(transaction
                         .getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new).getExchangeRate())));
 
         assertThat(transaction.getGrossValue(converter),

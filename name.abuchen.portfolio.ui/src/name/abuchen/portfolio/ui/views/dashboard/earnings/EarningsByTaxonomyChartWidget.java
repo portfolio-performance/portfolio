@@ -160,13 +160,13 @@ public class EarningsByTaxonomyChartWidget extends CircularChartWidget<Map<Inves
                     if (!earningsType.isIncluded(tx))
                         continue;
 
-                    if (!interval.contains(tx.getDateTime()))
+                    if (!interval.contains(tx.getDateTimeValue()))
                         continue;
 
                     InvestmentVehicle vehicle = tx.getSecurity() != null ? tx.getSecurity() : account;
 
                     Money value = (grossNetType == GrossNetType.GROSS ? tx.getGrossValue() : tx.getMonetaryAmount())
-                                    .with(converter.at(tx.getDateTime()));
+                                    .with(converter.at(tx.getDateTimeValue()));
 
                     var item = result.computeIfAbsent(vehicle, v -> new Item(v, 0, Classification.ONE_HUNDRED_PERCENT));
 

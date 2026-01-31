@@ -90,7 +90,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-17T09:04:10")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-17T09:04:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2700)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Limit billigst"));
@@ -140,7 +140,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-04T18:09:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-04T18:09:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Limit 341,00 EUR"));
@@ -190,7 +190,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-14T15:40:55")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-14T15:40:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Limit billigst"));
@@ -240,7 +240,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-27T16:18:02")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-27T16:18:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Limit 68,50 EUR"));
@@ -290,7 +290,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T18:27:57")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T18:27:57")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertThat(entry.getNote(), is("Limit 39,60 EUR"));
@@ -340,7 +340,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T15:37:21")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T15:37:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertThat(entry.getNote(), is("Limit 210,00 EUR"));
@@ -390,7 +390,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-17T15:09:38")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T15:09:38")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(350)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertThat(entry.getNote(), is("Limit 25,04 EUR"));
@@ -440,7 +440,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-15T14:18:35")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-15T14:18:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(47)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
         assertThat(entry.getNote(), is("Limit 66,00 EUR"));
@@ -490,7 +490,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-13T15:16:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-13T15:16:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Stoplimit 291,00 EUR Limit 290,00 EUR"));
@@ -510,7 +510,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Verkauf01.txt"));
         assertThat(transaction.getNote(), is("Verrechnete Aktienverluste 112,10- EUR"));
@@ -556,7 +556,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-26T09:04:37")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-26T09:04:37")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Stoplimit 65,10 EUR Limit 64,50 EUR"));
@@ -606,7 +606,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-09T19:48:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-09T19:48:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Limit 462,00 EUR"));
@@ -656,7 +656,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-01-27T15:52:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-01-27T15:52:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Limit 161,00 EUR"));
@@ -676,7 +676,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
         assertThat(transaction.getSource(), is("Verkauf04.txt"));
         assertThat(transaction.getNote(), is("Verrechnete Aktienverluste 99,50- EUR"));
@@ -721,7 +721,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -768,7 +768,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -820,7 +820,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(205)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -867,7 +867,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(205)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -919,7 +919,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-02-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(160)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -964,7 +964,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -1010,7 +1010,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(350)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertNull(transaction.getNote());
@@ -1061,7 +1061,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1106,7 +1106,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(102)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1153,7 +1153,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(102)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1205,7 +1205,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Zwischendividende"));
@@ -1252,7 +1252,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1400)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Zwischendividende"));
@@ -1441,7 +1441,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-07-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.286)));
         assertThat(entry.getSource(), is("Umsatzuebersicht01.txt"));
         assertNull(entry.getNote());
@@ -1539,7 +1539,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.730)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1559,7 +1559,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.658)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1579,7 +1579,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.010)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1600,7 +1600,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.025)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1620,7 +1620,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.869)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1641,7 +1641,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.950)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1662,7 +1662,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.739)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1682,7 +1682,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.395)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1702,7 +1702,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.461)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1723,7 +1723,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.894)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1743,7 +1743,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.766)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1763,7 +1763,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30.199)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1784,7 +1784,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.420)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1804,7 +1804,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.086)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1824,7 +1824,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.251)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1845,7 +1845,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.853)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1865,7 +1865,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.708)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1885,7 +1885,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.729)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1906,7 +1906,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.585)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1926,7 +1926,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.364)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1946,7 +1946,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.671)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(entry.getNote());
@@ -1966,7 +1966,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-11-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-11-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.665)));
         assertThat(entry.getSource(), is("Umsatzuebersicht02.txt"));
         assertThat(entry.getNote(), is("Wiederanlage"));
@@ -1986,7 +1986,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-11-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.665)));
         assertThat(transaction.getSource(), is("Umsatzuebersicht02.txt"));
         assertNull(transaction.getNote());
@@ -2034,7 +2034,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getSource(), is("Umsatzuebersicht03.txt"));
         assertThat(entry.getNote(), is("Wiederanlage"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.730)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2052,7 +2052,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.730)));
         assertThat(transaction.getSource(), is("Umsatzuebersicht03.txt"));
         assertNull(transaction.getNote());
@@ -2104,7 +2104,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.570)));
         assertThat(entry.getSource(), is("Umsatzuebersicht04.txt"));
         assertNull(entry.getNote());
@@ -2125,7 +2125,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.658)));
         assertThat(entry.getSource(), is("Umsatzuebersicht04.txt"));
         assertNull(entry.getNote());
@@ -2147,7 +2147,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getSource(), is("Umsatzuebersicht04.txt"));
         assertThat(entry.getNote(), is("Wiederanlage"));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.387)));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
@@ -2165,7 +2165,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.387)));
         assertThat(transaction.getSource(), is("Umsatzuebersicht04.txt"));
         assertNull(transaction.getNote());
@@ -2211,7 +2211,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.092)));
         assertThat(entry.getSource(), is("Umsatzuebersicht05.txt"));
         assertNull(entry.getNote());
@@ -2231,7 +2231,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-24T00:00")));
         assertThat(transaction.getSource(), is("Umsatzuebersicht05.txt"));
         assertThat(transaction.getNote(), is("Depotgebühr"));
 
@@ -2246,7 +2246,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-24T00:00")));
         assertThat(transaction.getSource(), is("Umsatzuebersicht05.txt"));
         assertThat(transaction.getNote(), is("Abrechnung Nr. 45"));
 
@@ -2260,7 +2260,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-24T00:00")));
         assertThat(transaction.getSource(), is("Umsatzuebersicht05.txt"));
         assertThat(transaction.getNote(), is("Abrechnung Nr. 45"));
 
@@ -2313,7 +2313,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(285.637)));
         assertThat(entry.getSource(), is("Umsatzuebersicht06.txt"));
         assertNull(entry.getNote());
@@ -2334,7 +2334,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.591)));
         assertThat(entry.getSource(), is("Umsatzuebersicht06.txt"));
         assertThat(entry.getNote(), is("Wiederanlage"));
@@ -2354,7 +2354,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.591)));
         assertThat(transaction.getSource(), is("Umsatzuebersicht06.txt"));
         assertNull(transaction.getNote());
@@ -2400,7 +2400,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-02-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.346)));
         assertThat(entry.getSource(), is("Umsatzuebersicht07.txt"));
         assertNull(entry.getNote());
@@ -2450,7 +2450,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.405)));
         assertThat(entry.getSource(), is("Umsatzuebersicht08.txt"));
         assertNull(entry.getNote());
@@ -2508,7 +2508,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-04-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.137)));
         assertThat(entry.getSource(), is("Umsatzuebersicht09.txt"));
         assertNull(entry.getNote());
@@ -2529,7 +2529,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-04-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.225)));
         assertThat(entry.getSource(), is("Umsatzuebersicht09.txt"));
         assertNull(entry.getNote());
@@ -2594,7 +2594,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2014-02-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(12.152)));
         assertThat(entry.getSource(), is("Umsatzuebersicht10.txt"));
         assertThat(entry.getNote(), is("Umtausch aus Unterdepot 1345674218"));
@@ -2610,7 +2610,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2014-02-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(5.148)));
         assertThat(entry.getSource(), is("Umsatzuebersicht10.txt"));
         assertThat(entry.getNote(), is("Umtausch aus Unterdepot 1345674218"));
@@ -2626,7 +2626,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2014-02-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(4.136)));
         assertThat(entry.getSource(), is("Umsatzuebersicht10.txt"));
         assertThat(entry.getNote(), is("Umtausch zugunsten Unterdepot 1345674217"));
@@ -2642,7 +2642,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2014-02-10T00:00")));
+        assertThat(entry.getDateTimeValue(), is(LocalDateTime.parse("2014-02-10T00:00")));
         assertThat(entry.getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Umsatzuebersicht10.txt"));
         assertThat(entry.getNote(), is("Umtausch zugunsten Unterdepot 1345674205"));
@@ -2688,7 +2688,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry1.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry1.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry1.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-20T00:00")));
+        assertThat(entry1.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-20T00:00")));
         assertThat(entry1.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.036)));
         assertThat(entry1.getSource(), is("Umsatzuebersicht11.txt"));
         assertNull(entry1.getNote());
@@ -2708,7 +2708,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
+        assertThat(entry2.getDateTimeValue(), is(LocalDateTime.parse("2019-11-21T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(0.009)));
         assertThat(entry2.getSource(), is("Umsatzuebersicht11.txt"));
         assertThat(entry2.getNote(), is("Ausgleichsbuchung Steuer"));
@@ -2724,7 +2724,7 @@ public class DZBankGruppePDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-24T00:00")));
         assertThat(transaction.getSource(), is("Umsatzuebersicht11.txt"));
         assertThat(transaction.getNote(), is("Depotgebühr"));
 
@@ -2833,7 +2833,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.915)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2854,7 +2854,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.926)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2875,7 +2875,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.022)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2895,7 +2895,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T15:48")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T15:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.095)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2916,7 +2916,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.166)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2936,7 +2936,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.227)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2956,7 +2956,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T15:44")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T15:44")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.034)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2976,7 +2976,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T15:46")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T15:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.289)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));
@@ -2996,7 +2996,7 @@ public class DZBankGruppePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.086)));
         assertThat(entry.getSource(), is("Umsatzuebersicht12.txt"));
         assertThat(entry.getNote(), is("Anlage"));

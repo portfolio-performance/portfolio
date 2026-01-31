@@ -245,7 +245,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.045)));
         assertThat(entry.getSource(), is("Fondabrechnung01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2536717769 | Splitkauf"));
@@ -269,7 +269,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-05-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.009)));
         assertThat(entry.getSource(), is("Fondabrechnung01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2536921666 | Wiederanlage"));
@@ -325,7 +325,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.045)));
         assertThat(entry.getSource(), is("Fondabrechnung01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2536717769 | Splitkauf"));
@@ -345,7 +345,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-05-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.009)));
         assertThat(entry.getSource(), is("Fondabrechnung01.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2536921666 | Wiederanlage"));
@@ -402,7 +402,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.417)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2539808855"));
@@ -427,7 +427,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.877)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2539808856"));
@@ -452,7 +452,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.409)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540401210"));
@@ -477,7 +477,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.728)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540401213"));
@@ -502,7 +502,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.011)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540818151 | Entgeltbelastung"));
@@ -525,7 +525,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-10-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.011)));
         assertThat(transaction.getSource(), is("Fondabrechnung02.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2540818151 | Verwahrentgelt Fonds 2019"));
@@ -577,7 +577,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.417)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2539808855"));
@@ -598,7 +598,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.877)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2539808856"));
@@ -619,7 +619,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.409)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540401210"));
@@ -640,7 +640,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.728)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540401213"));
@@ -661,7 +661,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.011)));
         assertThat(entry.getSource(), is("Fondabrechnung02.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2540818151 | Entgeltbelastung"));
@@ -680,7 +680,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-10-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-10-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.011)));
         assertThat(transaction.getSource(), is("Fondabrechnung02.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2540818151 | Verwahrentgelt Fonds 2019"));
@@ -726,7 +726,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getSource(), is("Fondabrechnung03.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568216341"));
@@ -776,7 +776,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.049)));
         assertThat(entry.getSource(), is("Fondabrechnung04.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2539291225 | Wiederanlage"));
@@ -826,7 +826,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.266)));
         assertThat(entry.getSource(), is("Fondabrechnung05.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2534379721 | Wiederanlage"));
@@ -876,7 +876,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(87.557)));
         assertThat(entry.getSource(), is("Fondabrechnung06.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2534364118"));
@@ -928,7 +928,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(87.557)));
         assertThat(entry.getSource(), is("Fondabrechnung06.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2534364118"));
@@ -984,7 +984,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-03T16:51:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-03T16:51:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.316)));
         assertThat(entry.getSource(), is("Fondabrechnung07.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2581216"));
@@ -1066,7 +1066,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.363)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1091,7 +1091,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.459)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1112,7 +1112,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.145)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1133,7 +1133,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.022)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1154,7 +1154,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.739)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1175,7 +1175,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.349)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1200,7 +1200,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.459)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1221,7 +1221,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.135)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1242,7 +1242,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.031)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1263,7 +1263,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.733)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1284,7 +1284,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.307)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2569249320 | Wiederanlage"));
@@ -1304,7 +1304,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.09)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2569273184 | Wiederanlage"));
@@ -1384,7 +1384,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.363)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1405,7 +1405,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.459)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1426,7 +1426,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.145)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1447,7 +1447,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.022)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1468,7 +1468,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.739)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2567655380 | Splitkauf"));
@@ -1489,7 +1489,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.349)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1510,7 +1510,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.459)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1531,7 +1531,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.135)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1552,7 +1552,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.031)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1573,7 +1573,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.733)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2568789861 | Splitkauf"));
@@ -1594,7 +1594,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.307)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2569249320 | Wiederanlage"));
@@ -1614,7 +1614,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.09)));
         assertThat(entry.getSource(), is("Fondabrechnung08.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2569273184 | Wiederanlage"));
@@ -1695,7 +1695,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.633)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343587"));
@@ -1716,7 +1716,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22.211)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343590"));
@@ -1741,7 +1741,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.772)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343592"));
@@ -1762,7 +1762,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.367)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343593"));
@@ -1783,7 +1783,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.419)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343595"));
@@ -1864,7 +1864,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.633)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343587"));
@@ -1885,7 +1885,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22.211)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343590"));
@@ -1906,7 +1906,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.772)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343592"));
@@ -1927,7 +1927,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.367)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343593"));
@@ -1948,7 +1948,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-10-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.419)));
         assertThat(entry.getSource(), is("Fondabrechnung09.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2526343595"));
@@ -2014,7 +2014,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-09-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53.781)));
         assertThat(entry.getSource(), is("Fondabrechnung10.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2525653390"));
@@ -2035,7 +2035,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-09-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43.326)));
         assertThat(entry.getSource(), is("Fondabrechnung10.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2525653392"));
@@ -2056,7 +2056,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-09-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(49.436)));
         assertThat(entry.getSource(), is("Fondabrechnung10.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2525653393"));
@@ -2178,7 +2178,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.004)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2197,7 +2197,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.004)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2214,7 +2214,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.003)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2233,7 +2233,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.003)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2250,7 +2250,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2269,7 +2269,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.002)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2286,7 +2286,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2309,7 +2309,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.001)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2329,7 +2329,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.043)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2348,7 +2348,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.043)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2365,7 +2365,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2384,7 +2384,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.025)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2401,7 +2401,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2424,7 +2424,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.006)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2444,7 +2444,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2463,7 +2463,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.006)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2480,7 +2480,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2503,7 +2503,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.002)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2523,7 +2523,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2542,7 +2542,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.001)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2653,7 +2653,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.004)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2672,7 +2672,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.004)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2689,7 +2689,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.003)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2708,7 +2708,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.003)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2725,7 +2725,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2744,7 +2744,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.002)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2761,7 +2761,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2780,7 +2780,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.001)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2797,7 +2797,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.043)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2816,7 +2816,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.043)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2833,7 +2833,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2852,7 +2852,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.025)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2869,7 +2869,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2888,7 +2888,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.006)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2905,7 +2905,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2924,7 +2924,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.006)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2941,7 +2941,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2960,7 +2960,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.002)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -2977,7 +2977,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001)));
         assertThat(entry.getSource(), is("Fondabrechnung11.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2538422391 | Entgeltbelastung"));
@@ -2996,7 +2996,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.001)));
         assertThat(transaction.getSource(), is("Fondabrechnung11.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2538422391 | lfd. Vermögensverwaltungsentgelt"));
@@ -3042,7 +3042,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.466)));
         assertThat(entry.getSource(), is("Fondabrechnung12.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2530389235 | Splitkauf"));
@@ -3063,7 +3063,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.597)));
         assertThat(entry.getSource(), is("Fondabrechnung12.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2531092602 | Entgeltbelastung"));
@@ -3083,7 +3083,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.597)));
         assertThat(transaction.getSource(), is("Fondabrechnung12.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2531092602 | Depotführungsentgelt 2018"));
@@ -3161,7 +3161,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.026)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3186,7 +3186,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.474)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3207,7 +3207,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.449)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3228,7 +3228,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.272)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3249,7 +3249,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.899)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3270,7 +3270,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.634)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490658604 | Entgeltbelastung"));
@@ -3290,7 +3290,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.634)));
         assertThat(transaction.getSource(), is("Fondabrechnung13.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2490658604 | Depotführungsentgelt"));
@@ -3367,7 +3367,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.026)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3388,7 +3388,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.474)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3409,7 +3409,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.449)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3430,7 +3430,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.272)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3451,7 +3451,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.899)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490116288 | Splitkauf"));
@@ -3472,7 +3472,7 @@ public class FILFondbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.634)));
         assertThat(entry.getSource(), is("Fondabrechnung13.txt"));
         assertThat(entry.getNote(), is("Auftrags-Nr. 2490658604 | Entgeltbelastung"));
@@ -3492,7 +3492,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-01-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.634)));
         assertThat(transaction.getSource(), is("Fondabrechnung13.txt"));
         assertThat(transaction.getNote(), is("Auftrags-Nr. 2490658604 | Depotführungsentgelt"));
@@ -3537,7 +3537,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-07-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.093)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Turnus halbjährlich"));
@@ -3582,7 +3582,7 @@ public class FILFondbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.299)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Turnus jährlich"));

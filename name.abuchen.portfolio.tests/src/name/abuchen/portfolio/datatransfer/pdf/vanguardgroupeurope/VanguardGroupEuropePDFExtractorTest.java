@@ -93,7 +93,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-03T11:11:17")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-03T11:11:17")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.956954)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Ord.-Nr.: 9876543 | Ref.-Nr.: 12345678"));
@@ -145,7 +145,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-07T01:32:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-07T01:32:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.228799)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Ord.-Nr.: 2586411 | Ref.-Nr.: 11001804"));
@@ -197,7 +197,7 @@ public class VanguardGroupEuropePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-06T01:33:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-06T01:33:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.446747)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Ord.-Nr.: 2586325 | Ref.-Nr.: 11001804"));

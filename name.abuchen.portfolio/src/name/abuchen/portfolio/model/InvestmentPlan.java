@@ -310,7 +310,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         LocalDate last = null;
         for (Transaction t : transactions)
         {
-            LocalDate date = t.getDateTime().toLocalDate();
+            LocalDate date = t.getDateTimeValue().toLocalDate();
             if (last == null || last.isBefore(date))
                 last = date;
         }
@@ -502,7 +502,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         {
             // create inbound delivery
             PortfolioTransaction transaction = new PortfolioTransaction();
-            transaction.setDateTime(tDate.atStartOfDay());
+            transaction.setDateTimeValue(tDate.atStartOfDay());
             transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             transaction.setSecurity(security);
             transaction.setCurrencyCode(targetCurrencyCode);
@@ -552,7 +552,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
-        transaction.setDateTime(tDate.atStartOfDay());
+        transaction.setDateTimeValue(tDate.atStartOfDay());
         transaction.setType(transactionType);
         transaction.setMonetaryAmount(monetaryAmount);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,

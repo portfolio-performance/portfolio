@@ -51,7 +51,7 @@ public interface CalculationLineItem
         @Override
         public LocalDateTime getDateTime()
         {
-            return txPair.getTransaction().getDateTime();
+            return txPair.getTransaction().getDateTimeValue();
         }
 
         @Override

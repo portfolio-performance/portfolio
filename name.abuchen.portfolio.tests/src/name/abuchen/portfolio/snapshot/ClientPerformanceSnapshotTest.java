@@ -396,7 +396,7 @@ public class ClientPerformanceSnapshotTest
         Account account = new AccountBuilder().addTo(client);
 
         AccountTransaction dividend = new AccountTransaction();
-        dividend.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
+        dividend.setDateTimeValue(LocalDateTime.parse("2011-03-01T00:00"));
         dividend.setType(AccountTransaction.Type.DIVIDENDS);
         dividend.setSecurity(security);
         dividend.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
@@ -432,7 +432,7 @@ public class ClientPerformanceSnapshotTest
         Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
 
         PortfolioTransaction delivery = new PortfolioTransaction();
-        delivery.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
+        delivery.setDateTimeValue(LocalDateTime.parse("2011-03-01T00:00"));
         delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
         delivery.setSecurity(security);
         delivery.setShares(Values.Share.factorize(1));

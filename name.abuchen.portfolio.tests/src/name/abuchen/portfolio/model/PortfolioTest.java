@@ -42,7 +42,7 @@ public class PortfolioTest
     {
         transaction = new PortfolioTransaction();
         transaction.setType(Type.DELIVERY_INBOUND);
-        transaction.setDateTime(LocalDate.now().atStartOfDay());
+        transaction.setDateTimeValue(LocalDate.now().atStartOfDay());
         transaction.setSecurity(security);
 
         portfolio.addTransaction(transaction);
@@ -52,7 +52,7 @@ public class PortfolioTest
     {
         transactionWithPlan = new PortfolioTransaction();
         transactionWithPlan.setType(Type.DELIVERY_INBOUND);
-        transactionWithPlan.setDateTime(LocalDate.now().atStartOfDay());
+        transactionWithPlan.setDateTimeValue(LocalDate.now().atStartOfDay());
         transactionWithPlan.setSecurity(security);
 
         plan.getTransactions().add(transactionWithPlan);

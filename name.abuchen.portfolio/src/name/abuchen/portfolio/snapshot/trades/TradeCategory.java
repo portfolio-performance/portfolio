@@ -329,9 +329,9 @@ public class TradeCategory
             // Collect cash flows from all transactions in this trade
             for (TransactionPair<PortfolioTransaction> txPair : trade.getTransactions())
             {
-                LocalDate date = txPair.getTransaction().getDateTime().toLocalDate();
+                LocalDate date = txPair.getTransaction().getDateTimeValue().toLocalDate();
                 double amount = txPair.getTransaction().getMonetaryAmount()
-                                .with(converter.at(txPair.getTransaction().getDateTime())).getAmount()
+                                .with(converter.at(txPair.getTransaction().getDateTimeValue())).getAmount()
                                 / Values.Amount.divider();
 
                 // Apply weight to the cash flow

@@ -408,7 +408,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag 144,52+ EUR
@@ -593,14 +593,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Herrn Datum 15.01.2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^.* Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -786,7 +786,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -851,7 +851,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("date", "currency") //
                         .match("^(?<note>Zinsen f.r Dispositionskredit) [\\s]*(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1109,7 +1109,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1144,7 +1144,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap((t) -> {
                             var item = new TransactionItem(t);
 
-                            if (t.getDateTime() != null)
+                            if (t.getDateTimeValue() != null)
                                 return item;
 
                             return null;
@@ -1199,7 +1199,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1237,7 +1237,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap((t) -> {
                             var item = new TransactionItem(t);
 
-                            if (t.getDateTime() != null)
+                            if (t.getDateTimeValue() != null)
                                 return item;
 
                             return null;
@@ -1305,7 +1305,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1340,7 +1340,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap((t) -> {
                             var item = new TransactionItem(t);
 
-                            if (t.getDateTime() != null)
+                            if (t.getDateTimeValue() != null)
                                 return item;
 
                             return null;
@@ -1378,7 +1378,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note1") + " " + v.get("note2"));
@@ -1391,7 +1391,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap((t) -> {
                             var item = new TransactionItem(t);
 
-                            if (t.getDateTime() != null)
+                            if (t.getDateTimeValue() != null)
                                 return item;
 
                             return null;
@@ -1431,7 +1431,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1502,7 +1502,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))Stornorechnung.*$") //
                         .match("^(?<note>Stornorechnung.*) Erstattung.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1562,7 +1562,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>Ausgleich Kreditkarte gem\\. Abrechnung) v\\. " //
                                                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(v.get("note"));
@@ -1575,7 +1575,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                                         + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
                                                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1596,7 +1596,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>(?! Habenzins).*) " //
                                                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1630,7 +1630,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>(Habenzins auf [\\d]+ Tage|Storno Habenzinsen)) " //
                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1654,7 +1654,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Abgeltungsteuer) " //
                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1682,7 +1682,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                                         + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
                                                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1704,7 +1704,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<note>(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).*) " //
                                                                         + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1736,7 +1736,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
                                         + "(?<note>(Kartenpreis|PIN\\-Geb.hr)) (?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1769,7 +1769,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(Long.parseLong(context.get("shares")));
                             t.setSecurity(getOrCreateSecurity(context));
 
@@ -2012,6 +2012,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             year--;
         }
 
-        t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
+        t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month2") + "." + year));
     }
 }

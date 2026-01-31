@@ -103,7 +103,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.369)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertNull(entry.getNote());
@@ -154,7 +154,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.369)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertNull(entry.getNote());
@@ -212,7 +212,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-07-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.051)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertNull(entry.getNote());
@@ -264,7 +264,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.924)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertNull(entry.getNote());
@@ -315,7 +315,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.924)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertNull(entry.getNote());
@@ -373,7 +373,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.766)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertNull(entry.getNote());
@@ -425,7 +425,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.024)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertNull(entry.getNote());
@@ -476,7 +476,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.024)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertNull(entry.getNote());
@@ -534,7 +534,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.114)));
         assertThat(entry.getSource(), is("Kauf06_English.txt"));
         assertNull(entry.getNote());
@@ -585,7 +585,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.114)));
         assertThat(entry.getSource(), is("Kauf06_English.txt"));
         assertNull(entry.getNote());
@@ -643,7 +643,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertNull(entry.getNote());
@@ -694,7 +694,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.477)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertNull(entry.getNote());
@@ -934,7 +934,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.027)));
         assertThat(entry.getSource(), is("Kauf11_Francais.txt"));
         assertNull(entry.getNote());
@@ -1029,7 +1029,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2025-01-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2025-01-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.839)));
         assertThat(entry.getSource(), is("Kauf12_ViacInvest.txt"));
         assertNull(entry.getNote());
@@ -1071,7 +1071,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-03-31T00:00")));
         assertThat(transaction.getSource(), is("Zins01.txt"));
         assertThat(transaction.getNote(), is("Zinssatz: 0.11% | Zinsperiode: März"));
 
@@ -1108,7 +1108,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(transaction.getSource(), is("Zins02_English.txt"));
         assertThat(transaction.getNote(), is("Interest rate: 0.10% | Interest period: June"));
 
@@ -1145,7 +1145,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-01-31T00:00")));
         assertThat(transaction.getSource(), is("Zins03.txt"));
         assertThat(transaction.getNote(), is("Zinssatz: 0.05% | Zinsperiode: Januar"));
 
@@ -1182,7 +1182,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-31T00:00")));
         assertThat(transaction.getSource(), is("Zins04_Francais.txt"));
         assertThat(transaction.getNote(), is("Taux d’intérêt: 0.10% | Période d’intérêt: mai"));
 
@@ -1277,7 +1277,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-31T00:00")));
         assertThat(transaction.getSource(), is("Gebuehren01.txt"));
         assertThat(transaction.getNote(), is("VIAC Verwaltungsgebühr: 0.123%"));
 
@@ -1314,7 +1314,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(transaction.getSource(), is("Gebuehren02_English.txt"));
         assertThat(transaction.getNote(), is("VIAC administration fee: 0.47%"));
 
@@ -1437,7 +1437,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-15T00:00")));
         assertThat(transaction.getSource(), is("CreditNote01.txt"));
         assertThat(transaction.getNote(), is("Einzahlung ABCD"));
 
@@ -1474,7 +1474,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-15T00:00")));
         assertThat(transaction.getSource(), is("CreditNote02.txt"));
         assertThat(transaction.getNote(), is("Einzahlung ABCD"));
 
@@ -1511,7 +1511,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-17T00:00")));
         assertThat(transaction.getSource(), is("CreditNote03_English.txt"));
         assertThat(transaction.getNote(), is("Deposit BESR"));
 
@@ -1586,7 +1586,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
@@ -1633,7 +1633,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
@@ -1678,7 +1678,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
@@ -1731,7 +1731,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
         assertThat(transaction.getSource(), is("Dividende03_English.txt"));
         assertThat(transaction.getNote(), is("Ordinary dividend"));
@@ -1776,7 +1776,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
         assertThat(transaction.getSource(), is("Dividende03_English.txt"));
         assertThat(transaction.getNote(), is("Ordinary dividend"));
@@ -1829,7 +1829,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
@@ -1874,7 +1874,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-02-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.817)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ordentliche Dividende"));
@@ -2038,7 +2038,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertNull(entry.getNote());
@@ -2089,7 +2089,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertNull(entry.getNote());
@@ -2147,7 +2147,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.035)));
         assertThat(entry.getSource(), is("Verkauf02_English.txt"));
         assertNull(entry.getNote());
@@ -2199,7 +2199,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.135)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertNull(entry.getNote());
@@ -2250,7 +2250,7 @@ public class WirBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.135)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertNull(entry.getNote());
@@ -2412,7 +2412,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.966)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung01.txt"));
         assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
@@ -2459,7 +2459,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung02.txt"));
         assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
@@ -2506,7 +2506,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung03.txt"));
         assertThat(transaction.getNote(), is("Rückerstattung Quellensteuer"));
@@ -2554,7 +2554,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-02-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-02-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.841)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung04_English.txt"));
         assertThat(transaction.getNote(), is("Refund withholding tax"));
@@ -2602,7 +2602,7 @@ public class WirBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.104)));
         assertThat(transaction.getSource(), is("Steuerrueckerstattung05_English.txt"));
         assertThat(transaction.getNote(), is("Refund withholding tax"));
@@ -2719,7 +2719,7 @@ public class WirBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2022-05-23T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0.515)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno01.txt"));

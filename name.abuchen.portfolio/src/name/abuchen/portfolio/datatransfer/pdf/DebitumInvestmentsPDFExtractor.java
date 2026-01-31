@@ -72,7 +72,7 @@ public class DebitumInvestmentsPDFExtractor extends AbstractPDFExtractor
                             if ("WITHDRAWALS".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(EUR));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -115,7 +115,7 @@ public class DebitumInvestmentsPDFExtractor extends AbstractPDFExtractor
                             var bonus = Money.of(asCurrencyCode(EUR), asAmount(v.get("bonus")));
                             var amount = Money.of(asCurrencyCode(EUR), asAmount(v.get("amount")));
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setMonetaryAmount(amount.add(bonus));
                         })
 

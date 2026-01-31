@@ -131,19 +131,19 @@ public interface PTransactionOrBuilder extends
   com.google.protobuf.TimestampOrBuilder getOtherUpdatedAtOrBuilder();
 
   /**
-   * <code>.google.protobuf.Timestamp date = 9;</code>
-   * @return Whether the date field is set.
+   * <code>.google.protobuf.Timestamp dateValue = 9;</code>
+   * @return Whether the dateValue field is set.
    */
-  boolean hasDate();
+  boolean hasDateValue();
   /**
-   * <code>.google.protobuf.Timestamp date = 9;</code>
-   * @return The date.
+   * <code>.google.protobuf.Timestamp dateValue = 9;</code>
+   * @return The dateValue.
    */
-  com.google.protobuf.Timestamp getDate();
+  com.google.protobuf.Timestamp getDateValue();
   /**
-   * <code>.google.protobuf.Timestamp date = 9;</code>
+   * <code>.google.protobuf.Timestamp dateValue = 9;</code>
    */
-  com.google.protobuf.TimestampOrBuilder getDateOrBuilder();
+  com.google.protobuf.TimestampOrBuilder getDateValueOrBuilder();
 
   /**
    * <code>string currencyCode = 10;</code>
@@ -263,4 +263,19 @@ public interface PTransactionOrBuilder extends
    */
   com.google.protobuf.ByteString
       getSourceBytes();
+
+  /**
+   * <code>optional .google.protobuf.Timestamp dateBooking = 18;</code>
+   * @return Whether the dateBooking field is set.
+   */
+  boolean hasDateBooking();
+  /**
+   * <code>optional .google.protobuf.Timestamp dateBooking = 18;</code>
+   * @return The dateBooking.
+   */
+  com.google.protobuf.Timestamp getDateBooking();
+  /**
+   * <code>optional .google.protobuf.Timestamp dateBooking = 18;</code>
+   */
+  com.google.protobuf.TimestampOrBuilder getDateBookingOrBuilder();
 }

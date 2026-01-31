@@ -71,7 +71,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
@@ -100,7 +100,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
                                         + "Habenzinsen " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })

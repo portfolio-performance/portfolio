@@ -83,7 +83,7 @@ public class Trade implements Adaptable
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                         .map(t -> t.getTransaction().getMonetaryAmount()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
+                                        .with(converter.at(t.getTransaction().getDateTimeValue())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         // for purchases, getGrossValue() returns the value without taxes and
@@ -91,7 +91,7 @@ public class Trade implements Adaptable
         this.entryValueWithoutTaxesAndFees = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                         .map(t -> t.getTransaction().getGrossValue()
-                                        .with(converter.at(t.getTransaction().getDateTime())))
+                                        .with(converter.at(t.getTransaction().getDateTimeValue())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
         if (end != null)
@@ -101,7 +101,7 @@ public class Trade implements Adaptable
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
                             .map(t -> t.getTransaction().getMonetaryAmount()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                                            .with(converter.at(t.getTransaction().getDateTimeValue())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             // for sales, getGrossValue() returns the sales proceeds without
@@ -109,13 +109,13 @@ public class Trade implements Adaptable
             this.exitValueWithoutTaxesAndFees = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation() == isLong)
                             .map(t -> t.getTransaction().getGrossValue()
-                                            .with(converter.at(t.getTransaction().getDateTime())))
+                                            .with(converter.at(t.getTransaction().getDateTimeValue())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares() * Dates.daysBetween(
-                                            t.getTransaction().getDateTime().toLocalDate(), end.toLocalDate()))
+                                            t.getTransaction().getDateTimeValue().toLocalDate(), end.toLocalDate()))
                             .sum() / (double) shares);
         }
         else
@@ -134,7 +134,7 @@ public class Trade implements Adaptable
             this.holdingPeriod = Math.round(transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isPurchase() == isLong)
                             .mapToLong(t -> t.getTransaction().getShares()
-                                            * Dates.daysBetween(t.getTransaction().getDateTime().toLocalDate(), now))
+                                            * Dates.daysBetween(t.getTransaction().getDateTimeValue().toLocalDate(), now))
                             .sum() / (double) shares);
         }
 
@@ -143,7 +143,7 @@ public class Trade implements Adaptable
         Collections.sort(transactions, TransactionPair.BY_DATE);
 
         // re-set start date from first entry after sorting
-        this.setStart(transactions.get(0).getTransaction().getDateTime());
+        this.setStart(transactions.get(0).getTransaction().getDateTimeValue());
 
         calculateIRR(converter);
 
@@ -164,9 +164,9 @@ public class Trade implements Adaptable
         Deque<CollateralLot> collateralLots = new ArrayDeque<>();
 
         transactions.stream().forEach(t -> {
-            dates.add(t.getTransaction().getDateTime().toLocalDate());
+            dates.add(t.getTransaction().getDateTimeValue().toLocalDate());
 
-            double amount = t.getTransaction().getMonetaryAmount().with(converter.at(t.getTransaction().getDateTime()))
+            double amount = t.getTransaction().getMonetaryAmount().with(converter.at(t.getTransaction().getDateTimeValue()))
                             .getAmount() / Values.Amount.divider();
 
             if (t.getTransaction().getType().isPurchase() == isLong())
@@ -431,7 +431,7 @@ public class Trade implements Adaptable
         var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter,
                         Interval.of(LocalDate.MIN,
                                         closingTransaction.isPresent()
-                                                        ? closingTransaction.get().getDateTime().toLocalDate()
+                                                        ? closingTransaction.get().getDateTimeValue().toLocalDate()
                                                         : LocalDate.now()));
         var r = snapshot.getRecord(security);
         if (r.isEmpty())

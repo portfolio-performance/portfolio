@@ -132,7 +132,7 @@ public class SharesHeldChartSeries
         // including to the end of the first day = first data point
         var sharesAtStart = 0L;
         while (index < transactions.size()
-                        && !transactions.get(index).getDateTime().toLocalDate().isAfter(chartInterval.getStart()))
+                        && !transactions.get(index).getDateTimeValue().toLocalDate().isAfter(chartInterval.getStart()))
         {
             var tx = transactions.get(index);
             sharesAtStart = sharesAtStart + (tx.getType().isPurchase() ? tx.getShares() : -tx.getShares());
@@ -155,11 +155,11 @@ public class SharesHeldChartSeries
 
         long currentShares = sharesAtStart;
 
-        while (index < transactions.size() && chartInterval.contains(transactions.get(index).getDateTime()))
+        while (index < transactions.size() && chartInterval.contains(transactions.get(index).getDateTimeValue()))
         {
             var tx = transactions.get(index);
 
-            var currentDate = tx.getDateTime().toLocalDate();
+            var currentDate = tx.getDateTimeValue().toLocalDate();
             currentShares += tx.getType().isPurchase() ? tx.getShares() : -tx.getShares();
 
             // if the next date is identical, include the next transaction in
@@ -167,7 +167,7 @@ public class SharesHeldChartSeries
             // transactions on the same day, but we can have only one entry
             // in the data series)
             if (index + 1 < transactions.size()
-                            && currentDate.equals(transactions.get(index + 1).getDateTime().toLocalDate()))
+                            && currentDate.equals(transactions.get(index + 1).getDateTimeValue().toLocalDate()))
             {
                 index++;
                 continue;

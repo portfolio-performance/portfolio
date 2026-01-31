@@ -408,7 +408,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.*(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) [\\.,'\\d]+ [\\.,'\\d]+ [\\.,'\\d]+$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -474,7 +474,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Interest .* (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -526,7 +526,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,'\\d]+)$") //
                                                         .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setNote(trim(v.get("note")));
@@ -553,7 +553,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                             if ("Withdrawal".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setNote(trim(v.get("note")));
@@ -596,7 +596,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.,'\\d]+)" //
                                         + "[\\.,'\\d]+$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));

@@ -113,8 +113,8 @@ public abstract class ReportingPeriod
     public final Predicate<Transaction> containsTransaction(LocalDate relativeTo)
     {
         Interval interval = toInterval(relativeTo);
-        return t -> t.getDateTime().toLocalDate().isAfter(interval.getStart())
-                        && !t.getDateTime().toLocalDate().isAfter(interval.getEnd());
+        return t -> t.getDateTimeValue().toLocalDate().isAfter(interval.getStart())
+                        && !t.getDateTimeValue().toLocalDate().isAfter(interval.getEnd());
     }
 
     public abstract Interval toInterval(LocalDate relativeTo);

@@ -41,7 +41,7 @@ public class NegativeExchangeRateCheck implements Check
         @Override
         public LocalDate getDate()
         {
-            return pair.getTransaction().getDateTime().toLocalDate();
+            return pair.getTransaction().getDateTimeValue().toLocalDate();
         }
 
         @Override

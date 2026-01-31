@@ -127,7 +127,7 @@ public class StockSplitModel extends BindingHelper.Model
             for (TransactionPair<?> pair : transactions)
             {
                 Transaction t = pair.getTransaction();
-                if (t.getDateTime().toLocalDate().isBefore(exDate))
+                if (t.getDateTimeValue().toLocalDate().isBefore(exDate))
                     t.setShares(calculateNewStock(t.getShares()));
             }
         }

@@ -373,6 +373,21 @@ public final class TextUtil
         return first == null ? trim(second) : trim(first) + separator + trim(second);
     }
 
+    /**
+     * Compares two strings for difference and only returns second string when
+     * it is different to the first one.
+     */
+    public static String secondDiffers(String first, String second)
+    {
+        if (trim(second) == null)
+            return null;
+
+        if (!trim(second).equalsIgnoreCase(trim(first)))
+            return trim(second);
+
+        return null;
+    }
+
     public static String escapeHtml(String input)
     {
         if (input == null)

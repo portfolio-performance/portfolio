@@ -61,7 +61,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -121,7 +121,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                                                             var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
                                                             var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount.subtract(tax));
                                                         }),
                                         // @formatter:off
@@ -146,7 +146,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                                                             var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
                                                             var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount.subtract(tax));
                                                         }))
 

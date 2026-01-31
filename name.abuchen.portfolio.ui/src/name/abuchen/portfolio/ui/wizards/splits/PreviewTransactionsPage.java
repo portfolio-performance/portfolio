@@ -63,7 +63,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return Values.DateTime.format(t.getDateTime());
+                    return Values.DateTime.format(t.getDateTimeValue());
                 case 1:
                     if (t instanceof AccountTransaction at)
                         return at.getType().toString();
@@ -73,7 +73,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
-                    if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
+                    if (model.isChangeTransactions() && t.getDateTimeValue().toLocalDate().isBefore(model.getExDate()))
                         return Values.Share.format(model.calculateNewStock(t.getShares()));
                     return null;
                 case 4:

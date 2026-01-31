@@ -73,7 +73,7 @@ public class WeberbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:14:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-26T15:14:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4440)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Limit billigst"));
@@ -123,7 +123,7 @@ public class WeberbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-26T15:12:58")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-26T15:12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(193)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Limit bestens"));
@@ -175,7 +175,7 @@ public class WeberbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getShares(), is(Values.Share.factorize(107)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-13T00:00")));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
 
@@ -222,7 +222,7 @@ public class WeberbankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getShares(), is(Values.Share.factorize(107)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-13T00:00")));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
 

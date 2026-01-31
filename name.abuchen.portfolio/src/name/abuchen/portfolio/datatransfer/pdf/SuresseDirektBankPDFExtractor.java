@@ -66,7 +66,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("sign"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + "-" + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + "-" + v.get("year")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -92,7 +92,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Periode von: (?<note>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} .* (?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4})).*$") //
                         .match("^Zu erhalten Nettozinsbetrag : (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));

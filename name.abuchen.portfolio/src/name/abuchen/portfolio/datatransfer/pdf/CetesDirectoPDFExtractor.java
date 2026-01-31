@@ -185,7 +185,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                                             t.setMonetaryAmount(amount);
 
                                                             var taxAmountTransactionHelper = context.getType(TaxAmountTransactionHelper.class).orElseGet(TaxAmountTransactionHelper::new);
-                                                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTime(), t.getPortfolioTransaction().getSecurity().getWkn());
+                                                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTimeValue(), t.getPortfolioTransaction().getSecurity().getWkn());
 
                                                             if (item.isPresent())
                                                             {
@@ -236,7 +236,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                             v.put("name", trim(v.get("name")) + " (" + trim(v.get("name1")) + ")");
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDateTime(asDate(v.get("date"), AdditionalLocales.MEXICO));
+                            t.setDateTimeValue(asDate(v.get("date"), AdditionalLocales.MEXICO));
                             t.setShares(asShares(v.get("shares")));
                             t.setCurrencyCode(asCurrencyCode(MXN));
                             t.setAmount(asAmount(v.get("amount")));

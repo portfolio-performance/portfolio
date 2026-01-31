@@ -170,7 +170,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .find("Valuta Betrag zu Ihren Gunsten.*")
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\w]{3}.*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Valuta Betrag zu Ihren Gunsten
@@ -260,7 +260,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Tag des steuerpflichtigen Zuflusses (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Betrag zu Ihren Lasten -13,47 EUR

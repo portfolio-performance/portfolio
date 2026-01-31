@@ -389,7 +389,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Gutschrift mit Wert 15.12.2014 64,88 EUR
@@ -547,7 +547,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("note", "Steuererstattung");
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -628,7 +628,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("note", "Steuererstattung");
                                                             }
 
-                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
@@ -699,7 +699,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) Verwendungszweck\\/ Kundenreferenz \\- (?<amount>[\\.,\\d]+)$") //
                         .match("^(?<note>Saldo der Abschlussposten)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));

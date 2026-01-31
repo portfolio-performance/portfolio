@@ -47,7 +47,7 @@ public class DividendCalculationTest
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
         t.setSecurity(security);
-        t.setDateTime(date);
+        t.setDateTimeValue(date);
         t.setAmount(100L);
         t.setShares(10);
         t.setCurrencyCode(security.getCurrencyCode());
@@ -235,7 +235,7 @@ public class DividendCalculationTest
         AccountTransaction dividend = new AccountTransaction();
         dividend.setType(AccountTransaction.Type.DIVIDENDS);
         dividend.setSecurity(testSecurity);
-        dividend.setDateTime(LocalDateTime.of(2015, 1, 15, 12, 0));
+        dividend.setDateTimeValue(LocalDateTime.of(2015, 1, 15, 12, 0));
         dividend.setAmount(Values.Amount.factorize(50));
         dividend.setShares(Values.Share.factorize(10));
         dividend.setCurrencyCode(testSecurity.getCurrencyCode());

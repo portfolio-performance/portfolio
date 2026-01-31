@@ -325,7 +325,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Uitbetaling dividenden.*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Netto credit 2.862,79 EUR
@@ -412,7 +412,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         + "Valuta[\\s]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -441,7 +441,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         + "Valuta[\\s]*[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
@@ -469,7 +469,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
                                         + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));

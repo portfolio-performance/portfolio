@@ -68,7 +68,7 @@ public class RevolutLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-11-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-11-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.1451261)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertNull(entry.getNote());
@@ -112,7 +112,7 @@ public class RevolutLtdPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-07-08T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(460.85))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());
@@ -122,7 +122,7 @@ public class RevolutLtdPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-07-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(204.15))));
         assertThat(transaction.getSource(), is("AccountStatement01.txt"));
         assertNull(transaction.getNote());

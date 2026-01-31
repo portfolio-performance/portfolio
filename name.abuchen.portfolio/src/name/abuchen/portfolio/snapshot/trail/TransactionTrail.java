@@ -19,7 +19,7 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public LocalDate getDate()
     {
-        return transaction.getDateTime().toLocalDate();
+        return transaction.getDateTimeValue().toLocalDate();
     }
 
     @Override

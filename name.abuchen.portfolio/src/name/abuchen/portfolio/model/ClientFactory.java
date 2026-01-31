@@ -945,6 +945,8 @@ public class ClientFactory
                 fixLogoAttributeName(client);
             case 67: // NOSONAR
                 removeSourceAttributeFromTaxonomy(client);
+            case 68: // NOSONAR
+                // added second date field
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1933,6 +1935,9 @@ public class ClientFactory
         xstream.alias("config", ConfigurationSet.Configuration.class);
 
         xstream.processAnnotations(SecurityProperty.class);
+
+        xstream.aliasField("date", AccountTransaction.class, "dateValue");
+        xstream.aliasField("date", PortfolioTransaction.class, "dateValue");
 
         return xstream;
     }

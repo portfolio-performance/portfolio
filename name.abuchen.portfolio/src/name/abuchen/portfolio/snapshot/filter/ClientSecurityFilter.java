@@ -114,26 +114,26 @@ public class ClientSecurityFilter implements ClientFilter
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
-                AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                AccountTransaction copy = new AccountTransaction(t.getDateTimeValue(), t.getCurrencyCode(), amount + taxes,
                                 t.getSecurity(), t.getType());
 
                 t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
 
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(copy);
                 getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                .internalAddTransaction(new AccountTransaction(t.getDateTimeValue(), t.getCurrencyCode(),
                                                 amount + taxes, null, AccountTransaction.Type.REMOVAL));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                .internalAddTransaction(new AccountTransaction(t.getDateTimeValue(), t.getCurrencyCode(),
                                                 t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES_REFUND:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
-                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                .internalAddTransaction(new AccountTransaction(t.getDateTimeValue(), t.getCurrencyCode(),
                                                 t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                 break;
             case TAXES:
@@ -156,7 +156,7 @@ public class ClientSecurityFilter implements ClientFilter
     private PortfolioTransaction convertToDelivery(PortfolioTransaction t, PortfolioTransaction.Type targetType)
     {
         PortfolioTransaction pseudo = new PortfolioTransaction();
-        pseudo.setDateTime(t.getDateTime());
+        pseudo.setDateTimeValue(t.getDateTimeValue());
         pseudo.setCurrencyCode(t.getCurrencyCode());
         pseudo.setSecurity(t.getSecurity());
         pseudo.setShares(t.getShares());

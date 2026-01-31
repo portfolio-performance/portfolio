@@ -265,7 +265,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            t.setDateTimeValue(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
                             t.setNote(v.get("note"));
                         })
 
@@ -333,7 +333,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Montant Net 135,00 €
@@ -392,7 +392,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) Taxe Transaction Financi.re$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Montant global soumis à la TTF : 489,72 €

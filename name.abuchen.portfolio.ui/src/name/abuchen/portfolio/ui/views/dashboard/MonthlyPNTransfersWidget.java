@@ -36,18 +36,18 @@ public class MonthlyPNTransfersWidget extends AbstractMonthlyHeatmapWidget
         // Cash account transactions
         filteredClient.getAccounts().stream() //
                         .flatMap(account -> account.getTransactions().stream())
-                        .filter(t -> interval.contains(t.getDateTime())) //
+                        .filter(t -> interval.contains(t.getDateTimeValue())) //
                         .forEach(t -> {
-                            var row = t.getDateTime().getYear() - startYear;
-                            var col = t.getDateTime().getMonth().getValue() - 1;
+                            var row = t.getDateTimeValue().getYear() - startYear;
+                            var col = t.getDateTimeValue().getMonth().getValue() - 1;
                             var value = 0L;
                             switch (t.getType())
                             {
                                 case DEPOSIT:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())).getAmount();
                                     break;
                                 case REMOVAL:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())).getAmount();
                                     break;
                                 default:
                                     return;
@@ -60,18 +60,18 @@ public class MonthlyPNTransfersWidget extends AbstractMonthlyHeatmapWidget
         // Securities account transactions
         filteredClient.getPortfolios().stream() //
                         .flatMap(portfolio -> portfolio.getTransactions().stream())
-                        .filter(t -> interval.contains(t.getDateTime())) //
+                        .filter(t -> interval.contains(t.getDateTimeValue())) //
                         .forEach(t -> {
-                            var row = t.getDateTime().getYear() - startYear;
-                            var col = t.getDateTime().getMonth().getValue() - 1;
+                            var row = t.getDateTimeValue().getYear() - startYear;
+                            var col = t.getDateTimeValue().getMonth().getValue() - 1;
                             var value = 0L;
                             switch (t.getType())
                             {
                                 case DELIVERY_INBOUND:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())).getAmount();
                                     break;
                                 case DELIVERY_OUTBOUND:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())).getAmount();
                                     break;
                                 default:
                                     return;

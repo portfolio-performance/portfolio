@@ -100,7 +100,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,'\\d\\s]+)" //
                                                                         + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,'\\d\\s]+(\\W)?(\\p{Sc})?$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             String language = "de";
                                                             String country = "DE";
@@ -141,7 +141,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+)" //
                                                                         + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,\\d]+(\\W)?(\\p{Sc})?$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date"), Locale.UK));
+                                                            t.setDateTimeValue(asDate(v.get("date"), Locale.UK));
 
                                                             String language = "de";
                                                             String country = "DE";
@@ -185,7 +185,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+)" //
                                                                         + "(\\W)?(\\p{Sc})(\\W)?(\\-)?[\\.,\\d]+(\\W)?(\\p{Sc})?$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount"), "de", "DE"));
                                                             t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setNote(trim(v.get("note")));

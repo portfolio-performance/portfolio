@@ -203,7 +203,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                             if ("Auszahlung".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
+                            t.setDateTimeValue(asDate(v.get("date"), v.get("time")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })

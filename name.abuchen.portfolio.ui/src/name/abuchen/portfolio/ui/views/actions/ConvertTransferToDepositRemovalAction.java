@@ -44,7 +44,7 @@ public class ConvertTransferToDepositRemovalAction extends Action
             {
                 tx.setAmount(transaction.getAmount());
                 tx.setCurrencyCode(transaction.getCurrencyCode());
-                tx.setDateTime(transaction.getDateTime());
+                tx.setDateTimeValue(transaction.getDateTimeValue());
                 tx.setMonetaryAmount(transaction.getMonetaryAmount());
                 tx.setNote(transaction.getNote());
                 tx.setSecurity(transaction.getSecurity());

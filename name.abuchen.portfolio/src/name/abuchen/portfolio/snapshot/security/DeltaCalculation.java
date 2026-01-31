@@ -48,11 +48,11 @@ import name.abuchen.portfolio.money.MutableMoney;
         {
             case TAXES:
             case FEES:
-                delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                 break;
             case TAX_REFUND:
             case FEES_REFUND:
-                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                 break;
             default:
                 throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
@@ -68,13 +68,13 @@ import name.abuchen.portfolio.money.MutableMoney;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+                Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTimeValue()));
                 delta.subtract(amount);
                 cost.add(amount);
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
-                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:

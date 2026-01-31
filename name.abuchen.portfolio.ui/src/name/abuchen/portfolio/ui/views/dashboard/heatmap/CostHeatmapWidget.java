@@ -86,11 +86,11 @@ public class CostHeatmapWidget extends AbstractMonthlyHeatmapWidget
 
         filteredClient.getPortfolios().stream() //
                         .flatMap(p -> p.getTransactions().stream()) //
-                        .filter(t -> calcInterval.contains(t.getDateTime())) //
+                        .filter(t -> calcInterval.contains(t.getDateTimeValue())) //
                         .forEach(t -> {
-                            int row = t.getDateTime().getYear() - startYear;
-                            int col = t.getDateTime().getMonth().getValue() - 1;
-                            long value = t.getUnitSum(unitType).with(converter.at(t.getDateTime())).getAmount();
+                            int row = t.getDateTimeValue().getYear() - startYear;
+                            int col = t.getDateTimeValue().getMonth().getValue() - 1;
+                            long value = t.getUnitSum(unitType).with(converter.at(t.getDateTimeValue())).getAmount();
 
                             Long oldValue = model.getRow(row).getData(col);
                             model.getRow(row).setData(col, oldValue + value);
@@ -99,21 +99,21 @@ public class CostHeatmapWidget extends AbstractMonthlyHeatmapWidget
         filteredClient.getAccounts().stream() //
                         .flatMap(a -> a.getTransactions().stream()) //
                         .filter(mode::isAccountTxIncluded) //
-                        .filter(t -> calcInterval.contains(t.getDateTime())) //
+                        .filter(t -> calcInterval.contains(t.getDateTimeValue())) //
                         .forEach(t -> {
-                            int row = t.getDateTime().getYear() - startYear;
-                            int col = t.getDateTime().getMonth().getValue() - 1;
+                            int row = t.getDateTimeValue().getYear() - startYear;
+                            int col = t.getDateTimeValue().getMonth().getValue() - 1;
 
                             long value = 0;
                             if (baseTransactionTypes.contains(t.getType()))
                             {
-                                value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                                value = t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())).getAmount();
                                 if (t.getType().isCredit())
                                     value *= -1;
                             }
                             else
                             {
-                                value = t.getUnitSum(unitType).with(converter.at(t.getDateTime())).getAmount();
+                                value = t.getUnitSum(unitType).with(converter.at(t.getDateTimeValue())).getAmount();
                             }
 
                             Long oldValue = model.getRow(row).getData(col);

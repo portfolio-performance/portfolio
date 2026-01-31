@@ -393,7 +393,18 @@ public class ExtractorMatchers
 
         return new PropertyMatcher<>("date", //$NON-NLS-1$
                         expectecd, //
-                        Transaction::getDateTime);
+                        Transaction::getDateTimeValue);
+    }
+
+    public static Matcher<Transaction> hasDateBooking(String dateString)
+    {
+        LocalDateTime expectecd = dateString.contains("T") //$NON-NLS-1$
+                        ? LocalDateTime.parse(dateString)
+                        : LocalDate.parse(dateString).atStartOfDay();
+
+        return new PropertyMatcher<>("dateBooking", //$NON-NLS-1$
+                        expectecd, //
+                        Transaction::getDateTimeBooking);
     }
 
     public static Matcher<Transaction> hasShares(double value)

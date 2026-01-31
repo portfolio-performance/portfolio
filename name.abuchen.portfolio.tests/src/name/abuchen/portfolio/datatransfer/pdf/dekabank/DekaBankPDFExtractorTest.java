@@ -106,7 +106,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(21.303)));
         assertThat(entry.getSource(), is("Tagesauszug01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 1017"));
@@ -127,7 +127,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.093)));
         assertThat(entry.getSource(), is("Tagesauszug01.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 3945"));
@@ -197,7 +197,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-06-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-06-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.112)));
         assertThat(entry.getSource(), is("Tagesauszug02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 2598"));
@@ -218,7 +218,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-06-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-06-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.181)));
         assertThat(entry.getSource(), is("Tagesauszug02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 3321"));
@@ -239,7 +239,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-06-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-06-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.598)));
         assertThat(entry.getSource(), is("Tagesauszug02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 2597"));
@@ -260,7 +260,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-06-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-06-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.579)));
         assertThat(entry.getSource(), is("Tagesauszug02.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 3320"));
@@ -322,7 +322,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-10-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28.939)));
         assertThat(entry.getSource(), is("Tagesauszug03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 4387"));
@@ -343,7 +343,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-10-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-10-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20.647)));
         assertThat(entry.getSource(), is("Tagesauszug03.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 3387"));
@@ -397,7 +397,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.597)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9704 9385"));
@@ -418,7 +418,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.425)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 0130"));
@@ -439,7 +439,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.551)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 1035"));
@@ -460,7 +460,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.316)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 1612"));
@@ -481,7 +481,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.220)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 3372"));
@@ -502,7 +502,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.324)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 4016"));
@@ -523,7 +523,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.362)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 4607"));
@@ -544,7 +544,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.215)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 5155"));
@@ -565,7 +565,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.360)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 6066"));
@@ -586,7 +586,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.295)));
         assertThat(entry.getSource(), is("Tagesauszug04.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 6630"));
@@ -648,7 +648,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.369)));
         assertThat(entry.getSource(), is("Tagesauszug05.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9701 0301"));
@@ -669,7 +669,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.083)));
         assertThat(entry.getSource(), is("Tagesauszug05.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8108 0595"));
@@ -819,7 +819,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9711 1533"));
@@ -839,7 +839,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9715 5001"));
@@ -859,7 +859,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.018)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9703 5128"));
@@ -879,7 +879,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.071)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 6371"));
@@ -899,7 +899,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.052)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9709 6969"));
@@ -919,7 +919,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.067)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9712 7274"));
@@ -943,7 +943,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9714 2092"));
@@ -963,7 +963,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.012)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9718 1490"));
@@ -983,7 +983,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9733 9061"));
@@ -1003,7 +1003,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9734 0025"));
@@ -1023,7 +1023,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.034)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9721 1901"));
@@ -1043,7 +1043,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.282)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9723 4163"));
@@ -1063,7 +1063,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9724 3146"));
@@ -1083,7 +1083,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.036)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9727 4488"));
@@ -1103,7 +1103,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.287)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9728 1854"));
@@ -1122,7 +1122,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.655)));
         assertThat(transaction.getSource(), is("Tagesauszug06.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9301 6001"));
@@ -1138,7 +1138,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.619)));
         assertThat(transaction.getSource(), is("Tagesauszug06.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9302 2538"));
@@ -1280,7 +1280,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9711 1533"));
@@ -1300,7 +1300,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9715 5001"));
@@ -1320,7 +1320,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.018)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9703 5128"));
@@ -1340,7 +1340,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.071)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9705 6371"));
@@ -1360,7 +1360,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.052)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9709 6969"));
@@ -1380,7 +1380,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.067)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9712 7274"));
@@ -1400,7 +1400,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9714 2092"));
@@ -1420,7 +1420,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.012)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9718 1490"));
@@ -1440,7 +1440,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9733 9061"));
@@ -1460,7 +1460,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9734 0025"));
@@ -1480,7 +1480,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.034)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9721 1901"));
@@ -1500,7 +1500,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.282)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9723 4163"));
@@ -1520,7 +1520,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9724 3146"));
@@ -1540,7 +1540,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.036)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9727 4488"));
@@ -1560,7 +1560,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.287)));
         assertThat(entry.getSource(), is("Tagesauszug06.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9728 1854"));
@@ -1579,7 +1579,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.655)));
         assertThat(transaction.getSource(), is("Tagesauszug06.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9301 6001"));
@@ -1595,7 +1595,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-03-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.619)));
         assertThat(transaction.getSource(), is("Tagesauszug06.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9302 2538"));
@@ -1644,7 +1644,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.823)));
         assertThat(transaction.getSource(), is("Tagesauszug07.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9457 2850"));
@@ -1660,7 +1660,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.848)));
         assertThat(transaction.getSource(), is("Tagesauszug07.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9457 2851"));
@@ -1677,7 +1677,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.457)));
         assertThat(entry.getSource(), is("Tagesauszug07.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9457 2850 | Wiederanlage"));
@@ -1698,7 +1698,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.120)));
         assertThat(entry.getSource(), is("Tagesauszug07.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9457 2851 | Wiederanlage"));
@@ -1752,7 +1752,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.402)));
         assertThat(entry.getSource(), is("Tagesauszug08.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 2521"));
@@ -1806,7 +1806,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-03-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-03-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.373)));
         assertThat(entry.getSource(), is("Tagesauszug09.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 3955"));
@@ -1860,7 +1860,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-06-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.977)));
         assertThat(entry.getSource(), is("Tagesauszug10.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 3074"));
@@ -1914,7 +1914,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.339)));
         assertThat(entry.getSource(), is("Tagesauszug11.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 7103 3775"));
@@ -1935,7 +1935,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.465)));
         assertThat(entry.getSource(), is("Tagesauszug11.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 7104 1292"));
@@ -1996,7 +1996,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(29.811)));
         assertThat(transaction.getSource(), is("Tagesauszug12.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9387 9103"));
@@ -2012,7 +2012,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35.950)));
         assertThat(transaction.getSource(), is("Tagesauszug12.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9401 7546"));
@@ -2028,7 +2028,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(transaction.getSource(), is("Tagesauszug12.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9387 9103"));
 
@@ -2044,7 +2044,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.872)));
         assertThat(entry.getSource(), is("Tagesauszug12.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9387 9103 | Wiederanlage"));
@@ -2065,7 +2065,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.095)));
         assertThat(entry.getSource(), is("Tagesauszug12.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9401 7546 | Wiederanlage"));
@@ -2125,7 +2125,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.565)));
         assertThat(transaction.getSource(), is("Tagesauszug13.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9311 0573"));
@@ -2141,7 +2141,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(49.088)));
         assertThat(transaction.getSource(), is("Tagesauszug13.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9329 3756"));
@@ -2158,7 +2158,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Tagesauszug13.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9311 0573 | Wiederanlage"));
@@ -2179,7 +2179,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.418)));
         assertThat(entry.getSource(), is("Tagesauszug13.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9329 3756 | Wiederanlage"));
@@ -2232,7 +2232,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
         assertThat(transaction.getSource(), is("Tagesauszug14.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9310 0970"));
@@ -2249,7 +2249,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.385)));
         assertThat(entry.getSource(), is("Tagesauszug14.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9310 0970 | Wiederanlage"));
@@ -2302,7 +2302,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.190)));
         assertThat(transaction.getSource(), is("Tagesauszug15.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9307 0124"));
@@ -2319,7 +2319,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.134)));
         assertThat(entry.getSource(), is("Tagesauszug15.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9307 0124 | Wiederanlage"));
@@ -2372,7 +2372,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2014-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.746)));
         assertThat(transaction.getSource(), is("Tagesauszug16.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9398 1226"));
@@ -2389,7 +2389,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.451)));
         assertThat(entry.getSource(), is("Tagesauszug16.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9398 1226 | Wiederanlage"));
@@ -2442,7 +2442,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.032)));
         assertThat(transaction.getSource(), is("Tagesauszug17.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9306 3038"));
@@ -2459,7 +2459,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-11-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-11-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.058)));
         assertThat(entry.getSource(), is("Tagesauszug17.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9306 3038 | Wiederanlage"));
@@ -2520,7 +2520,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.023)));
         assertThat(transaction.getSource(), is("Tagesauszug18.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9309 1751"));
@@ -2536,7 +2536,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(52.202)));
         assertThat(transaction.getSource(), is("Tagesauszug18.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9322 8046"));
@@ -2553,7 +2553,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Tagesauszug18.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9309 1751 | Wiederanlage"));
@@ -2574,7 +2574,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.580)));
         assertThat(entry.getSource(), is("Tagesauszug18.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9322 8046 | Wiederanlage"));
@@ -2643,7 +2643,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.279)));
         assertThat(transaction.getSource(), is("Tagesauszug19.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9410 2301"));
@@ -2659,7 +2659,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.888)));
         assertThat(transaction.getSource(), is("Tagesauszug19.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9410 2302"));
@@ -2675,7 +2675,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.558)));
         assertThat(transaction.getSource(), is("Tagesauszug19.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9412 4474"));
@@ -2691,7 +2691,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.486)));
         assertThat(transaction.getSource(), is("Tagesauszug19.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9413 5783"));
@@ -2708,7 +2708,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.122)));
         assertThat(entry.getSource(), is("Tagesauszug19.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9410 2301 | Wiederanlage"));
@@ -2729,7 +2729,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Tagesauszug19.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9410 2302 | Wiederanlage"));
@@ -2749,7 +2749,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.073)));
         assertThat(entry.getSource(), is("Tagesauszug19.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9412 4474 | Wiederanlage"));
@@ -2770,7 +2770,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-11-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.457)));
         assertThat(entry.getSource(), is("Tagesauszug19.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9413 5783 | Wiederanlage"));
@@ -2831,7 +2831,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35.197)));
         assertThat(transaction.getSource(), is("Tagesauszug20.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9401 1742"));
@@ -2847,7 +2847,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
         assertThat(transaction.getSource(), is("Tagesauszug20.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9426 3111"));
@@ -2864,7 +2864,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.135)));
         assertThat(entry.getSource(), is("Tagesauszug20.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9401 1742 | Wiederanlage"));
@@ -2885,7 +2885,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.118)));
         assertThat(entry.getSource(), is("Tagesauszug20.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9426 3111 | Wiederanlage"));
@@ -2946,7 +2946,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.013)));
         assertThat(transaction.getSource(), is("Tagesauszug21.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9309 2789"));
@@ -2962,7 +2962,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50.506)));
         assertThat(transaction.getSource(), is("Tagesauszug21.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9324 0160"));
@@ -2979,7 +2979,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Tagesauszug21.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9309 2789 | Wiederanlage"));
@@ -2999,7 +2999,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.696)));
         assertThat(entry.getSource(), is("Tagesauszug21.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9324 0160 | Wiederanlage"));
@@ -3060,7 +3060,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.934)));
         assertThat(transaction.getSource(), is("Tagesauszug22.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9308 3980"));
@@ -3076,7 +3076,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.324)));
         assertThat(transaction.getSource(), is("Tagesauszug22.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9310 4730"));
@@ -3093,7 +3093,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.098)));
         assertThat(entry.getSource(), is("Tagesauszug22.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9308 3980 | Wiederanlage"));
@@ -3114,7 +3114,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Tagesauszug22.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9310 4730 | Wiederanlage"));
@@ -3174,7 +3174,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.324)));
         assertThat(transaction.getSource(), is("Tagesauszug23.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9405 8250"));
@@ -3190,7 +3190,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.445)));
         assertThat(transaction.getSource(), is("Tagesauszug23.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9406 3275"));
@@ -3207,7 +3207,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.125)));
         assertThat(entry.getSource(), is("Tagesauszug23.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9405 8250 | Wiederanlage"));
@@ -3228,7 +3228,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.517)));
         assertThat(entry.getSource(), is("Tagesauszug23.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9406 3275 | Wiederanlage"));
@@ -3297,7 +3297,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Tagesauszug24.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9406 3036"));
@@ -3313,7 +3313,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
         assertThat(transaction.getSource(), is("Tagesauszug24.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9406 3037"));
@@ -3329,7 +3329,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.449)));
         assertThat(transaction.getSource(), is("Tagesauszug24.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9407 8611"));
@@ -3345,7 +3345,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.962)));
         assertThat(transaction.getSource(), is("Tagesauszug24.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9408 5425"));
@@ -3362,7 +3362,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.063)));
         assertThat(entry.getSource(), is("Tagesauszug24.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9406 3036 | Wiederanlage"));
@@ -3382,7 +3382,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024)));
         assertThat(entry.getSource(), is("Tagesauszug24.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9406 3037 | Wiederanlage"));
@@ -3402,7 +3402,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.109)));
         assertThat(entry.getSource(), is("Tagesauszug24.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9407 8611 | Wiederanlage"));
@@ -3423,7 +3423,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.524)));
         assertThat(entry.getSource(), is("Tagesauszug24.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9408 5425 | Wiederanlage"));
@@ -3484,7 +3484,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.090)));
         assertThat(transaction.getSource(), is("Tagesauszug25.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9404 4323"));
@@ -3500,7 +3500,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.371)));
         assertThat(transaction.getSource(), is("Tagesauszug25.txt"));
         assertThat(transaction.getNote(), is("Auftragsnummer: 9405 0501"));
@@ -3517,7 +3517,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.100)));
         assertThat(entry.getSource(), is("Tagesauszug25.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9404 4323 | Wiederanlage"));
@@ -3538,7 +3538,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.074)));
         assertThat(entry.getSource(), is("Tagesauszug25.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 9405 0501 | Wiederanlage"));
@@ -3631,7 +3631,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.882)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 8358"));
@@ -3652,7 +3652,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.388)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8102 9563"));
@@ -3673,7 +3673,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.952)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 0561"));
@@ -3694,7 +3694,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.148)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 0563"));
@@ -3715,7 +3715,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.854)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 0609"));
@@ -3736,7 +3736,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.726)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 1685"));
@@ -3757,7 +3757,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.901)));
         assertThat(entry.getSource(), is("Tagesauszug26.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8103 3824"));
@@ -3777,7 +3777,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8101 8357"));
@@ -3793,7 +3793,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8102 9562"));
@@ -3809,7 +3809,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8103 0560"));
@@ -3825,7 +3825,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8103 0562"));
@@ -3841,7 +3841,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8103 0608"));
@@ -3857,7 +3857,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8103 1684"));
@@ -3873,7 +3873,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(37)));
         assertThat(deliveryTransaction.getSource(), is("Tagesauszug26.txt"));
         assertThat(deliveryTransaction.getNote(), is("Auftragsnummer: 8103 3823"));
@@ -3893,7 +3893,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(16)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -3918,7 +3918,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(40)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -3943,7 +3943,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(15)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -3968,7 +3968,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -3993,7 +3993,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -4018,7 +4018,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(34)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -4043,7 +4043,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(37)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Tagesauszug26.txt"));
@@ -4106,7 +4106,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.864)));
         assertThat(entry.getSource(), is("Tagesauszug27.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 2364"));
@@ -4127,7 +4127,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.001)));
         assertThat(entry.getSource(), is("Tagesauszug27.txt"));
         assertThat(entry.getNote(), is("Auftragsnummer: 8101 2363"));
@@ -4261,7 +4261,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.258)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4281,7 +4281,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.253)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4301,7 +4301,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.269)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4321,7 +4321,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.335)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4341,7 +4341,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(21.303)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4361,7 +4361,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.286)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4381,7 +4381,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.275)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4402,7 +4402,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.087)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4422,7 +4422,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.736)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4442,7 +4442,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.075)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4462,7 +4462,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.068)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4482,7 +4482,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.082)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4502,7 +4502,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.068)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4522,7 +4522,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.037)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4542,7 +4542,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.330)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4563,7 +4563,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.451)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4583,7 +4583,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.439)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4603,7 +4603,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.433)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4623,7 +4623,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19.842)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4643,7 +4643,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.431)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4663,7 +4663,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.426)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4683,7 +4683,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.426)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4704,7 +4704,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.735)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4724,7 +4724,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.739)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4744,7 +4744,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.730)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4764,7 +4764,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.230)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4784,7 +4784,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.724)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4804,7 +4804,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.725)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4824,7 +4824,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.704)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4844,7 +4844,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.153)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4865,7 +4865,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.485)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4885,7 +4885,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.492)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4905,7 +4905,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.483)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4925,7 +4925,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.505)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4945,7 +4945,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.093)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4965,7 +4965,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.502)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -4985,7 +4985,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.466)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5005,7 +5005,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.416)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5026,7 +5026,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.395)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5046,7 +5046,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.340)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5066,7 +5066,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.337)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5086,7 +5086,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.157)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5106,7 +5106,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.535)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5126,7 +5126,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.145)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5146,7 +5146,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.094)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5167,7 +5167,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.290)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5187,7 +5187,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.273)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5207,7 +5207,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.301)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5227,7 +5227,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.382)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5247,7 +5247,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.328)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5267,7 +5267,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.298)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5287,7 +5287,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.488)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5308,7 +5308,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.267)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5328,7 +5328,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.319)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5349,7 +5349,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.510)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5369,7 +5369,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.534)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5389,7 +5389,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.533)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5409,7 +5409,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.620)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5429,7 +5429,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.465)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5449,7 +5449,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.404)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5470,7 +5470,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.869)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5490,7 +5490,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.361)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5511,7 +5511,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.464)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5531,7 +5531,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.452)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5552,7 +5552,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.217)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5572,7 +5572,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.391)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5592,7 +5592,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.140)));
         assertThat(entry.getSource(), is("Quartalsbericht01.txt"));
         assertNull(entry.getNote());
@@ -5612,7 +5612,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2021-05-28T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-28T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.315)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht01.txt"));
         assertThat(deliveryTransaction.getNote(), is("Fusion"));
@@ -5628,7 +5628,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2021-05-28T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-28T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.140)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht01.txt"));
         assertThat(deliveryTransaction.getNote(), is("Fusion"));
@@ -5648,7 +5648,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2021-05-28T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(1.315)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht01.txt"));
@@ -5673,7 +5673,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2021-05-28T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(2.140)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht01.txt"));
@@ -5744,7 +5744,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.255)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5765,7 +5765,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.268)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5786,7 +5786,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5811,7 +5811,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -5834,7 +5834,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.271)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5855,7 +5855,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.545)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5876,7 +5876,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.616)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5897,7 +5897,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.598)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5918,7 +5918,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.418)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5939,7 +5939,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.443)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5960,7 +5960,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.430)));
         assertThat(entry.getSource(), is("Quartalsbericht02.txt"));
         assertNull(entry.getNote());
@@ -5980,7 +5980,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.190 - 0.271 + 0.000 + 0.000)));
         assertThat(transaction.getSource(), is("Quartalsbericht02.txt"));
         assertNull(transaction.getNote());
@@ -5996,7 +5996,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.190 - 0.271 - 0.000)));
         assertThat(transaction.getSource(), is("Quartalsbericht02.txt"));
         assertNull(transaction.getNote());
@@ -6015,7 +6015,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(),
                         is(Values.Share.factorize(15.396 + 0.255 + 0.268)));
@@ -6071,7 +6071,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Quartalsbericht03.txt"));
         assertNull(entry.getNote());
@@ -6092,7 +6092,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.155)));
         assertThat(entry.getSource(), is("Quartalsbericht03.txt"));
         assertNull(entry.getNote());
@@ -6113,7 +6113,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-09-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.162)));
         assertThat(entry.getSource(), is("Quartalsbericht03.txt"));
         assertNull(entry.getNote());
@@ -6175,7 +6175,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.140)));
         assertThat(entry.getSource(), is("Quartalsbericht04.txt"));
         assertNull(entry.getNote());
@@ -6196,7 +6196,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-23T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.151)));
         assertThat(entry.getSource(), is("Quartalsbericht04.txt"));
         assertNull(entry.getNote());
@@ -6217,7 +6217,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.156)));
         assertThat(entry.getSource(), is("Quartalsbericht04.txt"));
         assertNull(entry.getNote());
@@ -6238,7 +6238,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.775)));
         assertThat(entry.getSource(), is("Quartalsbericht04.txt"));
         assertNull(entry.getNote());
@@ -6258,7 +6258,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-17T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.147)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht04.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2021"));
@@ -6380,7 +6380,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-01-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-01-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.228)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6401,7 +6401,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.216)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6422,7 +6422,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.008)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6442,7 +6442,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.212)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6463,7 +6463,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-04-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-04-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.202)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6484,7 +6484,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-05-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-05-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.203)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6505,7 +6505,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.204)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6526,7 +6526,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.196)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6547,7 +6547,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.202)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6568,7 +6568,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-09-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-09-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.196)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6589,7 +6589,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.196)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6610,7 +6610,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.186)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6631,7 +6631,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.184)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6652,7 +6652,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.194)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6673,7 +6673,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.170)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6693,7 +6693,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.121)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6714,7 +6714,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.020)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6735,7 +6735,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.034)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6755,7 +6755,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.045)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6775,7 +6775,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.140)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6795,7 +6795,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.098)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6816,7 +6816,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.00)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6837,7 +6837,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.015)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6857,7 +6857,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.373)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6878,7 +6878,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.019)));
         assertThat(entry.getSource(), is("Quartalsbericht05.txt"));
         assertNull(entry.getNote());
@@ -6897,7 +6897,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2019-05-16T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-16T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.197)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht05.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2018"));
@@ -6913,7 +6913,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.981 + 0.228 + 0.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -6929,7 +6929,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.461)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -6945,7 +6945,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50.822)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -6961,7 +6961,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.598)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -6977,7 +6977,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.391)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -6993,7 +6993,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(11.394)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -7009,7 +7009,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.892)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -7025,7 +7025,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.756)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -7041,7 +7041,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(29.546)));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertNull(transaction.getNote());
@@ -7060,7 +7060,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.50))));
         assertThat(transaction.getSource(), is("Quartalsbericht05.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2019"));
@@ -7169,7 +7169,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7189,7 +7189,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7209,7 +7209,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7229,7 +7229,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.125)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7250,7 +7250,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7270,7 +7270,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7290,7 +7290,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.373)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7311,7 +7311,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7331,7 +7331,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-06-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-06-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.006)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7352,7 +7352,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.110)));
         assertThat(entry.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7371,7 +7371,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2012-05-21T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2012-05-21T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.621)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht06.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2011"));
@@ -7387,7 +7387,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12.778)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7403,7 +7403,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50.169)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7419,7 +7419,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.454)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7435,7 +7435,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.791)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7451,7 +7451,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.694)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7467,7 +7467,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.332)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7483,7 +7483,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(13.772)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7499,7 +7499,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(28.237)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(transaction.getNote());
@@ -7515,7 +7515,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.898 - 0.110)));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertNull(entry.getNote());
@@ -7537,7 +7537,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7565,7 +7565,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7593,7 +7593,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7621,7 +7621,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7649,7 +7649,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7677,7 +7677,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -7702,7 +7702,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht06.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2012"));
@@ -7747,7 +7747,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.149)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7768,7 +7768,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-02-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-02-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.155)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7789,7 +7789,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.165)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7810,7 +7810,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-04-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-04-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.158)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7831,7 +7831,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.165)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7852,7 +7852,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.174)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7873,7 +7873,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7894,7 +7894,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-08-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-08-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.155)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7915,7 +7915,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-09-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.162)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7936,7 +7936,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-10-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-10-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.172)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7957,7 +7957,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-11-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-11-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.163)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -7978,7 +7978,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-12-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.165)));
         assertThat(entry.getSource(), is("Quartalsbericht07.txt"));
         assertNull(entry.getNote());
@@ -8001,7 +8001,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.50))));
         assertThat(transaction.getSource(), is("Quartalsbericht07.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2022"));
@@ -8062,7 +8062,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-23T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-01-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.153)));
         assertThat(entry.getSource(), is("Quartalsbericht08.txt"));
         assertNull(entry.getNote());
@@ -8083,7 +8083,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.176)));
         assertThat(entry.getSource(), is("Quartalsbericht08.txt"));
         assertNull(entry.getNote());
@@ -8104,7 +8104,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.151)));
         assertThat(entry.getSource(), is("Quartalsbericht08.txt"));
         assertNull(entry.getNote());
@@ -8125,7 +8125,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-03-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-03-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.154)));
         assertThat(entry.getSource(), is("Quartalsbericht08.txt"));
         assertNull(entry.getNote());
@@ -8146,7 +8146,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.498)));
         assertThat(entry.getSource(), is("Quartalsbericht08.txt"));
         assertNull(entry.getNote());
@@ -8166,7 +8166,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2023-01-06T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2023-01-06T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.016)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht08.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuererstattung"));
@@ -8182,7 +8182,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.297 + 0.153)));
         assertThat(transaction.getSource(), is("Quartalsbericht08.txt"));
         assertNull(transaction.getNote());
@@ -8198,7 +8198,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(29.658)));
         assertThat(transaction.getSource(), is("Quartalsbericht08.txt"));
         assertNull(transaction.getNote());
@@ -8320,7 +8320,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-01-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-01-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.630)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8341,7 +8341,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-02-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-02-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.032)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8361,7 +8361,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-02-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-02-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.615)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8382,7 +8382,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-03-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-03-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.622)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8403,7 +8403,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-04-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-04-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.636)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8424,7 +8424,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-05-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-05-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.608)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8445,7 +8445,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-06-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-06-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.588)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8466,7 +8466,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-07-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-07-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.564)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8487,7 +8487,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.573)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8508,7 +8508,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-09-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-09-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.546)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8529,7 +8529,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-10-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-10-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.574)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8550,7 +8550,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.539)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8571,7 +8571,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.161)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8592,7 +8592,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.166)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8613,7 +8613,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-06-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-06-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.858)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8634,7 +8634,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8655,7 +8655,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.054)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8675,7 +8675,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-12-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-12-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.143)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertThat(entry.getNote(), is("Depotpreis 2005"));
@@ -8696,7 +8696,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-01-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-01-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.004)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8716,7 +8716,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8736,7 +8736,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-01-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-01-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8757,7 +8757,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-02-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8778,7 +8778,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-03-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-03-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8799,7 +8799,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-04-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-04-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8820,7 +8820,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.494)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8841,7 +8841,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-01-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-01-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.002)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8861,7 +8861,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-10-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-10-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.854)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8882,7 +8882,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.782)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8903,7 +8903,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8923,7 +8923,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.100)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8943,7 +8943,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23.223)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8964,7 +8964,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.451)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -8985,7 +8985,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9005,7 +9005,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-09-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-09-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.00)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9025,7 +9025,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9045,7 +9045,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-09-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-09-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9065,7 +9065,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.949)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9086,7 +9086,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2005-11-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2005-11-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.812)));
         assertThat(entry.getSource(), is("Quartalsbericht09.txt"));
         assertNull(entry.getNote());
@@ -9112,7 +9112,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -9140,7 +9140,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -9168,7 +9168,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2005-09-09T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -9196,7 +9196,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2005-09-14T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -9218,7 +9218,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-02-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-02-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.135 - 0.539 - 0.574 - 0.546 - 0.573 - 0.564
                         - 0.588 - 0.608 - 0.636 - 0.622 - 0.615 - 0.032)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
@@ -9235,7 +9235,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.475 - 1.166 - 0.161)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9251,7 +9251,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20.130 + 0.143 - 0.054)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9267,7 +9267,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-01-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-01-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.909)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9283,7 +9283,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-12-30T00:00")));
         // assertThat(transaction.getShares(),
         // is(Values.Share.factorize(0.913)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
@@ -9300,7 +9300,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(43.494 - 2.494)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9316,7 +9316,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-01-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-01-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45.986 - 0.000 - 8.782 - 5.854 - 0.002)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9332,7 +9332,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45.986)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9348,7 +9348,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 23.223 - 0.100)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9364,7 +9364,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.268 - 0.451)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9380,7 +9380,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9396,7 +9396,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9412,7 +9412,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-09-09T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-09-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9428,7 +9428,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-08-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.194)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9444,7 +9444,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-09-14T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.194 + 0.025)));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertNull(transaction.getNote());
@@ -9463,7 +9463,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0.913)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
@@ -9487,7 +9487,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(),
                         is(Values.Share.factorize(31.348 + 0.002 + 5.854 + 8.782)));
@@ -9512,7 +9512,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2005-08-22T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
@@ -9536,7 +9536,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2005-09-09T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
@@ -9560,7 +9560,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2005-09-14T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(26.194 + 0.025)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht09.txt"));
@@ -9584,7 +9584,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2005-12-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2005-12-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht09.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2005"));
@@ -9693,7 +9693,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.198)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9714,7 +9714,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.102)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertThat(entry.getNote(), is("Vertragsgebühr 2006"));
@@ -9734,7 +9734,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.514)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9755,7 +9755,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-01-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.523)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9776,7 +9776,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-01-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-01-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.505)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9797,7 +9797,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-02-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-02-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.129)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9817,7 +9817,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-02-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-02-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.499)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9838,7 +9838,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-03-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-03-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.496)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9859,7 +9859,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-04-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-04-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.493)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9880,7 +9880,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-06-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-06-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.521)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9901,7 +9901,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-07-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-07-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.516)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9922,7 +9922,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-08-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-08-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.508)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9943,7 +9943,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-08-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-08-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.496)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9964,7 +9964,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-09-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-09-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.489)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -9985,7 +9985,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-10-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-10-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.471)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10006,7 +10006,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-11-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-11-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.475)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10027,7 +10027,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.460)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10048,7 +10048,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.157)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10069,7 +10069,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-11-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-11-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.152)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10090,7 +10090,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.004)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10110,7 +10110,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.117)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertThat(entry.getNote(), is("Depotpreis 2006"));
@@ -10131,7 +10131,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-01-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.005)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10151,7 +10151,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-10-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-10-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.323)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10172,7 +10172,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10192,7 +10192,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.771)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10213,7 +10213,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-01-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-01-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.699)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10234,7 +10234,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10254,7 +10254,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.461)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10275,7 +10275,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-01-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-01-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.089)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10296,7 +10296,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.070)));
         assertThat(entry.getSource(), is("Quartalsbericht10.txt"));
         assertNull(entry.getNote());
@@ -10321,7 +10321,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -10349,7 +10349,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -10371,7 +10371,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-02-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-02-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.716 - 0.460 - 0.475 - 0.471 - 0.489 - 0.496
                         - 0.508 - 0.516 - 0.521 - 0.493 - 0.496 - 0.499 - 0.129)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
@@ -10388,7 +10388,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.475)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10404,7 +10404,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20.130 + 12.152)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10420,7 +10420,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-01-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.913)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10436,7 +10436,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.913 + 0.005 + 15.323)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10452,7 +10452,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(43.494)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10468,7 +10468,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(45.986 + 8.699)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10484,7 +10484,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(26.268)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10500,7 +10500,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(39.168 + 9.089)));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertNull(transaction.getNote());
@@ -10519,7 +10519,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(),
                         is(Values.Share.factorize(0.913 + 0.005 + 15.323)));
@@ -10544,7 +10544,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(45.986 + 8.699)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht10.txt"));
@@ -10568,7 +10568,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2006"));
@@ -10578,7 +10578,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2006-12-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2006-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(5.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht10.txt"));
         assertThat(transaction.getNote(), is("Vertragsgebühr 2006"));
@@ -10695,7 +10695,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-09-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.598)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10716,7 +10716,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertThat(entry.getNote(), is("Depotpreis 2008"));
@@ -10737,7 +10737,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.795)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10758,7 +10758,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2007-12-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2007-12-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.952)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10779,7 +10779,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.007)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10799,7 +10799,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-08-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-08-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.926)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10820,7 +10820,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.494)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10841,7 +10841,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.357)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertThat(entry.getNote(), is("Vertragsgebühr 2008"));
@@ -10862,7 +10862,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-01-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-01-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.519)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10883,7 +10883,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.258)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10904,7 +10904,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-02-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-02-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.519)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10925,7 +10925,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-03-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-03-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.551)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10946,7 +10946,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-04-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-04-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.519)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10967,7 +10967,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-05-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-05-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.508)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -10988,7 +10988,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.578)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11009,7 +11009,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-07-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-07-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.577)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11030,7 +11030,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-08-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-08-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.571)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11051,7 +11051,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-09-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-09-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.651)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11072,7 +11072,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-31T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-10-31T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.775)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11093,7 +11093,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-11-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-11-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.817)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11114,7 +11114,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.848)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11135,7 +11135,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-03-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-03-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.761)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11156,7 +11156,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-04-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-04-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.531)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11177,7 +11177,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.473)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11198,7 +11198,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.451)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11219,7 +11219,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11239,7 +11239,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.161)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11260,7 +11260,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-05-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-05-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.270)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11281,7 +11281,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.078)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11301,7 +11301,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-01-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-01-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.168)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11322,7 +11322,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-03-07T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-03-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.025)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11343,7 +11343,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.998)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11364,7 +11364,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11384,7 +11384,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(48.399)));
         assertThat(entry.getSource(), is("Quartalsbericht11.txt"));
         assertNull(entry.getNote());
@@ -11410,7 +11410,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2008-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -11438,7 +11438,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -11460,7 +11460,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.529 + 3.952)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11476,7 +11476,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-02-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-02-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(21.253 + 0.519)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11492,7 +11492,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11508,7 +11508,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.934 - 0.161)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11524,7 +11524,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.324 - 0.078)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11540,7 +11540,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-01-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-01-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.00 + 15.025 - 0.168)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11556,7 +11556,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(49.088 - 1.998)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11572,7 +11572,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 48.399 - 0.000)));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertNull(transaction.getNote());
@@ -11591,7 +11591,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2008-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht11.txt"));
@@ -11615,7 +11615,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(),
                         is(Values.Share.factorize(0.000 + 48.399 - 0.000)));
@@ -11640,7 +11640,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2008"));
@@ -11650,7 +11650,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht11.txt"));
         assertThat(transaction.getNote(), is("Vertragsgebühr 2008"));
@@ -11759,7 +11759,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-06-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.977)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11780,7 +11780,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11801,7 +11801,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-10-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.402)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11822,7 +11822,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-03-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-03-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.373)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11843,7 +11843,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-03-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-03-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.373)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11864,7 +11864,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11884,7 +11884,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.065)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11904,7 +11904,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.326)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11925,7 +11925,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-01-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-01-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.867)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11946,7 +11946,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.872)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11967,7 +11967,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-02-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-02-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.998)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -11988,7 +11988,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12008,7 +12008,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.098)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12029,7 +12029,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.047)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12049,7 +12049,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.418)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12070,7 +12070,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.095)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12090,7 +12090,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht12.txt"));
         assertNull(entry.getNote());
@@ -12115,7 +12115,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2009-07-02T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12143,7 +12143,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2009-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12171,7 +12171,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2009-12-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12193,7 +12193,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2009-11-17T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2009-11-17T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(10.744)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht12.txt"));
         assertThat(deliveryTransaction.getNote(), is("Kauf Zulagenzahlung"));
@@ -12209,7 +12209,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2.014 - 0.402 - 0.047)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12225,7 +12225,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12241,7 +12241,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(38.686 - 10.744 - 8.326 - 0.065)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12257,7 +12257,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-02-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-02-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(31.681 - 0.998 - 0.872)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12273,7 +12273,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12289,7 +12289,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.032 - 0.098)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12305,7 +12305,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.371 - 0.047)));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertNull(transaction.getNote());
@@ -12324,7 +12324,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2009-07-02T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
@@ -12348,7 +12348,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2009-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
@@ -12372,7 +12372,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2009-12-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht12.txt"));
@@ -12396,7 +12396,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2009"));
@@ -12406,7 +12406,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(21.06))));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertThat(transaction.getNote(), is("Abschluss-/ Vertriebskosten 2009"));
@@ -12416,7 +12416,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2009-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht12.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis 2009"));
@@ -12525,7 +12525,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.001)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12546,7 +12546,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12566,7 +12566,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12586,7 +12586,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-02-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-02-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.331)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12607,7 +12607,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.339)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12628,7 +12628,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-14T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.465)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12649,7 +12649,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12669,7 +12669,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.864)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12690,7 +12690,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12710,7 +12710,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-11-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-11-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.058)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12731,7 +12731,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12751,7 +12751,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.696)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12772,7 +12772,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12792,7 +12792,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.059)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12812,7 +12812,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.448)));
         assertThat(entry.getSource(), is("Quartalsbericht13.txt"));
         assertNull(entry.getNote());
@@ -12838,7 +12838,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12866,7 +12866,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12894,7 +12894,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12922,7 +12922,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12950,7 +12950,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2010-12-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -12972,7 +12972,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2010-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2010-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.246)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2009"));
@@ -12988,7 +12988,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.023 - 0.010)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13004,7 +13004,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13020,7 +13020,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-02-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-02-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.816 - 0.465 - 1.339 - 0.331)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13036,7 +13036,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13052,7 +13052,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13068,7 +13068,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.090 - 0.058)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13084,7 +13084,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.371)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13100,7 +13100,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(52.202 - 1.696)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13116,7 +13116,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13132,7 +13132,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(47.439 - 7.448 - 0.059)));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertNull(transaction.getNote());
@@ -13151,7 +13151,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-07-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13175,7 +13175,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13199,7 +13199,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13223,7 +13223,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(32.371)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13247,7 +13247,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-12-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13271,7 +13271,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13295,7 +13295,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13320,7 +13320,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht13.txt"));
@@ -13344,7 +13344,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2010"));
@@ -13354,7 +13354,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.77))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Abschluss-/ Vertriebskosten 2010"));
@@ -13364,7 +13364,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis (zu Lasten Girokonto) 2010"));
@@ -13374,7 +13374,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis (zu Lasten Vertrag) 2010"));
@@ -13384,7 +13384,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Weitere Preise (zu Lasten Girokonto) 2010"));
@@ -13394,7 +13394,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht13.txt"));
         assertThat(transaction.getNote(), is("Weitere Preise (zu Lasten Vertrag) 2010"));
@@ -13503,7 +13503,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13524,7 +13524,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13544,7 +13544,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-02-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-02-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.166)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13564,7 +13564,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13584,7 +13584,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13604,7 +13604,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.100)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13625,7 +13625,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.074)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13645,7 +13645,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.580)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13666,7 +13666,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-12-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-12-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13686,7 +13686,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.051)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13706,7 +13706,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.077)));
         assertThat(entry.getSource(), is("Quartalsbericht14.txt"));
         assertNull(entry.getNote());
@@ -13732,7 +13732,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -13760,7 +13760,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -13788,7 +13788,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -13816,7 +13816,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2011-12-30T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -13838,7 +13838,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2011-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2011-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.739)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht14.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2010"));
@@ -13854,7 +13854,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.036 - 0.013)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13870,7 +13870,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13886,7 +13886,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-02-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-02-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.982 - 0.166)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13902,7 +13902,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13918,7 +13918,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-10-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13934,7 +13934,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.190 - 0.100)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13950,7 +13950,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-11-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-11-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.445 - 0.074)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13966,7 +13966,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-08-19T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-08-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53.782 - 1.580)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13982,7 +13982,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-12-30T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-12-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -13998,7 +13998,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-07-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(58.306 - 8.077 - 0.051)));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertNull(transaction.getNote());
@@ -14017,7 +14017,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2011-07-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
@@ -14041,7 +14041,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
@@ -14065,7 +14065,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
@@ -14089,7 +14089,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2011-12-30T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht14.txt"));
@@ -14113,7 +14113,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht14.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2011"));
@@ -14222,7 +14222,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-01-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-01-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.036)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14243,7 +14243,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14263,7 +14263,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-02-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-02-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.351)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14284,7 +14284,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14304,7 +14304,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14324,7 +14324,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.134)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14345,7 +14345,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14365,7 +14365,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-07-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53.782)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14386,7 +14386,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14406,7 +14406,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-02-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24.337)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14427,7 +14427,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.275)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14448,7 +14448,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-20T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-12-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(17.397)));
         assertThat(entry.getSource(), is("Quartalsbericht15.txt"));
         assertNull(entry.getNote());
@@ -14474,7 +14474,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -14502,7 +14502,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -14530,7 +14530,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -14558,7 +14558,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -14586,7 +14586,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -14608,7 +14608,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2012-05-21T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2012-05-21T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.617)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht15.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2011"));
@@ -14624,7 +14624,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.795)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14640,7 +14640,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-02-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-02-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.333 - 0.351)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14656,7 +14656,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.216)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14672,7 +14672,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.864)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14688,7 +14688,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.324 - 0.134)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14704,7 +14704,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32.445)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14720,7 +14720,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(36.045)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14736,7 +14736,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-07-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(101.932 - 17.397 - 0.275)));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertNull(transaction.getNote());
@@ -14755,7 +14755,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.795)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
@@ -14779,7 +14779,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.216)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
@@ -14803,7 +14803,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(5.864)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
@@ -14827,7 +14827,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(32.445)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
@@ -14851,7 +14851,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(36.045)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht15.txt"));
@@ -14875,7 +14875,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht15.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2012"));
@@ -14968,7 +14968,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -14988,7 +14988,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-08-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.091)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15009,7 +15009,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15029,7 +15029,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.239)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15050,7 +15050,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15070,7 +15070,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.101)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15091,7 +15091,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15111,7 +15111,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.039)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15131,7 +15131,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15151,7 +15151,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.052)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15172,7 +15172,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15192,7 +15192,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.236)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15213,7 +15213,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.009)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15233,7 +15233,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-08-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.220)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15254,7 +15254,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15274,7 +15274,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-01-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-01-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.582)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15295,7 +15295,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-11-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-11-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.428)));
         assertThat(entry.getSource(), is("Quartalsbericht16.txt"));
         assertNull(entry.getNote());
@@ -15321,7 +15321,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15349,7 +15349,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15377,7 +15377,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15405,7 +15405,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15433,7 +15433,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15461,7 +15461,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15489,7 +15489,7 @@ public class DekaBankPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(0)));
@@ -15511,7 +15511,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2018-05-15T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.024)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht16.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2017"));
@@ -15527,7 +15527,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.642 - 0.091)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15543,7 +15543,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-08-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.642 - 0.091)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15559,7 +15559,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(39.231 - 0.239)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15575,7 +15575,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-08-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(39.231 - 0.239)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15591,7 +15591,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.615 - 0.101)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15607,7 +15607,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.615 - 0.101)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15623,7 +15623,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.018 - 0.039)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15639,7 +15639,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.018 - 0.039)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15655,7 +15655,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.833 - 0.052)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15671,7 +15671,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.833 - 0.052)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15687,7 +15687,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.621 - 0.236)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15703,7 +15703,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-11-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-11-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.621 - 0.236)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15719,7 +15719,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(37.758 - 0.220 - 0.009)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15735,7 +15735,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-08-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(37.758 - 0.220)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15751,7 +15751,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(295.513 - 25.428 - 2.024 - 0.582)));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertNull(transaction.getNote());
@@ -15770,7 +15770,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(16.642 - 0.091)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15794,7 +15794,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(39.231 - 0.239)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15818,7 +15818,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(15.615 - 0.101)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15842,7 +15842,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(6.0180 - 0.039)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15866,7 +15866,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(6.833 - 0.052)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15890,7 +15890,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(), is(Values.Share.factorize(34.621 - 0.236)));
         assertThat(((Transaction) cancellation1.getSubject()).getSource(), is("Quartalsbericht16.txt"));
@@ -15914,7 +15914,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation1.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
         assertThat(((Transaction) cancellation1.getSubject()).getShares(),
                         is(Values.Share.factorize(295.513 - 25.428 - 2.024 - 0.582)));
@@ -15939,7 +15939,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.50))));
         assertThat(transaction.getSource(), is("Quartalsbericht16.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2018"));
@@ -16032,7 +16032,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.240)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16053,7 +16053,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.396)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16074,7 +16074,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.337)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16095,7 +16095,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.130)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16116,7 +16116,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.021)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16137,7 +16137,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.105)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16158,7 +16158,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.125)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16179,7 +16179,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-06-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.051)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16199,7 +16199,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.058)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16219,7 +16219,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(21.727)));
         assertThat(entry.getSource(), is("Quartalsbericht17.txt"));
         assertNull(entry.getNote());
@@ -16239,7 +16239,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2019-05-16T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2019-05-16T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.197)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht17.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2018"));
@@ -16255,7 +16255,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.882 - 0.240)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16271,7 +16271,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(39.627 - 0.396)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16287,7 +16287,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.952 - 0.337)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16303,7 +16303,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.148 - 0.130)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16319,7 +16319,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6.854 - 0.021)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16335,7 +16335,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-11-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-11-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34.726 - 0.105)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16351,7 +16351,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(37.883 - 0.125)));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertNull(transaction.getNote());
@@ -16370,7 +16370,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.50))));
         assertThat(transaction.getSource(), is("Quartalsbericht17.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2019"));
@@ -16463,7 +16463,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.882)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16484,7 +16484,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.761)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16505,7 +16505,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.388)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16526,7 +16526,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.952)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16547,7 +16547,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.148)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16568,7 +16568,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-19T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-19T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.854)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16589,7 +16589,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.726)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16610,7 +16610,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.018)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16630,7 +16630,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.901)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16651,7 +16651,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.119)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertNull(entry.getNote());
@@ -16672,7 +16672,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(275.911)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertThat(entry.getNote(), is("Schädliche Verwendung"));
@@ -16693,7 +16693,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.580)));
         assertThat(entry.getSource(), is("Quartalsbericht18.txt"));
         assertThat(entry.getNote(), is("Entgelt Auflösung"));
@@ -16713,7 +16713,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(16)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16729,7 +16729,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16745,7 +16745,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16761,7 +16761,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16777,7 +16777,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16793,7 +16793,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16809,7 +16809,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-03-18T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(37)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(deliveryTransaction.getNote());
@@ -16825,7 +16825,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-05-15T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-15T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(2.212)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2019"));
@@ -16841,7 +16841,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.356)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(deliveryTransaction.getNote(), is("Korrekturbuchung"));
@@ -16857,7 +16857,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(45.699)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuerrückzahlung"));
@@ -16873,7 +16873,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(23.331)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenrückzahlung"));
@@ -16889,7 +16889,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 0.388 + 40.000 - 0.761)));
         assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(transaction.getNote());
@@ -16905,7 +16905,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 0.901 + 37.000 - 0.018)));
         assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
         assertNull(transaction.getNote());
@@ -16925,7 +16925,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(16)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -16950,7 +16950,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(40)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -16975,7 +16975,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(15)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17000,7 +17000,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17025,7 +17025,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(6)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17050,7 +17050,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(34)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17075,7 +17075,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(37)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17099,7 +17099,7 @@ public class DekaBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+        assertThat(((Transaction) cancellation.getSubject()).getDateTimeValue(),
                         is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(0)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("Quartalsbericht18.txt"));
@@ -17123,7 +17123,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2020"));
@@ -17133,7 +17133,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(48.74))));
         assertThat(transaction.getSource(), is("Quartalsbericht18.txt"));
         assertThat(transaction.getNote(), is("Entgelt Auflösung"));
@@ -17194,7 +17194,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.220)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17215,7 +17215,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.216)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17236,7 +17236,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.213)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17257,7 +17257,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.471)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17278,7 +17278,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.116)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17299,7 +17299,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.786)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17320,7 +17320,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17340,7 +17340,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17360,7 +17360,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.209)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17381,7 +17381,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.436)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17402,7 +17402,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.731)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17423,7 +17423,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.077)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17444,7 +17444,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.007)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17464,7 +17464,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.014)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17484,7 +17484,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.996)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17505,7 +17505,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.205)));
         assertThat(entry.getSource(), is("Quartalsbericht19.txt"));
         assertNull(entry.getNote());
@@ -17525,7 +17525,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.422)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht19.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2019"));
@@ -17541,7 +17541,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.126)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht19.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2019"));
@@ -17557,7 +17557,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(21.100 - 0.471)));
         assertThat(transaction.getSource(), is("Quartalsbericht19.txt"));
         assertNull(transaction.getNote());
@@ -17671,7 +17671,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17691,7 +17691,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17712,7 +17712,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.201)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17733,7 +17733,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.200)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17754,7 +17754,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.197)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17775,7 +17775,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.143)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17796,7 +17796,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-26T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.260)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17817,7 +17817,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.867)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17838,7 +17838,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.910)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -17859,7 +17859,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Vertragspreis 2020"));
@@ -17879,7 +17879,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.560)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Schädliche Verwendung"));
@@ -17900,7 +17900,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.066)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Entgelt Auflösung"));
@@ -17920,7 +17920,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.083)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Vertragspreis 2020"));
@@ -17940,7 +17940,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.869)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Schädliche Verwendung"));
@@ -17961,7 +17961,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.416)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertThat(entry.getNote(), is("Entgelt Auflösung"));
@@ -17982,7 +17982,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.212)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -18003,7 +18003,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.661)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -18024,7 +18024,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -18044,7 +18044,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht20.txt"));
         assertNull(entry.getNote());
@@ -18063,7 +18063,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.260)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(deliveryTransaction.getNote(), is("Kauf aus Steuererstattung"));
@@ -18079,7 +18079,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.287)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuerrückzahlung"));
@@ -18095,7 +18095,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.741)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenrückzahlung"));
@@ -18111,7 +18111,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.817)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuerrückzahlung"));
@@ -18127,7 +18127,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(4.693)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenrückzahlung"));
@@ -18143,7 +18143,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(14.513 - 0.006)));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertNull(transaction.getNote());
@@ -18159,7 +18159,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(28.345 - 0.167)));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertNull(transaction.getNote());
@@ -18178,7 +18178,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.95))));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis 2020"));
@@ -18188,7 +18188,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.75))));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(transaction.getNote(), is("Entgelt Auflösung"));
@@ -18198,7 +18198,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.79))));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis 2020"));
@@ -18208,7 +18208,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(38.99))));
         assertThat(transaction.getSource(), is("Quartalsbericht20.txt"));
         assertThat(transaction.getNote(), is("Entgelt Auflösung"));
@@ -18334,7 +18334,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18354,7 +18354,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.167)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18375,7 +18375,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.188)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18396,7 +18396,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.183)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18417,7 +18417,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.247)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18438,7 +18438,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.220)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18459,7 +18459,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.216)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18480,7 +18480,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.213)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18501,7 +18501,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.201)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18522,7 +18522,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.200)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18543,7 +18543,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.197)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18564,7 +18564,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.191)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18585,7 +18585,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.003)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18605,7 +18605,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.185)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18626,7 +18626,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.185)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18647,7 +18647,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-09-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-09-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.143)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18668,7 +18668,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-26T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.260)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18689,7 +18689,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.867)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18710,7 +18710,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.115)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18730,7 +18730,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.910)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18751,7 +18751,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.016)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18771,7 +18771,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.004)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18791,7 +18791,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-22T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.471)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18812,7 +18812,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.013)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Vertragspreis 2020"));
@@ -18832,7 +18832,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.560)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Schädliche Verwendung"));
@@ -18853,7 +18853,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.066)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Entgelt Auflösung"));
@@ -18873,7 +18873,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.083)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Vertragspreis 2020"));
@@ -18893,7 +18893,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.869)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Schädliche Verwendung"));
@@ -18914,7 +18914,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.416)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertThat(entry.getNote(), is("Entgelt Auflösung"));
@@ -18935,7 +18935,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.532)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18956,7 +18956,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-11T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.102)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18977,7 +18977,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.668)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -18998,7 +18998,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.757)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19019,7 +19019,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.024)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19039,7 +19039,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-13T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.033)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19059,7 +19059,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.248)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19080,7 +19080,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.102)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19101,7 +19101,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18.994)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19122,7 +19122,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35.626)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19143,7 +19143,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.116)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19164,7 +19164,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-16T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.786)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19185,7 +19185,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19205,7 +19205,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-04-17T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-04-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19225,7 +19225,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.209)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19246,7 +19246,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-18T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.436)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19267,7 +19267,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.731)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19288,7 +19288,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-09T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.077)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19309,7 +19309,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.007)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19329,7 +19329,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.014)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19349,7 +19349,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.996)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19370,7 +19370,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.205)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19391,7 +19391,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.212)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19412,7 +19412,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-24T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.661)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19433,7 +19433,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.010)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19453,7 +19453,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-27T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.006)));
         assertThat(entry.getSource(), is("Quartalsbericht21.txt"));
         assertNull(entry.getNote());
@@ -19472,7 +19472,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.260)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Kauf aus Steuererstattung"));
@@ -19488,7 +19488,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.422)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2019"));
@@ -19504,7 +19504,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-05-19T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-19T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.126)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenzahlung 2019"));
@@ -19520,7 +19520,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.287)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuerrückzahlung"));
@@ -19536,7 +19536,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(0.741)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenrückzahlung"));
@@ -19552,7 +19552,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(1.817)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Steuerrückzahlung"));
@@ -19568,7 +19568,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(deliveryTransaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(deliveryTransaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(deliveryTransaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(deliveryTransaction.getShares(), is(Values.Share.factorize(4.693)));
         assertThat(deliveryTransaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(deliveryTransaction.getNote(), is("Zulagenrückzahlung"));
@@ -19584,7 +19584,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(14.513 - 0.006)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19600,7 +19600,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(28.345 - 0.167)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19616,7 +19616,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7.377 - 0.185 - 0.185 - 0.003)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19632,7 +19632,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.000 + 25.910 - 0.115)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19648,7 +19648,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(33.823 - 0.016)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19664,7 +19664,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-21T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(8.848 - 0.004)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertNull(transaction.getNote());
@@ -19680,7 +19680,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-05-22T00:00")));
         assertThat(transaction.getShares(),
                         is(Values.Share.factorize(0.000 + 4.693 + 1.817 + 0.416 + 9.869 + 0.083 - 0.471)));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
@@ -19700,7 +19700,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(12.18))));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2020"));
@@ -19710,7 +19710,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.95))));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis 2020"));
@@ -19720,7 +19720,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.75))));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(transaction.getNote(), is("Entgelt Auflösung"));
@@ -19730,7 +19730,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(7.79))));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(transaction.getNote(), is("Vertragspreis 2020"));
@@ -19740,7 +19740,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(38.99))));
         assertThat(transaction.getSource(), is("Quartalsbericht21.txt"));
         assertThat(transaction.getNote(), is("Entgelt Auflösung"));
@@ -19785,7 +19785,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-06-30T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-06-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.888)));
         assertThat(entry.getSource(), is("Quartalsbericht22.txt"));
         assertNull(entry.getNote());
@@ -19806,7 +19806,7 @@ public class DekaBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.110)));
         assertThat(entry.getSource(), is("Quartalsbericht22.txt"));
         assertThat(entry.getNote(), is("Depotpreis 2008"));
@@ -19829,7 +19829,7 @@ public class DekaBankPDFExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2008-12-12T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2008-12-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.00))));
         assertThat(transaction.getSource(), is("Quartalsbericht22.txt"));
         assertThat(transaction.getNote(), is("Depotpreis 2008"));

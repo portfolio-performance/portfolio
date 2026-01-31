@@ -34,7 +34,7 @@ public class CreateRemovalForDividendAction extends Action
             tx.setType(AccountTransaction.Type.REMOVAL);
             tx.setCurrencyCode(transaction.getCurrencyCode());
             tx.setAmount(transaction.getAmount());
-            tx.setDateTime(transaction.getDateTime());
+            tx.setDateTimeValue(transaction.getDateTimeValue());
 
             pair.getOwner().addTransaction(tx);
         }

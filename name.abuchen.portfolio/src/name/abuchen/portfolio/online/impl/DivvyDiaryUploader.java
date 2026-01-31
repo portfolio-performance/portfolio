@@ -122,7 +122,7 @@ public class DivvyDiaryUploader
                     activity.put("type", tx.getType().isPurchase() ? "BUY" : "SELL");
                     activity.put("isin", security.getIsin());
 
-                    LocalDateTime datetime = tx.getDateTime();
+                    LocalDateTime datetime = tx.getDateTimeValue();
                     if (datetime.getHour() == 0 && datetime.getMinute() == 0)
                         datetime = datetime.withHour(12);
                     activity.put("datetime",

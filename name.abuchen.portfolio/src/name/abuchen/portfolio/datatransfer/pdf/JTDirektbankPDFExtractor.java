@@ -140,7 +140,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
 
     private void assignmentsProvider(AccountTransaction t, ParsedData v)
     {
-        t.setDateTime(asDate(v.get("date") + v.get("year")));
+        t.setDateTimeValue(asDate(v.get("date") + v.get("year")));
         t.setAmount(asAmount(v.get("amount")));
         t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 

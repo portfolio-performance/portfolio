@@ -534,7 +534,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
 
                             // Calculation of dividend shares and rounding to
                             // whole shares
@@ -622,7 +622,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                                             t.setSecurity(getOrCreateSecurity(v));
 
                                                             var date = v.get("dateYear") + "-" + v.get("dateDay");
-                                                            t.setDateTime(asDate(date));
+                                                            t.setDateTimeValue(asDate(date));
 
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -663,7 +663,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                                             t.setSecurity(getOrCreateSecurity(v));
 
                                                             var date = v.get("dateYear") + "-" + v.get("dateDay");
-                                                            t.setDateTime(asDate(date));
+                                                            t.setDateTimeValue(asDate(date));
 
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -702,7 +702,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
 
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -718,7 +718,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             type.getCurrentContext().removeType(SecurityItem.class);
 
-                            if (t.getDateTime() == null)
+                            if (t.getDateTimeValue() == null)
                                 return null;
                             else
                                 return new TransactionItem(t);
@@ -746,7 +746,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "Cash Dividend [A-Z]{3} per Share \\- Tax " //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -777,7 +777,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                             t.setNote(trim(v.get("note")));

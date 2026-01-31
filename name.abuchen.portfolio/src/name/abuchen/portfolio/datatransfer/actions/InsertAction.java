@@ -71,7 +71,7 @@ public class InsertAction implements ImportAction
 
         if (removeDividends && transaction.getType() == AccountTransaction.Type.DIVIDENDS)
         {
-            AccountTransaction removal = new AccountTransaction(transaction.getDateTime(),
+            AccountTransaction removal = new AccountTransaction(transaction.getDateTimeValue(),
                             transaction.getCurrencyCode(), transaction.getAmount(), null,
                             AccountTransaction.Type.REMOVAL);
             removal.setNote(transaction.getNote());
@@ -119,7 +119,7 @@ public class InsertAction implements ImportAction
                 // update existingTransaction when found and return
                 if (existingTransaction != null)
                 {
-                    existingTransaction.setDateTime(t.getDateTime());
+                    existingTransaction.setDateTimeValue(t.getDateTimeValue());
                     existingTransaction.setNote(t.getNote());
                     existingTransaction.setSource(t.getSource());
                     existingTransaction.setShares(t.getShares());
@@ -131,7 +131,7 @@ public class InsertAction implements ImportAction
                     {
                         Transaction crossTransaction = existingTransaction.getCrossEntry()
                                         .getCrossTransaction(existingTransaction);
-                        crossTransaction.setDateTime(t.getDateTime());
+                        crossTransaction.setDateTimeValue(t.getDateTimeValue());
                         crossTransaction.setAmount(t.getAmount());
                         crossTransaction.setNote(t.getNote());
                         crossTransaction.setSource(t.getSource());
@@ -149,7 +149,7 @@ public class InsertAction implements ImportAction
             delivery.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
                             : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-            delivery.setDateTime(t.getDateTime());
+            delivery.setDateTimeValue(t.getDateTimeValue());
             delivery.setSecurity(t.getSecurity());
             delivery.setMonetaryAmount(t.getMonetaryAmount());
             delivery.setNote(t.getNote());

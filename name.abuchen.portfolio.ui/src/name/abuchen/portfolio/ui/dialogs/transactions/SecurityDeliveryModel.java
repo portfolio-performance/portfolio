@@ -88,7 +88,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
 
         PortfolioTransaction transaction = entry.getTransaction();
 
-        transaction.setDateTime(LocalDateTime.of(date, time));
+        transaction.setDateTimeValue(LocalDateTime.of(date, time));
         transaction.setCurrencyCode(getTransactionCurrencyCode());
         transaction.setSecurity(security);
         transaction.setShares(shares);

@@ -135,7 +135,8 @@ public class DetectDuplicatesActionTest
         transaction.setType(type);
         transaction.setAmount(1000);
         transaction.setCurrencyCode("EUR"); //$NON-NLS-1$
-        transaction.setDateTime(LocalDateTime.of(2025, 12, 15, 0, 0));
+        transaction.setDateTimeValue(LocalDateTime.of(2025, 12, 15, 0, 0));
+        transaction.setDateTimeBooking(LocalDateTime.of(2025, 12, 16, 0, 0));
 
         return transaction;
     }

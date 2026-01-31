@@ -94,7 +94,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-09-23T09:02:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-09-23T09:02:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(105)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -144,7 +144,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-05T12:39:27")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-10-05T12:39:27")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -194,7 +194,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-07-21T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-07-21T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.363)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -244,7 +244,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-23T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.004)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -294,7 +294,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-05-28T15:41:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-05-28T15:41:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -344,7 +344,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T16:28:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-11-20T16:28:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-2"));
@@ -394,7 +394,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-03-06T16:57:08")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-03-06T16:57:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -444,7 +444,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-23T16:18:07")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-12-23T16:18:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.671)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -494,7 +494,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -545,7 +545,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -601,7 +601,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.536)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -652,7 +652,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.536)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -708,7 +708,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.787)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -759,7 +759,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.787)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -815,7 +815,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-25T09:15:13")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-25T09:15:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(45)));
         assertThat(entry.getSource(), is("Kauf12.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: XXXXXXXX | Limit: Bestens"));
@@ -865,7 +865,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T14:10:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-09-08T14:10:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Kauf13.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12003580 | Limit: Bestens"));
@@ -915,7 +915,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12003586 | Limit: Bestens"));
@@ -966,7 +966,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12003586 | Limit: Bestens"));
@@ -1022,7 +1022,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-16T09:31:02")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-01-16T09:31:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(500)));
         assertThat(entry.getSource(), is("Kauf15.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 13001070 | Limit: EUR 30,15"));
@@ -1182,7 +1182,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-10-23T16:46:47")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-10-23T16:46:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -1232,7 +1232,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-09T16:27:05")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-09T16:27:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -1282,7 +1282,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T15:27:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-04-16T15:27:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -1332,7 +1332,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-04-10T09:00:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-04-10T09:00:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -1382,7 +1382,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-06T16:52:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2012-12-06T16:52:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Verkauf05.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -1432,7 +1432,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-30T14:32:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-04-30T14:32:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf06.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
@@ -1482,7 +1482,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -1533,7 +1533,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
@@ -1589,7 +1589,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-08T19:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-06-08T19:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.40)));
         assertThat(entry.getSource(), is("Verkauf08.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 89628241"));
@@ -1638,7 +1638,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-13T17:10:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-06-13T17:10:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Verkauf09.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 27302059 | Limit: Bestens"));
@@ -1688,7 +1688,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T18:38:03")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-12-14T18:38:03")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
         assertThat(entry.getSource(), is("Verkauf10.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 28170733"));
@@ -1738,7 +1738,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T20:54:28")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-11-23T20:54:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(331)));
         assertThat(entry.getSource(), is("Verkauf11.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12345678"));
@@ -1788,7 +1788,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(158)));
         assertThat(entry.getSource(), is("Verkauf12.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12345678 | Limit: Bestens"));
@@ -1838,7 +1838,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(89)));
         assertThat(entry.getSource(), is("Verkauf13.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 12345678 | Limit: Bestens"));
@@ -1888,7 +1888,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-29T19:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-06-29T19:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.609)));
         assertThat(entry.getSource(), is("Verkauf14.txt"));
         assertThat(entry.getNote(), is("Ref.-Nr.: 82004481"));
@@ -1946,7 +1946,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-26T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23.008)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertNull(entry.getNote());
@@ -1967,7 +1967,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-26T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-03-26T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14.603)));
         assertThat(entry.getSource(), is("SammelabrechnungKaufVerkauf01.txt"));
         assertNull(entry.getNote());
@@ -2016,7 +2016,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
@@ -2062,7 +2062,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
@@ -2114,7 +2114,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-04-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-04-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-12345"));
@@ -2159,7 +2159,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-01-29T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-01-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-12345"));
@@ -2204,7 +2204,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
@@ -2249,7 +2249,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-13T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
@@ -2300,7 +2300,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-26T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2010-11-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35.275)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
@@ -2345,7 +2345,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-06-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2011-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20.286)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
@@ -2390,7 +2390,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2012-11-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(77.638)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
@@ -2435,7 +2435,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-22T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(96.324)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
@@ -2480,7 +2480,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-06-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-06-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(62)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertThat(transaction.getNote(), is("Ausschüttung"));
@@ -2526,7 +2526,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-03-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-03-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -2571,7 +2571,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-03-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-03-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Quartalsdividende"));
@@ -2622,7 +2622,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-05-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(75)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertNull(transaction.getNote());
@@ -2667,7 +2667,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2016-05-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertNull(transaction.getNote());
@@ -2712,7 +2712,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-06-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1270.4)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
@@ -2757,7 +2757,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-08-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25.621)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertNull(transaction.getNote());
@@ -2802,7 +2802,7 @@ public class ErsteBankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
         assertNull(transaction.getNote());

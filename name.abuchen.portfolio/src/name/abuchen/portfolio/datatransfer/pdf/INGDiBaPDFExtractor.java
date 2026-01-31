@@ -473,14 +473,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // 07/06/2024 1465 0100 32 5120505073 51,25 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -606,7 +606,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(Valuta|Zahltag) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Gesamtbetrag zu Ihren Lasten EUR - 0,16
@@ -717,7 +717,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -766,7 +766,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Lastschrift\\-Einzug)" //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -797,11 +797,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount);
 
                                                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
-                                                                            && t.getDateTime().equals(asDate(v.get("taxDate1"))))
+                                                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate1"))))
                                                             {
                                                                 var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -809,7 +809,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
-                                                                            && t.getDateTime().equals(asDate(v.get("taxDate2"))))
+                                                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate2"))))
                                                             {
                                                                 var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -817,7 +817,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
-                                                                            && t.getDateTime().equals(asDate(v.get("taxDate3"))))
+                                                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate3"))))
                                                             {
                                                                 var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
@@ -844,7 +844,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Entgelt .* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
@@ -905,7 +905,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -925,7 +925,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 

@@ -135,16 +135,16 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().size(), is(4));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-01-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-01-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-03-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.TRANSFER_OUT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
     }
 
     @Test
@@ -174,22 +174,22 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().size(), is(4));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-01-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-01-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-03-01T00:00"))), is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
 
         // check other account
         result = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(accountB)).filter(client);
         assertThat(result.getAccounts().get(0).getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
     }
 
     @Test
@@ -219,10 +219,10 @@ public class PortfolioClientFilterTest
         assertThat(portfolio.getTransactions().size(), is(2));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.TRANSFER_OUT) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
     }
 
     @Test
@@ -251,16 +251,16 @@ public class PortfolioClientFilterTest
         assertThat(portfolio.getTransactions().size(), is(2));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-02-01T00:00"))), is(true));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
 
         // check the other portfolio
         result = new PortfolioClientFilter(Arrays.asList(portfolioB), Collections.emptyList()).filter(client);
         assertThat(result.getPortfolios().get(0).getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .anyMatch(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
+                        .anyMatch(t -> t.getDateTimeValue().equals(LocalDateTime.parse("2016-04-01T00:00"))), is(true));
     }
 
     @Test

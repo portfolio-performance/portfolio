@@ -88,7 +88,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         BuySellEntry copy = new BuySellEntry(readOnlyPortfolio, readOnlyAccount);
 
-        copy.setDate(t.getDateTime());
+        copy.setDate(t.getDateTimeValue());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
         copy.setType(t.getType());
@@ -109,7 +109,7 @@ public class WithoutTaxesFilter implements ClientFilter
         // correct the taxes on the account
         AccountTransaction at = new AccountTransaction();
         at.setType(AccountTransaction.Type.REMOVAL);
-        at.setDateTime(t.getDateTime());
+        at.setDateTimeValue(t.getDateTimeValue());
         at.setMonetaryAmount(taxes);
         readOnlyAccount.internalAddTransaction(at);
     }
@@ -122,7 +122,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         PortfolioTransaction copy = new PortfolioTransaction();
         copy.setType(deliveryT.getType());
-        copy.setDateTime(deliveryT.getDateTime());
+        copy.setDateTimeValue(deliveryT.getDateTimeValue());
         copy.setCurrencyCode(deliveryT.getCurrencyCode());
         copy.setSecurity(deliveryT.getSecurity());
         copy.setNote(deliveryT.getNote());
@@ -196,7 +196,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         AccountTransaction copy = new AccountTransaction();
         copy.setType(t.getType());
-        copy.setDateTime(t.getDateTime());
+        copy.setDateTimeValue(t.getDateTimeValue());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setAmount(t.getAmount() + taxes.getAmount());
         copy.setNote(t.getNote());
@@ -210,7 +210,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         AccountTransaction removal = new AccountTransaction();
         removal.setType(AccountTransaction.Type.REMOVAL);
-        removal.setDateTime(t.getDateTime());
+        removal.setDateTimeValue(t.getDateTimeValue());
         removal.setMonetaryAmount(taxes);
         readOnlyAccount.internalAddTransaction(removal);
     }
@@ -222,7 +222,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         AccountTransaction clone = new AccountTransaction();
         clone.setType(type);
-        clone.setDateTime(t.getDateTime());
+        clone.setDateTimeValue(t.getDateTimeValue());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null);
         clone.setAmount(t.getAmount());

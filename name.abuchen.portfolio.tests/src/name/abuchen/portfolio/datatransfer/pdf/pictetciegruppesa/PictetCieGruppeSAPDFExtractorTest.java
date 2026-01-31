@@ -69,7 +69,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-20T17:06:32")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-20T17:06:32")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24728)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertThat(entry.getNote(), is("Transaction no.: 781327840"));
@@ -119,7 +119,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-02T14:40:10")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-02T14:40:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4834)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Transaction no.: 761800293"));
@@ -169,7 +169,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-02T14:39:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-02T14:39:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1497)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Transaction no.: 761800107"));
@@ -219,7 +219,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-03-22T17:45:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-03-22T17:45:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1800)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
         assertThat(entry.getNote(), is("Transaction no.: 766962817"));
@@ -269,7 +269,7 @@ public class PictetCieGruppeSAPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-07-14T10:31:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-07-14T10:31:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(74.620)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Transaction no.: 794448726"));
@@ -318,7 +318,7 @@ public class PictetCieGruppeSAPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-08-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-08-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2420)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Transaction no.: 797075451"));

@@ -64,7 +64,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(t.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(t.getDateTimeValue(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(1.2)));
         assertThat(t.getSecurity(), is(security));
         assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 11_00)));
@@ -99,7 +99,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(source.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(source.getNote(), is("Notiz"));
-        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(source.getDateTimeValue(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
         assertThat(source.getSecurity(), is(security));
         // security transfers do not support fees and taxes at the moment
@@ -151,7 +151,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(source.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(source.getNote(), is("Notiz"));
-        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T14:05")));
+        assertThat(source.getDateTimeValue(), is(LocalDateTime.parse("2013-01-01T14:05")));
         assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
         assertThat(source.getSecurity(), is(security));
         // security transfers do not support fees and taxes at the moment
@@ -193,7 +193,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(source.getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(source.getNote(), is("Notiz"));
-        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T10:07")));
+        assertThat(source.getDateTimeValue(), is(LocalDateTime.parse("2013-01-01T10:07")));
         assertThat(source.getShares(), is(Values.Share.factorize(1.2)));
         assertThat(source.getSecurity(), is(security));
         // security transfers do not support fees and taxes at the moment
@@ -233,7 +233,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(t.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-02T10:00")));
+        assertThat(t.getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T10:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(1.9)));
         assertThat(t.getSecurity(), is(security));
         assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 11_00)));

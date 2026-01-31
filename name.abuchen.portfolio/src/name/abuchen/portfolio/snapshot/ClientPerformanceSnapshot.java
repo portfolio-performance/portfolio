@@ -436,10 +436,10 @@ public class ClientPerformanceSnapshot
         {
             for (AccountTransaction t : account.getTransactions())
             {
-                if (!period.contains(t.getDateTime()))
+                if (!period.contains(t.getDateTimeValue()))
                     continue;
 
-                Money value = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+                Money value = t.getMonetaryAmount().with(converter.at(t.getDateTimeValue()));
 
                 switch (t.getType())
                 {
@@ -497,7 +497,7 @@ public class ClientPerformanceSnapshot
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                if (!period.contains(t.getDateTime()))
+                if (!period.contains(t.getDateTimeValue()))
                     continue;
 
                 Money unit = t.getUnitSum(Unit.Type.FEE, converter);
@@ -519,10 +519,10 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
-                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                         break;
                     case DELIVERY_OUTBOUND:
-                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                         break;
                     case BUY:
                     case SELL:
@@ -571,13 +571,13 @@ public class ClientPerformanceSnapshot
                     Map<Security, MutableMoney> earningsBySecurity, MutableMoney mFees, MutableMoney mTaxes,
                     Map<Security, MutableMoney> feesBySecurity, Map<Security, MutableMoney> taxesBySecurity)
     {
-        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTime()));
+        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTimeValue()));
         mEarnings.add(earned);
         this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
         earningsBySecurity.computeIfAbsent(transaction.getSecurity(), k -> MutableMoney.of(converter.getTermCurrency()))
                         .add(earned);
 
-        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter).with(converter.at(transaction.getDateTime()));
+        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter).with(converter.at(transaction.getDateTimeValue()));
         if (!fee.isZero())
         {
             mFees.add(fee);
@@ -586,7 +586,7 @@ public class ClientPerformanceSnapshot
                             .add(fee);
         }
 
-        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTime()));
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTimeValue()));
         if (!tax.isZero())
         {
             mTaxes.add(tax);
@@ -614,7 +614,7 @@ public class ClientPerformanceSnapshot
             // add and subtract transactions
             for (AccountTransaction t : snapshot.getAccount().getTransactions())
             {
-                if (!period.contains(t.getDateTime()))
+                if (!period.contains(t.getDateTimeValue()))
                     continue;
 
                 switch (t.getType())
@@ -625,14 +625,14 @@ public class ClientPerformanceSnapshot
                     case TAX_REFUND:
                     case SELL:
                     case FEES_REFUND:
-                        value.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                        value.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                         break;
                     case REMOVAL:
                     case FEES:
                     case INTEREST_CHARGE:
                     case TAXES:
                     case BUY:
-                        value.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+                        value.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
                         break;
                     case TRANSFER_IN:
                         value.subtract(determineTransferAmount(t));
@@ -683,8 +683,8 @@ public class ClientPerformanceSnapshot
             return other.getMonetaryAmount();
 
         MutableMoney m = MutableMoney.of(converter.getTermCurrency());
-        m.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
-        m.add(other.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        m.add(t.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
+        m.add(other.getMonetaryAmount().with(converter.at(t.getDateTimeValue())));
         return m.divide(2).toMoney();
     }
 }

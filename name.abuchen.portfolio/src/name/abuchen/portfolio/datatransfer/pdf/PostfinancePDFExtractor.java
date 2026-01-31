@@ -403,7 +403,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Total EUR 20.93
@@ -461,7 +461,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Total CHF 1'200.00
@@ -512,7 +512,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -556,7 +556,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -616,7 +616,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.'\\d\\s]+)" //
                                                                         + ".*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(v.get("note"));
@@ -638,7 +638,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                             var month2 = v.get("date2").substring(2, 4);
                                                             var date2 = day2 + "." + month2 + "." + v.get("year");
 
-                                                            t.setDateTime(asDate(date2));
+                                                            t.setDateTimeValue(asDate(date2));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(date1 + " - " + date2);
@@ -678,7 +678,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*$") //
                         .match("^Zusammenstellung der belasteten Kontof.hrungsgeb.hr: (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setNote("Gebührenausweis " + v.get("note"));
@@ -731,7 +731,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .match("^(?i:Verrechnungssteuer) [\\.'\\d\\s]+(%| %) (?<amount>[\\.'\\d\\s]+).*$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kontostand nach Zinsabschluss .*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote("Verrechnungssteuer " + v.get("note"));
@@ -781,7 +781,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                                                         .match("^AUF KONTO .*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -813,7 +813,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$")
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -920,7 +920,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                         .match("^AUS KONTO .*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -945,7 +945,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -994,7 +994,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                         .match("^(?<iban>[A-Z0-9 -]{15,42})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote("Übertrag aus Konto " + trim(v.get("iban")));
@@ -1030,7 +1030,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1095,7 +1095,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.'\\d\\s]+) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1119,7 +1119,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             var month2 = v.get("date2").substring(2, 4);
                             var date2 = day2 + "." + month2 + "." + v.get("year");
 
-                            t.setDateTime(asDate(date2));
+                            t.setDateTimeValue(asDate(date2));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 

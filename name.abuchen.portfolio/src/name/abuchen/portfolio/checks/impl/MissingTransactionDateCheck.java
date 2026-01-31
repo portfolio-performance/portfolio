@@ -42,7 +42,7 @@ public class MissingTransactionDateCheck implements Check
         @Override
         public void execute()
         {
-            tx.setDateTime(LocalDate.now().atStartOfDay());
+            tx.setDateTimeValue(LocalDate.now().atStartOfDay());
         }
     }
 
@@ -61,7 +61,7 @@ public class MissingTransactionDateCheck implements Check
         public LocalDate getDate()
         {
             // if the transaction has been fixed, the date should be
-            return tx.getDateTime() != null ? tx.getDateTime().toLocalDate() : null;
+            return tx.getDateTimeValue() != null ? tx.getDateTimeValue().toLocalDate() : null;
         }
 
         @Override
@@ -100,7 +100,7 @@ public class MissingTransactionDateCheck implements Check
         {
             for (AccountTransaction tx : account.getTransactions())
             {
-                if (tx.getDateTime() == null)
+                if (tx.getDateTimeValue() == null)
                 {
                     answer.add(new MissingDateIssue<>(account, tx));
                 }
@@ -111,7 +111,7 @@ public class MissingTransactionDateCheck implements Check
         {
             for (PortfolioTransaction tx : portfolio.getTransactions())
             {
-                if (tx.getDateTime() == null)
+                if (tx.getDateTimeValue() == null)
                 {
                     answer.add(new MissingDateIssue<>(portfolio, tx));
                 }

@@ -59,7 +59,7 @@ public class ClientIRRYield
         for (Portfolio portfolio : client.getPortfolios())
         {
             portfolio.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDateTime())) //
+                            .filter(t -> interval.contains(t.getDateTimeValue())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -84,7 +84,7 @@ public class ClientIRRYield
         for (Account account : client.getAccounts())
         {
             account.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDateTime())) //
+                            .filter(t -> interval.contains(t.getDateTimeValue())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -129,18 +129,18 @@ public class ClientIRRYield
 
         for (Transaction t : transactions)
         {
-            dates.add(t.getDateTime().toLocalDate());
+            dates.add(t.getDateTimeValue().toLocalDate());
 
             if (t instanceof AccountTransaction at)
             {
-                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
             }
             else if (t instanceof PortfolioTransaction pt)
             {
-                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTimeValue(), t.getMonetaryAmount()).getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                 || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;

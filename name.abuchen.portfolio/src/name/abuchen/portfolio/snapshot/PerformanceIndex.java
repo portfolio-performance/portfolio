@@ -346,12 +346,12 @@ public class PerformanceIndex
                             .stream() //
                             .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT
                                             || t.getType() == AccountTransaction.Type.REMOVAL)
-                            .filter(t -> !t.getDateTime().toLocalDate().isAfter(intervalStart)) //
+                            .filter(t -> !t.getDateTimeValue().toLocalDate().isAfter(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == AccountTransaction.Type.DEPOSIT)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTimeValue());
                                 else if (t.getType() == AccountTransaction.Type.REMOVAL)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTimeValue());
                                 else
                                     return 0;
                             }).sum();
@@ -361,12 +361,12 @@ public class PerformanceIndex
                             .stream() //
                             .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                             || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            .filter(t -> !t.getDateTime().toLocalDate().isAfter(intervalStart)) //
+                            .filter(t -> !t.getDateTimeValue().toLocalDate().isAfter(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTimeValue());
                                 else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTimeValue());
                                 else
                                     return 0;
                             }).sum();

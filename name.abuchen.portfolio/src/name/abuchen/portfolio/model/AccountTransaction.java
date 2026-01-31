@@ -98,7 +98,7 @@ public class AccountTransaction extends Transaction
     public String toString()
     {
         return String.format("%s %-17s %s %9s %s %s", //$NON-NLS-1$
-                        Values.Date.format(getDateTime().toLocalDate()), //
+                        Values.Date.format(getDateTimeValue().toLocalDate()), //
                         type.name(), //
                         getCurrencyCode(), //
                         Values.Amount.format(getAmount()), //

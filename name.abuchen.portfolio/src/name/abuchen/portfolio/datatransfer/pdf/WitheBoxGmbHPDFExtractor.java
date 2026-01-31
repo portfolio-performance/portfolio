@@ -54,7 +54,7 @@ public class WitheBoxGmbHPDFExtractor extends AbstractPDFExtractor
                         .documentContext("date") //
                         .match("^[\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ (?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

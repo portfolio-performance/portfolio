@@ -178,7 +178,7 @@ public class SecurityTransferModel extends AbstractModel
         this.targetPortfolio = (Portfolio) entry.getOwner(entry.getTargetTransaction());
 
         this.security = entry.getSourceTransaction().getSecurity();
-        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
+        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTimeValue();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
         this.shares = entry.getSourceTransaction().getShares();

@@ -76,8 +76,8 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     public void setDate(LocalDateTime date)
     {
-        this.transactionFrom.setDateTime(date);
-        this.transactionTo.setDateTime(date);
+        this.transactionFrom.setDateTimeValue(date);
+        this.transactionTo.setDateTimeValue(date);
     }
 
     public void setSecurity(Security security)
@@ -150,7 +150,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     private void copyAttributesOver(PortfolioTransaction source, PortfolioTransaction target)
     {
-        target.setDateTime(source.getDateTime());
+        target.setDateTimeValue(source.getDateTimeValue());
         target.setSecurity(source.getSecurity());
         target.setShares(source.getShares());
         target.setNote(source.getNote());

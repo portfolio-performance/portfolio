@@ -325,7 +325,7 @@ import name.abuchen.portfolio.money.Money;
                     buysell.setType(type == PTransaction.Type.PURCHASE ? PortfolioTransaction.Type.BUY
                                     : PortfolioTransaction.Type.SELL);
 
-                    buysell.setDate(fromTimestamp(newTransaction.getDate()));
+                    buysell.setDate(fromTimestamp(newTransaction.getDateValue()));
                     buysell.setCurrencyCode(newTransaction.getCurrencyCode());
                     buysell.setAmount(newTransaction.getAmount());
 
@@ -367,7 +367,7 @@ import name.abuchen.portfolio.money.Money;
 
                     PortfolioTransferEntry transfer = new PortfolioTransferEntry(source, sourceTx, target, targetTx);
 
-                    transfer.setDate(fromTimestamp(newTransaction.getDate()));
+                    transfer.setDate(fromTimestamp(newTransaction.getDateValue()));
                     transfer.setCurrencyCode(newTransaction.getCurrencyCode());
                     transfer.setAmount(newTransaction.getAmount());
 
@@ -419,7 +419,7 @@ import name.abuchen.portfolio.money.Money;
                     AccountTransferEntry cashTransfer = new AccountTransferEntry(sourceAccount, sourceATx,
                                     targetAccount, targetATx);
 
-                    cashTransfer.setDate(fromTimestamp(newTransaction.getDate()));
+                    cashTransfer.setDate(fromTimestamp(newTransaction.getDateValue()));
                     cashTransfer.setCurrencyCode(newTransaction.getCurrencyCode());
                     cashTransfer.setAmount(newTransaction.getAmount());
 
@@ -544,7 +544,9 @@ import name.abuchen.portfolio.money.Money;
     private void loadCommonTransaction(PTransaction newTransaction, Transaction t, Lookup lookup,
                     boolean requiresSecurity)
     {
-        t.setDateTime(fromTimestamp(newTransaction.getDate()));
+        if (newTransaction.hasDateBooking())
+            t.setDateTimeBooking(fromTimestamp(newTransaction.getDateBooking()));
+        t.setDateTimeValue(fromTimestamp(newTransaction.getDateValue()));
         t.setCurrencyCode(newTransaction.getCurrencyCode());
         t.setAmount(newTransaction.getAmount());
 
@@ -1162,7 +1164,9 @@ import name.abuchen.portfolio.money.Money;
 
     private void saveCommonTransaction(Transaction t, PTransaction.Builder newTransaction)
     {
-        newTransaction.setDate(asTimestamp(t.getDateTime()));
+        newTransaction.setDateValue(asTimestamp(t.getDateTimeValue()));
+        if (t.getDateTimeBooking() != null)
+            newTransaction.setDateBooking(asTimestamp(t.getDateTimeBooking()));
         newTransaction.setCurrencyCode(t.getCurrencyCode());
         newTransaction.setAmount(t.getAmount());
 

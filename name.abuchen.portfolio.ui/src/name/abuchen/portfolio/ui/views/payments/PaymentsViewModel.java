@@ -322,7 +322,7 @@ public class PaymentsViewModel
         this.noOfmonths = (now.getYear() - startYear) * 12 + now.getMonthValue();
 
         Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);
-        Predicate<Transaction> checkIsInInterval = t -> interval.contains(t.getDateTime());
+        Predicate<Transaction> checkIsInInterval = t -> interval.contains(t.getDateTimeValue());
 
         Set<TransactionPair<?>> transactions = new HashSet<>();
         Map<InvestmentVehicle, Line> vehicle2line = new HashMap<>();
@@ -383,17 +383,17 @@ public class PaymentsViewModel
 
                     long value = 0;
                     if (mode == Mode.TAXES || mode == Mode.ALL)
-                        value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
+                        value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTimeValue()))
                                         .getAmount();
                     if (mode == Mode.FEES || mode == Mode.ALL)
-                        value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                        value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTimeValue()))
                                         .getAmount();
                     if (mode == Mode.SAVING)
                     {
                         PortfolioTransaction.Type type = transaction.getType();
                         if (type == PortfolioTransaction.Type.DELIVERY_INBOUND
                                         || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTimeValue()))
                                             .getAmount();
                         if (type.isLiquidation())
                             value *= -1;
@@ -413,8 +413,8 @@ public class PaymentsViewModel
 
                         transactions.add(new TransactionPair<>(portfolio, transaction));
 
-                        int index = (transaction.getDateTime().getYear() - startYear) * 12
-                                        + transaction.getDateTime().getMonthValue() - 1;
+                        int index = (transaction.getDateTimeValue().getYear() - startYear) * 12
+                                        + transaction.getDateTimeValue().getMonthValue() - 1;
 
                         InvestmentVehicle vehicle = transaction.getSecurity();
                         if (useConsolidateRetired && vehicle.isRetired())
@@ -458,14 +458,14 @@ public class PaymentsViewModel
                         if (transaction.getType() == AccountTransaction.Type.TAXES
                                         || transaction.getType() == AccountTransaction.Type.TAX_REFUND)
                         {
-                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTimeValue()))
                                             .getAmount();
                             if (transaction.getType().isDebit())
                                 value *= -1;
                         }
                         else
                         {
-                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
+                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTimeValue()))
                                             .getAmount();
                         }
                         break;
@@ -473,28 +473,28 @@ public class PaymentsViewModel
                         if (transaction.getType() == AccountTransaction.Type.FEES
                                         || transaction.getType() == AccountTransaction.Type.FEES_REFUND)
                         {
-                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTimeValue()))
                                             .getAmount();
                             if (transaction.getType().isDebit())
                                 value *= -1;
                         }
                         else
                         {
-                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTimeValue()))
                                             .getAmount();
                         }
                         break;
                     case TRADES:
                         break;
                     case ALL:
-                        value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                        value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTimeValue()))
                                         .getAmount();
                         if (transaction.getType().isDebit())
                             value *= -1;
                         break;
                     default:
                         value = (useGrossValue ? transaction.getGrossValue() : transaction.getMonetaryAmount())
-                                        .with(converter.at(transaction.getDateTime())).getAmount();
+                                        .with(converter.at(transaction.getDateTimeValue())).getAmount();
                         if (transaction.getType().isDebit())
                             value *= -1;
                 }
@@ -503,8 +503,8 @@ public class PaymentsViewModel
                 {
                     transactions.add(new TransactionPair<>(account, transaction));
 
-                    int index = (transaction.getDateTime().getYear() - startYear) * 12
-                                    + transaction.getDateTime().getMonthValue() - 1;
+                    int index = (transaction.getDateTimeValue().getYear() - startYear) * 12
+                                    + transaction.getDateTimeValue().getMonthValue() - 1;
 
                     InvestmentVehicle vehicle = transaction.getSecurity() != null ? transaction.getSecurity() : account;
                     if (useConsolidateRetired && vehicle.isRetired())

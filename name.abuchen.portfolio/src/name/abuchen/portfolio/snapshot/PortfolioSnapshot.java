@@ -30,7 +30,7 @@ public class PortfolioSnapshot
     {
         List<SecurityPosition> positions = portfolio.getTransactions() //
                         .stream() //
-                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(date)) //
+                        .filter(t -> !t.getDateTimeValue().toLocalDate().isAfter(date)) //
                         .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
@@ -49,7 +49,7 @@ public class PortfolioSnapshot
                                 if (last.isPresent())
                                 {
                                     PortfolioTransaction t = last.get();
-                                    price = new SecurityPrice(t.getDateTime().toLocalDate(),
+                                    price = new SecurityPrice(t.getDateTimeValue().toLocalDate(),
                                                     t.getGrossPricePerShare(
                                                                     converter.with(e.getKey().getCurrencyCode()))
                                                                     .getAmount());

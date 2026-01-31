@@ -48,14 +48,14 @@ public class BalanceCollector
         Collections.sort(tx, Transaction.BY_DATE);
 
         // determine first month end
-        var month = tx.get(0).getDateTime().toLocalDate().with(TemporalAdjusters.lastDayOfMonth());
+        var month = tx.get(0).getDateTimeValue().toLocalDate().with(TemporalAdjusters.lastDayOfMonth());
         if (month.isAfter(today))
             month = today;
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)
         {
-            var txDate = t.getDateTime().toLocalDate();
+            var txDate = t.getDateTimeValue().toLocalDate();
 
             while (txDate.isAfter(month))
             {
@@ -156,7 +156,7 @@ public class BalanceCollector
             if (!(tx.getType().isDebit() ^ needsCredit))
                 return false;
 
-            if (tx.getDateTime().toLocalDate().isBefore(date))
+            if (tx.getDateTimeValue().toLocalDate().isBefore(date))
                 return false;
 
             return tx.getMonetaryAmount().equals(delta);

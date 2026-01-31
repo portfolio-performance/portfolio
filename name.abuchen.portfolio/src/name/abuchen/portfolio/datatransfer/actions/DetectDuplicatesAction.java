@@ -146,7 +146,10 @@ public class DetectDuplicatesAction implements ImportAction
 
     private boolean isPotentialDuplicate(Transaction subject, Transaction other)
     {
-        if (!other.getDateTime().toLocalDate().equals(subject.getDateTime().toLocalDate()))
+        if (!other.getDateTimeValue().toLocalDate().equals(subject.getDateTimeValue().toLocalDate()))
+            return false;
+
+        if (!other.getDateTimeBooking().toLocalDate().equals(subject.getDateTimeBooking().toLocalDate()))
             return false;
 
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))
@@ -181,10 +184,10 @@ public class DetectDuplicatesAction implements ImportAction
         if (amount * 1.01 < other.getAmount() || amount * 0.99 > other.getAmount())
             return false;
 
-        LocalDateTime date = subject.getDateTime();
+        LocalDateTime date = subject.getDateTimeValue();
         // date can be up to five days after other's date (due to shifted
         // executions on weekends and holidays)
-        if (date.isBefore(other.getDateTime()) || date.minusDays(5).isAfter(other.getDateTime()))
+        if (date.isBefore(other.getDateTimeValue()) || date.minusDays(5).isAfter(other.getDateTimeValue()))
             return false;
 
         // number of shares might differ due to differing prices per share used

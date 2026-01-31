@@ -59,11 +59,11 @@ public class EarningsHeatmapWidget extends AbstractMonthlyHeatmapWidget
         filteredClient.getAccounts().stream() //
                         .flatMap(a -> a.getTransactions().stream()) //
                         .filter(type::isIncluded) //
-                        .filter(t -> interval.contains(t.getDateTime())).forEach(t -> {
-                            int row = t.getDateTime().getYear() - startYear;
-                            int col = t.getDateTime().getMonth().getValue() - 1;
+                        .filter(t -> interval.contains(t.getDateTimeValue())).forEach(t -> {
+                            int row = t.getDateTimeValue().getYear() - startYear;
+                            int col = t.getDateTimeValue().getMonth().getValue() - 1;
 
-                            Long value = converter.convert(t.getDateTime(), grossNet.getValue(t)).getAmount();
+                            Long value = converter.convert(t.getDateTimeValue(), grossNet.getValue(t)).getAmount();
                             if (t.getType().isDebit())
                                 value = -value;
 

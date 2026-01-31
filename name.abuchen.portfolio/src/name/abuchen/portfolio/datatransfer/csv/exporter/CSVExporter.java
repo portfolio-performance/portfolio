@@ -63,7 +63,7 @@ public class CSVExporter
 
     private void writeAccountTransaction(CSVPrinter printer, AccountTransaction accountTransaction) throws IOException
     {
-        printer.print(accountTransaction.getDateTime().toString());
+        printer.print(accountTransaction.getDateTimeValue().toString());
         printer.print(accountTransaction.getType().toString());
         printer.print(Values.Amount.format(accountTransaction.getType().isDebit() ? -accountTransaction.getAmount()
                         : accountTransaction.getAmount()));
@@ -132,7 +132,7 @@ public class CSVExporter
 
     private void writePortfolioTransaction(CSVPrinter printer, PortfolioTransaction transaction) throws IOException
     {
-        printer.print(transaction.getDateTime().toString());
+        printer.print(transaction.getDateTimeValue().toString());
         printer.print(transaction.getType().toString());
         printer.print(Values.Amount.format(
                         transaction.getType().isLiquidation() ? -transaction.getAmount() : transaction.getAmount()));

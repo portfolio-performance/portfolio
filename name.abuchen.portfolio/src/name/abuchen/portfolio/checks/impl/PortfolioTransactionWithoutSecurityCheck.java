@@ -32,7 +32,7 @@ public class PortfolioTransactionWithoutSecurityCheck implements Check
         @Override
         public LocalDate getDate()
         {
-            return transaction.getDateTime().toLocalDate();
+            return transaction.getDateTimeValue().toLocalDate();
         }
 
         @Override

@@ -122,14 +122,14 @@ public class PortfolioTransaction extends Transaction
             // use exchange rate used within the transaction,
             // not the historical exchange rate
             BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
-                            : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
+                            : converter.getRate(getDateTimeValue(), getCurrencyCode()).getValue();
 
             return Money.of(converter.getTermCurrency(), BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
                             .multiply(BigDecimal.valueOf(getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
         }
         else
         {
-            return converter.convert(getDateTime(), getMonetaryAmount());
+            return converter.convert(getDateTimeValue(), getMonetaryAmount());
         }
     }
 
@@ -182,7 +182,7 @@ public class PortfolioTransaction extends Transaction
                 return Money.of(converter.getTermCurrency(), grossValue.get().getForex().getAmount());
         }
 
-        return converter.convert(getDateTime(), getGrossValue());
+        return converter.convert(getDateTimeValue(), getGrossValue());
     }
 
     /**
@@ -231,7 +231,7 @@ public class PortfolioTransaction extends Transaction
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTime()), type.name(), //$NON-NLS-1$
+        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTimeValue()), type.name(), //$NON-NLS-1$
                         getCurrencyCode(), Values.Amount.format(getAmount()), getSecurity().getName());
     }
 }

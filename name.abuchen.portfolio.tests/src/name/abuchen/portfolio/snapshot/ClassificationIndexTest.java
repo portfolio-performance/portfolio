@@ -177,7 +177,7 @@ public class ClassificationIndexTest
 
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
-        t.setDateTime(LocalDateTime.parse("2016-06-01T00:00"));
+        t.setDateTimeValue(LocalDateTime.parse("2016-06-01T00:00"));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
         t.setShares(Values.Share.factorize(10));

@@ -108,7 +108,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                         + "|Ru.ckzahlung Ihres Festgeldes)[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
@@ -136,7 +136,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                         + "|Abschluss eines Festgeldes)[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
@@ -170,26 +170,26 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                         + "|Zinszahlung Festgeld)[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
-                                            && t.getDateTime().equals(asDate(v.get("taxDate1"))))
+                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate1"))))
                             {
                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
-                                            && t.getDateTime().equals(asDate(v.get("taxDate2"))))
+                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate2"))))
                             {
                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                             }
 
                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
-                                            && t.getDateTime().equals(asDate(v.get("taxDate3"))))
+                                            && t.getDateTimeValue().equals(asDate(v.get("taxDate3"))))
                             {
                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));

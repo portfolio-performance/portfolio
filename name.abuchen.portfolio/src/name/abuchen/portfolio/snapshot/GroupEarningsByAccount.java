@@ -93,7 +93,7 @@ public class GroupEarningsByAccount
 
             for (AccountTransaction at : account.getTransactions())
             {
-                if (at.getDateTime().isAfter(startDate) && !at.getDateTime().isAfter(endDate))
+                if (at.getDateTimeValue().isAfter(startDate) && !at.getDateTimeValue().isAfter(endDate))
                 {
                     switch (at.getType())
                     {

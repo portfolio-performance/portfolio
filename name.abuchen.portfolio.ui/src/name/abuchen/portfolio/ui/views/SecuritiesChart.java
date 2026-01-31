@@ -225,10 +225,10 @@ public class SecuritiesChart
                                     .getPositionsByVehicle().containsKey(security);
 
                     return new ChartIntervalOrMessage(
-                                    new ChartInterval(tx.get(0).getTransaction().getDateTime().toLocalDate(),
+                                    new ChartInterval(tx.get(0).getTransaction().getDateTimeValue().toLocalDate(),
                                                     hasHoldings ? LocalDate.now()
                                                                     : tx.get(tx.size() - 1).getTransaction()
-                                                                                    .getDateTime().toLocalDate()));
+                                                                                    .getDateTimeValue().toLocalDate()));
                 case ALL:
                     List<SecurityPrice> prices = security.getPricesIncludingLatest();
                     if (prices.isEmpty())
@@ -587,7 +587,7 @@ public class SecuritiesChart
                 Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
 
                 customTooltipEvents.stream() //
-                                .filter(t -> displayInterval.contains(t.getDateTime())) //
+                                .filter(t -> displayInterval.contains(t.getDateTimeValue())) //
                                 .forEach(t -> {
                                     if (t instanceof AccountTransaction at)
                                         addDividendTooltip(composite, at);
@@ -614,7 +614,7 @@ public class SecuritiesChart
     {
         Label label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
+                        dateTimeFormatter.format(t.getDateTimeValue().toLocalDate()), t.getMonetaryAmount().toString()));
 
         label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
@@ -627,7 +627,7 @@ public class SecuritiesChart
         Label label = new Label(composite, SWT.NONE);
         String amount = t.getMonetaryAmount().toString();
         label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), amount));
+                        dateTimeFormatter.format(t.getDateTimeValue().toLocalDate()), amount));
 
         if (t.getShares() == 0L)
         {
@@ -1337,7 +1337,7 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
-                        .filter(t -> chartInterval.contains(t.getDateTime())) //
+                        .filter(t -> chartInterval.contains(t.getDateTimeValue())) //
                         .sorted(Transaction.BY_DATE).toList();
 
         addInvestmentMarkers(purchase, investmentMarkerLabelBuy, colorEventPurchase, PlotSymbolType.TRIANGLE, security,
@@ -1347,7 +1347,7 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                        .filter(t -> chartInterval.contains(t.getDateTime())) //
+                        .filter(t -> chartInterval.contains(t.getDateTimeValue())) //
                         .sorted(Transaction.BY_DATE).toList();
 
         addInvestmentMarkers(sales, investmentMarkerLabelSell, colorEventSale, PlotSymbolType.INVERTED_TRIANGLE,
@@ -1371,15 +1371,15 @@ public class SecuritiesChart
                     String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
                     double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
                                     .getAmount() / Values.Quote.divider();
-                    chart.addMarkerLine(t.getDateTime().toLocalDate(), color, label, value);
+                    chart.addMarkerLine(t.getDateTimeValue().toLocalDate(), color, label, value);
                 }
                 else
-                    chart.addMarkerLine(t.getDateTime().toLocalDate(), color, null);
+                    chart.addMarkerLine(t.getDateTimeValue().toLocalDate(), color, null);
             });
         }
         else
         {
-            LocalDate[] dates = transactions.stream().map(PortfolioTransaction::getDateTime).map(d -> d.toLocalDate())
+            LocalDate[] dates = transactions.stream().map(PortfolioTransaction::getDateTimeValue).map(d -> d.toLocalDate())
                             .toArray(size -> new LocalDate[size]);
 
             double[] values = transactions.stream().mapToDouble(
@@ -1466,7 +1466,7 @@ public class SecuritiesChart
         List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
                         .filter(t -> t.getSecurity() == security) //
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS) //
-                        .filter(t -> chartInterval.contains(t.getDateTime())) //
+                        .filter(t -> chartInterval.contains(t.getDateTimeValue())) //
                         .sorted(Transaction.BY_DATE) //
                         .toList(); //
 
@@ -1478,12 +1478,12 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
             var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_DIVIDEND_LABEL);
-            dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
+            dividends.forEach(t -> chart.addMarkerLine(t.getDateTimeValue().toLocalDate(), colorEventDividend,
                             showLabels ? getDividendLabel(t) : null));
         }
         else
         {
-            LocalDate[] dates = dividends.stream().map(AccountTransaction::getDateTime).map(d -> d.toLocalDate())
+            LocalDate[] dates = dividends.stream().map(AccountTransaction::getDateTimeValue).map(d -> d.toLocalDate())
                             .toArray(size -> new LocalDate[size]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
@@ -1815,8 +1815,8 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity().equals(security))
                         .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
                                         || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT))
-                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(chartInterval.getEnd()))
-                        .map(t -> chartInterval.contains(t.getDateTime()) ? t.getDateTime().toLocalDate()
+                        .filter(t -> !t.getDateTimeValue().toLocalDate().isAfter(chartInterval.getEnd()))
+                        .map(t -> chartInterval.contains(t.getDateTimeValue()) ? t.getDateTimeValue().toLocalDate()
                                         : chartInterval.getStart())
                         .distinct() //
                         .sorted() //

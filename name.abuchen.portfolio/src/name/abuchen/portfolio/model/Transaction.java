@@ -198,7 +198,7 @@ public abstract class Transaction implements Annotated, Adaptable
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            int compareTo = t1.getDateTime().compareTo(t2.getDateTime());
+            int compareTo = t1.getDateTimeValue().compareTo(t2.getDateTimeValue());
             if (compareTo != 0)
                 return compareTo;
 
@@ -218,7 +218,8 @@ public abstract class Transaction implements Annotated, Adaptable
     }
 
     private String uuid;
-    private LocalDateTime date;
+    private LocalDateTime dateBooking;
+    private LocalDateTime dateValue;
     private String currencyCode;
     private long amount;
 
@@ -243,16 +244,29 @@ public abstract class Transaction implements Annotated, Adaptable
         this.updatedAt = Instant.now();
     }
 
-    public Transaction(LocalDateTime date, String currencyCode, long amount)
+    public Transaction(LocalDateTime dateValue, String currencyCode, long amount)
     {
-        this(date, currencyCode, amount, null, 0, null);
+        this(null, dateValue, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
+    public Transaction(LocalDateTime dateBooking, LocalDateTime dateValue, String currencyCode, long amount)
+    {
+        this(dateBooking, dateValue, currencyCode, amount, null, 0, null);
+    }
+
+    public Transaction(LocalDateTime dateValue, String currencyCode, long amount, Security security, long shares,
+                    String note)
+    {
+        this(null, dateValue, currencyCode, amount, security, shares, note);
+    }
+
+    public Transaction(LocalDateTime dateBooking, LocalDateTime dateValue, String currencyCode, long amount,
+                    Security security, long shares,
                     String note)
     {
         this();
-        this.date = date;
+        this.dateBooking = dateBooking;
+        this.dateValue = dateValue;
         this.currencyCode = currencyCode;
         this.amount = amount;
         this.security = security;
@@ -270,14 +284,25 @@ public abstract class Transaction implements Annotated, Adaptable
         uuid = UUID.randomUUID().toString();
     }
 
-    public LocalDateTime getDateTime()
+    public LocalDateTime getDateTimeBooking()
     {
-        return date;
+        return dateBooking;
     }
 
-    public void setDateTime(LocalDateTime date)
+    public LocalDateTime getDateTimeValue()
     {
-        this.date = date;
+        return dateValue;
+    }
+
+    public void setDateTimeBooking(LocalDateTime date)
+    {
+        this.dateBooking = date;
+        this.updatedAt = Instant.now();
+    }
+
+    public void setDateTimeValue(LocalDateTime date)
+    {
+        this.dateValue = date;
         this.updatedAt = Instant.now();
     }
 
@@ -495,7 +520,7 @@ public abstract class Transaction implements Annotated, Adaptable
                                             && converter.getTermCurrency().equals(unit.getForex().getCurrencyCode()))
                                 return unit.getForex();
                             else
-                                return unit.getAmount().with(converter.at(date));
+                                return unit.getAmount().with(converter.at(dateValue));
                         }));
     }
 

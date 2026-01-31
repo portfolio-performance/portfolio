@@ -294,7 +294,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(Nettoguthaben|Net CREDIT) [\\.,\\d]+ [\\w]{3} (Datum|Date) ([\\s]+)?(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Date valeur: 11/01/2021
                                         // Date valeur: 17/11/2021 C
@@ -303,7 +303,7 @@ public class KeytradeBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^(Date valeur|Valuta datum): (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off

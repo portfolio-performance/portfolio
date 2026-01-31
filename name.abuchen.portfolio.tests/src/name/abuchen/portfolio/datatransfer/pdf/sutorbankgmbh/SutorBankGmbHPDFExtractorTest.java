@@ -108,7 +108,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53.00)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertNull(entry.getNote());
@@ -158,7 +158,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-03T09:27:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-06-03T09:27:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.00)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: [0123456789abcdef01234567]"));
@@ -208,7 +208,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30.00)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 603d2318e971a90019a6053b"));
@@ -326,7 +326,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(58)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f245de9567c6400199b6ba9"));
@@ -376,7 +376,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
         assertThat(entry.getNote(), is("Referenz 6709"));
@@ -493,7 +493,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f313e083e83d00019d6835e"));
@@ -514,7 +514,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f315020567c6400199c4044"));
@@ -535,7 +535,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:51:21")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T15:51:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f3150d93e83d00019d68628"));
@@ -556,7 +556,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:51:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T16:51:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f315ee83e83d00019d6885a"));
@@ -577,7 +577,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f314b9f567c6400199c3fb1"));
@@ -598,7 +598,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f31509a3e83d00019d6861b"));
@@ -619,7 +619,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:19:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T16:19:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f3156b43e83d00019d686fa"));
@@ -640,7 +640,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T17:07:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-08-10T17:07:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
         assertThat(entry.getNote(), is("Handelsreferenz: 5f3162a03e83d00019d68929"));
@@ -689,7 +689,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Vierteljährlich"));
@@ -734,7 +734,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-04-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Vierteljährlich"));
@@ -779,7 +779,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-09-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Interim"));
@@ -824,7 +824,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-09-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Vierteljährlich"));
@@ -869,7 +869,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-11-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-11-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(31)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Vierteljährlich"));
@@ -1038,7 +1038,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-04T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-04T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3308)));
         assertThat(entry.getSource(), is("Depotauszug01.txt"));
         assertNull(entry.getNote());
@@ -1058,7 +1058,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.5264)));
         assertThat(entry.getSource(), is("Depotauszug01.txt"));
         assertNull(entry.getNote());
@@ -1079,7 +1079,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-05T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0387)));
         assertThat(entry.getSource(), is("Depotauszug01.txt"));
         assertThat(entry.getNote(), is("Gebührentilgung"));
@@ -1099,7 +1099,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0299)));
         assertThat(entry.getSource(), is("Depotauszug01.txt"));
         assertThat(entry.getNote(), is("Gebührentilgung"));
@@ -1119,7 +1119,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-07-02T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-07-02T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.2631)));
         assertThat(entry.getSource(), is("Depotauszug01.txt"));
         assertNull(entry.getNote());
@@ -1139,7 +1139,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -1155,7 +1155,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-02-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Zulage 2018"));
@@ -1171,7 +1171,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-07-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
@@ -1187,7 +1187,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Verwaltgebühr/Vertriebskosten"));
@@ -1203,7 +1203,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug01.txt"));
         assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
@@ -1273,7 +1273,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:46")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7524)));
         assertThat(entry.getSource(), is("Depotauszug02.txt"));
         assertNull(entry.getNote());
@@ -1294,7 +1294,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4517)));
         assertThat(entry.getSource(), is("Depotauszug02.txt"));
         assertNull(entry.getNote());
@@ -1315,7 +1315,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:56")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:56")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.9784)));
         assertThat(entry.getSource(), is("Depotauszug02.txt"));
         assertNull(entry.getNote());
@@ -1336,7 +1336,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T13:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T13:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34.7017)));
         assertThat(entry.getSource(), is("Depotauszug02.txt"));
         assertNull(entry.getNote());
@@ -1357,7 +1357,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-02T15:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
         assertThat(entry.getSource(), is("Depotauszug02.txt"));
         assertNull(entry.getNote());
@@ -1377,7 +1377,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-03-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -1393,7 +1393,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
@@ -1409,7 +1409,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-08T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug02.txt"));
         assertThat(transaction.getNote(), is("Verwaltgebühr/Vertriebskosten"));
@@ -1487,7 +1487,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T14:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0405)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1507,7 +1507,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T14:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0014)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1527,7 +1527,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T14:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0012)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1547,7 +1547,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-10-01T14:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T14:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0347)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1567,7 +1567,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-02T15:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0272)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1587,7 +1587,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-02T15:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0490)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1607,7 +1607,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:56")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-02T15:56")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0076)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1627,7 +1627,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-02T15:58")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-02T15:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1492)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1647,7 +1647,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T13:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1962)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1668,7 +1668,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T13:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0281)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1688,7 +1688,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T13:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0122)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1708,7 +1708,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-04T13:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T13:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1058)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1728,7 +1728,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T16:54")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-10T16:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2219)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1749,7 +1749,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:05")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-10T17:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.7701)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1770,7 +1770,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:10")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-10T17:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0437)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1790,7 +1790,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-10T17:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0470)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1810,7 +1810,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-10T17:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-10T17:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1881)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1830,7 +1830,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T12:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-11T12:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2750)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1851,7 +1851,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-11T13:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.7541)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1872,7 +1872,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:08")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-11T13:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0133)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1892,7 +1892,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-11T13:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0076)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1912,7 +1912,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-11T13:17")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-11T13:17")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0999)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1932,7 +1932,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-12T16:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2993)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1953,7 +1953,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-12T16:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9197)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1974,7 +1974,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:56")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-12T16:56")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0001)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -1994,7 +1994,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T16:59")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-12T16:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2014,7 +2014,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-12T17:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-12T17:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0090)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2034,7 +2034,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:35")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T13:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8888)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2055,7 +2055,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:44")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T13:44")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0021)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2075,7 +2075,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:46")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T13:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2095,7 +2095,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-13T13:54")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-13T13:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0184)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2115,7 +2115,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-16T13:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.9354)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2136,7 +2136,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-16T13:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0023)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2156,7 +2156,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T13:56")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-16T13:56")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0026)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2176,7 +2176,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-16T14:08")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-16T14:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0007)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2196,7 +2196,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:47")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-17T14:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.8809)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2217,7 +2217,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-17T14:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0054)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2237,7 +2237,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:55")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-17T14:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0088)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2257,7 +2257,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-17T14:59")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-17T14:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0420)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2277,7 +2277,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T12:55")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-18T12:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.2364)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2298,7 +2298,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T12:58")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-18T12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0015)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2318,7 +2318,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T13:06")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-18T13:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0044)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2338,7 +2338,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-18T13:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-18T13:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0601)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2358,7 +2358,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-26T13:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0633)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2379,7 +2379,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:44")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-26T13:44")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0092)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2399,7 +2399,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-11-26T13:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-11-26T13:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0922)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2419,7 +2419,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:07")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T15:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0137)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2439,7 +2439,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T15:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0087)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2459,7 +2459,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T15:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0027)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2479,7 +2479,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-01T15:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T15:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0264)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2499,7 +2499,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:41")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T13:41")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0132)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2519,7 +2519,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:49")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T13:49")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0004)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2539,7 +2539,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T13:55")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T13:55")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1367)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2559,7 +2559,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-04T14:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-04T14:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0819)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2580,7 +2580,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:21")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T13:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0061)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2600,7 +2600,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T13:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0375)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2621,7 +2621,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:33")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T13:33")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0030)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2641,7 +2641,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-12-16T13:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T13:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0136)));
         assertThat(entry.getSource(), is("Depotauszug03.txt"));
         assertNull(entry.getNote());
@@ -2660,7 +2660,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-10-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -2676,7 +2676,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -2692,7 +2692,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -2708,7 +2708,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
@@ -2724,7 +2724,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-11-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Storno Verwaltungsgebühr/Vertriebskosten vom 04.11.2020"));
@@ -2740,7 +2740,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-03T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Verwaltungsgebühr/Vertriebskosten"));
@@ -2756,7 +2756,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-16T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-12-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug03.txt"));
         assertThat(transaction.getNote(), is("Kontoführungs-u.Depotgebühren"));
@@ -2818,7 +2818,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:05")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T12:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.0208)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2839,7 +2839,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T12:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9470)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2860,7 +2860,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-01T12:45")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T12:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.1448)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2881,7 +2881,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T12:08")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-12T12:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0994)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2901,7 +2901,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T12:59")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-12T12:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.8650)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2922,7 +2922,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-04-12T13:18")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-04-12T13:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7870)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2943,7 +2943,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T10:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-10T10:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7947)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2964,7 +2964,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T11:31")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-10T11:31")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0382)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -2984,7 +2984,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-10T11:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-10T11:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5025)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -3005,7 +3005,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-13T08:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.4634)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -3026,7 +3026,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-13T08:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3840)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -3047,7 +3047,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-05-13T08:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2021-05-13T08:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7624)));
         assertThat(entry.getSource(), is("Depotauszug04.txt"));
         assertNull(entry.getNote());
@@ -3067,7 +3067,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-01T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-04-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("automatischer Lastschrifteinzug"));
@@ -3083,7 +3083,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Depot- u. Verwaltgebühr"));
@@ -3099,7 +3099,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-05-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
@@ -3115,7 +3115,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2021-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Umbuchung Geld"));
@@ -3220,7 +3220,7 @@ public class SutorBankGmbHPDFExtractorTest
                         is(AccountTransaction.Type.BUY));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
+        assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2020-06-22T13:31")));
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getShares(),
                         is(Values.Share.factorize(3.9988)));
@@ -3243,7 +3243,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:46")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7524)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3264,7 +3264,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.4517)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3285,7 +3285,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T12:56")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T12:56")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.9784)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3306,7 +3306,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-01T13:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-01T13:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34.7017)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3327,7 +3327,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-02T15:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25.3618)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3348,7 +3348,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-02T15:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.5282)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3369,7 +3369,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-02T15:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.0802)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3390,7 +3390,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-02T15:38")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-02T15:38")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7334)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3411,7 +3411,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T13:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(24.2090)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3432,7 +3432,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:45")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T13:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6319)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3453,7 +3453,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:48")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T13:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.2017)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3474,7 +3474,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-03T13:50")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-03T13:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3694)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3495,7 +3495,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-06T14:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.2697)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3516,7 +3516,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-06T14:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.3863)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3537,7 +3537,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:21")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-06T14:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4.5074)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3558,7 +3558,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-06T14:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-06T14:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.1368)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3579,7 +3579,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T15:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-07T15:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.6770)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3600,7 +3600,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T15:59")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-07T15:59")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8213)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3621,7 +3621,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T16:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-07T16:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0785)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3642,7 +3642,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-07T18:47")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-07T18:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.0853)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3663,7 +3663,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:37")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-08T14:37")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.0525)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3684,7 +3684,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:44")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-08T14:44")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8713)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3705,7 +3705,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:49")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-08T14:49")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1278)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3726,7 +3726,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-08T14:58")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-08T14:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.3485)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3747,7 +3747,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:24")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-09T13:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(26.7793)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3768,7 +3768,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:30")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-09T13:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.0562)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3789,7 +3789,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-09T13:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3355)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3810,7 +3810,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-09T13:38")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-09T13:38")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6494)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3831,7 +3831,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T14:28")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-10T14:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(31.6526)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3852,7 +3852,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-10T15:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.1321)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3873,7 +3873,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:06")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-10T15:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.2016)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3893,7 +3893,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-10T15:13")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-10T15:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.7348)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3914,7 +3914,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-13T15:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10.2897)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3935,7 +3935,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:34")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-13T15:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.5625)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3956,7 +3956,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:43")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-13T15:43")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.8336)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3977,7 +3977,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-13T15:49")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-13T15:49")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1798)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -3998,7 +3998,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-14T15:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15.9700)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4019,7 +4019,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-14T15:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.3164)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4040,7 +4040,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-14T15:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.7908)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4061,7 +4061,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-14T15:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-14T15:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8.8113)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4082,7 +4082,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-15T14:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13.0631)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4103,7 +4103,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-15T14:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.9939)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4124,7 +4124,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:28")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-15T14:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.6946)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4145,7 +4145,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-15T14:35")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-15T14:35")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7.0652)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4166,7 +4166,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T13:46")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-17T13:46")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9.7407)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4187,7 +4187,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T13:53")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-17T13:53")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.7338)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4208,7 +4208,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T14:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-17T14:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.1513)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4229,7 +4229,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-17T14:07")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-17T14:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5.4242)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4250,7 +4250,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-21T14:37")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-21T14:37")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(33.7619)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());
@@ -4271,7 +4271,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-21T14:47")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-21T14:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.6196)));
         assertThat(entry.getSource(), is("Depotauszug05.txt"));
         assertNull(entry.getNote());

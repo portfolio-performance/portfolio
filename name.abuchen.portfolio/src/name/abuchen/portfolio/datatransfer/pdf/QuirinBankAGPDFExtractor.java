@@ -329,7 +329,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -441,7 +441,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // For dividend transactions, the gross amount is calculated.
@@ -572,7 +572,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlungstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag EUR -4,66
@@ -629,7 +629,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Ref\\.: (?<note2>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -662,7 +662,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                                                         .match("^Ref\\.: (?<note2>.*)$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                                                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -677,7 +677,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}"
                                                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                                                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -711,7 +711,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Steuern auf Kontoabschluss.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -744,7 +744,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Ref\\.: (?<note2>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -774,7 +774,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Steuern auf Kontoabschluss.*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -807,7 +807,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Ref\\.: (?<note2>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -836,7 +836,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Ref\\.: (?<note2>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -865,7 +865,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3})$") //
                         .match("^(?<note3>Geb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -893,7 +893,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^(?<note3>Geb.hren).* (?<note4>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " " + trim(v.get("note4")) + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -927,7 +927,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<note3>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                         .match("^Ref\\.: (?<note4>.*)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " " + trim(v.get("note2")) + " | Ref.-Nr.: " + trim(v.get("note4")));
@@ -955,7 +955,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "\\-(?<amount>[\\.,\\d]+)[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
                         .match("^Honorar:(?<note3>.*\\/[\\d]{4}) .*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -986,7 +986,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<amount>[\\.,\\d]+)([\\s]+)?(?<currency>[A-Z]{3}).*$") //
                         .match("^Bestand (?<note3>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -1013,7 +1013,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+)[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)([\\s]+)?(?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note1") + " | Ref.-Nr.: " + trim(v.get("note2")));
@@ -1046,7 +1046,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Verrechnungstopf Sonstige .* Steuerbetrag[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .match("^Bemessungsgrundlage KESt .* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setShares(Long.parseLong(context.get("shares")));
                             t.setSecurity(getOrCreateSecurity(context));
 

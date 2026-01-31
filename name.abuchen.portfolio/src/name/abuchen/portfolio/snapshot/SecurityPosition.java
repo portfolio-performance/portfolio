@@ -113,7 +113,7 @@ public class SecurityPosition
         for (PortfolioTransaction t : position.transactions)
         {
             PortfolioTransaction t2 = new PortfolioTransaction();
-            t2.setDateTime(t.getDateTime());
+            t2.setDateTimeValue(t.getDateTimeValue());
             t2.setSecurity(t.getSecurity());
             t2.setType(t.getType());
             t2.setCurrencyCode(t.getCurrencyCode());

@@ -646,21 +646,21 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahltag : (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zahltag : 29. April 2010
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahltag : (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Valutatag : 23.05.2012
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Valutatag : (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -832,7 +832,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.* mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         //                                                       Beträge in FW        Beträge in EUR
@@ -911,7 +911,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Es wurde Ihnen dieser Betrag gutgebucht: 198,21
@@ -980,9 +980,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
-                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                                t.setDateTimeValue(asDate(v.get("date"), type.getCurrentContext().get("time")));
                                                             else
-                                                                t.setDateTime(asDate(v.get("date")));
+                                                                t.setDateTimeValue(asDate(v.get("date")));
                                                         }),
                                         // @formatter:off
                                         // Ausführungsdatum: 05. Oktober 2009
@@ -992,9 +992,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
-                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                                t.setDateTimeValue(asDate(v.get("date"), type.getCurrentContext().get("time")));
                                                             else
-                                                                t.setDateTime(asDate(v.get("date")));
+                                                                t.setDateTimeValue(asDate(v.get("date")));
                                                         }))
 
                         // @formatter:off

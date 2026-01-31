@@ -374,14 +374,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,125275000 USD
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+                                                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -653,7 +653,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -838,7 +838,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -870,7 +870,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
-                            if (t.getDateTime() == null && t.getNote() == null)
+                            if (t.getDateTimeValue() == null && t.getNote() == null)
                                 return null;
 
                             return item;
@@ -971,7 +971,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTimeValue(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1061,7 +1061,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -1134,7 +1134,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -1252,7 +1252,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1363,7 +1363,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1435,7 +1435,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1465,7 +1465,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("sonstige Entgelte".equals(trim(v.get("note"))))
                                                                 t.setType(AccountTransaction.Type.FEES);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1511,7 +1511,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1534,7 +1534,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(trim(v.get("note")));
@@ -1571,7 +1571,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.TAXES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note"));
@@ -1628,7 +1628,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -1660,7 +1660,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setDateTimeValue(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(v.get("currency"));
 
@@ -1706,7 +1706,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(v.get("note")));
@@ -1777,7 +1777,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .find("Wert Konto\\-Nr\\. Abrechnungs\\-Nr\\. Betrag zu Ihren Gunsten") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\/\\d]+ [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

@@ -183,7 +183,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-01-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-01-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(10.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("VIRTX/EBS (NP,L1) FOR DEC 2012"));
@@ -193,7 +193,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-04-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-04-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(9.49))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("BALANCE OF MONTHLY MINIMUM FEE FOR MAR 2013"));
@@ -203,7 +203,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-02-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-02-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CAD", Values.Amount.factorize(1.23))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("CAD DEBIT INT FOR JAN-2013"));
@@ -213,7 +213,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-02-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2013-02-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CAD", Values.Amount.factorize(15.17))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("CAD DEBIT INT FOR JAN-2013"));
@@ -223,7 +223,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.07))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("GCM.TO CASH DIVIDEND USD 0.6900000000 - US TAX"));
@@ -233,7 +233,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-05-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.18))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("NP SECURITIES AND FUTURES VALUE BUNDLE FOR APR 2017"));
@@ -243,7 +243,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES_REFUND));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-05-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.18))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("NP SECURITIES AND FUTURES VALUE BUNDLE FOR APR 2017"));
@@ -255,7 +255,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction1.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(transaction1.getDateTime(), is(LocalDateTime.parse("2013-03-05T00:00")));
+        assertThat(transaction1.getDateTimeValue(), is(LocalDateTime.parse("2013-03-05T00:00")));
         assertThat(transaction1.getShares(), is(Values.Share.factorize(12000)));
         assertNull(transaction1.getSource());
         assertThat(transaction1.getNote(),
@@ -272,7 +272,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction1.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(transaction1.getDateTime(), is(LocalDateTime.parse("2013-03-05T00:00")));
+        assertThat(transaction1.getDateTimeValue(), is(LocalDateTime.parse("2013-03-05T00:00")));
         assertThat(transaction1.getShares(), is(Values.Share.factorize(12000)));
         assertNull(transaction1.getSource());
         assertThat(transaction1.getNote(), is(
@@ -289,7 +289,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction1.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(transaction1.getDateTime(), is(LocalDateTime.parse("2013-06-18T00:00")));
+        assertThat(transaction1.getDateTimeValue(), is(LocalDateTime.parse("2013-06-18T00:00")));
         assertThat(transaction1.getShares(), is(Values.Share.factorize(480)));
         assertNull(transaction1.getSource());
         assertThat(transaction1.getNote(),
@@ -306,7 +306,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction1.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(transaction1.getDateTime(), is(LocalDateTime.parse("2013-06-18T00:00")));
+        assertThat(transaction1.getDateTimeValue(), is(LocalDateTime.parse("2013-06-18T00:00")));
         assertThat(transaction1.getShares(), is(Values.Share.factorize(12000)));
         assertNull(transaction1.getSource());
         assertThat(transaction1.getNote(),
@@ -324,7 +324,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-01T09:34:06")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-04-01T09:34:06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5000)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 855937427 | Transaction-ID: 3452745495"));
@@ -347,7 +347,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-01T09:34:13")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-04-01T09:34:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6000)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 855937873 | Transaction-ID: 3452746284"));
@@ -370,7 +370,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-01T09:34:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-04-01T09:34:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 855938012 | Transaction-ID: 3452746368"));
@@ -393,7 +393,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:12:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:12:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813598116 | Transaction-ID: 3277427053"));
@@ -416,7 +416,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:12:48")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:12:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813598306 | Transaction-ID: 3277427256"));
@@ -439,7 +439,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:13:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:13:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813599636 | Transaction-ID: 3277432110"));
@@ -462,7 +462,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:14:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:14:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813599932 | Transaction-ID: 3277432289"));
@@ -485,7 +485,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:14:17")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:14:17")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813600188 | Transaction-ID: 3277432430"));
@@ -508,7 +508,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:14:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:14:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813600464 | Transaction-ID: 3277432563"));
@@ -531,7 +531,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:14:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:14:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813600662 | Transaction-ID: 3277435157"));
@@ -554,7 +554,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-02T15:14:54")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-02T15:14:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813600885 | Transaction-ID: 3277435310"));
@@ -577,7 +577,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-03T09:32:48")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-01-03T09:32:48")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 813803887 | Transaction-ID: 3279084518"));
@@ -600,7 +600,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-02-19T15:36:15")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-02-19T15:36:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10000)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 836265238 | Transaction-ID: 3370960179"));
@@ -623,7 +623,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-05-11T11:42:12")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-05-11T11:42:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 2107403097 | Transaction-ID: 9004794431"));
@@ -646,7 +646,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-10-25T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-10-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12000)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -769,7 +769,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1908991475"));
@@ -794,7 +794,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-07T14:50:36")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-07T14:50:36")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1902533101"));
@@ -819,7 +819,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1908991474"));
@@ -850,7 +850,7 @@ public class IBFlexStatementExtractorTest
         assertThat(cancellation.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation, is(not(nullValue())));
 
-        assertThat(cancellation.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
+        assertThat(cancellation.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(cancellation.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(cancellation.getSource());
         assertThat(cancellation.getNote(), is("Trade-ID: 1908991474"));
@@ -875,7 +875,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-19T14:30:51")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-09-19T14:30:51")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1910911677"));
@@ -900,7 +900,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-05-11T11:45:45")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-05-11T11:45:45")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 2107408815 | Transaction-ID: 9004815263"));
@@ -926,7 +926,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-11-06T03:35:13")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2013-11-06T03:35:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(141)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 970510813 | Transaction-ID: 3937447227"));
@@ -949,7 +949,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-08-05T04:34:09")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2016-08-05T04:34:09")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1622654675 | Transaction-ID: 6698911710"));
@@ -972,7 +972,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-07T04:15:27")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2017-06-07T04:15:27")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1834141392 | Transaction-ID: 7684604106"));
@@ -995,7 +995,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-08T03:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2015-12-08T03:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1452394455 | Transaction-ID: 5956040041"));
@@ -1017,7 +1017,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-25T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-10-25T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("ORCL(US68389X1054) CASH DIVIDEND 0.19000000 USD PER SHARE - US TAX"));
@@ -1041,7 +1041,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-10-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("US SECURITIES SNAPSHOT AND FUTURES VALUE FOR AUG 2017"));
@@ -1051,7 +1051,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-31T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2017-10-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("US SECURITIES SNAPSHOT AND FUTURES VALUE FOR JUL 2017"));
@@ -1093,7 +1093,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-05T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.02))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -1143,7 +1143,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-01-25T10:59:10")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-01-25T10:59:10")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1111111111"));
@@ -1213,7 +1213,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-02-09T11:19:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-02-09T11:19:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 2029054512 | Transaction-ID: 8626274484"));
@@ -1236,7 +1236,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-29T12:44:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-29T12:44:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 3004185992 | Transaction-ID: 13346288726"));
@@ -1258,7 +1258,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 8765764573"));
@@ -1276,7 +1276,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 13713058125"));
@@ -1341,7 +1341,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-02-09T11:19:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2018-02-09T11:19:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 2029054512 | Transaction-ID: 8626274484"));
@@ -1364,7 +1364,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-29T12:44:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-07-29T12:44:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 3004185992 | Transaction-ID: 13346288726"));
@@ -1388,7 +1388,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-03-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2018-03-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(7)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 8765764573"));
@@ -1406,7 +1406,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-09-10T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 13713058125"));
@@ -1465,7 +1465,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-10-30T09:16:42")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-10-30T09:16:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(120)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 2592275115 | Transaction-ID: 11501005"));
@@ -1524,7 +1524,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(120)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -1547,7 +1547,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-08-18T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-08-18T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.67))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -1597,7 +1597,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-02T06:26:11")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-12-02T06:26:11")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 464740365 | Transaction-ID: 1522126816"));
@@ -1626,7 +1626,7 @@ public class IBFlexStatementExtractorTest
         assertThat(cancellation.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
         assertThat(cancellation, is(not(nullValue())));
 
-        assertThat(cancellation.getPortfolioTransaction().getDateTime(),
+        assertThat(cancellation.getPortfolioTransaction().getDateTimeValue(),
                         is(LocalDateTime.parse("2022-12-02T06:26:11")));
         assertThat(cancellation.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
         assertNull(cancellation.getSource());
@@ -1703,7 +1703,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-21T18:05:04")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-12-21T18:05:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 116815359 | Transaction-ID: 415451625"));
@@ -1779,7 +1779,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-13T10:36:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2019-12-13T10:36:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -1850,7 +1850,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-15T15:32:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-15T15:32:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(400)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -1875,7 +1875,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T09:30:01")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-02T09:30:01")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -1901,7 +1901,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-08T15:59:16")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-08T15:59:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -1926,7 +1926,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-15T14:17:05")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-01-15T14:17:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());
@@ -1955,7 +1955,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-31T20:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.99))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -1967,7 +1967,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-31T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-01-31T20:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.54))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -1979,7 +1979,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-02T20:20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.97))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -1992,7 +1992,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-12-31T20:20")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXCAD"));
@@ -2012,7 +2012,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-15T20:20")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXCAD"));
@@ -2032,7 +2032,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-02T20:20")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -2052,7 +2052,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-02T20:20")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-02T20:20")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertNull(transaction.getNote());
@@ -2075,7 +2075,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T17:59:42")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-03T17:59:42")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -2085,7 +2085,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-03T17:59:42")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-03T17:59:42")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("XXXXXUSD"));
@@ -2095,7 +2095,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-20T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(999.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2105,7 +2105,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-01-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(9.99))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("USD DEBIT INT FOR DEC-2019"));
@@ -2171,7 +2171,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-10T07:15:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-10T07:15:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5281530886 | Transaction-ID: 23009417807"));
@@ -2194,7 +2194,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-27T04:51:23")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-27T04:51:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5312944175 | Transaction-ID: 23147049711"));
@@ -2217,7 +2217,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-09T15:22:26")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-09T15:22:26")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5280765385 | Transaction-ID: 23003106266"));
@@ -2240,7 +2240,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-27T11:06:39")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-27T11:06:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5314164096 | Transaction-ID: 23150695041"));
@@ -2263,7 +2263,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-09T15:23:39")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-09T15:23:39")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5280769765 | Transaction-ID: 23003107589"));
@@ -2286,7 +2286,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-27T11:07:52")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-27T11:07:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 5314170175 | Transaction-ID: 23150713945"));
@@ -2348,7 +2348,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1500.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(),
@@ -2359,7 +2359,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-27T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1500.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(),
@@ -2410,7 +2410,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-04-12T10:19:29")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-04-12T10:19:29")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(23.342)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 129722031"));
@@ -2436,7 +2436,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2446,7 +2446,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-11T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2495,7 +2495,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-12-24T12:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-12-24T12:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 0123456789"));
@@ -2518,7 +2518,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-02-20T10:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-02-20T10:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 1234567890"));
@@ -2571,7 +2571,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(),
@@ -2582,7 +2582,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(),
@@ -2593,7 +2593,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.50))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 457125110 | R******09:OPRA NP L1 FOR MAR 2023"));
@@ -2603,7 +2603,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -2614,7 +2614,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -2625,7 +2625,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-03-02T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-03-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.30))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(),
@@ -2683,7 +2683,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-26T14:43:22")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-26T14:43:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(22)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 383581369 | Transaction-ID: 1160238864"));
@@ -2706,7 +2706,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-05-26T14:51:14")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2022-05-26T14:51:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 383584912 | Transaction-ID: 1160245912"));
@@ -2730,7 +2730,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(22)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -2750,7 +2750,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-23T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-09-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(22)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is(
@@ -2803,7 +2803,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 1112107901 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2813,7 +2813,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-20T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-05-20T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20000.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 1147954315 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2870,7 +2870,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-04-04T10:15:19")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-04-04T10:15:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(446)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 523119226 | Transaction-ID: 1779250008"));
@@ -2893,7 +2893,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-04-03T10:32:20")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-04-03T10:32:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(862)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 522441859 | Transaction-ID: 1775854738"));
@@ -2919,7 +2919,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-06T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-12-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15000.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 1528984216 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2929,7 +2929,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-04T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-04-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000.00))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 1777346910 | CASH RECEIPTS / ELECTRONIC FUND TRANSFERS"));
@@ -2939,7 +2939,7 @@ public class IBFlexStatementExtractorTest
         // assert transaction
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-03T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2023-02-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.02))));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 1648654096 | EUR CREDIT INT FOR JAN-2023"));
@@ -2997,7 +2997,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-23T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-01-23T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(157)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 486028469 | Transaction-ID: 1619968617"));
@@ -3021,7 +3021,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 486028469 | Transaction-ID: 1619968617"));
@@ -3041,7 +3041,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-10-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 486028469 | Transaction-ID: 1619968617"));
@@ -3108,7 +3108,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-05-17T07:12:40")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2023-05-17T07:12:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertNull(entry.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 543995474 | Transaction-ID: 1872174881"));
@@ -3130,7 +3130,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-24T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2022-06-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
         assertThat(entry.getNote(), is("Trade-ID: 543995474 | Transaction-ID: 1872174881"));
@@ -3239,7 +3239,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-17T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2020-02-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
         assertNull(transaction.getSource());
 
@@ -3258,7 +3258,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-08-15T00:00")));
+        assertThat(transaction.getDateTimeValue(), is(LocalDateTime.parse("2019-08-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(326)));
         assertNull(transaction.getSource());
         assertThat(transaction.getNote(), is("Transaction-ID: 11136056417"));
@@ -3279,7 +3279,7 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-11T00:00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTimeValue(), is(LocalDateTime.parse("2020-05-11T00:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(367)));
         assertNull(entry.getSource());
         assertNull(entry.getNote());

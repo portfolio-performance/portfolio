@@ -235,7 +235,7 @@ public interface Extractor
         @Override
         public LocalDateTime getDate()
         {
-            return transaction.getDateTime();
+            return transaction.getDateTimeValue();
         }
 
         @Override
@@ -336,7 +336,7 @@ public interface Extractor
         @Override
         public LocalDateTime getDate()
         {
-            return entry.getAccountTransaction().getDateTime();
+            return entry.getAccountTransaction().getDateTimeValue();
         }
 
         @Override
@@ -431,7 +431,7 @@ public interface Extractor
         @Override
         public LocalDateTime getDate()
         {
-            return entry.getSourceTransaction().getDateTime();
+            return entry.getSourceTransaction().getDateTimeValue();
         }
 
         @Override
@@ -514,7 +514,7 @@ public interface Extractor
         @Override
         public LocalDateTime getDate()
         {
-            return entry.getSourceTransaction().getDateTime();
+            return entry.getSourceTransaction().getDateTimeValue();
         }
 
         @Override

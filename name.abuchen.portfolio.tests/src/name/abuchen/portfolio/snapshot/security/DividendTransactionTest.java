@@ -34,7 +34,7 @@ public class DividendTransactionTest
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
         t.setSecurity(security);
-        t.setDateTime(date);
+        t.setDateTimeValue(date);
         t.setAmount(amount);
         t.setShares(shares);
         t.setCurrencyCode(security.getCurrencyCode());

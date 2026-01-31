@@ -85,7 +85,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     {
         String termCurrency = getTermCurrency();
         Money grossValue = t.getGrossValue();
-        Money convertedGrossValue = grossValue.with(converter.at(t.getDateTime()));
+        Money convertedGrossValue = grossValue.with(converter.at(t.getDateTimeValue()));
 
         TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
         if (!grossValue.getCurrencyCode().equals(converter.getTermCurrency()))
@@ -96,7 +96,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         {
             case BUY:
             case DELIVERY_INBOUND:
-                fifo.add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(), convertedGrossValue.getAmount(),
+                fifo.add(new LineItem(t.getShares(), t.getDateTimeValue().toLocalDate(), convertedGrossValue.getAmount(),
                                 txTrail, transactionItem));
                 break;
 
@@ -139,12 +139,12 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                         CurrencyConverter convert2forex = converter.with(t.getSecurity().getCurrencyCode());
 
                         Money forex = convert2forex.convert(item.date, Money.of(termCurrency, start));
-                        Money back = forex.with(converter.at(t.getDateTime()));
+                        Money back = forex.with(converter.at(t.getDateTimeValue()));
                         forexGain = back.getAmount() - start;
 
                         forexGainTrail = startTrail //
                                         .convert(forex, convert2forex.getRate(item.date, termCurrency)) //
-                                        .convert(back, converter.getRate(t.getDateTime(),
+                                        .convert(back, converter.getRate(t.getDateTimeValue(),
                                                         t.getSecurity().getCurrencyCode()))
                                         .subtract(startTrail);
                     }
@@ -167,7 +167,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     // Report that more was sold than bought to log
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                                    Values.DateTime.format(t.getDateTimeValue())));
                 }
 
                 break;
@@ -192,12 +192,12 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     long n = Math.min(moved, entry.shares);
                     
                     long transferredValue = Math.round(n / (double) entry.shares * entry.value);                    
-                    LineItem transfer = new LineItem(n, t.getDateTime().toLocalDate(), transferredValue,
+                    LineItem transfer = new LineItem(n, t.getDateTimeValue().toLocalDate(), transferredValue,
                                     entry.trail.fraction(
                                                     Money.of(getTermCurrency(), transferredValue),
                                                     n,
                                                     entry.originalShares
-                                    ).transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
+                                    ).transfer(t.getDateTimeValue().toLocalDate(), entry.source.getOwner(),
                                                     transactionItem.getOwner()),
                                     transactionItem);
 
@@ -222,7 +222,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     // FIXME Oops. More moved than available.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(moved), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                                    Values.DateTime.format(t.getDateTimeValue())));
                 }
 
                 break;

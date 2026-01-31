@@ -124,7 +124,7 @@ public class AccountTransactionModel extends AbstractModel
             account.addTransaction(t);
         }
 
-        t.setDateTime(LocalDateTime.of(date, time));
+        t.setDateTimeValue(LocalDateTime.of(date, time));
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -226,7 +226,7 @@ public class AccountTransactionModel extends AbstractModel
             this.security = EMPTY_SECURITY;
 
         this.account = account;
-        LocalDateTime transactionDate = transaction.getDateTime();
+        LocalDateTime transactionDate = transaction.getDateTimeValue();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
         this.shares = transaction.getShares();

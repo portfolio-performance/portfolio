@@ -47,7 +47,7 @@ public class CheckTransactionDateAction implements ImportAction
     {
         for (Transaction tx : transactions)
         {
-            if (tx.getDateTime() == null)
+            if (tx.getDateTimeValue() == null)
                 return new Status(Status.Code.ERROR, Messages.IssueTransactionWithoutDate);
         }
         return Status.OK_STATUS;

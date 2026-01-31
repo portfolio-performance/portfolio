@@ -109,7 +109,7 @@ public class CostCalculationTest
         PortfolioTransaction tx = new PortfolioTransaction();
         tx.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
         tx.setSecurity(security);
-        tx.setDateTime(LocalDateTime.parse("2015-01-01T00:00"));
+        tx.setDateTimeValue(LocalDateTime.parse("2015-01-01T00:00"));
         tx.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1100)));
         tx.setShares(Values.Share.factorize(10));
         tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, tx.getMonetaryAmount(),
@@ -119,7 +119,7 @@ public class CostCalculationTest
         tx = new PortfolioTransaction();
         tx.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
         tx.setSecurity(security);
-        tx.setDateTime(LocalDateTime.parse("2015-10-01T00:00"));
+        tx.setDateTimeValue(LocalDateTime.parse("2015-10-01T00:00"));
         tx.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1100)));
         tx.setShares(Values.Share.factorize(10));
         tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, tx.getMonetaryAmount(),

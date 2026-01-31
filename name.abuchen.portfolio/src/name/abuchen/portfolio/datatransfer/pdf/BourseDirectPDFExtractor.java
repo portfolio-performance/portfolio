@@ -158,7 +158,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
 
                             var taxAmountTransactionHelper = type.getCurrentContext().getType(TaxAmountTransactionHelper.class).orElseGet(TaxAmountTransactionHelper::new);
-                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTime(), t.getPortfolioTransaction().getSecurity().getIsin());
+                            var item = taxAmountTransactionHelper.findItem(v.getStartLineNumber(), t.getPortfolioTransaction().getDateTimeValue(), t.getPortfolioTransaction().getSecurity().getIsin());
 
                             if (item.isPresent())
                             {
@@ -242,7 +242,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}COUPONS.*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"))))
 
                         // @formatter:off
                         //  06/08/2025  COUPONS  NL0010273215  ASML HOLDING  4,08
@@ -311,7 +311,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}VIREMENT ESPECES.*[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -335,7 +335,7 @@ public class BourseDirectPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})[\\s]{1,}DROITS DE GARDE(?<note>.*)[\\s]{2,}(?<amount>[\\d\\s]+,[\\d]{2})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTimeValue(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(trim(v.get("note")));

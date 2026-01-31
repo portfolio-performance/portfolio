@@ -184,7 +184,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4}[\\s]*\\.(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) UNITS?([\\s]|\\|)DIST.*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), Locale.US)))
+                        .assign((t, v) -> t.setDateTimeValue(asDate(v.get("date"), Locale.US)))
 
                         // @formatter:off
                         // 01-07-2025 01-07-2025    .VEQT UNIT DIST      ON      29 SHS REC 12/30/24 PAY - - - - 20.69 - - - -
@@ -249,7 +249,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) [\\d]{2}\\-[\\d]{2}\\-[\\d]{4} Contribution .* (?<amount>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date"), Locale.US));
+                            t.setDateTimeValue(asDate(v.get("date"), Locale.US));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                         })

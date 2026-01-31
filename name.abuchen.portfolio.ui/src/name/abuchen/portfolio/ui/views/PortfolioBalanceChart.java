@@ -225,8 +225,8 @@ public class PortfolioBalanceChart
         Collections.sort(tx, Transaction.BY_DATE);
 
         LocalDate now = LocalDate.now();
-        LocalDate start = tx.get(0).getDateTime().toLocalDate();
-        LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
+        LocalDate start = tx.get(0).getDateTimeValue().toLocalDate();
+        LocalDate end = tx.get(tx.size() - 1).getDateTimeValue().toLocalDate();
 
         if (now.isAfter(end))
             end = now;
@@ -249,8 +249,8 @@ public class PortfolioBalanceChart
 
         if (!tx.isEmpty())
         {
-            start = tx.getFirst().getTransaction().getDateTime().toLocalDate();
-            end = tx.getLast().getTransaction().getDateTime().toLocalDate();
+            start = tx.getFirst().getTransaction().getDateTimeValue().toLocalDate();
+            end = tx.getLast().getTransaction().getDateTimeValue().toLocalDate();
         }
 
         if (now.isAfter(end))

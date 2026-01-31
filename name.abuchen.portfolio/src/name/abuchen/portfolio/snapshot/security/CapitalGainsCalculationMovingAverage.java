@@ -73,7 +73,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     // FIXME Oops. More sold than bought.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
                                     Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                                    Values.DateTime.format(t.getDateTimeValue())));
                 }
                 else
                 {

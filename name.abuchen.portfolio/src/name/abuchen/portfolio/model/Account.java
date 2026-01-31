@@ -157,7 +157,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public long getCurrentAmount(LocalDateTime date)
     {
         return transactions.stream() //
-                        .filter(t -> t.getDateTime().isBefore(date)) //
+                        .filter(t -> t.getDateTimeValue().isBefore(date)) //
                         .mapToLong(t -> {
                             switch (t.getType())
                             {

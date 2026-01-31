@@ -220,7 +220,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
                 date += context.get(CONTEXT_KEY_YEAR);
             }
 
-            transaction.setDateTime(asDate(date));
+            transaction.setDateTimeValue(asDate(date));
             transaction.setAmount(asAmount(matcherMap.get("amount")));
             transaction.setCurrencyCode(asCurrencyCode(context.get(CONTEXT_KEY_CURRENCY)));
         };
