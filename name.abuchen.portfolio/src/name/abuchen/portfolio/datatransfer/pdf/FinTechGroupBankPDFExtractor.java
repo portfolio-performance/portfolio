@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
@@ -564,19 +563,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
             // first: find the start of the blocks
             var blockStarts = new ArrayList<Integer>();
 
-            for (int ii = 0; ii < lines.length; ii++)
+            for (var ii = 0; ii < lines.length; ii++)
             {
-                Matcher matcher = startsWith.matcher(lines[ii]);
+                var matcher = startsWith.matcher(lines[ii]);
                 if (matcher.matches() && blockIdentifiers.add(lines[ii]))
                     blockStarts.add(ii);
             }
 
             // second: convert to line spans
             var spans = new ArrayList<LineSpan>();
-            for (int ii = 0; ii < blockStarts.size(); ii++)
+            for (var ii = 0; ii < blockStarts.size(); ii++)
             {
                 int startLine = blockStarts.get(ii);
-                int endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
+                var endLine = ii + 1 < blockStarts.size() ? blockStarts.get(ii + 1) - 1 : lines.length - 1;
                 spans.add(new LineSpan(startLine, endLine));
             }
             return spans;
@@ -601,7 +600,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
-                        
+
                         .optionalOneOf( //
                                         // @formatter:off
                                         // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
@@ -612,9 +611,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^Nr\\.[\\s]*[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
                                         .match("^Kurs[:\\s]{1,}[\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        
+
                                         // @formatter:off
-                                        // Nr.329393872/1 Verkauf WITR 
+                                        // Nr.329393872/1 Verkauf WITR
                                         // COM.SEC.Z08/UN.IDX (JE00B2NFTL95/A0V6Z0)
                                         // Kurs : 193,6300 EUR Kurswert : 1.742,67 EUR
                                         // @formatter:on
@@ -3881,7 +3880,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
                         })
-                        
+
                         // @formatter:off
                         // * Fremde Spesen: 2,51 EUR
                         // @formatter:on
