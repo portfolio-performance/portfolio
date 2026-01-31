@@ -1,0 +1,71 @@
+﻿PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 793738619
+Kundennummer 09857423
+dkFuG iDqDngmST
+Auftragsnummer 249453/79.00
+Herrn Datum 30.12.2025
+EekkB sJhHYRhpA Rechnungsnummer W00883-0009388585/25
+pegwCJvB YSP. 935 Umsatzsteuer-ID BV250992728
+65139 wdIb
+Wertpapier Abrechnung Verkauf
+Auftrag vom 29.12.2025 10:14:12 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 547 SPDR BLOOM.1-3M.T-BI.U.ETF IE00BJXRT698 (A2PM4Q)
+REGISTERED SHARES (ACC) O.N.
+Handels-/Ausführungsplatz XETRA (gemäß Weisung)
+Börsensegment XETA
+Limit-Order
+Limit 118,02 USD
+Schlusstag/-Zeit 29.12.2025 10:14:13 Auftraggeber bSHUX sVoppiVVJ
+Ausführungskurs 118,02 USD Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Irland
+Devisenkurs (EUR/USD) 1,1816 vom 30.12.2025
+Kurswert 54.635,19 EUR
+Provision 30,00- EUR
+Eigene Spesen 2,50- EUR
+Transaktionsentgelt Börse 2,62- EUR
+Übertragungs-/Liefergebühr 0,72- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 5.908,43- EUR
+Eingebuchte sonstige negative Kapitalerträge 5.908,43 EUR
+Ausmachender Betrag 54.599,35 EUR
+Den Gegenwert buchen wir mit Valuta 31.12.2025 zu Gunsten des Kontos 27180309
+(IBAN DE11 3771 0298 3444 5189 72), BLZ 38141212 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+0883.12301613.0000021OR07
+Seite 2 von 2
+Depotnummer 063375129
+Kundennummer 56688282
+Auftragsnummer 249453/79.00
+Datum 30.12.2025
+Verrechnete sonstige negative Kapitalerträge 5.908,43- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 5.908,43 EUR
+Kapitalertragsteuer 25,00% auf 5.908,43 EUR 1.477,11 EUR
+Solidaritätszuschlag 5,50% auf 1.477,11 EUR 81,24 EUR
+Ausmachender Betrag 1.558,35 EUR
+Den Gegenwert buchen wir mit Valuta 30.12.2025 zu Gunsten des Kontos 42208017
+(IBAN ER03 9382 5922 3183 4895 33), BLZ 94273290 (BIC oPsDPQY3746).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2025 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 16.576,42
+Verkauf 0,00 5.908,43 0,00 0,00 0,00
+Steuerausgleich 0,00 5.908,43- 0,00 0,00 5.908,43-
+Nachher 0,00 0,00 0,00 0,00 10.667,99
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 5077169100 10.02.2025 Stück 547,0000 60.507,78- 54.599,35 0,00 5.908,43- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 5.908,43-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.12301613.0000022OR07
