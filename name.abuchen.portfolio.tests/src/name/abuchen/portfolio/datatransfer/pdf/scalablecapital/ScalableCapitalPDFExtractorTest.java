@@ -519,7 +519,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-07"), hasShares(53.928), //
+                        hasDate("2026-01-07T00:00"), hasShares(53.928), //
                         hasSource("Verkauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 289.43), hasGrossValue("EUR", 292.17), //
@@ -533,7 +533,7 @@ public class ScalableCapitalPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06_KnockOut.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -553,10 +553,52 @@ public class ScalableCapitalPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2026-01-14"), hasShares(1.327), //
-                        hasSource("Verkauf06_KnockOut.txt"), //
+                        hasDate("2026-01-14T00:00"), hasShares(1.327), //
+                        hasSource("Verkauf06.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.33), hasGrossValue("EUR", 1.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf07()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4278661081"), hasWkn(null), hasTicker(null), //
+                        hasName("Hershey"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-12-29T12:38:52"), hasShares(70.00), //
+                        hasSource("Verkauf07.txt"), //
+                        hasNote("Ord.-Nr.: RgWCVXnhH0pG3Xr"), //
+                        hasAmount("EUR", 11264.35), hasGrossValue("EUR", 11264.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-12-29T00:00"), hasShares(70.00), //
+                        hasSource("Verkauf07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 366.75), hasGrossValue("EUR", 366.75), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
