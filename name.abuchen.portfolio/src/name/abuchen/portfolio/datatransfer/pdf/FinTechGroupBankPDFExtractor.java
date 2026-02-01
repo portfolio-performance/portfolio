@@ -1747,7 +1747,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final var type = new DocumentType("Kontoauszug Nr:", //
+        final var type = new DocumentType("Kontoauszug Nr[\\.]?:", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Kontowährung:      EUR
@@ -1760,7 +1760,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Kontoauszug Nr:    004/2014                              Seite 1 von 2
                                         // @formatter:on
                                         .section("year") //
-                                        .match("^Kontoauszug Nr:[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4}).*$") //
+                                        .match("^Kontoauszug Nr[\\.]?:[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4}).*$") //
                                         .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
