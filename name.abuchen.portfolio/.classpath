@@ -5,46 +5,15 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/eclipse/osgi/util/**"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="protos">
 		<attributes>
 			<attribute name="ignore_optional_problems" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/com.google.protobuf_4.33.0.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.commons.math3_3.6.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.servicemix.bundles.xstream_1.4.20.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/json-path_2.10.0.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/com.googlecode.json-simple_1.1.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.commons.commons-csv_1.14.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/wrapped.com.auth0.java-jwt_4.5.0.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>

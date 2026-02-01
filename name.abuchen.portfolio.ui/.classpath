@@ -18,27 +18,13 @@
 			<accessrule kind="accessible" pattern="jakarta/inject/**"/>
 			<accessrule kind="accessible" pattern="org/osgi/service/prefs/**"/>
 			<accessrule kind="accessible" pattern="jakarta/annotation/**"/>
+			<accessrule kind="accessible" pattern="org/jsoup/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/osgi/service/datalocation/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/osgi/util/**"/>
+			<accessrule kind="accessible" pattern="org/apache/commons/csv/**"/>
+			<accessrule kind="accessible" pattern="org/json/simple/**"/>
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/com.googlecode.json-simple_1.1.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/io.github.java-diff-utils_4.16.0.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.eclipse.swt.gtk.linux.x86_64_3.132.0.v20251124-0642.jar"/>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.eclipse.swtchart_1.1.0.202511241716.jar"/>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/de.engehausen.treemap_0.0.4.jar"/>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/de.engehausen.treemap.swt_0.0.5.jar"/>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.commons.commons-csv_1.14.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
