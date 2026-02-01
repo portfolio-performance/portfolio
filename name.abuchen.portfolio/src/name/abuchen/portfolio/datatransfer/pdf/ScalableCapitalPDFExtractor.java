@@ -212,11 +212,24 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // Addebito 250.00 EUR
                         // Gesamtbetrag 289,43 EUR
                         // @formatter:on
-                        .section("currency", "amount") //
+                        .section("amount", "currency") //
                         .match("^(Total|Gutschrift|Belastung|Debit|Credit|Totaal|Addebito|Gesamtbetrag) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Erstattete Steuern 366,75 EUR
+                        // @formatter:on
+                        .section("taxRefund", "currency").optional() //
+                        .match("^Erstattete Steuern (?<taxRefund>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            var isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+                            var taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                            if (isLiquidation)
+                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                         })
 
                         .optionalOneOf( //

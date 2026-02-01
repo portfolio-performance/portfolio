@@ -590,7 +590,7 @@ public class ScalableCapitalPDFExtractorTest
                         hasDate("2025-12-29T12:38:52"), hasShares(70.00), //
                         hasSource("Verkauf07.txt"), //
                         hasNote("Ord.-Nr.: RgWCVXnhH0pG3Xr"), //
-                        hasAmount("EUR", 11264.35), hasGrossValue("EUR", 11264.35), //
+                        hasAmount("EUR", 10897.60), hasGrossValue("EUR", 10897.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check tax refund transaction
