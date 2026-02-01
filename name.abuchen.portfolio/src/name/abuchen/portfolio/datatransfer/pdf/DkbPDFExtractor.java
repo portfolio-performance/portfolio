@@ -79,7 +79,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        var type = new DocumentType("(Kauf" //
+        final var type = new DocumentType("(Kauf" //
                         + "|Kauf Direkthandel" //
                         + "|Ausgabe" //
                         + "|Ausgabe Investmentfonds" //
@@ -113,7 +113,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         firstRelevantLine.set(pdfTransaction);
 
         // Map for tax lost adjustment transaction
-        Map<String, String> context = type.getCurrentContext();
+        var context = type.getCurrentContext();
 
         pdfTransaction //
 
@@ -166,7 +166,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -178,7 +178,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "name", "isin", "wkn", "nameContinued") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -190,7 +190,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^R.ckzahlungsbetrag .* [\\.,\\d]+ (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
@@ -273,8 +273,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                            var fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            context.put("baseCurrency", rate.getBaseCurrency());
+                            context.put("termCurrency", rate.getTermCurrency());
+                            context.put("exchangeRate", v.get("exchangeRate"));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -319,7 +323,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        var type = new DocumentType("(Dividendengutschrift" //
+        final var type = new DocumentType("(Dividendengutschrift" //
                         + "|Zinsgutschrift" //
                         + "|Gutschrift von Investmenterträgen" //
                         + "|Aussch.ttung aus Genussschein" //
@@ -352,7 +356,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "name", "isin", "wkn", "nameContinued") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("(?<nameContinued>.*)") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -364,7 +368,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "nameContinued", "currency") //
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("(?<nameContinued>.*)") //
                                                         .match("^Zahlbarkeitstag .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -380,7 +384,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*)$") //
                                                         .match("(?<nameContinued>.*)") //
-                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Ertrag pro St. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -472,7 +476,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addTransferOutTransaction()
     {
-        var type = new DocumentType("Depotbuchung \\- Belastung", isJointAccount);
+        final var type = new DocumentType("Depotbuchung \\- Belastung", isJointAccount);
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<BuySellEntry>();
@@ -496,7 +500,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "shares", "name", "isin", "wkn", "nameContinued") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                        .match("^(?<currency>[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                        .match("^(?<currency>[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
@@ -536,7 +540,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        var type = new DocumentType("Vorabpauschale Investmentfonds");
+        final var type = new DocumentType("Vorabpauschale Investmentfonds");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
@@ -561,7 +565,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
-                        .match("^(St.ck|[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                        .match("^(St.ck|[A-Z]{3}) (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
                         .match("^.* Vorabpauschale pro St\\. [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
@@ -1770,6 +1774,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ausmachender Betrag 56,57 EUR
                         // Den Gegenwert buchen wir mit Valuta 27.10.2015 zu Gunsten des Kontos 12345678
+                        //
+                        // Ausmachender Betrag 1.558,35 EUR
+                        // Den Gegenwert buchen wir mit Valuta 30.12.2025 zu Gunsten des Kontos 42208017
                         // @formatter:on
                         .section("amount", "currency", "date").optional() //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
@@ -1781,6 +1788,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Ausmachender Betrag 1.558,35 EUR
+                        // @formatter:on
+                        .section("gross", "currency").optional() //
+                        .match("^Ausmachender Betrag (?<gross>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            if (context.get("exchangeRate") != null)
+                            {
+                                var rate = asExchangeRate(context);
+                                type.getCurrentContext().putType(rate);
+
+                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                            }
                         })
 
                         .wrap(t -> {
