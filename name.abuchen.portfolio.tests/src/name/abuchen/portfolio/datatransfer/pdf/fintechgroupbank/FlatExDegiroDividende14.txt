@@ -1,0 +1,51 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+flatexDEGIRO Bank SE
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank SE -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0102382000005619457770
+GSiks KNeOuTeR
+OSsptFkMSUS zbH. 2
+21415 rZqiZsr Rb Gueamz
+             Frankfurt, 26.01.2026
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: 3844628722
+Depotinhaber    : FLjJPXFl, hEXaR PuKx ZmBhkoyF, OYDJGatJ
+Nr.4741404453        ANDERSONS INC., THE               (US0341641035/920678)  
+St.             :      100,000000      Bruttodividende
+                                       pro Stück       :          0,2000 USD
+Extag           :      02.01.2026      Bruttodividende :           20,00 USD
+Zahlungstag     :      23.01.2026      Bemessungs-
+Valuta          :      23.01.2026      grundlage       :            6,83 EUR
+                                      *Einbeh. Steuer  :            1,80 EUR
+Devisenkurs     :        1,174200
+Quellenst.-satz :           15,00 %    Gez. Quellenst. :            2,99 USD
+                                       Endbetrag       :           12,68 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                  Kapitalertragsteuer  :            1,71 EUR
+                                  Solidaritätszuschlag :            0,09 EUR
+                                  Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+  finden Sie im Steuerreport unter der Transaktion-Nr. :
+  4741404453
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.: 1050836601
+Anrechenbare Quellensteuer**                  15,00 %  =            3,00 USD
+** nur relevant für Steuerinländer
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Societas Europaea, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Hans-Hermann Lotter  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Evgeni Kaplun, Jens Möbitz, Christiane Strubel
+2000005619457770 0113102380000101

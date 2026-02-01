@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf.dkb;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
@@ -24,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -57,7 +57,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -592,12 +591,7 @@ public class DkbPDFExtractorTest
                         hasSource("Kauf09.txt"), //
                         hasNote("Limit 1,80 USD"), //
                         hasAmount("EUR", 3884.81), hasGrossValue("EUR", 3848.30), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.51 + 20.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.51 + 20.00))));
     }
 
     @Test
@@ -667,12 +661,7 @@ public class DkbPDFExtractorTest
                         hasSource("Kauf10.txt"), //
                         hasNote("Auftragsnummer 123456/31.01 | Limit 0,54 USD"), //
                         hasAmount("EUR", 1037.14), hasGrossValue("EUR", 1000.65), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.49 + 20.00), //
-                        check(tx -> {
-                            var c = new CheckCurrenciesAction();
-                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
-                            assertThat(s, is(Status.OK_STATUS));
-                        }))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 10.00 + 6.49 + 20.00))));
     }
 
     @Test
@@ -1289,6 +1278,127 @@ public class DkbPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 2390.77), hasGrossValue("EUR", 2400.00), //
                         hasTaxes("EUR", 8.75 + 0.48), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf13()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000HLB2DM0"), hasWkn("HLB2DM"), hasTicker(null), //
+                        hasName("LB.HESSEN-THÜRINGEN GZ NACHR.ANLEIHE V.15(25)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-11-18T00:00"), hasShares(50.00), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("Auftragsnummer CERZ 9504228500 | Rückzahlungskurs 100 %"), //
+                        hasAmount("EUR", 4976.27), hasGrossValue("EUR", 5000.00), //
+                        hasTaxes("EUR", 22.50 + 1.23), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf14()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BJXRT698"), hasWkn("A2PM4Q"), hasTicker(null), //
+                        hasName("SPDR BLOOM.1-3M.T-BI.U.ETF REGISTERED SHARES (ACC) O.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-12-29T10:14:13"), hasShares(547.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote("Auftragsnummer 249453/79.00 | Limit 118,02 USD"), //
+                        hasAmount("EUR", 54599.35), hasGrossValue("EUR", 54635.19), //
+                        hasForexGrossValue("USD", 64556.94), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 30.00 + 2.50 + 2.62 + 0.72))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-12-30T00:00"), hasShares(547.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1558.35), hasGrossValue("EUR", 1558.35), //
+                        hasForexGrossValue("USD", 1841.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf14WithSecurityInEUR()
+    {
+        var security = new Security("SPDR BLOOM.1-3M.T-BI.U.ETF REGISTERED SHARES (ACC) O.N.", "EUR");
+        security.setIsin("IE00BJXRT698");
+        security.setWkn("A2PM4Q");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new DkbPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-12-29T10:14:13"), hasShares(547.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote("Auftragsnummer 249453/79.00 | Limit 118,02 USD"), //
+                        hasAmount("EUR", 54599.35), hasGrossValue("EUR", 54635.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 30.00 + 2.50 + 2.62 + 0.72))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-12-30T00:00"), hasShares(547.00), //
+                        hasSource("Verkauf14.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1558.35), hasGrossValue("EUR", 1558.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2810,6 +2920,40 @@ public class DkbPDFExtractorTest
                                         hasNote("Abrechnungsnr. 123456789"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0533033667"), hasWkn("LYX0GP"), hasTicker(null), //
+                        hasName("MUL AMUNDI MSCI WORLD INF TECH UCITS ETF INH.ANTEILE ACC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-02T00:00"), hasShares(5.00), //
+                        hasSource("Vorabpauschale03.txt"), //
+                        hasNote("Abrechnungsnr. 51511993430"), //
+                        hasAmount("EUR", 5.28), hasGrossValue("EUR", 5.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -5264,6 +5408,30 @@ public class DkbPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-11-06"), hasAmount("EUR", 50.00), //
                         hasSource("GiroKontoauszug34.txt"), hasNote("Echtzeitüberweisung"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug35()
+    {
+        var extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug35.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-12-22"), hasAmount("EUR", 20.71), //
+                        hasSource("GiroKontoauszug35.txt"), hasNote("Rückbuchung"))));
     }
 
     @Test
