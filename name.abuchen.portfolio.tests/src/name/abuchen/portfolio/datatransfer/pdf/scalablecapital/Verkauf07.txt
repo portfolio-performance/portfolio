@@ -1,0 +1,41 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+HoVy zZrElRq
+LT hAyXauxN 3 
+23615 rzOGqoWImWiz RLemA 29.12.2025
+Deutschland Seite 1 / 2
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order RgWCVXnhH0pG3Xr
+Ausführung 29.12.2025 12:38:52 Geschäft 12439pyBKDv34037
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 6505481522 Verwahrart Girosammelverwahrung
+Typ Wertpapier Anzahl Kurs Betrag
+Verkauf Hershey 70,00 Stk. 155,68 EUR 10.897,60 EUR
+US4278661081
+Steuern +366,75 EUR
+Gutschrift 11.264,35 EUR
+Der Betrag wird mit dem Verrechnungskonto gn86339910422583872441 (Valuta: 31.12.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 1 / 2
+Wertpapierabrechnung
+Verkauf 70,00 Stk. Hershey 
+Ermittlung steuerrelevanter Erträge
+Typ Betrag
+Verlust -1.390,50 EUR
+Verrechnung mit vorherigen Gewinnen +1.390,50 EUR
+Zu versteuern 0,00 EUR
+Erstattete Steuern 
+Typ Betrag
+Kapitalertragsteuer -347,63 EUR
+Solidaritätszuschlag -19,12 EUR
+Erstattete Steuern 366,75 EUR
+Scalable Capital Bank GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Florian Prucker, Martin Krebs, Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Dirk Franzmeyer 2 / 2
