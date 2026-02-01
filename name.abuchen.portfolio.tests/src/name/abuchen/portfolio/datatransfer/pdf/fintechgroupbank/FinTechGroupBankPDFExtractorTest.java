@@ -8430,6 +8430,71 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDeGiroSammelabrechnung09()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDeGiroSammelabrechnung09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // VANECK BITCOIN ETN
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A28M8D0"), hasWkn("A28M8D"), hasTicker(null), //
+                        hasName("VANECK BITCOIN ETN"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("DE000A28M8D0")), //
+                        hasDate("2026-01-14T09:56"), hasShares(80.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4713456485"), //
+                        hasAmount("EUR", 3458.42), hasGrossValue("EUR", 3451.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.85))));
+
+        // META PLATFORMS INC. A
+        assertThat(results, hasItem(security( //
+                        hasIsin("US30303M1027"), hasWkn("A1JWVX"), hasTicker(null), //
+                        hasName("META PLATFORMS INC. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(sale( //
+                        hasSecurity(hasIsin("US30303M1027")), //
+                        hasDate("2026-01-14T18:00"), hasShares(27.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4714408398"), //
+                        // hasAmount("EUR", 14323.50), hasGrossValue("EUR",
+                        // 14323.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 19.90 + 0.85))));
+
+        // TODO: tax refund 230,67
+
+        // SILVER47 EXPLORATION CORP
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA8277191059"), hasWkn("A408EQ"), hasTicker(null), //
+                        hasName("SILVER47 EXPLORATION CORP"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(purchase( //
+                        hasSecurity(hasIsin("CA8277191059")), //
+                        hasDate("2026-01-14T18:11"), hasShares(608.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4714426142"), //
+                        hasAmount("EUR", 361.05), hasGrossValue("EUR", 352.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.51))));
+    }
+
+    @Test
     public void testFlatExDeGiroDepotServiceGebuehr01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
