@@ -65,7 +65,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE000716YHJ7"), hasWkn("125615212"), hasTicker(null), //
-                        hasName("Inve FTSE All"), //
+                        hasName("Accum Shs USD Inve FTSE All"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -99,7 +99,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE000716YHJ7"), hasWkn("125615212"), hasTicker(null), //
-                        hasName("Inve FTSE All"), //
+                        hasName("Accum Shs USD Inve FTSE All"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -133,7 +133,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00BKS7L097"), hasWkn("51992937"), hasTicker(null), //
-                        hasName("Inv S&P 500 ESG"), //
+                        hasName("Accum Shs USD Inv S&P 500 ESG"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -167,7 +167,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00B3RBWM25"), hasWkn("18575459"), hasTicker(null), //
-                        hasName("Van FTSE All Wr"), //
+                        hasName("Ptg.Shs Van FTSE All Wr"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -201,7 +201,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00B6YX5D40"), hasWkn("13976063"), hasTicker(null), //
-                        hasName("SPDR S&P US Di"), //
+                        hasName("Shs SPDR S&P US Di"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -235,7 +235,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE000V93BNU0"), hasWkn("113303241"), hasTicker(null), //
-                        hasName("Wld ESG"), //
+                        hasName("Accum Shs USD Inv MSC Wld ESG"), //
                         hasCurrencyCode("CHF"))));
 
         // check buy sell transaction
@@ -303,7 +303,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00BFNM3G45"), hasWkn("43695283"), hasTicker(null), //
-                        hasName("iSh MSCI USA"), //
+                        hasName("Accum Shs Unhedged USD iSh MSCI USA"), //
                         hasCurrencyCode("USD"))));
 
         // check buy sell transaction
@@ -581,7 +581,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin("IE00BFNM3L97"), hasWkn("43671001"), hasTicker(null), //
-                        hasName("iShs Jap ESG"), //
+                        hasName("Accum Shs Unhedged USD iShs Jap ESG"), //
                         hasCurrencyCode("USD"))));
 
         // check buy sell transaction
@@ -597,7 +597,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02WithSecurityInCHF()
     {
-        var security = new Security("iShs Jap ESG", "CHF");
+        var security = new Security("Accum Shs Unhedged USD iShs Jap ESG", "CHF");
         security.setIsin("IE00BFNM3L97");
         security.setWkn("43671001");
 
@@ -731,6 +731,76 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
                         hasNote("Transaktion 82230675"), //
                         hasAmount("CHF", 3728.25), hasGrossValue("CHF", 3728.25), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US8725401090"), hasWkn("978121"), hasTicker(null), //
+                        hasName("Registered Shs TJX Companies Inc Nom."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-12-12T00:00"), hasShares(1.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Transaktion 87724790-0054"), //
+                        hasAmount("CHF", 124.01), hasGrossValue("CHF", 124.20), //
+                        hasForexGrossValue("USD", 156.09), //
+                        hasTaxes("CHF", 0.19), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05WithSecurityInCHF()
+    {
+        var security = new Security("Registered Shs TJX Companies Inc Nom.", "CHF");
+        security.setIsin("US8725401090");
+        security.setWkn("978121");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-12-12T00:00"), hasShares(1.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote("Transaktion 87724790-0054"), //
+                        hasAmount("CHF", 124.01), hasGrossValue("CHF", 124.20), //
+                        hasTaxes("CHF", 0.19), hasFees("CHF", 0.00))));
     }
 
     @Test
