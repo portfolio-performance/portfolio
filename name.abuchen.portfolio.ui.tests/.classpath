@@ -5,15 +5,19 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/framework/**"/>
+			<accessrule kind="accessible" pattern="org/apache/commons/csv/**"/>
+			<accessrule kind="accessible" pattern="com/google/common/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/swt/graphic/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/core/runtime/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/swt/graphics/**"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="src" path="src">
 		<attributes>
 			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.commons.commons-csv_1.14.1.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
