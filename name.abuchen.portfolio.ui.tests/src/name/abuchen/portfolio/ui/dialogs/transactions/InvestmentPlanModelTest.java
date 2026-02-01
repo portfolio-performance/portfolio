@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.junit.Test;
 

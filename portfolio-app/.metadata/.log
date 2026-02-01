@@ -1,0 +1,749 @@
+!SESSION 2026-02-01 13:05:23.736 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=21.0.10
+java.vendor=Red Hat, Inc.
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=de_DE
+Framework arguments:  -product name.abuchen.portfolio.bootstrap.product
+Command-line arguments:  -product name.abuchen.portfolio.bootstrap.product -data /stratis/home/tpasch/dev/scm/github/portfolio/portfolio-app -dev file:///stratis/home/tpasch/dev/workspaces/202512/.metadata/.plugins/org.eclipse.pde.core/app/dev.properties -os linux -ws gtk -arch x86_64 -consoleLog
+
+!ENTRY name.abuchen.portfolio 4 0 2026-02-01 13:05:26.132
+!MESSAGE FrameworkEvent ERROR
+!STACK 0
+org.osgi.framework.BundleException: Could not resolve module: name.abuchen.portfolio [63]
+  Unresolved requirement: Import-Package: com.auth0.jwt
+
+	at org.eclipse.osgi.container.Module.start(Module.java:495)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel$2.run(ModuleContainer.java:2110)
+	at org.eclipse.osgi.internal.framework.EquinoxContainerAdaptor$1$1.execute(EquinoxContainerAdaptor.java:146)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2101)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2041)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:2003)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1915)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY name.abuchen.portfolio.pdfbox1 4 0 2026-02-01 13:05:26.135
+!MESSAGE FrameworkEvent ERROR
+!STACK 0
+org.osgi.framework.BundleException: Could not resolve module: name.abuchen.portfolio.pdfbox1 [66]
+  Unresolved requirement: Require-Bundle: org.apache.pdfbox; bundle-version="[1.8.17,2.0.0)"
+
+	at org.eclipse.osgi.container.Module.start(Module.java:495)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel$2.run(ModuleContainer.java:2110)
+	at org.eclipse.osgi.internal.framework.EquinoxContainerAdaptor$1$1.execute(EquinoxContainerAdaptor.java:146)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2101)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2041)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:2003)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1915)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY name.abuchen.portfolio.pdfbox3 4 0 2026-02-01 13:05:26.136
+!MESSAGE FrameworkEvent ERROR
+!STACK 0
+org.osgi.framework.BundleException: Could not resolve module: name.abuchen.portfolio.pdfbox3 [67]
+  Unresolved requirement: Require-Bundle: org.apache.pdfbox; bundle-version="[3.0.3,4.0.0)"
+
+	at org.eclipse.osgi.container.Module.start(Module.java:495)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel$2.run(ModuleContainer.java:2110)
+	at org.eclipse.osgi.internal.framework.EquinoxContainerAdaptor$1$1.execute(EquinoxContainerAdaptor.java:146)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2101)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2041)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:2003)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1915)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY name.abuchen.portfolio.ui 4 0 2026-02-01 13:05:26.136
+!MESSAGE FrameworkEvent ERROR
+!STACK 0
+org.osgi.framework.BundleException: Could not resolve module: name.abuchen.portfolio.ui [69]
+  Unresolved requirement: Import-Package: de.engehausen.treemap
+
+	at org.eclipse.osgi.container.Module.start(Module.java:495)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel$2.run(ModuleContainer.java:2110)
+	at org.eclipse.osgi.internal.framework.EquinoxContainerAdaptor$1$1.execute(EquinoxContainerAdaptor.java:146)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2101)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.incStartLevel(ModuleContainer.java:2041)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:2003)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1915)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.dispatchEvent(ModuleContainer.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.601
+!MESSAGE Unable to resolve plug-in "platform:/meta/name.abuchen.portfolio.ui/custom.css".
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "platform:/meta/name.abuchen.portfolio.ui/custom.css".
+	at org.eclipse.core.internal.runtime.PlatformURLMetaConnection.resolve(PlatformURLMetaConnection.java:54)
+	at org.eclipse.core.internal.boot.PlatformURLHandler.openConnection(PlatformURLHandler.java:72)
+	at org.eclipse.osgi.internal.url.URLStreamHandlerProxy.openConnection(URLStreamHandlerProxy.java:138)
+	at org.eclipse.equinox.plurl.impl.PlurlImpl$PlurlRootURLStreamHandler.openConnection(PlurlImpl.java:1453)
+	at java.base/java.net.URL.openConnection(URL.java:1258)
+	at org.eclipse.core.internal.runtime.PlatformURLConverter.resolve(PlatformURLConverter.java:48)
+	at org.eclipse.core.runtime.FileLocator.resolve(FileLocator.java:301)
+	at name.abuchen.portfolio.bootstrap.LifeCycleManager.checkForCustomCSSFile(LifeCycleManager.java:75)
+	at name.abuchen.portfolio.bootstrap.LifeCycleManager.doPostContextCreate(LifeCycleManager.java:62)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.e4.core.internal.di.MethodRequestor.execute(MethodRequestor.java:58)
+	at org.eclipse.e4.core.internal.di.InjectorImpl.invokeUsingClass(InjectorImpl.java:305)
+	at org.eclipse.e4.core.internal.di.InjectorImpl.invoke(InjectorImpl.java:231)
+	at org.eclipse.e4.core.contexts.ContextInjectionFactory.invoke(ContextInjectionFactory.java:148)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.lambda$0(E4Application.java:233)
+	at java.base/java.util.Optional.ifPresent(Optional.java:178)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.createE4Workbench(E4Application.java:229)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.start(E4Application.java:152)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:615)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:563)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1415)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1387)
+
+!ENTRY org.eclipse.e4.ui.workbench 1 0 2026-02-01 13:05:27.602
+!MESSAGE Detected model change from version 0.0.0 to version 0.81.4.qualifier; clearing persisted state
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.869
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.869
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.905
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.QuitHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.906
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.906
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.907
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.907
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportCSVHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.908
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.908
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateTextFromPDFHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.909
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportIBHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.909
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.RunConsistencyChecksHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.910
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.910
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.911
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.AboutHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.911
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.ClearLogHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.912
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.OpenErrorLogFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.912
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPreferenceDialogHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.912
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAsFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.913
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.913
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveAllFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.913
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenSampleHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.913
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenPartHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.916
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenRecentFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.916
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ClearRecentFilesHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.916
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CloseFileHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.917
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ForceClearPersistedStateHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.917
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenBookmarksHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.917
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenCommandPaletteHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.917
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SetCurrentViewAsInitialViewHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.917
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenWithLastViewHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.918
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ShowHideSidebarHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.918
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveErrorLogHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.918
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToDivvyDiaryHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.918
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.918
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.919
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToMyDividends24Handler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.919
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.919
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.RestoreSourceAttributeHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.919
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.FocusSearchBarHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.920
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateDiffFromPDFHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.920
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.MigratePortfolioReportHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.920
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportTaxonomiesHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.920
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportTaxonomiesHandler
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.944
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.OSXStartupAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.945
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.945
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.Preference2EnvAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:27.945
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.theme.ThemeAddon
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:28.192
+!MESSAGE Unable to retrieve the bundle from the URI: bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.WelcomePart
+
+!ENTRY org.eclipse.equinox.event 4 0 2026-02-01 13:05:28.271
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/LifeCycle/appStartupComplete] {org.eclipse.e4.data=name.abuchen.portfolio.ui.application=org.eclipse.e4.ui.model.application.impl.ApplicationImpl@c0013b8 (tags: [activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration], contributorURI: platform:/plugin/name.abuchen.portfolio.bootstrap) (widget: null, toBeRendered: true, visible: true) (context: WorkbenchContext, variables: null)} to handler net.sf.eclipsecs.ui.ApplicationStartedHandler@482ef391
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at net.sf.eclipsecs.ui.ApplicationStartedHandler.registerListener(ApplicationStartedHandler.java:86)
+	at net.sf.eclipsecs.ui.ApplicationStartedHandler.handleEvent(ApplicationStartedHandler.java:80)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:206)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.equinox.event 4 0 2026-02-01 13:05:28.274
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/LifeCycle/appStartupComplete] {org.eclipse.e4.data=name.abuchen.portfolio.ui.application=org.eclipse.e4.ui.model.application.impl.ApplicationImpl@c0013b8 (tags: [activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration], contributorURI: platform:/plugin/name.abuchen.portfolio.bootstrap) (widget: null, toBeRendered: true, visible: true) (context: WorkbenchContext, variables: null)} to handler org.eclipse.egit.ui.internal.ApplicationActiveListener@62901af2
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.egit.ui.internal.ApplicationActiveListener.handleEvent(ApplicationActiveListener.java:58)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:206)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.equinox.event 4 0 2026-02-01 13:05:28.346
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/LifeCycle/appStartupComplete] {org.eclipse.e4.data=name.abuchen.portfolio.ui.application=org.eclipse.e4.ui.model.application.impl.ApplicationImpl@c0013b8 (tags: [activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration], contributorURI: platform:/plugin/name.abuchen.portfolio.bootstrap) (widget: null, toBeRendered: true, visible: true) (context: WorkbenchContext, variables: null)} to handler org.eclipse.egit.ui.internal.StartEventListener@5270974
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.egit.ui.internal.selection.SelectionRepositoryStateCache.initialize(SelectionRepositoryStateCache.java:52)
+	at org.eclipse.egit.ui.internal.StartEventListener.startInternalComponents(StartEventListener.java:44)
+	at org.eclipse.egit.ui.internal.StartEventListener.handleEvent(StartEventListener.java:54)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:206)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.equinox.event 4 0 2026-02-01 13:05:28.349
+!MESSAGE Exception while dispatching event org.osgi.service.event.Event [topic=org/eclipse/e4/ui/LifeCycle/appStartupComplete] {org.eclipse.e4.data=name.abuchen.portfolio.ui.application=org.eclipse.e4.ui.model.application.impl.ApplicationImpl@c0013b8 (tags: [activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration], contributorURI: platform:/plugin/name.abuchen.portfolio.bootstrap) (widget: null, toBeRendered: true, visible: true) (context: WorkbenchContext, variables: null)} to handler org.eclipse.egit.ui.internal.clone.GitCloneDropAdapter@7743c0b9
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.egit.ui.internal.clone.GitCloneDropAdapter.handleEvent(GitCloneDropAdapter.java:79)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:206)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.osgi 4 0 2026-02-01 13:05:28.841
+!MESSAGE An error occurred while automatically activating bundle org.eclipse.mylyn.team.ui (521).
+!STACK 0
+org.osgi.framework.BundleException: Exception in org.eclipse.mylyn.internal.team.ui.FocusedTeamUiPlugin.start() of bundle org.eclipse.mylyn.team.ui.
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:859)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.start(BundleContextImpl.java:780)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.startWorker0(EquinoxBundle.java:1082)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.startWorker(EquinoxBundle.java:394)
+	at org.eclipse.osgi.container.Module.doStart(Module.java:643)
+	at org.eclipse.osgi.container.Module.start(Module.java:500)
+	at org.eclipse.osgi.framework.util.SecureAction.start(SecureAction.java:528)
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:122)
+	at org.eclipse.osgi.internal.loader.classpath.ClasspathManager.findLocalClass(ClasspathManager.java:620)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.findLocalClass(ModuleClassLoader.java:353)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findLocalClass(BundleLoader.java:418)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:527)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:439)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:195)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:663)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.initDependencyManagers(AbstractComponentManager.java:1027)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.collectDependencies(AbstractComponentManager.java:1057)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getServiceInternal(SingleComponentManager.java:955)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getService(SingleComponentManager.java:920)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse$1.run(ServiceFactoryUse.java:229)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.factoryGetService(ServiceFactoryUse.java:226)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.getService(ServiceFactoryUse.java:120)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceConsumer$2.getService(ServiceConsumer.java:48)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl.getService(ServiceRegistrationImpl.java:588)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistry.getService(ServiceRegistry.java:590)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.getService(BundleContextImpl.java:675)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:137)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.getHandler(EventHandlerWrapper.java:134)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:200)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+Caused by: java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.mylyn.internal.team.ui.FocusedTeamUiPlugin.start(FocusedTeamUiPlugin.java:65)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:838)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:830)
+	... 36 more
+Root exception:
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.mylyn.internal.team.ui.FocusedTeamUiPlugin.start(FocusedTeamUiPlugin.java:65)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:838)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:830)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.start(BundleContextImpl.java:780)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.startWorker0(EquinoxBundle.java:1082)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.startWorker(EquinoxBundle.java:394)
+	at org.eclipse.osgi.container.Module.doStart(Module.java:643)
+	at org.eclipse.osgi.container.Module.start(Module.java:500)
+	at org.eclipse.osgi.framework.util.SecureAction.start(SecureAction.java:528)
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:122)
+	at org.eclipse.osgi.internal.loader.classpath.ClasspathManager.findLocalClass(ClasspathManager.java:620)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.findLocalClass(ModuleClassLoader.java:353)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findLocalClass(BundleLoader.java:418)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:527)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:439)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:195)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:663)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.initDependencyManagers(AbstractComponentManager.java:1027)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.collectDependencies(AbstractComponentManager.java:1057)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getServiceInternal(SingleComponentManager.java:955)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getService(SingleComponentManager.java:920)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse$1.run(ServiceFactoryUse.java:229)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.factoryGetService(ServiceFactoryUse.java:226)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.getService(ServiceFactoryUse.java:120)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceConsumer$2.getService(ServiceConsumer.java:48)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl.getService(ServiceRegistrationImpl.java:588)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistry.getService(ServiceRegistry.java:590)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.getService(BundleContextImpl.java:675)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:137)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.getHandler(EventHandlerWrapper.java:134)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:200)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+
+!ENTRY org.eclipse.mylyn.team.ui 4 0 2026-02-01 13:05:28.842
+!MESSAGE bundle org.eclipse.mylyn.team.ui:4.9.0.v20251121-0621 (521)[org.eclipse.mylyn.internal.team.ui.FocusedTeamUiStartup(152)] : Could not load implementation object class org.eclipse.mylyn.internal.team.ui.FocusedTeamUiStartup
+!STACK 0
+java.lang.ClassNotFoundException: An error occurred while automatically activating bundle org.eclipse.mylyn.team.ui (521).
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:133)
+	at org.eclipse.osgi.internal.loader.classpath.ClasspathManager.findLocalClass(ClasspathManager.java:620)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.findLocalClass(ModuleClassLoader.java:353)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findLocalClass(BundleLoader.java:418)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass0(BundleLoader.java:527)
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:439)
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:195)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:663)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.initDependencyManagers(AbstractComponentManager.java:1027)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.collectDependencies(AbstractComponentManager.java:1057)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getServiceInternal(SingleComponentManager.java:955)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getService(SingleComponentManager.java:920)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse$1.run(ServiceFactoryUse.java:229)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.factoryGetService(ServiceFactoryUse.java:226)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.getService(ServiceFactoryUse.java:120)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceConsumer$2.getService(ServiceConsumer.java:48)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl.getService(ServiceRegistrationImpl.java:588)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistry.getService(ServiceRegistry.java:590)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.getService(BundleContextImpl.java:675)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:137)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.getHandler(EventHandlerWrapper.java:134)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:200)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+Caused by: org.osgi.framework.BundleException: Exception in org.eclipse.mylyn.internal.team.ui.FocusedTeamUiPlugin.start() of bundle org.eclipse.mylyn.team.ui.
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:859)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.start(BundleContextImpl.java:780)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.startWorker0(EquinoxBundle.java:1082)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.startWorker(EquinoxBundle.java:394)
+	at org.eclipse.osgi.container.Module.doStart(Module.java:643)
+	at org.eclipse.osgi.container.Module.start(Module.java:500)
+	at org.eclipse.osgi.framework.util.SecureAction.start(SecureAction.java:528)
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:122)
+	... 29 more
+Caused by: java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.mylyn.internal.team.ui.FocusedTeamUiPlugin.start(FocusedTeamUiPlugin.java:65)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:838)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$2.run(BundleContextImpl.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:830)
+	... 36 more
+
+!ENTRY org.eclipse.osgi 4 0 2026-02-01 13:05:28.843
+!MESSAGE FrameworkEvent ERROR
+!STACK 0
+org.osgi.framework.ServiceException: Exception in org.apache.felix.scr.impl.manager.SingleComponentManager.getService()
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.factoryGetService(ServiceFactoryUse.java:238)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.getService(ServiceFactoryUse.java:120)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceConsumer$2.getService(ServiceConsumer.java:48)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistrationImpl.getService(ServiceRegistrationImpl.java:588)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceRegistry.getService(ServiceRegistry.java:590)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.getService(BundleContextImpl.java:675)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:137)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper$1.run(EventHandlerWrapper.java:1)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.getHandler(EventHandlerWrapper.java:134)
+	at org.eclipse.equinox.internal.event.EventHandlerWrapper.handleEvent(EventHandlerWrapper.java:200)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:201)
+	at org.eclipse.equinox.internal.event.EventHandlerTracker.dispatchEvent(EventHandlerTracker.java:1)
+	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:230)
+	at org.eclipse.osgi.framework.eventmgr.EventManager$EventThread.run(EventManager.java:341)
+Caused by: java.lang.IllegalStateException: Could not load implementation object class org.eclipse.mylyn.internal.team.ui.FocusedTeamUiStartup
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.initDependencyManagers(AbstractComponentManager.java:1038)
+	at org.apache.felix.scr.impl.manager.AbstractComponentManager.collectDependencies(AbstractComponentManager.java:1057)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getServiceInternal(SingleComponentManager.java:955)
+	at org.apache.felix.scr.impl.manager.SingleComponentManager.getService(SingleComponentManager.java:920)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse$1.run(ServiceFactoryUse.java:229)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:319)
+	at org.eclipse.osgi.internal.serviceregistry.ServiceFactoryUse.factoryGetService(ServiceFactoryUse.java:226)
+	... 14 more
+
+!ENTRY org.eclipse.tips.ide 4 2 2026-02-01 13:05:28.855
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.tips.ide".
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.tips.ide.internal.TipSourceProvider.layoutWorkbench(TipSourceProvider.java:80)
+	at org.eclipse.tips.ide.internal.TipSourceProvider.setStatus(TipSourceProvider.java:74)
+	at org.eclipse.tips.ide.internal.IDETipManager.setNewTips(IDETipManager.java:205)
+	at org.eclipse.tips.ide.internal.ProviderLoadJobChangeListener.done(ProviderLoadJobChangeListener.java:48)
+	at org.eclipse.core.internal.jobs.JobListeners.sendEvent(JobListeners.java:160)
+	at org.eclipse.core.internal.jobs.JobListeners.sendEventsAsync(JobListeners.java:140)
+	at org.eclipse.core.internal.jobs.JobListeners.waitAndSendEvents(JobListeners.java:80)
+	at org.eclipse.core.internal.jobs.JobManager.withWriteLock(JobManager.java:571)
+	at org.eclipse.core.internal.jobs.JobManager.endJob(JobManager.java:785)
+	at org.eclipse.core.internal.jobs.WorkerPool.endJob(WorkerPool.java:118)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:83)
+
+!ENTRY org.eclipse.tips.core 4 0 2026-02-01 13:05:28.872
+!MESSAGE Workbench has not been created yet.
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.tips.ide.internal.IDETipManager.getEvaluationContext(IDETipManager.java:264)
+	at org.eclipse.tips.ide.internal.IDETipManager.doGetPriority(IDETipManager.java:251)
+	at org.eclipse.tips.ide.internal.IDETipManager.getPriority(IDETipManager.java:235)
+	at org.eclipse.tips.core.internal.TipManager.register(TipManager.java:97)
+	at org.eclipse.tips.ide.internal.IDETipManager.register(IDETipManager.java:85)
+	at org.eclipse.tips.ide.internal.TipsStartupService.loadProviders(TipsStartupService.java:95)
+	at org.eclipse.tips.ide.internal.TipsStartupService.start(TipsStartupService.java:79)
+	at org.eclipse.tips.ide.internal.TipsStartupService$1.run(TipsStartupService.java:63)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.core.jobs 4 2 2026-02-01 13:05:28.874
+!MESSAGE An internal error occurred during: "Loading Tips".
+!STACK 0
+java.lang.IllegalStateException: Workbench has not been created yet.
+	at org.eclipse.ui.PlatformUI.getWorkbench(PlatformUI.java:119)
+	at org.eclipse.tips.ide.internal.TipsStartupService.getOpenUIJob(TipsStartupService.java:201)
+	at org.eclipse.tips.ide.internal.TipsStartupService.openManager(TipsStartupService.java:146)
+	at org.eclipse.tips.ide.internal.TipsStartupService.start(TipsStartupService.java:80)
+	at org.eclipse.tips.ide.internal.TipsStartupService$1.run(TipsStartupService.java:63)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.core.runtime 4 0 2026-02-01 13:05:31.475
+!MESSAGE Invalid input url:platform:/plugin/name.abuchen.portfolio.ui/icons/import_file.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "name.abuchen.portfolio.ui".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:66)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:331)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:219)
+	at org.eclipse.jface.resource.URLImageDescriptor.resolvePathVariables(URLImageDescriptor.java:280)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:253)
+	at org.eclipse.jface.resource.URLImageDescriptor.lambda$0(URLImageDescriptor.java:64)
+	at org.eclipse.swt.internal.DPIUtil.lambda$4(DPIUtil.java:363)
+	at org.eclipse.swt.internal.DPIUtil.getElementAtZoom(DPIUtil.java:372)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:363)
+	at org.eclipse.swt.graphics.Image.initFromFileNameProvider(Image.java:786)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:639)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:300)
+	at org.eclipse.jface.resource.ImageDescriptor.createResource(ImageDescriptor.java:271)
+	at org.eclipse.jface.resource.DeviceResourceManager.allocate(DeviceResourceManager.java:56)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.resource.LazyResourceManager.create(LazyResourceManager.java:95)
+	at org.eclipse.jface.resource.LocalResourceManager.allocate(LocalResourceManager.java:71)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.action.MenuManager.fill(MenuManager.java:277)
+	at org.eclipse.jface.action.MenuManager.doItemFill(MenuManager.java:727)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:804)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:468)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:493)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:297)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:5894)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1656)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1682)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1661)
+	at org.eclipse.swt.widgets.Menu.gtk_show(Menu.java:854)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:2602)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:6195)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_do_event(Native Method)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1624)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_iteration_do(Native Method)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:4543)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1147)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1038)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.start(E4Application.java:166)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:615)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:563)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1415)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1387)
+
+!ENTRY org.eclipse.jface 4 0 2026-02-01 13:05:31.477
+!MESSAGE Unable to resolve plug-in "name.abuchen.portfolio.ui".
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "name.abuchen.portfolio.ui".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:66)
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.resolve(PlatformURLPluginConnection.java:76)
+	at org.eclipse.core.internal.boot.PlatformURLHandler.openConnection(PlatformURLHandler.java:72)
+	at org.eclipse.osgi.internal.url.URLStreamHandlerProxy.openConnection(URLStreamHandlerProxy.java:138)
+	at org.eclipse.equinox.plurl.impl.PlurlImpl$PlurlRootURLStreamHandler.openConnection(PlurlImpl.java:1453)
+	at java.base/java.net.URL.openConnection(URL.java:1258)
+	at org.eclipse.core.internal.runtime.PlatformURLConverter.toFileURL(PlatformURLConverter.java:34)
+	at org.eclipse.core.runtime.FileLocator.toFileURL(FileLocator.java:277)
+	at org.eclipse.jface.resource.URLImageDescriptor.getFilePath(URLImageDescriptor.java:254)
+	at org.eclipse.jface.resource.URLImageDescriptor.lambda$0(URLImageDescriptor.java:64)
+	at org.eclipse.swt.internal.DPIUtil.lambda$4(DPIUtil.java:363)
+	at org.eclipse.swt.internal.DPIUtil.getElementAtZoom(DPIUtil.java:372)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImagePathAtZoom(DPIUtil.java:363)
+	at org.eclipse.swt.graphics.Image.initFromFileNameProvider(Image.java:786)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:639)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:300)
+	at org.eclipse.jface.resource.ImageDescriptor.createResource(ImageDescriptor.java:271)
+	at org.eclipse.jface.resource.DeviceResourceManager.allocate(DeviceResourceManager.java:56)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.resource.LazyResourceManager.create(LazyResourceManager.java:95)
+	at org.eclipse.jface.resource.LocalResourceManager.allocate(LocalResourceManager.java:71)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.action.MenuManager.fill(MenuManager.java:277)
+	at org.eclipse.jface.action.MenuManager.doItemFill(MenuManager.java:727)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:804)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:468)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:493)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:297)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:5894)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1656)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1682)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1661)
+	at org.eclipse.swt.widgets.Menu.gtk_show(Menu.java:854)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:2602)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:6195)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_do_event(Native Method)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1624)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_iteration_do(Native Method)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:4543)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1147)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1038)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.start(E4Application.java:166)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:615)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:563)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1415)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1387)
+
+!ENTRY org.eclipse.core.runtime 4 0 2026-02-01 13:05:31.478
+!MESSAGE Invalid input url:platform:/plugin/name.abuchen.portfolio.ui/icons/import_file.png
+!STACK 0
+java.io.IOException: Unable to resolve plug-in "name.abuchen.portfolio.ui".
+	at org.eclipse.core.internal.runtime.PlatformURLPluginConnection.parse(PlatformURLPluginConnection.java:66)
+	at org.eclipse.core.internal.runtime.FindSupport.find(FindSupport.java:331)
+	at org.eclipse.core.runtime.FileLocator.find(FileLocator.java:219)
+	at org.eclipse.jface.resource.URLImageDescriptor.resolvePathVariables(URLImageDescriptor.java:280)
+	at org.eclipse.jface.resource.URLImageDescriptor.getStream(URLImageDescriptor.java:170)
+	at org.eclipse.jface.resource.URLImageDescriptor.getImageData(URLImageDescriptor.java:134)
+	at org.eclipse.jface.resource.URLImageDescriptor.getImageData(URLImageDescriptor.java:108)
+	at org.eclipse.jface.resource.URLImageDescriptor.lambda$2(URLImageDescriptor.java:73)
+	at org.eclipse.swt.internal.DPIUtil.lambda$3(DPIUtil.java:343)
+	at org.eclipse.swt.internal.DPIUtil.getElementAtZoom(DPIUtil.java:372)
+	at org.eclipse.swt.internal.DPIUtil.validateAndGetImageDataAtZoom(DPIUtil.java:343)
+	at org.eclipse.swt.graphics.Image.initFromImageDataProvider(Image.java:801)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:676)
+	at org.eclipse.jface.resource.URLImageDescriptor.createImage(URLImageDescriptor.java:311)
+	at org.eclipse.jface.resource.ImageDescriptor.createResource(ImageDescriptor.java:271)
+	at org.eclipse.jface.resource.DeviceResourceManager.allocate(DeviceResourceManager.java:56)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.resource.LazyResourceManager.create(LazyResourceManager.java:95)
+	at org.eclipse.jface.resource.LocalResourceManager.allocate(LocalResourceManager.java:71)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.action.MenuManager.fill(MenuManager.java:277)
+	at org.eclipse.jface.action.MenuManager.doItemFill(MenuManager.java:727)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:804)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:468)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:493)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:297)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:5894)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1656)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1682)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1661)
+	at org.eclipse.swt.widgets.Menu.gtk_show(Menu.java:854)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:2602)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:6195)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_do_event(Native Method)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1624)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_iteration_do(Native Method)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:4543)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1147)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1038)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.start(E4Application.java:166)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:615)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:563)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1415)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1387)
+
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2026-02-01 13:05:31.480
+!MESSAGE Internal Error
+!STACK 0
+org.eclipse.jface.resource.DeviceResourceException: Unable to create resource URLImageDescriptor(platform:/plugin/name.abuchen.portfolio.ui/icons/import_file.png)
+	at org.eclipse.jface.resource.ImageDescriptor.createResource(ImageDescriptor.java:273)
+	at org.eclipse.jface.resource.DeviceResourceManager.allocate(DeviceResourceManager.java:56)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.resource.LazyResourceManager.create(LazyResourceManager.java:95)
+	at org.eclipse.jface.resource.LocalResourceManager.allocate(LocalResourceManager.java:71)
+	at org.eclipse.jface.resource.AbstractResourceManager.create(AbstractResourceManager.java:92)
+	at org.eclipse.jface.action.MenuManager.fill(MenuManager.java:277)
+	at org.eclipse.jface.action.MenuManager.doItemFill(MenuManager.java:727)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:804)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:468)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:493)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:297)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:91)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:5894)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1656)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1682)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1661)
+	at org.eclipse.swt.widgets.Menu.gtk_show(Menu.java:854)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:2602)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:6195)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_do_event(Native Method)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1624)
+	at org.eclipse.swt.internal.gtk3.GTK3.gtk_main_iteration_do(Native Method)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:4543)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1147)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:339)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1038)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:153)
+	at org.eclipse.e4.ui.internal.workbench.swt.E4Application.start(E4Application.java:166)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:115)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:467)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:298)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:615)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:563)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1415)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1387)
