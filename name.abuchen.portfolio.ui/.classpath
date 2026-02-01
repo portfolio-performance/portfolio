@@ -8,6 +8,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<accessrules>
 			<accessrule kind="accessible" pattern="org/eclipse/swt/**"/>
+			<accessrule kind="accessible" pattern="org/eclipse/swt/widgets/**"/>
 			<accessrule kind="accessible" pattern="org/eclipse/equinox/preferences/**"/>
 			<accessrule kind="accessible" pattern="org/eclipse/core/runtime/**"/>
 			<accessrule kind="accessible" pattern="org/osgi/framework/**"/>
@@ -30,5 +31,21 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/io.github.java-diff-utils_4.16.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/de.engehausen.treemap_0.0.4.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/de.engehausen.treemap.swt_0.0.5.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.eclipse.swt.gtk.linux.x86_64_3.132.0.v20251124-0642.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
