@@ -21,5 +21,25 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/org.apache.commons.commons-csv_1.14.1.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/net.minidev.accessors-smart_2.6.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/portfolio-product/target/products/name.abuchen.portfolio.product/linux/gtk/x86_64/portfolio/plugins/net.minidev.json-smart_2.6.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/name.abuchen.portfolio.pdfbox3">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
