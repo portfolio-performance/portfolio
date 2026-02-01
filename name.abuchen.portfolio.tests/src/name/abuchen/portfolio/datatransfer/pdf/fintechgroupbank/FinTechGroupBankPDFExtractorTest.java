@@ -14,7 +14,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValu
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSecurity;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
@@ -4669,6 +4668,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
@@ -4685,6 +4685,74 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr.: 4685418678"), //
                         hasAmount("EUR", 501.50), hasGrossValue("EUR", 500.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.50))));
+    }
+
+    @Test
+    public void testFlatExDegiroKauf10()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008019001"), hasWkn("801900"), hasTicker(null), //
+                        hasName("DEUTSCHE PFANDBRIEFBANK A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-29T10:09"), hasShares(500), //
+                        hasSource("FlatExDegiroKauf10.txt"), //
+                        hasNote("Transaktion-Nr.: 1754597838"), //
+                        hasAmount("EUR", 2092.90), hasGrossValue("EUR", 2085.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroKauf11()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKauf11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0003Z9E2Y3"), hasWkn("A3C7FZ"), hasTicker(null), //
+                        hasName("GLOBAL X COPPER MINERS ET"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-30T17:30"), hasShares(172), //
+                        hasSource("FlatExDegiroKauf11.txt"), //
+                        hasNote("Transaktion-Nr.: 35693739674"), //
+                        hasAmount("EUR", 1668.90), hasGrossValue("EUR", 1665.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.90 + 2.00))));
     }
 
     @Test
@@ -5097,6 +5165,40 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr.: 4732792019"), //
                         hasAmount("EUR", 17500.12), hasGrossValue("EUR", 17524.00), //
                         hasTaxes("EUR", 15.15 + 0.83), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf09()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000APOST4"), hasWkn("A0JML5"), hasTicker(null), //
+                        hasName("OESTERREICHISCHE POST AG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-09T10:49"), hasShares(111.00), //
+                        hasSource("FlatExDegiroVerkauf09.txt"), //
+                        hasNote("Transaktion-Nr.: 4768516515"), //
+                        hasAmount("EUR", 11111.11), hasGrossValue("EUR", 11234.36), //
+                        hasTaxes("EUR", 111.11), hasFees("EUR", 11.10 + 1.04))));
     }
 
     @Test
@@ -6022,7 +6124,8 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testFlatExDegiroDividende13()
     {
-        // Gross Value is wrong, because we missing fx rate for the german taxes 2,99 EUR
+        // Gross Value is wrong, because we missing fx rate for the german taxes
+        // 2,99 EUR
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
@@ -7557,6 +7660,46 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroKontoauszug09()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest( //
+                                        hasDate("2025-09-30"), hasAmount("EUR", 0.00), //
+                                        hasSource("FlatExDegiroKontoauszug09.txt"),
+                                        hasNote("Zinsabschluss 01.07.2025 - 30.09.2025")))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-10-03"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExDegiroKontoauszug09.txt"), hasNote("LI787233965724704495"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-11-05"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExDegiroKontoauszug09.txt"), hasNote("fs939468989892221962"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-12-03"), hasAmount("EUR", 150.00), //
+                        hasSource("FlatExDegiroKontoauszug09.txt"), hasNote("dM239204144852486335"))));
+    }
+
+    @Test
     public void testFlatExDeGiroSammelabrechnung01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -7920,9 +8063,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("LEVERAGE SHARES GOLD+ ETP"), //
                         hasCurrencyCode("EUR"))));
 
-        // check purchase transactions
+        // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("JE00B2NFTL95")),
                         hasDate("2025-12-29T08:31"), hasShares(9.00), //
                         hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
                         hasNote("Transaktion-Nr.: 4636047412"), //
@@ -7930,14 +8072,13 @@ public class FinTechGroupBankPDFExtractorTest
                         hasTaxes("EUR", 50.07), hasFees("EUR", 5.90 + 2.74))));
 
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("XS2852999775")),
                         hasDate("2025-12-29T08:51"), hasShares(150.00), //
                         hasSource("FlatExDeGiroSammelabrechnung06.txt"), //
                         hasNote("Transaktion-Nr.: 4666192991"), //
                         hasAmount("EUR", 2033.04), hasGrossValue("EUR", 2024.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.74))));
     }
-    
+
     @Test
     public void testFlatExDeGiroSammelabrechnung07()
     {
@@ -7951,192 +8092,395 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(12L));
         assertThat(countBuySell(results), is(12L));
-        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(countAccountTransfers(results), is(0L));
         assertThat(countItemsWithFailureMessage(results), is(0L));
-        assertThat(results.size(), is(24));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(25));
         new AssertImportActions().check(results, "EUR");
 
-        // AES CORP., THE
+        // check securities
         assertThat(results, hasItem(security( //
                         hasIsin("US00130H1059"), hasWkn("882177"), hasTicker(null), //
                         hasName("AES CORP., THE"), //
                         hasCurrencyCode("EUR"))));
 
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA05156V1022"), hasWkn("A1W7D4"), hasTicker(null), //
+                        hasName("AURINIA PHARMACEUTICALS I"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US11135F1012"), hasWkn("A2JG9Z"), hasTicker(null), //
+                        hasName("BROADCOM INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US14174T1079"), hasWkn("A11398"), hasTicker(null), //
+                        hasName("CARETRUST REIT INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5324571083"), hasWkn("858560"), hasTicker(null), //
+                        hasName("ELI LILLY AND COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92556V1061"), hasWkn("A2QAME"), hasTicker(null), //
+                        hasName("VIATRIS INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US83601L1026"), hasWkn("A2QHA5"), hasTicker(null), //
+                        hasName("SOTERA HEALTH COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29357K1034"), hasWkn("A12D51"), hasTicker(null), //
+                        hasName("ENOVA INTERNATIONAL INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG6683N1034"), hasWkn("A3C82G"), hasTicker(null), //
+                        hasName("NU HOLDINGS LTD. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
+                        hasName("FORD MOTOR CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4062161017"), hasWkn("853986"), hasTicker(null), //
+                        hasName("HALLIBURTON CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0038705702"), hasWkn("889328"), hasTicker(null), //
+                        hasName("MILLICOM INTL CELLULAR S."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("US00130H1059")), //
                         hasDate("2026-01-02T15:30"), hasShares(120.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682588850"), //
                         hasAmount("EUR", 1460.05), hasGrossValue("EUR", 1476.00), //
                         hasTaxes("EUR", 9.31), hasFees("EUR", 5.90 + 0.74))));
 
-        // AURINIA PHARMACEUTICALS I (includes negative taxes - unsupported)
-        assertThat(results, hasItem(security( //
-                        hasIsin("CA05156V1022"), hasWkn("A1W7D4"), hasTicker(null), //
-                        hasName("AURINIA PHARMACEUTICALS I"), //
-                        hasCurrencyCode("EUR"))));
-
-        // Nr.329633182/1 Verkauf AURINIA
-        // PHARMACEUTICALS I (CA05156V1022/A1W7D4)
-        // Ordervolumen : 105,00 St. Handelsplatz : Société Générale
-        // davon ausgef. : 105,00 St. Schlusstag : 02.01.2026, 15:30 Uhr
-        // Kurs : 13,4600 EUR Kurswert : 1.413,30 EUR
-        // Devisenkurs : Provision : 5,90 EUR
-        // Bew-Faktor : 1,0000 Eigene Spesen :
-        // Verwahrart : Wertpapierrechnung * Fremde Spesen : 2,40 EUR
-        // Lagerstelle : Clearstream Lux.
-        // Lagerland : Canada ** Einbeh. Steuer : -9,31 EUR
-        // Gewinn/Verlust : -47,78 EUR
-        // Valuta : 06.01.2026 Endbetrag : 1.414,31 EUR
-
+        // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("CA05156V1022")), //
                         hasDate("2026-01-02T15:30"), hasShares(105.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682592903"), //
-                        hasAmount("EUR", 1414.31), hasGrossValue("EUR", 1422.61), //
+                        hasAmount("EUR", 1414.31 - 9.31), hasGrossValue("EUR", 1422.61 - 9.31), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
 
-        // BROADCOM INC.
-        assertThat(results, hasItem(security( //
-                        hasIsin("US11135F1012"), hasWkn("A2JG9Z"), hasTicker(null), //
-                        hasName("BROADCOM INC."), //
-                        hasCurrencyCode("EUR"))));
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-01-02T15:30"), hasShares(105.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682592903"), //
+                        hasAmount("EUR", 9.31), hasGrossValue("EUR", 9.31), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("US11135F1012")), //
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( ////
                         hasDate("2026-01-02T15:30"), hasShares(5.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682595695"), //
                         hasAmount("EUR", 1500.11), hasGrossValue("EUR", 1506.75), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
 
-        // CARETRUST REIT INC.
-        assertThat(results, hasItem(security( //
-                        hasIsin("US14174T1079"), hasWkn("A11398"), hasTicker(null), //
-                        hasName("CARETRUST REIT INC."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("US14174T1079")), //
                         hasDate("2026-01-02T15:32"), hasShares(45.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682601474"), //
                         hasAmount("EUR", 1368.70), hasGrossValue("EUR", 1377.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
 
-        // ELI LILLY AND COMPANY (includes page break)
-        assertThat(results, hasItem(security( //
-                        hasIsin("US5324571083"), hasWkn("858560"), hasTicker(null), //
-                        hasName("ELI LILLY AND COMPANY"), //
-                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-02T15:30"), hasShares(120.00), //
+                        hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
+                        hasNote("Transaktion-Nr.: 4682588850"), //
+                        hasAmount("EUR", 1460.05), hasGrossValue("EUR", 1476.00), //
+                        hasTaxes("EUR", 9.31), hasFees("EUR", 5.90 + 0.74))));
 
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("US5324571083")), //
                         hasDate("2026-01-02T15:32"), hasShares(2.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682602407"), //
                         hasAmount("EUR", 1801.36), hasGrossValue("EUR", 1808.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
 
-        // VIATRIS INC.
-        assertThat(results, hasItem(security( //
-                        hasIsin("US92556V1061"), hasWkn("A2QAME"), hasTicker(null), //
-                        hasName("VIATRIS INC."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(sale( //
-                        hasSecurity(hasIsin("US92556V1061")), //
                         hasDate("2026-01-02T15:32"), hasShares(160.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682603713"), //
                         hasAmount("EUR", 1649.87), hasGrossValue("EUR", 1689.60), //
                         hasTaxes("EUR", 33.09), hasFees("EUR", 5.90 + 0.74))));
 
-        // SOTERA HEALTH COMPANY
-        assertThat(results, hasItem(security( //
-                        hasIsin("US83601L1026"), hasWkn("A2QHA5"), hasTicker(null), //
-                        hasName("SOTERA HEALTH COMPANY"), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("US83601L1026")), //
                         hasDate("2026-01-02T15:34"), hasShares(95.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682606959"), //
                         hasAmount("EUR", 1450.88), hasGrossValue("EUR", 1442.58), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
 
-        // ENOVA INTERNATIONAL
-        assertThat(results, hasItem(security( //
-                        hasIsin("US29357K1034"), hasWkn("A12D51"), hasTicker(null), //
-                        hasName("ENOVA INTERNATIONAL INC."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("US29357K1034")), //
                         hasDate("2026-01-02T15:34"), hasShares(10.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682608626"), //
                         hasAmount("EUR", 1388.30), hasGrossValue("EUR", 1380.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
 
-        // NU HOLDINGS LTD. A
-        assertThat(results, hasItem(security( //
-                        hasIsin("KYG6683N1034"), hasWkn("A3C82G"), hasTicker(null), //
-                        hasName("NU HOLDINGS LTD. A"), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("KYG6683N1034")), //
                         hasDate("2026-01-02T15:35"), hasShares(100.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682610434"), //
                         hasAmount("EUR", 1433.90), hasGrossValue("EUR", 1425.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
 
-        // FORD MOTOR CO. (includes page break)
-        assertThat(results, hasItem(security( //
-                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
-                        hasName("FORD MOTOR CO."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("US3453708600")), //
                         hasDate("2026-01-02T15:35"), hasShares(130.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682612776"), //
                         hasAmount("EUR", 1460.82), hasGrossValue("EUR", 1454.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
 
-        // HALLIBURTON CO.
-        assertThat(results, hasItem(security( //
-                        hasIsin("US4062161017"), hasWkn("853986"), hasTicker(null), //
-                        hasName("HALLIBURTON CO."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("US4062161017")), //
                         hasDate("2026-01-02T15:35"), hasShares(60.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682613610"), //
                         hasAmount("EUR", 1455.64), hasGrossValue("EUR", 1449.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.74))));
 
-        // FORD MOTOR CO. (includes page break)
-        assertThat(results, hasItem(security( //
-                        hasIsin("LU0038705702"), hasWkn("889328"), hasTicker(null), //
-                        hasName("MILLICOM INTL CELLULAR S."), //
-                        hasCurrencyCode("EUR"))));
-
         assertThat(results, hasItem(purchase( //
-                        hasSecurity(hasIsin("LU0038705702")), //
                         hasDate("2026-01-02T15:36"), hasShares(30.00), //
                         hasSource("FlatExDeGiroSammelabrechnung07.txt"), //
                         hasNote("Transaktion-Nr.: 4682615368"), //
                         hasAmount("EUR", 1454.30), hasGrossValue("EUR", 1446.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+    }
+
+    @Test
+    public void testFlatExDeGiroSammelabrechnung08()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(10L));
+        assertThat(countBuySell(results), is(10L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(21));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA0084741085"), hasWkn("860325"), hasTicker(null), //
+                        hasName("AGNICO EAGLE MINES LTD."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA01921D2041"), hasWkn("A417BV"), hasTicker(null), //
+                        hasName("ALLIED GOLD CORP."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn("A14Y6F"), hasTicker(null), //
+                        hasName("ALPHABET INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US29357K1034"), hasWkn("A12D51"), hasTicker(null), //
+                        hasName("ENOVA INTERNATIONAL INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3453708600"), hasWkn("502391"), hasTicker(null), //
+                        hasName("FORD MOTOR CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4062161017"), hasWkn("853986"), hasTicker(null), //
+                        hasName("HALLIBURTON CO."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US4432011082"), hasWkn("A2PZ2D"), hasTicker(null), //
+                        hasName("HOWMET AEROSPACE INC."), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("KYG6683N1034"), hasWkn("A3C82G"), hasTicker(null), //
+                        hasName("NU HOLDINGS LTD. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US83601L1026"), hasWkn("A2QHA5"), hasTicker(null), //
+                        hasName("SOTERA HEALTH COMPANY"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9581021055"), hasWkn("863060"), hasTicker(null), //
+                        hasName("WESTERN DIGITAL CORP."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:36"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745481480"), //
+                        hasAmount("EUR", 1701.96), hasGrossValue("EUR", 1810.50), //
+                        hasTaxes("EUR", 100.24), hasFees("EUR", 5.90 + 2.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:36"), hasShares(75.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745482455"), //
+                        hasAmount("EUR", 1823.20), hasGrossValue("EUR", 1980.00), //
+                        hasTaxes("EUR", 148.50), hasFees("EUR", 5.90 + 2.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:36"), hasShares(5.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745483413"), //
+                        hasAmount("EUR", 1399.20), hasGrossValue("EUR", 1406.25), //
+                        hasTaxes("EUR", 0.41), hasFees("EUR", 5.90 + 0.74))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:37"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745483647"), //
+                        hasAmount("EUR", 1281.70), hasGrossValue("EUR", 1290.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.40))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-01-27T15:37"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745483647"), //
+                        hasAmount("EUR", 24.75), hasGrossValue("EUR", 24.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:37"), hasShares(130.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745484810"), //
+                        hasAmount("EUR", 1470.91), hasGrossValue("EUR", 1486.42), //
+                        hasTaxes("EUR", 8.87), hasFees("EUR", 5.90 + 0.74))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:37"), hasShares(60.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745485584"), //
+                        hasAmount("EUR", 1652.03), hasGrossValue("EUR", 1738.20), //
+                        hasTaxes("EUR", 79.53), hasFees("EUR", 5.90 + 0.74))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:37"), hasShares(8.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745486146"), //
+                        hasAmount("EUR", 1437.77), hasGrossValue("EUR", 1452.00), //
+                        hasTaxes("EUR", 7.59), hasFees("EUR", 5.90 + 0.74))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:38"), hasShares(100.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745486582"), //
+                        hasAmount("EUR", 1489.65), hasGrossValue("EUR", 1525.40), //
+                        hasTaxes("EUR", 27.45), hasFees("EUR", 5.90 + 2.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:38"), hasShares(95.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745487431"), //
+                        hasAmount("EUR", 1455.97), hasGrossValue("EUR", 1472.50), //
+                        hasTaxes("EUR", 8.23), hasFees("EUR", 5.90 + 2.40))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-27T15:38"), hasShares(10.00), //
+                        hasSource("FlatExDegiroSammelabrechnung08.txt"), //
+                        hasNote("Transaktion-Nr.: 4745488464"), //
+                        hasAmount("EUR", 1901.16), hasGrossValue("EUR", 2048.00), //
+                        hasTaxes("EUR", 140.20), hasFees("EUR", 5.90 + 0.74))));
+    }
+
+    @Test
+    public void testFlatExDeGiroSammelabrechnung09()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroSammelabrechnung09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, "EUR");
+
+        // check securities
+        assertThat(results, hasItem(security( //
+                        hasIsin("US30303M1027"), hasWkn("A1JWVX"), hasTicker(null), //
+                        hasName("META PLATFORMS INC. A"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A28M8D0"), hasWkn("A28M8D"), hasTicker(null), //
+                        hasName("VANECK BITCOIN ETN"), //
+                        hasCurrencyCode("EUR"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA8277191059"), hasWkn("A408EQ"), hasTicker(null), //
+                        hasName("SILVER47 EXPLORATION CORP"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-14T09:56"), hasShares(80.00), //
+                        hasSource("FlatExDegiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4713456485"), //
+                        hasAmount("EUR", 3458.42), hasGrossValue("EUR", 3451.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 0.85))));
+
+        assertThat(results, hasItem(sale( //
+                        hasDate("2026-01-14T18:00"), hasShares(27.00), //
+                        hasSource("FlatExDegiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4714408398"), //
+                        hasAmount("EUR", 14302.75), hasGrossValue("EUR", 14323.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 19.90 + 0.85))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2026-01-14T18:00"), hasShares(27.00), //
+                        hasSource("FlatExDegiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4714408398"), //
+                        hasAmount("EUR", 230.67), hasGrossValue("EUR", 230.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-01-14T18:11"), hasShares(608.00), //
+                        hasSource("FlatExDegiroSammelabrechnung09.txt"), //
+                        hasNote("Transaktion-Nr.: 4714426142"), //
+                        hasAmount("EUR", 361.05), hasGrossValue("EUR", 352.64), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.51))));
     }
 
     @Test
@@ -8183,8 +8527,7 @@ public class FinTechGroupBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(),
-                        is(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex));
+        assertThat(cancellation.getFailureMessage(), is(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2023-03-23T00:00")));
