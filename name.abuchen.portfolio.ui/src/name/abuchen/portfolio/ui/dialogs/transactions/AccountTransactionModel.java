@@ -293,16 +293,12 @@ public class AccountTransactionModel extends AbstractModel
 
         if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
         {
-            if (grossAmount >= 0 && (grossAmount < lower || grossAmount > upper))
-                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
-            if (grossAmount < 0 && (-grossAmount < lower || -grossAmount > upper))
-                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
+            long newUpper = Math.max(upper, lower);
+            lower = Math.min(upper, lower);
+            upper = newUpper;
         }
-        else
-        {
-            if (grossAmount < lower || grossAmount > upper)
-                return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
-        }
+        if (grossAmount < lower || grossAmount > upper)
+            return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
 
         /* allow grossAmount to be zero in case of fees/taxes only transactions
         if (grossAmount == 0L)
