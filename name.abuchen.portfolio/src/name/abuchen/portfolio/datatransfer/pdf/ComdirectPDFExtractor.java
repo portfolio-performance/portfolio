@@ -715,6 +715,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // per 06.01.2026 ING Groep N.V. A2ANV3
+                                        // STK 2.000,000 Aandelen op naam EO -,01 NL0011821202
+                                        // EUR 0,172 Dividende pro Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .match("^per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<name>.*) (?<wkn>[A-Z0-9]{6})$") //
+                                                        .match("^STK [\\.,\\d]+ (?<nameContinued>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<currency>[A-Z]{3}) [\\.,\\d]+ Dividende pro St.ck$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // p e r   1 7.  01 .  20 1 8                         P r  oc t  e r  & G a m b l e  C o  .,   T he                85 2 0 6  2
                                         // ST K                0  , 3 1 6                R e gi  st  er  ed  S  ha r  e s  o .N  .            U S 7 4 27  18  10 9  1
                                         // USD 0,6896     Dividende pro Stück für Geschäftsjahr        01.07.17 bis 30.06.18
