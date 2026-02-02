@@ -27,7 +27,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 {
     public RaiffeisenBankgruppePDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Raiffeisenbank");
         addBankIdentifier("RB Augsburger Land West eG");

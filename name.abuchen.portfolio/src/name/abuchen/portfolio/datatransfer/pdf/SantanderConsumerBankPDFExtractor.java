@@ -22,7 +22,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 {
     public SantanderConsumerBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Santander Consumer Bank AG");
         addBankIdentifier("Santander Consumer Bank GmbH");

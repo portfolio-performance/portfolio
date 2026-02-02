@@ -26,7 +26,7 @@ public class SydbankASPDFExtractor extends AbstractPDFExtractor
 
     public SydbankASPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Sydbank A/S");
 

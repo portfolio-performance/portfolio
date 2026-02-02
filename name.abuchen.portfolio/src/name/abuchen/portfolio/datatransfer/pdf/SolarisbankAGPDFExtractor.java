@@ -16,7 +16,7 @@ public class SolarisbankAGPDFExtractor extends AbstractPDFExtractor
 {
     public SolarisbankAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Solarisbank");
         addBankIdentifier("Solaris SE");

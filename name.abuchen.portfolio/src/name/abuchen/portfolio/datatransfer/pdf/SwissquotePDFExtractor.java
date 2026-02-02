@@ -26,7 +26,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 {
     public SwissquotePDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Swissquote Bank AG");
         addBankIdentifier("Swissquote Bank Ltd");

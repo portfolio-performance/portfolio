@@ -21,7 +21,7 @@ public class VDKBankNVPDFExtractor extends AbstractPDFExtractor
 {
     public VDKBankNVPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("vdk bank nv");
 

@@ -21,7 +21,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 {
     public RaisinBankAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Raisin Bank AG");
 

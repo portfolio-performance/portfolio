@@ -18,7 +18,7 @@ public class WeberbankPDFExtractor extends AbstractPDFExtractor
 {
     public WeberbankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("BLZ 101 201 00");
         addBankIdentifier("BLZ 10120100");

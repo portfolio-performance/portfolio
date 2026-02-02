@@ -466,7 +466,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         return editArea;
     }
 
-    protected abstract void createFormElements(Composite editArea);
+    protected abstract void createFormElements(NegativeValue negativeValue, Composite editArea);
 
     @Override
     protected void okPressed()

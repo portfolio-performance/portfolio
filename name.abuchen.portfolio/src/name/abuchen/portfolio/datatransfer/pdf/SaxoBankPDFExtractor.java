@@ -25,7 +25,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 {
     public SaxoBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Saxo Bank");
 

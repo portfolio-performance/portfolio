@@ -22,7 +22,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 {
     public TradegateAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Tradegate AG");
 

@@ -33,7 +33,7 @@ public class SimpelPDFExtractor extends AbstractPDFExtractor
 
     public SimpelPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Simpel S.A.");
 

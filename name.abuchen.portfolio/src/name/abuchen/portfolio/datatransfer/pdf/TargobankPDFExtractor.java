@@ -67,7 +67,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     public TargobankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("TARGO");
         addBankIdentifier("Targobank");

@@ -25,7 +25,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
 {
     public SelfWealthPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("SelfWealth");
         addBankIdentifier("Selfwealth");

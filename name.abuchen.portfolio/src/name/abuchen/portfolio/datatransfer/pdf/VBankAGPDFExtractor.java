@@ -18,7 +18,7 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 {
     public VBankAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("V-Bank AG");
 

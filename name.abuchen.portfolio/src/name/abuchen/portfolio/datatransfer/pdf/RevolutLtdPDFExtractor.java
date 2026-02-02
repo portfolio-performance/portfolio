@@ -31,7 +31,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 {
     public RevolutLtdPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Revolut Trading Ltd");
 

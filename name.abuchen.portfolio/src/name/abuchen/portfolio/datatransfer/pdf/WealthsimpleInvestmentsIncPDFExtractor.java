@@ -43,7 +43,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
 
     public WealthsimpleInvestmentsIncPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Wealthsimple Inc.");
 

@@ -25,7 +25,7 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
 
     public UnicreditPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("UniCredit Bank AG");
         addBankIdentifier("UniCredit Bank GmbH");

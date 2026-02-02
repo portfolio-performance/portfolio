@@ -20,7 +20,7 @@ public class VanguardGroupEuropePDFExtractor extends AbstractPDFExtractor
 {
     public VanguardGroupEuropePDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Vanguard Group Europe GmbH");
 

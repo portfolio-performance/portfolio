@@ -43,7 +43,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     public PostbankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Postbank");
 

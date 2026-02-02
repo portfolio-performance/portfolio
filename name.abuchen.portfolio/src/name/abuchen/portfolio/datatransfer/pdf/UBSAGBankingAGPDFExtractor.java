@@ -25,7 +25,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
 {
     public UBSAGBankingAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("UBS");
         addBankIdentifier("UBS Switzerland AG");

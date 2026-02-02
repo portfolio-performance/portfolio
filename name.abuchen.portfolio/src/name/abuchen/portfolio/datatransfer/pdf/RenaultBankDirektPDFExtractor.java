@@ -35,7 +35,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
 
     public RenaultBankDirektPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("305 200 37");
         addBankIdentifier("Renault Bank direkt");

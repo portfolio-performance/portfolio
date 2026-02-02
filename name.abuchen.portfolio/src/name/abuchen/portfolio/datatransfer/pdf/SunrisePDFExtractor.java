@@ -32,7 +32,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 {
     public SunrisePDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("info@meetsunrise.com");
         addBankIdentifier("Sunrise Securities GmbH");

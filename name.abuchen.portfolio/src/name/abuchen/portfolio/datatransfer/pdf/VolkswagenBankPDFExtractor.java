@@ -14,7 +14,7 @@ public class VolkswagenBankPDFExtractor extends AbstractPDFExtractor
 {
     public VolkswagenBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Volkswagen Bank");
 

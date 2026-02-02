@@ -12,7 +12,7 @@ public class WitheBoxGmbHPDFExtractor extends AbstractPDFExtractor
 {
     public WitheBoxGmbHPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Whitebox GmbH");
 

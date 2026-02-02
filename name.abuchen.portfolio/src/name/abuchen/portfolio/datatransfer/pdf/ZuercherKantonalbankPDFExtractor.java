@@ -33,7 +33,7 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
 {
     public ZuercherKantonalbankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Zürcher Kantonalbank");
 

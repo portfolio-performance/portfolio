@@ -32,7 +32,7 @@ public class UmweltbankAGPDFExtractor extends AbstractPDFExtractor
 {
     public UmweltbankAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("UmweltBank AG");
 

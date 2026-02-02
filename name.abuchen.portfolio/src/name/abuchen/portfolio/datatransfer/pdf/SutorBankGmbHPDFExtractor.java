@@ -30,7 +30,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 {
     public SutorBankGmbHPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("justTRADE");
         addBankIdentifier("Sutor");

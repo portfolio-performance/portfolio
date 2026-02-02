@@ -23,7 +23,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 {
     public ScalableCapitalPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Scalable Capital GmbH");
         addBankIdentifier("Scalable Capital Bank GmbH");

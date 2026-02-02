@@ -47,7 +47,7 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
 
     public DZBankGruppePDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("GLS Bank");
         addBankIdentifier("Union Investment Service Bank AG");

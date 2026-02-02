@@ -12,7 +12,7 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 {
     public SberbankEuropeAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Sberbank Europe AG");
 

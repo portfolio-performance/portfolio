@@ -28,7 +28,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 {
     public SBrokerPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("S Broker AG & Co. KG");
         addBankIdentifier("Sparkasse");

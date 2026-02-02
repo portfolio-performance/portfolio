@@ -28,7 +28,7 @@ public class VZVermoegenszentrumAGPDFExtractor extends AbstractPDFExtractor
 {
     public VZVermoegenszentrumAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("VZ Depotbank AG");
 

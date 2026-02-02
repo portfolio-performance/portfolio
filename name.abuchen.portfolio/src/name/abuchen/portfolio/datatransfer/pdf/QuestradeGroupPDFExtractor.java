@@ -30,7 +30,7 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
 {
     public QuestradeGroupPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Questrade, Inc.");
 

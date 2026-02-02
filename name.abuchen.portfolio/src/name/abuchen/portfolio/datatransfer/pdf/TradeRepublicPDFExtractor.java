@@ -27,7 +27,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 {
     public TradeRepublicPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("TRADE REPUBLIC");
         addBankIdentifier("Trade Republic Bank GmbH");

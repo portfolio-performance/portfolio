@@ -16,7 +16,7 @@ public class SchelhammerCapitalBankAG extends AbstractPDFExtractor
 {
     public SchelhammerCapitalBankAG(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Schelhammer Capital Bank AG");
 

@@ -16,7 +16,7 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
 {
     public SuresseDirektBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Suresse");
 

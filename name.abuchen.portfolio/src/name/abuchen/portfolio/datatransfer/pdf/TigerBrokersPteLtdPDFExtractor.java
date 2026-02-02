@@ -56,7 +56,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
     public TigerBrokersPteLtdPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Tiger Brokers (Singapore) PTE.LTD.");
 

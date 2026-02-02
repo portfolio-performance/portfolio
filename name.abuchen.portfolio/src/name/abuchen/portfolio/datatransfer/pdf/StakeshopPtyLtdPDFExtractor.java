@@ -27,7 +27,7 @@ public class StakeshopPtyLtdPDFExtractor extends AbstractPDFExtractor
 {
     public StakeshopPtyLtdPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Stakeshop Pty Ltd");
 

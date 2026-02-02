@@ -24,7 +24,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 {
     public QuirinBankAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("quirin bank AG");
         addBankIdentifier("Quirin Privatbank AG");

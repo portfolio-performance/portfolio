@@ -37,7 +37,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 {
     public ScorePriorityIncPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Score Priority");
 

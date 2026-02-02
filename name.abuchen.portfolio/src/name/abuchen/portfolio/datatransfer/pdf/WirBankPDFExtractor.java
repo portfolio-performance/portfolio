@@ -24,7 +24,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 {
     public WirBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("WIR Bank");
         addBankIdentifier("Banque WIR");
