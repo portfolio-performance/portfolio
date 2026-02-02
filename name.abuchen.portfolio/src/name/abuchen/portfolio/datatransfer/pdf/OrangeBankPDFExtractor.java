@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
@@ -10,7 +11,7 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class OrangeBankPDFExtractor extends AbstractPDFExtractor
 {
-    public OrangeBankPDFExtractor(Client client)
+    public OrangeBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

@@ -70,12 +70,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
     public class Input
     {
+        protected final NegativeValue negativeValue;
         public final Label label;
         public final Text value;
         public final Label currency;
 
-        public Input(Composite editArea, String text)
+        public Input(NegativeValue negativeValue, Composite editArea, String text)
         {
+            this.negativeValue = negativeValue;
             label = new Label(editArea, SWT.LEFT);
             label.setText(text);
             value = new Text(editArea, SWT.BORDER | SWT.RIGHT);
@@ -95,14 +97,16 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
         {
-            StringToCurrencyConverter converter = new StringToCurrencyConverter(values, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
+            StringToCurrencyConverter converter = new StringToCurrencyConverter(values,
+                            negativeValue.isNegativeValueAllowed());
             UpdateValueStrategy<String, Long> strategy = new UpdateValueStrategy<>();
             strategy.setAfterGetValidator(converter);
             strategy.setConverter(converter);
             if (isMandatory)
             {
                 strategy.setAfterConvertValidator(
-                                convertedValue -> convertedValue != null && (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE || convertedValue.longValue() > 0)
+                                convertedValue -> convertedValue != null && (negativeValue.isNegativeValueAllowed()
+                                                || convertedValue.longValue() > 0)
                                                 ? ValidationStatus.ok()
                                                 : ValidationStatus.error(MessageFormat
                                                                 .format(Messages.MsgDialogInputRequired, description)));
@@ -325,7 +329,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {
         public final ImageHyperlink buttonInvertExchangeRate;
 
-        public ExchangeRateInput(Composite editArea, String text)
+        public ExchangeRateInput(NegativeValue negativeValue, Composite editArea, String text)
         {
             super(editArea, text);
 

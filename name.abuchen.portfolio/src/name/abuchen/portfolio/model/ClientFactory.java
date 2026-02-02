@@ -1700,7 +1700,7 @@ public class ClientFactory
         }
     }
 
-    private static void addInvestmentPlanTypes(Client client)
+    private static void addInvestmentPlanTypes(NegativeValue negativeValue, Client client)
     {
         for (InvestmentPlan plan : client.getPlans())
         {
@@ -1711,7 +1711,7 @@ public class ClientFactory
             else
             {
                 plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
-                plan.setAmount(NegativeValue.maybeAbs(plan.getAmount()));
+                plan.setAmount(negativeValue.maybeAbs(plan.getAmount()));
             }
         }
     }

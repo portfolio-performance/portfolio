@@ -344,7 +344,8 @@ public class ExtractorUtils
         }
     }
 
-    public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
+    public static long convertToNumberLong(NegativeValue negativeValue, String value, Values<Long> valueType,
+                    String language, String country)
     {
         var newNumberFormat = (DecimalFormat) NumberFormat
                         .getInstance(Locale.forLanguageTag(language + "-" + country));
@@ -387,7 +388,7 @@ public class ExtractorUtils
 
         try
         {
-            return NegativeValue.maybeAbs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
+            return negativeValue.maybeAbs(Math.round(newNumberFormat.parse(value).doubleValue() * valueType.factor()));
         }
         catch (ParseException e)
         {
@@ -395,7 +396,8 @@ public class ExtractorUtils
         }
     }
 
-    public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, String language,
+    public static BigDecimal convertToNumberBigDecimal(NegativeValue negativeValue, String value,
+                    Values<Long> valueType, String language,
                     String country)
     {
         /**

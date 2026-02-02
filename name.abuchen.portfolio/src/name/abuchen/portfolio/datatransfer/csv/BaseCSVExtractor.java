@@ -38,8 +38,9 @@ import name.abuchen.portfolio.money.Money;
     private String label;
     private List<Field> fields;
 
-    /* package */ BaseCSVExtractor(Client client, String label)
+    /* package */ BaseCSVExtractor(NegativeValue negativeValue, Client client, String label)
     {
+        super(negativeValue);
         this.client = client;
         this.label = label;
         this.fields = new ArrayList<>();
@@ -180,7 +181,7 @@ import name.abuchen.portfolio.money.Money;
         if (date == null)
             date = LocalDate.now().atStartOfDay();
 
-        return Optional.of(new SecurityPrice(date.toLocalDate(), NegativeValue.maybeAbs(amount)));
+        return Optional.of(new SecurityPrice(date.toLocalDate(), negativeValue.maybeAbs(amount)));
     }
 
     protected Optional<Unit> extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
@@ -205,7 +206,7 @@ import name.abuchen.portfolio.money.Money;
             // if no exchange rate is available, try to calculate given the
             // amount
 
-            var forex = Money.of(currencyCode, NegativeValue.maybeAbs(grossAmount.longValue()));
+            var forex = Money.of(currencyCode, negativeValue.maybeAbs(grossAmount.longValue()));
             var converted = Money.of(amount.getCurrencyCode(), amount.getAmount());
             var calcluatedRate = BigDecimal.valueOf((double)amount.getAmount() / forex.getAmount());
 
@@ -215,7 +216,7 @@ import name.abuchen.portfolio.money.Money;
         {
             // create the unit out of given amount, currency, and exchange rate
 
-            Money forex = Money.of(currencyCode, NegativeValue.maybeAbs(grossAmount.longValue()));
+            Money forex = Money.of(currencyCode, negativeValue.maybeAbs(grossAmount.longValue()));
             BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
             Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
 

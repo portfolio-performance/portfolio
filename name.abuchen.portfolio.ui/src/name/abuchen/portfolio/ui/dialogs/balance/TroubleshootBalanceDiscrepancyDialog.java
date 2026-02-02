@@ -100,10 +100,14 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
 
     };
 
-    public TroubleshootBalanceDiscrepancyDialog(Shell parentShell, ClientInput clientInput, Account account)
+    protected final NegativeValue negativeValue;
+
+    public TroubleshootBalanceDiscrepancyDialog(NegativeValue negativeValue, Shell parentShell, ClientInput clientInput,
+                    Account account)
     {
         super(parentShell);
 
+        this.negativeValue = negativeValue;
         this.clientInput = clientInput;
         this.account = account;
 
@@ -267,7 +271,8 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         });
         column.setEditingSupport(new ColumnEditingSupport()
         {
-            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
+            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount,
+                            negativeValue.isNegativeValueAllowed());
 
             @Override
             public void setValue(Object element, Object value) throws Exception

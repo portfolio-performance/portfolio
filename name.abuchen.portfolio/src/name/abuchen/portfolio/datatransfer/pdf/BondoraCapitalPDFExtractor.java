@@ -7,6 +7,7 @@ import java.util.Locale;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -17,9 +18,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 @SuppressWarnings("nls")
 public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
 {
-    public BondoraCapitalPDFExtractor(Client client)
+    public BondoraCapitalPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addAccountStatementTransaction();
     }

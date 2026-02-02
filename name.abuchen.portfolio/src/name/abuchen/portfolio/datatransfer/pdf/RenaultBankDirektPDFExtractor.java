@@ -7,6 +7,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 
@@ -32,7 +33,7 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
     private static final String CONTEXT_KEY_TRANSACTIONS_HAVE_FULL_DATE = "transactions_full_date";
     private static final String CONTEXT_VALUE_TRUE = "true";
 
-    public RenaultBankDirektPDFExtractor(Client client)
+    public RenaultBankDirektPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

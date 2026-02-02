@@ -6,6 +6,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -22,9 +23,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BasellandschaftlicheKantonalbankPDFExtractor extends AbstractPDFExtractor
 {
-    public BasellandschaftlicheKantonalbankPDFExtractor(Client client)
+    public BasellandschaftlicheKantonalbankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("radicant bank ag");
 

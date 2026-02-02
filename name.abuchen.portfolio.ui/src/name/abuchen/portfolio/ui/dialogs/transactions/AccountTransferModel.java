@@ -31,6 +31,7 @@ public class AccountTransferModel extends AbstractModel
         inverseExchangeRateCurrencies, calculationStatus;
     }
 
+    protected final NegativeValue negativeValue;
     private final Client client;
 
     private AccountTransferEntry source;
@@ -47,8 +48,9 @@ public class AccountTransferModel extends AbstractModel
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public AccountTransferModel(Client client)
+    public AccountTransferModel(NegativeValue negativeValue, Client client)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
     }
 
@@ -182,7 +184,7 @@ public class AccountTransferModel extends AbstractModel
         long upper = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        if (negativeValue.isNegativeValueAllowed())
         {
             if (amount >= 0 && (amount < lower || amount > upper))
                 return ValidationStatus.error(Messages.MsgErrorConvertedAmount);

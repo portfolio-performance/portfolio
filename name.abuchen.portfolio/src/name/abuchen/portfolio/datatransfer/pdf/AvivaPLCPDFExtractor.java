@@ -6,6 +6,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -26,9 +27,9 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
 {
     private static final String GBP = "GBP";
 
-    public AvivaPLCPDFExtractor(Client client)
+    public AvivaPLCPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Aviva Pension Trustees UK Limited");
 

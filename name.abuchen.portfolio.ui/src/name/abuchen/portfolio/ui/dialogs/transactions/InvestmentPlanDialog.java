@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -53,14 +54,15 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
     private final InvestmentPlan.Type planType;
 
     @Inject
-    public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+    public InvestmentPlanDialog(NegativeValue negativeValue, @Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell,
+                    Client client,
                     InvestmentPlan.Type planType)
     {
         super(parentShell);
         this.client = client;
         this.planType = planType;
 
-        setModel(new InvestmentPlanModel(client, planType));
+        setModel(new InvestmentPlanModel(negativeValue, client, planType));
     }
 
     private InvestmentPlanModel model()

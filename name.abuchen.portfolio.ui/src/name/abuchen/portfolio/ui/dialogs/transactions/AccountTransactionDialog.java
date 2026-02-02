@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -95,7 +96,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     }
 
     @Override
-    protected void createFormElements(Composite editArea) // NOSONAR
+    protected void createFormElements(NegativeValue negativeValue, Composite editArea) // NOSONAR
     {
         //
         // input elements

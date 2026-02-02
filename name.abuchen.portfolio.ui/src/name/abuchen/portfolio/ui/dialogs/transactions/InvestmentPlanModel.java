@@ -24,6 +24,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
 
+    protected final NegativeValue negativeValue;
     private final Client client;
 
     private InvestmentPlan source;
@@ -96,8 +97,9 @@ public class InvestmentPlanModel extends AbstractModel
         }
     }
 
-    public InvestmentPlanModel(Client client, InvestmentPlan.Type planType)
+    public InvestmentPlanModel(NegativeValue negativeValue, Client client, InvestmentPlan.Type planType)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
         this.planType = planType;
     }
@@ -348,9 +350,9 @@ public class InvestmentPlanModel extends AbstractModel
 
         long newGrossAmount = switch (planType)
         {
-            case PURCHASE_OR_DELIVERY -> NegativeValue.maybeAbs(amount - fees - taxes);
-            case INTEREST -> NegativeValue.maybeAbs(amount + taxes);
-            case DEPOSIT, REMOVAL -> NegativeValue.maybeAbs(amount);
+            case PURCHASE_OR_DELIVERY -> negativeValue.maybeAbs(amount - fees - taxes);
+            case INTEREST -> negativeValue.maybeAbs(amount + taxes);
+            case DEPOSIT, REMOVAL -> negativeValue.maybeAbs(amount);
             default -> throw new IllegalArgumentException();
         };
 
@@ -413,7 +415,7 @@ public class InvestmentPlanModel extends AbstractModel
         return switch (planType)
         {
             case PURCHASE_OR_DELIVERY -> grossAmount + fees + taxes;
-            case INTEREST -> NegativeValue.maybeAbs(grossAmount - taxes);
+            case INTEREST -> negativeValue.maybeAbs(grossAmount - taxes);
             case DEPOSIT, REMOVAL -> grossAmount;
             default -> throw new IllegalArgumentException();
         };

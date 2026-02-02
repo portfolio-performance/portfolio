@@ -3,13 +3,14 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
 {
-    public SberbankEuropeAGPDFExtractor(Client client)
+    public SberbankEuropeAGPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

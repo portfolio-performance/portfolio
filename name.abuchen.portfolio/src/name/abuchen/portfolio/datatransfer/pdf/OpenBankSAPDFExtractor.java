@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -12,7 +13,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 @SuppressWarnings("nls")
 public class OpenBankSAPDFExtractor extends AbstractPDFExtractor
 {
-    public OpenBankSAPDFExtractor(Client client)
+    public OpenBankSAPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

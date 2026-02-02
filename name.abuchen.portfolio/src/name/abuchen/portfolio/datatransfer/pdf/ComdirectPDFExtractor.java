@@ -24,6 +24,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -72,9 +73,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     private static final String ATTRIBUTE_GROSS_TAXES_TREATMENT = "gross_taxes_treatment";
     private static final String ATTRIBUTE_GROSS_TAX_BASE_BEFORE_LOST_OFFSET = "gross_tax_base_before_lost_offset";
 
-    public ComdirectPDFExtractor(Client client)
+    public ComdirectPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("comdirect");
 

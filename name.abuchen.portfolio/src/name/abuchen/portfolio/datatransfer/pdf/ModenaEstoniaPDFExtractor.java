@@ -7,6 +7,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
@@ -18,7 +19,7 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
 {
-    public ModenaEstoniaPDFExtractor(Client client)
+    public ModenaEstoniaPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

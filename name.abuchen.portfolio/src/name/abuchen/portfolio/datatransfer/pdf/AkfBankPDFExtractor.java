@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
@@ -12,9 +13,9 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class AkfBankPDFExtractor extends AbstractPDFExtractor
 {
-    public AkfBankPDFExtractor(Client client)
+    public AkfBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("akf bank GmbH & Co KG");
 

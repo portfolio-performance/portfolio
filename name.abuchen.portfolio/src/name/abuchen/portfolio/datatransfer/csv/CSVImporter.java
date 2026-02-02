@@ -56,6 +56,7 @@ import org.apache.commons.csv.CSVRecord;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -828,14 +829,16 @@ public final class CSVImporter
     private Column[] columns;
     private List<String[]> values;
 
-    public CSVImporter(Client client, File file)
+    public CSVImporter(NegativeValue negativeValue, Client client, File file)
     {
         this.client = client;
         this.inputFile = file;
 
-        this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
-                        new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
-                        new CSVSecurityPriceExtractor(), new CSVPortfolioExtractor(client)));
+        this.extractors = Collections.unmodifiableList(Arrays.asList(
+                        new CSVAccountTransactionExtractor(negativeValue, client),
+                        new CSVPortfolioTransactionExtractor(negativeValue, client),
+                        new CSVSecurityExtractor(negativeValue, client), new CSVSecurityPriceExtractor(negativeValue),
+                        new CSVPortfolioExtractor(negativeValue, client)));
         this.currentExtractor = extractors.get(0);
     }
 

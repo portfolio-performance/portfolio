@@ -8,6 +8,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -18,9 +19,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BoursoBankPDFExtractor extends AbstractPDFExtractor
 {
-    public BoursoBankPDFExtractor(Client client)
+    public BoursoBankPDFExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client);
+        super(negativeValue, client);
 
         addBankIdentifier("Boursorama S.A.");
         addBankIdentifier("Compte PEA");

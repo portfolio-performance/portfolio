@@ -29,9 +29,9 @@ import name.abuchen.portfolio.money.Money;
 
 /* package */class CSVPortfolioTransactionExtractor extends BaseCSVExtractor
 {
-    /* package */ CSVPortfolioTransactionExtractor(Client client)
+    /* package */ CSVPortfolioTransactionExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client, Messages.CSVDefPortfolioTransactions);
+        super(negativeValue, client, Messages.CSVDefPortfolioTransactions);
 
         var fields = getFields();
         fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
@@ -139,7 +139,7 @@ import name.abuchen.portfolio.money.Money;
         entry.setType(type);
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
+        entry.setAmount(negativeValue.maybeAbs(amount.getAmount()));
         entry.setCurrencyCode(amount.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);
@@ -149,11 +149,13 @@ import name.abuchen.portfolio.money.Money;
 
         if (fees != null && fees.longValue() != 0)
             entry.getPortfolioTransaction()
-                            .addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(fees))));
+                            .addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(amount.getCurrencyCode(), negativeValue.maybeAbs(fees))));
 
         if (taxes != null && taxes.longValue() != 0)
             entry.getPortfolioTransaction()
-                            .addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
+                            .addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(amount.getCurrencyCode(), negativeValue.maybeAbs(taxes))));
 
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
@@ -168,7 +170,7 @@ import name.abuchen.portfolio.money.Money;
         var entry = new PortfolioTransferEntry();
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
+        entry.setAmount(negativeValue.maybeAbs(amount.getAmount()));
         entry.setCurrencyCode(amount.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);
@@ -185,7 +187,7 @@ import name.abuchen.portfolio.money.Money;
         t.setType(type);
         t.setSecurity(security);
         t.setDateTime(date);
-        t.setAmount(NegativeValue.maybeAbs(amount.getAmount()));
+        t.setAmount(negativeValue.maybeAbs(amount.getAmount()));
         t.setCurrencyCode(amount.getCurrencyCode());
         t.setShares(shares);
         t.setNote(note);
@@ -194,10 +196,10 @@ import name.abuchen.portfolio.money.Money;
             t.addUnit(grossAmount.get());
 
         if (fees != null && fees.longValue() != 0)
-            t.addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(fees))));
+            t.addUnit(new Unit(Unit.Type.FEE, Money.of(amount.getCurrencyCode(), negativeValue.maybeAbs(fees))));
 
         if (taxes != null && taxes.longValue() != 0)
-            t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), NegativeValue.maybeAbs(taxes))));
+            t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), negativeValue.maybeAbs(taxes))));
 
         if (!grossAmount.isPresent())
             createGrossValueIfNecessary(rawValues, field2column, t);

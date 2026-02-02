@@ -409,9 +409,11 @@ public class BindingHelper
         return txtValue;
     }
 
-    private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
+    private void bindMandatoryDecimalInput(NegativeValue negativeValue, final String label, String property,
+                    Text txtValue, Values<?> type)
     {
-        StringToCurrencyConverter converter = new StringToCurrencyConverter(type, NegativeValue.ALLOW_CSV_NEGATIVE_VALUE);
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type,
+                        negativeValue.isNegativeValueAllowed());
 
         UpdateValueStrategy<String, Long> input2model = new UpdateValueStrategy<>();
         input2model.setAfterGetValidator(converter);

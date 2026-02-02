@@ -39,6 +39,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         calculationStatus;
     }
 
+    protected final NegativeValue negativeValue;
     protected final Client client;
     protected PortfolioTransaction.Type type;
 
@@ -59,8 +60,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected String note;
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public AbstractSecurityTransactionModel(Client client, Type type)
+    public AbstractSecurityTransactionModel(NegativeValue negativeValue, Client client, Type type)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
         this.type = type;
     }
@@ -640,7 +642,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         {
             case BUY:
             case DELIVERY_INBOUND:
-                if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+                if (negativeValue.isNegativeValueAllowed())
                 {
                     return total - feesAndTaxes;
                 }
@@ -664,7 +666,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 return convertedGrossValue + feesAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+                if (negativeValue.isNegativeValueAllowed())
                 {
                     return convertedGrossValue - feesAndTaxes;
                 }

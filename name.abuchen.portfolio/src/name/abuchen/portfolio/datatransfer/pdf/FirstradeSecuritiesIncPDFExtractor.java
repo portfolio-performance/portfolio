@@ -4,6 +4,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -22,7 +23,7 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class FirstradeSecuritiesIncPDFExtractor extends AbstractPDFExtractor
 {
-    public FirstradeSecuritiesIncPDFExtractor(Client client)
+    public FirstradeSecuritiesIncPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 

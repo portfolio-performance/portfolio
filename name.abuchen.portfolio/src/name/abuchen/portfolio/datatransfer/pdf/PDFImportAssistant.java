@@ -16,6 +16,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 public class PDFImportAssistant
@@ -24,53 +25,52 @@ public class PDFImportAssistant
     private final List<File> files;
     private final List<Extractor> extractors = new ArrayList<>();
 
-    public PDFImportAssistant(Client client, List<File> files)
+    public PDFImportAssistant(NegativeValue negativeValue, Client client, List<File> files)
     {
         this.client = client;
         this.files = files;
 
-        extractors.add(new ABNAMROGroupPDFExtractor(client));
-        extractors.add(new AdvanziaBankPDFExtractor(client));
-        extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
-        extractors.add(new AkfBankPDFExtractor(client));
-        extractors.add(new ArkeaDirectBankPDFExtractor(client));
-        extractors.add(new AudiBankPDFExtractor(client));
+        extractors.add(new ABNAMROGroupPDFExtractor(negativeValue, client));
+        extractors.add(new AdvanziaBankPDFExtractor(negativeValue, client));
+        extractors.add(new AJBellSecuritiesLimitedPDFExtractor(negativeValue, client));
+        extractors.add(new AkfBankPDFExtractor(negativeValue, client));
+        extractors.add(new ArkeaDirectBankPDFExtractor(negativeValue, client));
+        extractors.add(new AudiBankPDFExtractor(negativeValue, client));
         extractors.add(new AustrianAnadiBankPDFExtractor(client));
-        extractors.add(new AlpacCapitalPDFExtractor(client));
-        extractors.add(new ApoBankPDFExtractor(client));
-        extractors.add(new AvivaPLCPDFExtractor(client));
-        extractors.add(new BaaderBankPDFExtractor(client));
-        extractors.add(new Bank11PDFExtractor(client));
-        extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(client));
-        extractors.add(new BankSLMPDFExtractor(client));
-        extractors.add(new BarclaysBankIrelandPLCPDFExtractor(client));
-        extractors.add(new BasellandschaftlicheKantonalbankPDFExtractor(client));
-        extractors.add(new BawagAGPDFExtractor(client));
-        extractors.add(new BigbankPDFExtractor(client));
-        extractors.add(new BisonPDFExtractor(client));
-        extractors.add(new BondoraCapitalPDFExtractor(client));
-        extractors.add(new BourseDirectPDFExtractor(client));
-        extractors.add(new BoursoBankPDFExtractor(client));
-        extractors.add(new BSDEXPDFExtractor(client));
-        extractors.add(new C24BankGmbHPDFExtractor(client));
-        extractors.add(new CetesDirectoPDFExtractor(client));
-        extractors.add(new ComdirectPDFExtractor(client));
-        extractors.add(new CommerzbankPDFExtractor(client));
-        extractors.add(new CommSecPDFExtractor(client));
-        extractors.add(new ComputersharePDFExtractor(client));
-        extractors.add(new ConsorsbankPDFExtractor(client));
-        extractors.add(new CreditMutuelAllianceFederalePDFExtractor(client));
-        extractors.add(new CreditSuisseAGPDFExtractor(client));
-        extractors.add(new CrowdestorPDFExtractor(client));
-        extractors.add(new DABPDFExtractor(client));
-        extractors.add(new DADATBankenhausPDFExtractor(client));
-        extractors.add(new DebitumInvestmentsPDFExtractor(client));
-        extractors.add(new DegiroPDFExtractor(client));
-        extractors.add(new DekaBankPDFExtractor(client));
-        extractors.add(new DeutscheBankPDFExtractor(client));
-        extractors.add(new DirectaSimPDFExtractor(client));
-        extractors.add(new Direkt1822BankPDFExtractor(client));
-        extractors.add(new DkbPDFExtractor(client));
+        extractors.add(new ApoBankPDFExtractor(negativeValue, client));
+        extractors.add(new AvivaPLCPDFExtractor(negativeValue, client));
+        extractors.add(new BaaderBankPDFExtractor(negativeValue, client));
+        extractors.add(new Bank11PDFExtractor(negativeValue, client));
+        extractors.add(new BancoBilbaoVizcayaArgentariaPDFExtractor(negativeValue, client));
+        extractors.add(new BankSLMPDFExtractor(negativeValue, client));
+        extractors.add(new BarclaysBankIrelandPLCPDFExtractor(negativeValue, client));
+        extractors.add(new BasellandschaftlicheKantonalbankPDFExtractor(negativeValue, client));
+        extractors.add(new BawagAGPDFExtractor(negativeValue, client));
+        extractors.add(new BigbankPDFExtractor(negativeValue, client));
+        extractors.add(new BisonPDFExtractor(negativeValue, client));
+        extractors.add(new BondoraCapitalPDFExtractor(negativeValue, client));
+        extractors.add(new BourseDirectPDFExtractor(negativeValue, client));
+        extractors.add(new BoursoBankPDFExtractor(negativeValue, client));
+        extractors.add(new BSDEXPDFExtractor(negativeValue, client));
+        extractors.add(new C24BankGmbHPDFExtractor(negativeValue, client));
+        extractors.add(new CetesDirectoPDFExtractor(negativeValue, client));
+        extractors.add(new ComdirectPDFExtractor(negativeValue, client));
+        extractors.add(new CommerzbankPDFExtractor(negativeValue, client));
+        extractors.add(new CommSecPDFExtractor(negativeValue, client));
+        extractors.add(new ComputersharePDFExtractor(negativeValue, client));
+        extractors.add(new ConsorsbankPDFExtractor(negativeValue, client));
+        extractors.add(new CreditMutuelAllianceFederalePDFExtractor(negativeValue, client));
+        extractors.add(new CreditSuisseAGPDFExtractor(negativeValue, client));
+        extractors.add(new CrowdestorPDFExtractor(negativeValue, client));
+        extractors.add(new DABPDFExtractor(negativeValue, client));
+        extractors.add(new DADATBankenhausPDFExtractor(negativeValue, client));
+        extractors.add(new DebitumInvestmentsPDFExtractor(negativeValue, client));
+        extractors.add(new DegiroPDFExtractor(negativeValue, client));
+        extractors.add(new DekaBankPDFExtractor(negativeValue, client));
+        extractors.add(new DeutscheBankPDFExtractor(negativeValue, client));
+        extractors.add(new DirectaSimPDFExtractor(negativeValue, client));
+        extractors.add(new Direkt1822BankPDFExtractor(negativeValue, client));
+        extractors.add(new DkbPDFExtractor(negativeValue, client));
         extractors.add(new DreiBankenEDVPDFExtractor(client));
         extractors.add(new DZBankGruppePDFExtractor(client));
         extractors.add(new EasyBankAGPDFExtractor(client));
@@ -143,15 +143,15 @@ public class PDFImportAssistant
         extractors.add(new UmweltbankAGPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VanguardGroupEuropePDFExtractor(client));
-        extractors.add(new VBankAGPDFExtractor(client));
-        extractors.add(new VDKBankNVPDFExtractor(client));
-        extractors.add(new VolkswagenBankPDFExtractor(client));
-        extractors.add(new VZVermoegenszentrumAGPDFExtractor(client));
-        extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
-        extractors.add(new WirBankPDFExtractor(client));
-        extractors.add(new WitheBoxGmbHPDFExtractor(client));
-        extractors.add(new WeberbankPDFExtractor(client));
-        extractors.add(new ZuercherKantonalbankPDFExtractor(client));
+        extractors.add(new VBankAGPDFExtractor(negativeValue, client));
+        extractors.add(new VDKBankNVPDFExtractor(negativeValue, client));
+        extractors.add(new VolkswagenBankPDFExtractor(negativeValue, client));
+        extractors.add(new VZVermoegenszentrumAGPDFExtractor(negativeValue, client));
+        extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(negativeValue, client));
+        extractors.add(new WirBankPDFExtractor(negativeValue, client));
+        extractors.add(new WitheBoxGmbHPDFExtractor(negativeValue, client));
+        extractors.add(new WeberbankPDFExtractor(negativeValue, client));
+        extractors.add(new ZuercherKantonalbankPDFExtractor(negativeValue, client));
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

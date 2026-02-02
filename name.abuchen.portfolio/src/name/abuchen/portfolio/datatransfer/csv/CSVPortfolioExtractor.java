@@ -21,9 +21,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 /* package */class CSVPortfolioExtractor extends BaseCSVExtractor
 {
-    /* package */ CSVPortfolioExtractor(Client client)
+    /* package */ CSVPortfolioExtractor(NegativeValue negativeValue, Client client)
     {
-        super(client, Messages.CSVDefPortfolio);
+        super(negativeValue, client, Messages.CSVDefPortfolio);
 
         var fields = getFields();
         fields.add(new DateField("date", Messages.CSVColumn_DateValue).setOptional(true)); //$NON-NLS-1$
@@ -95,7 +95,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(NegativeValue.maybeAbs(valuation.getAmount()));
+        entry.setAmount(negativeValue.maybeAbs(valuation.getAmount()));
         entry.setCurrencyCode(valuation.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);

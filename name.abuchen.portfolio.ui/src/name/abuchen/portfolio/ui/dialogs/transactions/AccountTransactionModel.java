@@ -39,6 +39,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public static final Security EMPTY_SECURITY = new Security("-----", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
+    protected final NegativeValue negativeValue;
     private final Client client;
     private AccountTransaction.Type type;
 
@@ -69,8 +70,9 @@ public class AccountTransactionModel extends AbstractModel
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public AccountTransactionModel(Client client, AccountTransaction.Type type)
+    public AccountTransactionModel(NegativeValue negativeValue, Client client, AccountTransaction.Type type)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
         this.type = type;
 
@@ -291,7 +293,7 @@ public class AccountTransactionModel extends AbstractModel
         long upper = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
-        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        if (negativeValue.isNegativeValueAllowed())
         {
             long newUpper = Math.max(upper, lower);
             lower = Math.min(upper, lower);
@@ -652,7 +654,7 @@ public class AccountTransactionModel extends AbstractModel
 
     protected BigDecimal calculateDividendAmount()
     {
-        if (shares > 0 || NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        if (shares > 0 || negativeValue.isNegativeValueAllowed())
             return BigDecimal.valueOf(
                             (fxGrossAmount * Values.Share.factor()) / (double) shares / Values.Amount.divider());
         else
@@ -675,7 +677,7 @@ public class AccountTransactionModel extends AbstractModel
     {
         long totalFees = fees + Math.round(exchangeRate.doubleValue() * fxFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        if (NegativeValue.ALLOW_CSV_NEGATIVE_VALUE)
+        if (negativeValue.isNegativeValueAllowed())
         {
             return grossAmount - totalTaxes - totalFees;
         }

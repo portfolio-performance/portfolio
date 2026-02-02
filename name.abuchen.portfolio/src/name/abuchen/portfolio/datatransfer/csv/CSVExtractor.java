@@ -26,7 +26,14 @@ import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
 {
+    protected final NegativeValue negativeValue;
+
     public abstract List<Field> getFields();
+
+    public CSVExtractor(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
+    }
 
     public Field getField(String code)
     {
@@ -189,7 +196,7 @@ public abstract class CSVExtractor implements Extractor
         var value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
-        return NegativeValue.maybeAbs(value);
+        return negativeValue.maybeAbs(value);
     }
 
     @SuppressWarnings("unchecked")

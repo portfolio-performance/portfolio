@@ -9,6 +9,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -27,7 +28,7 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 {
-    public SutorBankGmbHPDFExtractor(Client client)
+    public SutorBankGmbHPDFExtractor(NegativeValue negativeValue, Client client)
     {
         super(client);
 
