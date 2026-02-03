@@ -2627,6 +2627,26 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
+                                        // 02 Jan. Incoming transfer from Vorname Nachname 
+                                        // Überweisung 50,00 € 361,83 €
+                                        // 2026 (DE00000000000000000000)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency", "amountAfter", "currencyAfter", "note0", "year", "note1") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) (?<note0>(Incoming transfer from) .*)$") //
+                                                        .match("^(.berweisung) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
+                                                                        + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}) (?<note1>(.*))$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note0") + v.get("note1")));
+                                                        }),
+                                        // @formatter:off
                                         // 20 Mai
                                         // 2024 Überweisung PayOut to transit 18.085,60 € 18.939,80 €
                                         //
