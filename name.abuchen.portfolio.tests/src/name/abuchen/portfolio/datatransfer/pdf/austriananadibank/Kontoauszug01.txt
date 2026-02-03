@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Online Customers KONTOAUSZUG
+Inglitschstraße 5A, 050202-0 vom 30.05.2025
+Wir sind Top bei Kundenzufriedenheit und Preis Leistungsverhältnis beim Branchen Cha-
+mpion 2020 in einer österreichweiten unabhängigen Studie. Mehr Infos auf anadibank.at
+685100
+Kundennummer
+Alter Saldo per 13.05.2025 0,00
+Summe der Gutschriften 26.848,95
+Summe der Lastschriften 2.500,00-
+9020 Klagenfurt a.W.,Inglitschstraße 5A
+Neuer Saldo zu Ihren Gunsten
+bviLsv eGxFMWE EUR 24.348,95
+kjbsJujfRrF 798
+9351 VqByMMyqf
+Konto-Nr.: 32298758685 Bankleitzahl: 52000
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+14.05 FTHcZZ trSlPNt, KsI 15.05 2.500,00
+IBAN: TT40 1705 1256 3324 8502
+Zahlungsreferenz: Festgeld
+REF: PSSAAT140525000665510002688
+15.05 ONLINE-FESTGELD / KONTO 12345555555 15.05 2.500,00-
+VERANLAGUNGSBETRAG             2.500,00
+LAUFZEIT        2025-05-15 - 2025-11-17
+Habenzinsen
+AB 2025-05-15          2,4000%              30,33
+KESt                                         7,58-
+19.05 TdTaIe dFGUXqU, MIh 20.05 8.320,00
+IBAN: ur98 0202 5368 2910 8017
+eonjBbgOJogeiuoE: rVOWJNoSA
+REF: PSSAAT190525000730410002599
+Neuer Saldo zu Ihren Gunsten 8.320,00
+tJ73 6064 6343 1723 7834 HAABAT2K 20 0001 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 38620 Doknr.: EK00-015-0356158954

@@ -1,0 +1,47 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Online Customers KONTOAUSZUG
+Inglitschstraße 5A, 050202-0 vom 28.11.2025
+123445
+Kundennummer
+Alter Saldo per 31.10.2025 1.000,00
+Summe der Gutschriften 3.522,75
+Summe der Lastschriften 4.284,00-
+9020 Klagenfurt a.W.,Inglitschstraße 5A
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 238,75
+Musterstraße 99
+1234 Musterstadt
+Konto-Nr.: 12345678890 Bankleitzahl: 52000
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+04.11 IBAN: AT11 1234 1234 1234 1234 04.11 500,00-
+Max Mustermann
+Überweisungsbetreff
+REF: 52000251103EBP00000239240248
+05.11 Max Mustermann, MSc 05.11 500,00
+IBAN: AT11 1234 1234 1234 1234
+REF: 1234567856745EB1231235
+11.11 Max Mustermann, MSc 12.11 500,00
+IBAN: AT11 1234 1234 1234 1234
+Tagesgeld
+REF: 1234567856745EB1231235
+17.11 ABRECHNUNG ZU KONTO 00123456678 17.11 2.522,75
+VERANLAGUNGSBETRAG             2.500,00
+LAUFZEIT        2025-05-15 - 2025-11-17
+Habenzinsen
+AB 2025-05-15          2,4000%              30,33
+KESt                                         7,58-
+24.11 IBAN: AT11 1234 1234 1234 1234 24.11 1.000,00-
+Max Mustermann
+REF: 1234567856745EB1231235
+24.11 IBAN: AT11 1234 1234 1234 1234 24.11 2.784,00-
+Max Mustermann
+Überweisungsbetreff
+REF: 1234567856745EB1231235
+Neuer Saldo zu Ihren Gunsten 238,75
+AT20 5200 0001 2345 12345 HAABAT2K 20 0007 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 24093 Doknr.: EK00-015-1234566789

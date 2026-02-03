@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.1.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Online Customers KONTOAUSZUG
+Inglitschstraße 5A, 050202-0 vom 31.12.2025
+123451
+Kundennummer
+Alter Saldo per 28.11.2025 238,75
+Summe der Gutschriften 4.123,91
+Summe der Lastschriften 2.000,00-
+9020 Klagenfurt a.W.,Inglitschstraße 5A
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 2.362,66
+lsaögjkjds 999
+8593 Musterstadt
+Konto-Nr.: 92474549238 Bankleitzahl: 52000
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+09.12 Max Mustermann 05.12 3.500,00
+IBAN: AT12 1234 1234 1234 1234
+REF: 1111111111111EB1111111
+11.12 Max Mustermann 12.12 500,00
+IBAN: AT12 1234 1234 1234 1234
+Tagesgeld
+REF: PSSAAT111111111111111111111
+16.12 IBAN: AT12 1234 1234 1234 1234 16.12 2.000,00-
+Max Mustermann
+REF: 52000251215EBP00000243646135
+31.12 Abschluss 31.12 123,91
+Habenzinsen                                165,21
+KESt                                        41,30-
+Gegen diesen Rechnungsabschluss können Sie binnen
+2 Monaten nach Zugang Einwendungen erheben. Eine nicht
+fristgerechte Reklamation gilt als Zustimmung für diese
+Rechnungsperiode.
+Neuer Saldo zu Ihren Gunsten 2.362,66
+AT20 5200 0001 2345 12345 HAABAT2K 20 0008 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 33333 Doknr.: EK20-015-1234312312
