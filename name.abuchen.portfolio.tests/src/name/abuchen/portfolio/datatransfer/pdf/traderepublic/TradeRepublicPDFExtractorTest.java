@@ -4038,6 +4038,31 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug39()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug39.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+
+        assertThat(results, hasItem(deposit(hasDate("2026-01-02"), hasAmount("EUR", 50.00),
+                        hasSource("Kontoauszug39.txt"), hasNote("Incoming transfer from Vorname Nachname (DE00000000000000000000)"))));
+    }
+
+    @Test
     public void testEstrattoContoRiassuntivo01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
