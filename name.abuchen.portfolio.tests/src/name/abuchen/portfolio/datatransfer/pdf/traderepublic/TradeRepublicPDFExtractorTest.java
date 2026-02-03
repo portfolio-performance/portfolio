@@ -3967,7 +3967,6 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-
         assertThat(results, hasItem(deposit(hasDate("2025-11-21"), hasAmount("EUR", 58.36),
                         hasSource("Kontoauszug36.txt"), hasNote("Crypto one percent bonus compensation for orderId: 0a000a0a-a000-000a-a000-00a000a0a0a0"))));
 
@@ -3998,10 +3997,8 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-
         assertThat(results, hasItem(deposit(hasDate("2025-12-01"), hasAmount("EUR", 4.71),
                         hasSource("Kontoauszug37.txt"), hasNote("Cash reward allocation"))));
-
 
         assertThat(results, hasItem(removal(hasDate("2025-12-31"), hasAmount("EUR", 1800.00),
                         hasSource("Kontoauszug37.txt"), hasNote("Outgoing transfer for Vorname Nachname (DE00000000000000000000)"))));
@@ -4027,7 +4024,6 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-
         assertThat(results, hasItem(deposit(hasDate("2025-12-01"), hasAmount("EUR", 0.06),
                         hasSource("Kontoauszug38.txt"), hasNote("Cash reward allocation"))));
 
@@ -4057,9 +4053,41 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-
         assertThat(results, hasItem(deposit(hasDate("2026-01-02"), hasAmount("EUR", 50.00),
                         hasSource("Kontoauszug39.txt"), hasNote("Incoming transfer from Vorname Nachname (DE00000000000000000000)"))));
+    }
+
+    @Test
+    public void testKontoauszug40()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug40.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2025-12-01"), hasAmount("EUR", 30.40), //
+                                        hasSource("Kontoauszug40.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-12-03"), hasAmount("EUR", 280.00),
+                        hasSource("Kontoauszug40.txt"), hasNote("Outgoing transfer for name surname (DE987654321)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-12-12"), hasAmount("EUR", 3950.00),
+                        hasSource("Kontoauszug40.txt"), hasNote("Incoming transfer from name surname (DE987654321)"))));
     }
 
     @Test
@@ -6437,6 +6465,40 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testTilgung03()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000HT7LYD5"), hasWkn(null), hasTicker(null), //
+                        hasName("SMA Solar Technology Open End Turbo"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-09-15T00:00"), hasShares(500.00), //
+                        hasSource("Tilgung03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.50), hasGrossValue("EUR", 0.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

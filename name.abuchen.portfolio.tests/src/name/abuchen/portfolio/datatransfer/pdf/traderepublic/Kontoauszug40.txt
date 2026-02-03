@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: linux | x86_64 | 21.0.9 | Flathub
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+name surname DATUM 01 Dez. 2025 - 31 Dez. 2025
+Musterstrasse 1 IBAN DE1234567890
+somenumber somenumber BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 18.787,38 € 3.980,40 € 8.975,00 € 13.792,78 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Dez. 
+Zinsen Interest payment 30,40 € 18.817,78 €
+2025
+02 Dez. Savings plan execution IE00085PWS28 Amundi MSCI World Ex 
+Handel 150,00 € 18.667,78 €
+2025 USA UCITS ETF Acc, quantity: 14.417531
+02 Dez. Savings plan execution IE00B4L5Y983 iShares III plc - iShares 
+Handel 500,00 € 18.167,78 €
+2025 Core MSCI World UCITS ETF USD (Acc), quantity: 4.494988
+03 Dez. Outgoing transfer for name surname 
+Überweisung 280,00 € 17.887,78 €
+2025 (DE987654321)
+12 Dez. Incoming transfer from name surname 
+Überweisung 3.950,00 € 21.557,78 €
+2025 (DE987654321)
+...
+HINWEISE ZUM KONTOAUSZUG
+Bitte überprüfe Deinen Kontoauszug, da Einwendungen unverzüglich geltend gemacht/erhoben werden müssen. Bitte beachte, dass der 
+angegebene Kontostand nicht die Wertstellung der einzelnen Buchungen bzw. Transaktionen berücksichtigt, der genannte Betrag bzw. 
+Nennbetrag also nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss. Ein Rechnungsabschluss gilt als 
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 11.01.2026, 10:03:37 Seite 3 von 4
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+genehmigt, sofern Du innerhalb von 6 Wochen keine Einwendungen erhebst. Zur Fristwahrung genügt die Einreichung einer Einwendung 
+über unseren Kundenservice (Chat). Alle Chats sind Gegenstand unabhängiger Überprüfungen durch den Bereich Internal Audit. Dieser 
+Kontoauszug gilt im Zusammenhang mit den zugrundeliegenden Verträgen laut angegebener Kontonummer als Rechnung i.S.d. UStG. 
+Die Guthaben, die bei Treuhandbanken verwahrt werden, sind jeweils bis zu €100.000 von der Einlagensicherung der Treuhandbank 
+gesichert. Die Anteile an qualifizierten Geldmarktfonds (QMMF) sind für den unwahrscheinlichen Fall einer Insolvenz von Trade Republic 
+geschützt. Weitere Informationen zur Sicherung Deiner Gelder findest Du unter https://support.traderepublic.com.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 11.01.2026, 10:03:37 Seite 4 von 4
