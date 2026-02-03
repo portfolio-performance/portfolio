@@ -1,4 +1,3 @@
-```
 PDFBox Version: 3.0.6
 Portfolio Performance Version: 0.81.1.qualifier
 System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
@@ -46,5 +45,3 @@ Neuer Saldo zu Ihren Gunsten 238,75
 AT20 5200 0001 2345 12345 HAABAT2K 20 0007 1/1
 IBAN BIC Filiale Auszug Blatt/Gesamt
 R0042 24093 Doknr.: EK00-015-1234566789
-
-```
