@@ -137,5 +137,21 @@ public class BuySellModelTest
         assertThat(model.getQuote(), is(BigDecimal.valueOf(5.0)));
         assertThat(model.getSecurityCurrencyCode(), is("USD"));
         assertThat(model.getExchangeRate(), is(BigDecimal.ONE));
+        assertThat(model.getGrossValue(), is(500L * Values.Amount.factor()));
+    }
+
+    @Test
+    public void testWithPercentQuoting()
+    {
+        // some properties can be fetched from a Security object
+        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var security = new Security("Acme Corporation", "USD");
+        security.setPercentageQuoted(true);
+        var date = LocalDate.now();
+        security.addPrice(new SecurityPrice(date, 90L * Values.Quote.factor()));
+        model.setSecurity(security);
+        model.setShares(1000L * Values.Share.factor());
+        model.setDate(date);
+        assertThat(model.getGrossValue(), is(900L * Values.Amount.factor()));
     }
 }
