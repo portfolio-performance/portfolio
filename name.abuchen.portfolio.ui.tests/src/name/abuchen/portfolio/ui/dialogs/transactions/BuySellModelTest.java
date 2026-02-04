@@ -5,12 +5,15 @@ import static org.hamcrest.Matchers.is;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -118,5 +121,21 @@ public class BuySellModelTest
         model.setGrossValue(0L);
         assertThat(model.getCalculationStatus(), is(ValidationStatus
                         .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnSubTotal))));
+    }
+
+    @Test
+    public void testWithSecurity()
+    {
+        // some properties can be fetched from a Security object
+        var model = new BuySellModel(new Client(), PortfolioTransaction.Type.BUY);
+        var security = new Security("Acme Corporation", "USD");
+        var date = LocalDate.now();
+        security.addPrice(new SecurityPrice(date, 5L * Values.Quote.factor()));
+        model.setSecurity(security);
+        model.setShares(100L * Values.Share.factor());
+        model.setDate(date);
+        assertThat(model.getQuote(), is(BigDecimal.valueOf(5.0)));
+        assertThat(model.getSecurityCurrencyCode(), is("USD"));
+        assertThat(model.getExchangeRate(), is(BigDecimal.ONE));
     }
 }
