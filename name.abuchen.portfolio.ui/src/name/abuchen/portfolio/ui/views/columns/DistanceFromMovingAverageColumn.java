@@ -17,10 +17,9 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CacheKey;
-import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
@@ -115,9 +114,9 @@ public class DistanceFromMovingAverageColumn extends Column implements Column.Ca
                 return null;
 
             if (value.doubleValue() < 0)
-                return Colors.theme().redForeground();
+                return ValueColorScheme.current().negativeForeground();
             else if (value.doubleValue() > 0)
-                return Colors.theme().greenForeground();
+                return ValueColorScheme.current().positiveForeground();
             else
                 return null;
         }
@@ -130,9 +129,9 @@ public class DistanceFromMovingAverageColumn extends Column implements Column.Ca
                 return null;
 
             if (value.doubleValue() > 0)
-                return Images.GREEN_ARROW.image();
+                return ValueColorScheme.current().upArrow();
             if (value.doubleValue() < 0)
-                return Images.RED_ARROW.image();
+                return ValueColorScheme.current().downArrow();
             return null;
         }
     }

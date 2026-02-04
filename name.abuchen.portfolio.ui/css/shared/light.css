@@ -94,6 +94,20 @@ CustomColors {
 	gray-foreground: #707070;
 }
 
+ValueColorScheme.greenred {
+	positive-foreground: #377500;
+	negative-foreground: #7f0000;
+	up-arrow: "greenred/light/up_arrow.svg";
+	down-arrow: "greenred/light/down_arrow.svg";
+}
+
+ValueColorScheme.blueorange {
+	positive-foreground: #0066CC;
+	negative-foreground: #B36E3A;
+	up-arrow: "blueorange/light/up_arrow.svg";
+	down-arrow: "blueorange/light/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #6a58db;
 	quote-area-positive-color: #8396f2;

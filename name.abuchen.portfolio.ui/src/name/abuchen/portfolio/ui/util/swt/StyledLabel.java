@@ -38,6 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 
 /**
  * Instances of this class represent a non-selectable user interface object that
@@ -45,8 +46,8 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
  * <p/>
  * Supported tags are:
  * <ul>
- * <li>green</li>
- * <li>red</li>
+ * <li>positive, green - uses ValueColorScheme positive color</li>
+ * <li>negative, red - uses ValueColorScheme negative color</li>
  * <li>gray</li>
  * <li>strong</li>
  * <li>em</li>
@@ -105,15 +106,15 @@ public class StyledLabel extends Canvas // NOSONAR
             if (tag == null)
                 return;
 
-            if ("red".equals(qName)) //$NON-NLS-1$
+            if ("green".equals(qName) || "positive".equals(qName)) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
-                                Colors.theme().redForeground(), null));
+                                ValueColorScheme.current().positiveForeground(), null));
             }
-            else if ("green".equals(qName)) //$NON-NLS-1$
+            else if ("red".equals(qName) || "negative".equals(qName)) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
-                                Colors.theme().greenForeground(), null));
+                                ValueColorScheme.current().negativeForeground(), null));
             }
             else if ("gray".equals(qName)) //$NON-NLS-1$
             {
