@@ -410,6 +410,40 @@ public class ArkeaDirectBankPDFExtractorTest
     }
 
     @Test
+    public void testCompteAchat10()
+    {
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1832174889"), hasWkn(null), hasTicker(null), //
+                        hasName("IND.ET EXP.EUROPE SM.XC EUR 4D"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2026-02-02T00:00:00"), hasShares(24.5), //
+                        hasSource("Achat10.txt"), //
+                        hasNote("Référence 94F7048294366804"), //
+                        hasAmount("EUR", 5931.63), hasGrossValue("EUR", 5815.32), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 116.31))));
+    }
+
+    @Test
     public void testCompteAchat07WithAchatTaxesTreatment07()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
