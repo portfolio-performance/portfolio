@@ -40,6 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -2053,6 +2054,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-21T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2016-04-21")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 77110599"));
@@ -2113,6 +2115,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-16T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2016-12-14")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.0545)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 55746925 | Ertrag für 2016/17"));
@@ -2129,6 +2132,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-16T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2016-12-14")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.2879)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 97603916 | Ertrag für 2016/17"));
@@ -2145,6 +2149,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-16T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2016-12-14")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.9225)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 33071326 | Ertrag für 2016"));
@@ -2189,6 +2194,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-06-27")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -2234,6 +2240,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-15T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-06-27")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertNull(transaction.getNote());
@@ -2285,6 +2292,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-26T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-03-22")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 29013705"));
@@ -2329,6 +2337,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-26T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-03-22")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 29013705"));
@@ -2379,6 +2388,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertNull(transaction.getDateEx());
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -2424,6 +2434,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-03-04T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2015-03-02")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(28)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 96937413 | Ertrag für 2014"));
@@ -2469,6 +2480,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2016-12-15")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.8192)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 14053767 | Ertrag für 2016/17"));
@@ -2513,6 +2525,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-05T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-01-31")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 12345 | Ertrag für 2018"));
@@ -2557,6 +2570,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-05T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-01-31")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 12345 | Ertrag für 2018"));
@@ -2607,6 +2621,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-11T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2019-08-08")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertNull(transaction.getNote());
@@ -2652,6 +2667,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-25T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2020-09-29")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(46)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 11223344"));
@@ -2697,6 +2713,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-25T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2020-09-29")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(46)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 11223344"));
@@ -2748,6 +2765,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2020-11-04")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 23344420 | Ertrag für 2020"));
@@ -2793,6 +2811,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-12T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2020-11-04")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 23344420 | Ertrag für 2020"));
@@ -2844,6 +2863,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-17T00:00")));
+        assertNull(transaction.getDateEx());
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 63302459"));
@@ -2888,6 +2908,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-09-15T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2021-09-15")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(549)));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 34091609 | Ertrag für 2021/22"));
@@ -2933,6 +2954,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-17T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2021-12-02")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 59788848"));
@@ -2978,6 +3000,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-17T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2021-12-02")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 59788848"));
@@ -3029,6 +3052,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-20T00:00")));
+        assertThat(transaction.getDateEx(), is(LocalDate.parse("2017-10-06")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(0.4512)));
         assertThat(transaction.getSource(), is("Dividende15.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 12345678 | Ertrag für 2017"));
@@ -3073,6 +3097,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertNull(transaction.getDateEx());
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 42739637 | Kapitalrückzahlung"));
@@ -3117,6 +3142,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-09-30T00:00")));
+        assertNull(transaction.getDateEx());
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
         assertThat(transaction.getNote(), is("Abrechnungs-Nr. 42739637 | Kapitalrückzahlung"));
@@ -3160,6 +3186,7 @@ public class OnvistaPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-09-09"), hasShares(60), //
+                        /* hasDateEx("2021-12-02"), */
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungs-Nr. 26128781"), //
                         hasAmount("EUR", 7.65), hasGrossValue("EUR", 15.73), //
@@ -3194,6 +3221,7 @@ public class OnvistaPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-09-09"), hasShares(60), //
+                        /* hasDateEx("2021-12-02"), */
                         hasSource("Dividende17.txt"), hasNote("Abrechnungs-Nr. 26128781"), //
                         hasAmount("EUR", 7.65), hasGrossValue("EUR", 15.73), //
                         hasTaxes("EUR", (39.00 / 9.9148) + 3.93 + 0.22), hasFees("EUR", 0.00), //
@@ -3232,8 +3260,10 @@ public class OnvistaPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        assertThat(results, hasItem(dividend( //
+        assertThat(results, hasItem(dividend/* WithExDate */( //
+                        /* asDate("2015-12-15").toLocalDate(), */
                         hasDate("2015-12-17T00:00"), hasShares(156.729), //
+                        /* hasDateEx("2021-12-02"), */
                         hasSource("Dividende18.txt"), //
                         hasNote("Abrechnungs-Nr. 70187215 | Ertrag für 2014/15"), //
                         hasAmount("EUR", 7.68), hasGrossValue("EUR", 11.84), //
@@ -3278,6 +3308,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-05-15T00:00")));
+        assertThat(((AccountTransaction) cancellation.getSubject()).getDateEx(), is(LocalDate.parse("2020-04-29")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(46)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno01.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is(

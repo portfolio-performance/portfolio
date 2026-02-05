@@ -566,14 +566,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         // STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "isin", "name1", "currency") //
+                                                        .attributes("dateEx", "name", "isin", "name1", "currency") //
                                                         .find("Gattungsbezeichnung ISIN") //
                                                         .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} )?(?<name1>.*)$") //
-                                                        .match("^STK [\\.,\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
+                                                        .match("^STK [\\.,\\d]+ (?<dateEx>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} (?<currency>[A-Z]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Nominal"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setDateEx(asDate(v.get("dateEx")).toLocalDate());
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
