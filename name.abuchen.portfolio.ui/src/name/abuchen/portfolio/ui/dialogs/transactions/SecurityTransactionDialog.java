@@ -130,19 +130,18 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         // other input fields
 
-        Input shares = new Input(negativeValue, editArea, Messages.ColumnShares);
+        Input shares = new Input(editArea, Messages.ColumnShares);
         shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
 
-        Input quote = new Input(negativeValue, editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
+        Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
         quote.bindCurrency(Properties.securityCurrencyCode.name());
 
-        Input grossValue = new Input(negativeValue, editArea, "="); //$NON-NLS-1$
+        Input grossValue = new Input(editArea, "="); //$NON-NLS-1$
         grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
         grossValue.bindCurrency(Properties.securityCurrencyCode.name());
 
-        ExchangeRateInput exchangeRate = new ExchangeRateInput(negativeValue, editArea,
-                        useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
@@ -156,7 +155,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                                         model().getExchangeRate(), model().getTransactionCurrencyCode(),
                                         model().getSecurityCurrencyCode())));
 
-        final Input convertedGrossValue = new Input(negativeValue, editArea, "="); //$NON-NLS-1$
+        final Input convertedGrossValue = new Input(editArea, "="); //$NON-NLS-1$
         convertedGrossValue.bindValue(Properties.convertedGrossValue.name(), Messages.ColumnSubTotal, Values.Amount,
                         true);
         convertedGrossValue.bindCurrency(Properties.transactionCurrencyCode.name());
@@ -166,31 +165,31 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         Label plusForexFees = new Label(editArea, SWT.NONE);
         plusForexFees.setText("+"); //$NON-NLS-1$
 
-        Input forexFees = new Input(negativeValue, editArea, sign() + Messages.ColumnFees);
+        Input forexFees = new Input(editArea, sign() + Messages.ColumnFees);
         forexFees.bindValue(Properties.forexFees.name(), Messages.ColumnFees, Values.Amount, false);
         forexFees.bindCurrency(Properties.securityCurrencyCode.name());
 
-        Input fees = new Input(negativeValue, editArea, sign() + Messages.ColumnFees);
+        Input fees = new Input(editArea, sign() + Messages.ColumnFees);
         fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
         fees.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // taxes
 
-        Label plusForexTaxes = new Label(negativeValue, editArea, SWT.NONE);
+        Label plusForexTaxes = new Label(editArea, SWT.NONE);
         plusForexTaxes.setText("+"); //$NON-NLS-1$
 
-        Input forexTaxes = new Input(negativeValue, editArea, sign() + Messages.ColumnTaxes);
+        Input forexTaxes = new Input(editArea, sign() + Messages.ColumnTaxes);
         forexTaxes.bindValue(Properties.forexTaxes.name(), Messages.ColumnTaxes, Values.Amount, false);
         forexTaxes.bindCurrency(Properties.securityCurrencyCode.name());
 
-        Input taxes = new Input(negativeValue, editArea, sign() + Messages.ColumnTaxes);
+        Input taxes = new Input(editArea, sign() + Messages.ColumnTaxes);
         taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
         taxes.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // total
 
         String label = getTotalLabel();
-        Input total = new Input(negativeValue, editArea, "= " + label); //$NON-NLS-1$
+        Input total = new Input(editArea, "= " + label); //$NON-NLS-1$
         total.bindValue(Properties.total.name(), label, Values.Amount,
                         model().getType() != PortfolioTransaction.Type.DELIVERY_OUTBOUND);
         total.bindCurrency(Properties.transactionCurrencyCode.name());

@@ -127,12 +127,11 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 
         // other input fields
 
-        Input fxAmount = new Input(negativeValue, editArea, Messages.ColumnAmount);
+        Input fxAmount = new Input(editArea, Messages.ColumnAmount);
         fxAmount.bindValue(Properties.fxAmount.name(), Messages.ColumnAmount, Values.Amount, true);
         fxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
 
-        ExchangeRateInput exchangeRate = new ExchangeRateInput(negativeValue, editArea,
-                        useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());

@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -96,7 +95,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     }
 
     @Override
-    protected void createFormElements(NegativeValue negativeValue, Composite editArea) // NOSONAR
+    protected void createFormElements(Composite editArea) // NOSONAR
     {
         //
         // input elements
@@ -124,7 +123,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // shares
 
-        Input shares = new Input(negativeValue, editArea, Messages.ColumnShares);
+        Input shares = new Input(editArea, Messages.ColumnShares);
         shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, false);
         shares.setVisible(model().supportsShares());
 
@@ -140,7 +139,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         btnShares.setVisible(model().supportsShares());
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
 
-        Input dividendAmount = new Input(negativeValue, editArea, Messages.LabelDividendPerShare);
+        Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
         dividendAmount.bindBigDecimal(Properties.dividendAmount.name(), "#,##0.0000"); //$NON-NLS-1$
         dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
         dividendAmount.setVisible(model().supportsShares());
@@ -148,12 +147,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // other input fields
 
         String totalLabel = model().supportsTaxUnits() ? Messages.ColumnGrossValue : getTotalLabel();
-        Input fxGrossAmount = new Input(negativeValue, editArea, totalLabel);
+        Input fxGrossAmount = new Input(editArea, totalLabel);
         fxGrossAmount.bindValue(Properties.fxGrossAmount.name(), totalLabel, Values.Amount, true);
         fxGrossAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
-        ExchangeRateInput exchangeRate = new ExchangeRateInput(negativeValue, editArea,
-                        useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
