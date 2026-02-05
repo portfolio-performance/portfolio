@@ -60,7 +60,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         this.client = client;
         this.planType = planType;
 
-        setModel(new InvestmentPlanModel(client, planType));
+        setModel(new InvestmentPlanModel(negativeValue, client, planType));
     }
 
     private InvestmentPlanModel model()

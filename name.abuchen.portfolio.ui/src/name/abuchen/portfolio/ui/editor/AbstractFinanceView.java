@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -40,6 +41,9 @@ import name.abuchen.portfolio.util.TextUtil;
 public abstract class AbstractFinanceView
 {
     private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     @Inject
     private IEclipseContext context;

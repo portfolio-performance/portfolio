@@ -392,20 +392,22 @@ public class BindingHelper
         return boxDate.getControl();
     }
 
-    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property, int style,
+    public final Control bindMandatoryAmountInput(NegativeValue negativeValue, Composite editArea, final String label,
+                    String property, int style,
                     int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
         DecimalKeypadSupport.configure(txtValue);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
+        bindMandatoryDecimalInput(negativeValue, label, property, txtValue, Values.Amount);
         return txtValue;
     }
 
-    public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
+    public final Control bindMandatoryQuoteInput(NegativeValue negativeValue, Composite editArea, final String label,
+                    String property)
     {
         Text txtValue = createTextInput(editArea, label);
         DecimalKeypadSupport.configure(txtValue);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Quote);
+        bindMandatoryDecimalInput(negativeValue, label, property, txtValue, Values.Quote);
         return txtValue;
     }
 

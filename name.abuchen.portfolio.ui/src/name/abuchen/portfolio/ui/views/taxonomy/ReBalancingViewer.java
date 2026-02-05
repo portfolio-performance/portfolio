@@ -531,7 +531,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return node.isClassification() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
             }
         });
-        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
         {
             @Override
             public boolean canEdit(Object element)

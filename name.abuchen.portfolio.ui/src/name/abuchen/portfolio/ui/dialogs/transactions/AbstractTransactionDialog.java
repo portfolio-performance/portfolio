@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import jakarta.inject.Inject;
+
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -70,14 +72,12 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
     public class Input
     {
-        protected final NegativeValue negativeValue;
         public final Label label;
         public final Text value;
         public final Label currency;
 
-        public Input(NegativeValue negativeValue, Composite editArea, String text)
+        public Input(Composite editArea, String text)
         {
-            this.negativeValue = negativeValue;
             label = new Label(editArea, SWT.LEFT);
             label.setText(text);
             value = new Text(editArea, SWT.BORDER | SWT.RIGHT);
@@ -329,7 +329,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {
         public final ImageHyperlink buttonInvertExchangeRate;
 
-        public ExchangeRateInput(NegativeValue negativeValue, Composite editArea, String text)
+        public ExchangeRateInput(Composite editArea, String text)
         {
             super(editArea, text);
 
@@ -380,6 +380,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     }
 
     public static final int SAVE_AND_NEW_ID = 4711;
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     protected AbstractModel model;
     protected DataBindingContext context = new DataBindingContext();
@@ -466,7 +469,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         return editArea;
     }
 
-    protected abstract void createFormElements(NegativeValue negativeValue, Composite editArea);
+    protected abstract void createFormElements(Composite editArea);
 
     @Override
     protected void okPressed()

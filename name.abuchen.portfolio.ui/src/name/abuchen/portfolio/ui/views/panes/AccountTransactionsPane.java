@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -89,6 +90,9 @@ import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountTransactionsPane implements InformationPanePage, ModificationListener
 {
+    @Inject
+    protected NegativeValue negativeValue;
+
     @Inject
     private Client client;
 

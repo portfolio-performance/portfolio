@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -121,6 +122,9 @@ public final class TransactionsViewer implements ModificationListener
             return marked.contains(element) ? Colors.theme().warningBackground() : null;
         }
     }
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     @Inject
     private SelectionService selectionService;
