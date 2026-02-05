@@ -146,6 +146,21 @@ public interface PTransactionOrBuilder extends
   com.google.protobuf.TimestampOrBuilder getDateOrBuilder();
 
   /**
+   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+   * @return Whether the dateEx field is set.
+   */
+  boolean hasDateEx();
+  /**
+   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+   * @return The dateEx.
+   */
+  com.google.protobuf.Timestamp getDateEx();
+  /**
+   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+   */
+  com.google.protobuf.TimestampOrBuilder getDateExOrBuilder();
+
+  /**
    * <code>string currencyCode = 10;</code>
    * @return The currencyCode.
    */
