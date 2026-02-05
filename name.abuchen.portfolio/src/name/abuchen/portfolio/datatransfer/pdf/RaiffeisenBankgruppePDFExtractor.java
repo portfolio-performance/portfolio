@@ -12,7 +12,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -25,9 +24,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 {
-    public RaiffeisenBankgruppePDFExtractor(NegativeValue negativeValue, Client client)
+    public RaiffeisenBankgruppePDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("Raiffeisenbank");
         addBankIdentifier("RB Augsburger Land West eG");

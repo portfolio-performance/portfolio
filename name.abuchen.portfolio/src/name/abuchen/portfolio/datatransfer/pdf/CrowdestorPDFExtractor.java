@@ -4,7 +4,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
@@ -12,9 +11,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CrowdestorPDFExtractor extends AbstractPDFExtractor
 {
-    public CrowdestorPDFExtractor(NegativeValue negativeValue, Client client)
+    public CrowdestorPDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("FLEX STATEMENT");
 

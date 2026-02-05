@@ -28,7 +28,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
@@ -58,16 +57,14 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
-    protected final NegativeValue negativeValue;
     private final Client client;
     private SecurityCache securityCache;
 
     private final List<String> bankIdentifier = new ArrayList<>();
     private final List<DocumentType> documentTypes = new ArrayList<>();
 
-    public AbstractPDFExtractor(NegativeValue negativeValue, Client client)
+    public AbstractPDFExtractor(Client client)
     {
-        this.negativeValue = negativeValue;
         this.client = client;
     }
 

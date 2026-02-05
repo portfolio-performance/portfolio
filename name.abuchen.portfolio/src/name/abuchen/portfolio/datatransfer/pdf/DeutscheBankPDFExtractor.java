@@ -13,7 +13,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -26,7 +25,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 {
     private static final String SKIP_TRANSACTION = "skipTransaction";
 
-    public DeutscheBankPDFExtractor(NegativeValue negativeValue, Client client)
+    public DeutscheBankPDFExtractor(Client client)
     {
         super(client);
 

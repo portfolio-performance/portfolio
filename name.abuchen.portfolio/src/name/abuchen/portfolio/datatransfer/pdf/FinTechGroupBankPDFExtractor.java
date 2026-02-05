@@ -20,7 +20,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.LineSpan;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.SplittingStrategy;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -32,7 +31,7 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 {
-    public FinTechGroupBankPDFExtractor(NegativeValue negativeValue, Client client)
+    public FinTechGroupBankPDFExtractor(Client client)
     {
         super(client);
 

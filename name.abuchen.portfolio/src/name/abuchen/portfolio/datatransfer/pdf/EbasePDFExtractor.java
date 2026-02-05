@@ -8,7 +8,6 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -20,7 +19,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 {
     private static final String SKIP_TRANSACTION = "skipTransaction";
 
-    public EbasePDFExtractor(NegativeValue negativeValue, Client client)
+    public EbasePDFExtractor(Client client)
     {
         super(client);
 

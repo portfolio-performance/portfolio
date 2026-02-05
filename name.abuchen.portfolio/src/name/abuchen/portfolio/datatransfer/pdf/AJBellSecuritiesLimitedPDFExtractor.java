@@ -8,7 +8,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -27,9 +26,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
 {
-    public AJBellSecuritiesLimitedPDFExtractor(NegativeValue negativeValue, Client client)
+    public AJBellSecuritiesLimitedPDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("AJ Bell Securities Limited"); //$NON-NLS-1$
 
@@ -141,18 +140,18 @@ public class AJBellSecuritiesLimitedPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "UK");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "en", "UK");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "UK");
     }
 }

@@ -9,7 +9,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -26,7 +25,7 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
     private static final String INR = "INR";
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.US);
 
-    public KFintechPDFExtractor(NegativeValue negativeValue, Client client)
+    public KFintechPDFExtractor(Client client)
     {
         super(client);
 

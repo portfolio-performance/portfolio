@@ -8,7 +8,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -17,7 +16,7 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class DirectaSimPDFExtractor extends AbstractPDFExtractor
 {
-    public DirectaSimPDFExtractor(NegativeValue negativeValue, Client client)
+    public DirectaSimPDFExtractor(Client client)
     {
         super(client);
 

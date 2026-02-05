@@ -11,7 +11,6 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -31,9 +30,9 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
 {
-    public ZuercherKantonalbankPDFExtractor(NegativeValue negativeValue, Client client)
+    public ZuercherKantonalbankPDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("Zürcher Kantonalbank");
 
@@ -509,18 +508,18 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "de", "CH");
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "de", "CH");
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "de", "CH");
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
     }
 }

@@ -4,7 +4,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 
@@ -15,9 +14,9 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
     private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(Umbuchung|.*berweisungsauftrag))[\\s]{1,}(?<amount>[\\.,\\d]+) [S]";
     private static final String INTEREST = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}(?<amount>[\\.,\\d]+) [H]";
 
-    public Bank11PDFExtractor(NegativeValue negativeValue, Client client)
+    public Bank11PDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("Bank11 für Privatkunden und Handel GmbH");
 

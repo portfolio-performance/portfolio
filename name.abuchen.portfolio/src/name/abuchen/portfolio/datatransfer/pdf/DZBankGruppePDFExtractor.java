@@ -19,7 +19,6 @@ import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -45,9 +44,9 @@ public class DZBankGruppePDFExtractor extends AbstractPDFExtractor
         }
     };
 
-    public DZBankGruppePDFExtractor(NegativeValue negativeValue, Client client)
+    public DZBankGruppePDFExtractor(Client client)
     {
-        super(negativeValue, client);
+        super(client);
 
         addBankIdentifier("GLS Bank");
         addBankIdentifier("Union Investment Service Bank AG");
