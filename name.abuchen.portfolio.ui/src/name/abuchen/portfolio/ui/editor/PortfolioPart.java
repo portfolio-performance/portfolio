@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.SaveFlag;
@@ -75,6 +76,9 @@ public class PortfolioPart implements ClientInputListener
     private AbstractFinanceView view;
 
     private Control focus;
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     @Inject
     MPart part;
@@ -140,6 +144,11 @@ public class PortfolioPart implements ClientInputListener
         }
 
         clientInputFactory.incrementEditorCount(clientInput);
+    }
+
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
     }
 
     private void createContainerWithViews(Composite parent)
