@@ -291,7 +291,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
         manager.add(new Separator());
 
         manager.add(new SimpleAction(Messages.AccountMenuTroubleshootBalanceDiscrepancy,
-                        a -> new TroubleshootBalanceDiscrepancyDialog(getActiveShell(), getPart().getClientInput(),
+                        a -> new TroubleshootBalanceDiscrepancyDialog(negativeValue, getActiveShell(),
+                                        getPart().getClientInput(),
                                         account).open()));
         manager.add(new Separator());
 

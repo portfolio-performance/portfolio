@@ -378,7 +378,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                 return colorFor((AccountTransaction) element);
             }
         });
-        new ValueEditingSupport(AccountTransaction.class, "shares", Values.Share) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, AccountTransaction.class, "shares", Values.Share) //$NON-NLS-1$
         {
             @Override
             public boolean canEdit(Object element)

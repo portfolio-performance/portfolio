@@ -343,7 +343,7 @@ public final class TransactionsViewer implements ModificationListener
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getShares()).attachTo(column);
-        new ValueEditingSupport(Transaction.class, "shares", Values.Share) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, Transaction.class, "shares", Values.Share) //$NON-NLS-1$
                         .setCanEditCheck(e -> ((TransactionPair<?>) e).getTransaction() instanceof PortfolioTransaction
                                         || (((TransactionPair<?>) e).getTransaction() instanceof AccountTransaction
                                                         && ((AccountTransaction) ((TransactionPair<?>) e)
