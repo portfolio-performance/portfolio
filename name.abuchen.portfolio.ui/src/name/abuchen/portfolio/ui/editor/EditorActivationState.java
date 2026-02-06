@@ -1,5 +1,10 @@
 package name.abuchen.portfolio.ui.editor;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationListener;
 import org.eclipse.jface.viewers.ColumnViewerEditorDeactivationEvent;
@@ -14,13 +19,28 @@ import name.abuchen.portfolio.ui.preferences.Experiments;
  * ms. That results in an call to recalculate the tables which deactivates the
  * editor. Practically, it is not possible use the editor in this case.
  */
+@Creatable
+@Singleton
 public class EditorActivationState
 {
-    private final boolean isFeatureEnabled = new Experiments()
-                    .isEnabled(Experiments.Feature.JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS);
+    @Inject
+    private Experiments experiments;
+
+    private boolean isFeatureEnabled;
 
     private boolean isEditorActive = false;
     private Runnable onEditorDeactivated;
+
+    public EditorActivationState()
+    {
+        // default constructor
+    }
+
+    @PostConstruct
+    void init()
+    {
+        this.isFeatureEnabled = experiments.isEnabled(Experiments.Feature.JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS);
+    }
 
     private void activateEditor()
     {

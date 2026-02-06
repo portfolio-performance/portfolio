@@ -5,15 +5,26 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
+import org.eclipse.e4.core.di.annotations.Creatable;
+
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
+@Creatable
+@Singleton
 public class Experiments
 {
-    public enum Feature
+    public static enum Feature
     {
         JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS, JAN26_ALLOW_NEGATIVE_VALUES
     }
+
+    @Inject
+    private NegativeValue negativeValue;
 
     public boolean isEnabled(Feature feature)
     {

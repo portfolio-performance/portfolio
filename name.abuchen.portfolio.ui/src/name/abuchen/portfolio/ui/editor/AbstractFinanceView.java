@@ -57,7 +57,8 @@ public abstract class AbstractFinanceView
     /**
      * Track editor activation and delay updates until the editor is deactivated
      */
-    private final EditorActivationState editorActivationState = new EditorActivationState();
+    @Inject
+    private EditorActivationState editorActivationState;
 
     private Composite top;
     private InformationPane pane;
