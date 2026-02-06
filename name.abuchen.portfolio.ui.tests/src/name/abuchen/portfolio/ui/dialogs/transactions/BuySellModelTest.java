@@ -10,10 +10,14 @@ import java.time.LocalDate;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -153,5 +157,41 @@ public class BuySellModelTest
         model.setShares(1000L * Values.Share.factor());
         model.setDate(date);
         assertThat(model.getGrossValue(), is(900L * Values.Amount.factor()));
+    }
+
+    @Test
+    public void testEntryWithPercentQuoting()
+    {
+        // set up model with accounts, etc.
+        var client = new Client();
+        var model = new BuySellModel(client, PortfolioTransaction.Type.BUY);
+        model.setExchangeRateProviderFactory(new ExchangeRateProviderFactory(client));
+        var account = new Account();
+        account.setCurrencyCode("USD");
+        var portfolio = new Portfolio();
+        portfolio.setReferenceAccount(account);
+        model.setAccount(account);
+        model.setPortfolio(portfolio);
+
+        var security = new Security("Acme Corporation", "USD");
+        security.setPercentageQuoted(true);
+        var date = LocalDate.now();
+        security.addPrice(new SecurityPrice(date, 90L * Values.Quote.factor()));
+        model.setSecurity(security);
+        model.setShares(1000L * Values.Share.factor());
+        model.setDate(date);
+        assertThat(model.getGrossValue(), is(900L * Values.Amount.factor()));
+
+        // add new transactions to account and portfolio
+        model.applyChanges();
+
+        // check the newly created PortfolioTransaction object
+        var transaction = portfolio.getTransactions().getFirst();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is("USD"));
+        assertThat(transaction.getShares(), is(1000L * Values.Share.factor()));
+        assertThat(transaction.getGrossValueAmount(), is(900L * Values.Amount.factor()));
+        assertThat(transaction.getGrossPricePerShare(), is(Quote.of("USD", 90L * Values.Quote.factor())));
     }
 }
