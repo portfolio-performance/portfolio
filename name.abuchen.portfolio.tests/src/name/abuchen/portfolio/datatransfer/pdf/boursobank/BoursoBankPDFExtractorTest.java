@@ -427,7 +427,7 @@ public class BoursoBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-09-29T00:00"), hasShares(42.00), //
+                        hasDate("2023-09-29T12:36:04"), hasShares(42.00), //
                         hasSource("Vente01.txt"), //
                         hasNote("à cours limiteCours demandé : 20,5500 EUR | Référence : 493029272303"), //
                         hasAmount("EUR", 858.78), hasGrossValue("EUR", 863.10), //

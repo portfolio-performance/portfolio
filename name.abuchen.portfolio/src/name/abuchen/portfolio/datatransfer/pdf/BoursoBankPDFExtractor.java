@@ -115,7 +115,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // 15:38:46
                         // @formatter:on
                         .section("time").optional() //
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
                         // @formatter:off
