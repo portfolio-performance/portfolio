@@ -125,6 +125,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -195,6 +196,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -265,6 +267,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -335,6 +338,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -369,6 +373,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -438,6 +443,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -508,6 +514,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -542,6 +549,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -576,6 +584,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -610,6 +619,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -644,6 +654,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy03()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -678,6 +689,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy04()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -712,6 +724,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy05()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -746,6 +759,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy06()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -779,6 +793,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy07()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -811,6 +826,7 @@ public class SaxoBankPDFExtractorTest
     public void testSecurityBuy08()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -843,6 +859,7 @@ public class SaxoBankPDFExtractorTest
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -867,6 +884,7 @@ public class SaxoBankPDFExtractorTest
     public void testCashTransfer02()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -891,6 +909,7 @@ public class SaxoBankPDFExtractorTest
     public void testCashTransfer03()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -915,6 +934,7 @@ public class SaxoBankPDFExtractorTest
     public void testCashTransfer04()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -939,6 +959,7 @@ public class SaxoBankPDFExtractorTest
     public void testCashTransfer05()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -963,6 +984,7 @@ public class SaxoBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -997,6 +1019,7 @@ public class SaxoBankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1031,6 +1054,7 @@ public class SaxoBankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1065,6 +1089,7 @@ public class SaxoBankPDFExtractorTest
     public void testInterest01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1093,6 +1118,7 @@ public class SaxoBankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
