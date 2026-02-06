@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -21,10 +22,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CSVSecurityPriceExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testSecurityCreation()
     {
         CSVExtractor extractor = new CSVSecurityPriceExtractor();
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //

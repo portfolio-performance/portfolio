@@ -61,7 +61,7 @@ public class BSDEXPDFExtractorTest
     };
 
     @Before
-    void init()
+    public void init()
     {
         extractor.setNegativeValue(negativeValue);
     }

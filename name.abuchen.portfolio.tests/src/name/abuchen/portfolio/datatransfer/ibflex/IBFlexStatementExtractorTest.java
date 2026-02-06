@@ -1296,6 +1296,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile06() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile06.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1429,6 +1430,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile07() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile07.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1489,6 +1491,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile08() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile08.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1561,6 +1564,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile09() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile09.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1667,6 +1671,7 @@ public class IBFlexStatementExtractorTest
         client.addPortfolio(portfolio);
 
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile10.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1743,6 +1748,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile11() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile11.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -1805,6 +1811,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile12() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile12.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2118,6 +2125,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile14() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile14.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2373,6 +2381,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile15() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile15.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2459,6 +2468,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile16() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile16.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2542,6 +2552,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile17() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile17.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2639,6 +2650,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile18() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile18.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2826,6 +2838,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile19() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile19.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -2952,6 +2965,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile20() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile20.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -3064,6 +3078,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile21() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile21.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -3150,6 +3165,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile22() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile22.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -3214,6 +3230,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile23() throws IOException
     {
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile23.xml");
         Extractor.InputFile tempFile = createTempFile(activityStatement);
@@ -3355,6 +3372,7 @@ public class IBFlexStatementExtractorTest
         client.addSecurity(test2);
 
         var extractor = new IBFlexStatementExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile25.xml");
         var tempFile = createTempFile(activityStatement);
@@ -3440,6 +3458,7 @@ public class IBFlexStatementExtractorTest
         client.addPortfolio(portfolioB);
 
         var extractor = new IBFlexStatementExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile26.xml");
         var tempFile = createTempFile(activityStatement);
@@ -3513,6 +3532,7 @@ public class IBFlexStatementExtractorTest
         client.addPortfolio(portfolio);
 
         var extractor = new IBFlexStatementExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile27.xml");
         var tempFile = createTempFile(activityStatement);
