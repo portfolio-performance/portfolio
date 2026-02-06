@@ -3,8 +3,6 @@
 
 package name.abuchen.portfolio.model.proto.v1;
 
-import com.google.protobuf.RepeatedFieldBuilderV3;
-
 /**
  * Protobuf type {@code name.abuchen.portfolio.PAccount}
  */
