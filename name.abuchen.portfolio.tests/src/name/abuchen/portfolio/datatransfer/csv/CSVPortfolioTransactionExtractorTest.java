@@ -43,7 +43,7 @@ public class CSVPortfolioTransactionExtractorTest
     {
         Client client = new Client();
 
-        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        var extractor = new CSVPortfolioTransactionExtractor(client);
         extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();

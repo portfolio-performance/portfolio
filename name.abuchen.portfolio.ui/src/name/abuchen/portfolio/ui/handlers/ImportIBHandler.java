@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -24,16 +25,20 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
 public class ImportIBHandler
 {
+    @Inject
+    private NegativeValue negativeValue;
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
@@ -63,7 +68,8 @@ public class ImportIBHandler
 
         try
         {
-            Extractor extractor = new IBFlexStatementExtractor(client);
+            var extractor = new IBFlexStatementExtractor(client);
+            extractor.setNegativeValue(negativeValue);
 
             PortfolioPart portPart = (PortfolioPart) part.getObject();
             FilePathHelper helper = new FilePathHelper(portPart, UIConstants.Preferences.CSV_IMPORT_PATH);

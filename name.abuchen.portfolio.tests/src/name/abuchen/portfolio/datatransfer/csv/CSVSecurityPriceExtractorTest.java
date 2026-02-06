@@ -27,7 +27,7 @@ public class CSVSecurityPriceExtractorTest
     @Test
     public void testSecurityCreation()
     {
-        CSVExtractor extractor = new CSVSecurityPriceExtractor();
+        var extractor = new CSVSecurityPriceExtractor();
         extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();

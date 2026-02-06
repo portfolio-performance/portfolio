@@ -310,6 +310,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     {
         Combo cmbExtractor = new Combo(container, SWT.READ_ONLY);
         ComboViewer extractor = new ComboViewer(cmbExtractor);
+
         extractor.setContentProvider(ArrayContentProvider.getInstance());
         extractor.setInput(importer.getExtractors());
         extractor.getCombo().setEnabled(!onlySecurityPrices);

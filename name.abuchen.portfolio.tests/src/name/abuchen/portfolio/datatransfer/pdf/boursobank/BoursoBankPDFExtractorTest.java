@@ -90,6 +90,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat02()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -124,6 +125,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat03()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -158,6 +160,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat04()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -192,6 +195,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat05()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -226,6 +230,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat06()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -301,6 +306,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat07()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -342,6 +348,7 @@ public class BoursoBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BoursoBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -375,6 +382,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteVente01()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -409,6 +417,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteVente02()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -443,6 +452,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteVente03()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -477,6 +487,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteVente04()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -518,6 +529,7 @@ public class BoursoBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BoursoBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -551,6 +563,7 @@ public class BoursoBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

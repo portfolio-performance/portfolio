@@ -292,6 +292,7 @@ public class LimeTradingCorpPDFExtractorTest
     public void testAccountStatement02()
     {
         var extractor = new LimeTradingCorpPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

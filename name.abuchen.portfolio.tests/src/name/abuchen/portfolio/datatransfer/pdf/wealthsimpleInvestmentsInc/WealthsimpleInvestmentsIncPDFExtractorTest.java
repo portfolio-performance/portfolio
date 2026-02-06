@@ -24,6 +24,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.WealthsimpleInvestmentsIncPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -39,12 +40,15 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class WealthsimpleInvestmentsIncPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDepotStatement01()
     {
         Client client = new Client();
 
-        WealthsimpleInvestmentsIncPDFExtractor extractor = new WealthsimpleInvestmentsIncPDFExtractor(client);
+        var extractor = new WealthsimpleInvestmentsIncPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1590,6 +1594,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         client.addSecurity(security8);
 
         WealthsimpleInvestmentsIncPDFExtractor extractor = new WealthsimpleInvestmentsIncPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();
@@ -3084,6 +3089,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         Client client = new Client();
 
         WealthsimpleInvestmentsIncPDFExtractor extractor = new WealthsimpleInvestmentsIncPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3571,6 +3577,7 @@ public class WealthsimpleInvestmentsIncPDFExtractorTest
         client.addSecurity(security2);
 
         WealthsimpleInvestmentsIncPDFExtractor extractor = new WealthsimpleInvestmentsIncPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();

@@ -110,6 +110,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -160,6 +161,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -194,6 +196,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -228,6 +231,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -262,6 +266,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -296,6 +301,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -330,6 +336,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -364,6 +371,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -409,6 +417,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -443,6 +452,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -477,6 +487,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -511,6 +522,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
