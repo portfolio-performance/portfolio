@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.money.impl;
 
-import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -16,6 +17,8 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 @SuppressWarnings("nls")
 public class ExchangeRateProviderILATest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testIt()
     {

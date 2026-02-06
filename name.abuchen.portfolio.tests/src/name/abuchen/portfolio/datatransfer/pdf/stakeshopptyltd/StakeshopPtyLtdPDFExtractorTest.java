@@ -115,6 +115,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -147,6 +148,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -179,6 +181,7 @@ public class StakeshopPtyLtdPDFExtractorTest
     public void testSecuritySell02()
     {
         var extractor = new StakeshopPtyLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

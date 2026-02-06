@@ -21,6 +21,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -35,12 +36,15 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CSVPortfolioTransactionExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDeliveryTransactionPlusSecurityCreation()
     {
         Client client = new Client();
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -80,6 +84,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -121,6 +126,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -173,6 +179,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -215,6 +222,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -254,6 +262,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -291,6 +300,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -313,6 +323,7 @@ public class CSVPortfolioTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -371,6 +382,7 @@ public class CSVPortfolioTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
@@ -402,6 +414,7 @@ public class CSVPortfolioTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,

@@ -87,6 +87,7 @@ public class HargreavesLansdownPlcTest
     public void testWertpapierKauf02()
     {
         var extractor = new HargreavesLansdownPlcExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -135,6 +136,7 @@ public class HargreavesLansdownPlcTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new HargreavesLansdownPlcExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -183,6 +185,7 @@ public class HargreavesLansdownPlcTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new HargreavesLansdownPlcExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

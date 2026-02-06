@@ -39,6 +39,7 @@ public class ComputershareExtractorTest
     public void testDepotAuszugWithPurchase01()
     {
         final var extractor = new ComputersharePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         final List<Exception> errors = new ArrayList<>();
 

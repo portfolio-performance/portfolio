@@ -91,6 +91,7 @@ public class CommSecPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new CommSecPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -141,6 +142,7 @@ public class CommSecPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new CommSecPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

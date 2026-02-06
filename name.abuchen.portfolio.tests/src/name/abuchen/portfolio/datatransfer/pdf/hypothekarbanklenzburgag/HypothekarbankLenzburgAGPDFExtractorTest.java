@@ -85,6 +85,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -119,6 +120,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -153,6 +155,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -360,6 +363,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -394,6 +398,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -436,6 +441,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -464,6 +470,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf11()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -506,6 +513,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -534,6 +542,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -568,6 +577,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -610,6 +620,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -638,6 +649,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -672,6 +684,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -714,6 +727,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -742,6 +756,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -784,6 +799,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -812,6 +828,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -854,6 +871,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -882,6 +900,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -924,6 +943,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -952,6 +972,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -986,6 +1007,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1020,6 +1042,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1054,6 +1077,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1096,6 +1120,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1124,6 +1149,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende07()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1166,6 +1192,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1194,6 +1221,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testDividende08()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1236,6 +1264,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

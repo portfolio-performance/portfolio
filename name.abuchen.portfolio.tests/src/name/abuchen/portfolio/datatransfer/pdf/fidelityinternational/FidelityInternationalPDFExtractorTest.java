@@ -82,6 +82,7 @@ public class FidelityInternationalPDFExtractorTest
     public void testSecuritySale01()
     {
         var extractor = new FidelityInternationalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -116,6 +117,7 @@ public class FidelityInternationalPDFExtractorTest
     public void testSecuritySale02()
     {
         var extractor = new FidelityInternationalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -150,6 +152,7 @@ public class FidelityInternationalPDFExtractorTest
     public void testTradeConfirmation01()
     {
         var extractor = new FidelityInternationalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -237,6 +240,7 @@ public class FidelityInternationalPDFExtractorTest
     {
 
         var extractor = new FidelityInternationalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -84,6 +85,12 @@ public class FinTechGroupBankPDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testFinTechSammelabrechnung01()
@@ -198,6 +205,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung02()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -437,6 +445,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung03()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -486,6 +495,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung04()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -536,6 +546,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung05()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -665,6 +676,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung06()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -731,6 +743,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung07()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -801,6 +814,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGKauf01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -851,6 +865,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGKauf02()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -901,6 +916,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGWertpapierEingang01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -946,6 +962,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGWertpapierAusgang01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1002,6 +1019,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGKontoauszug01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1046,6 +1064,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGKontoauszug02()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1070,6 +1089,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testbiwAGKontoauszug03()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1118,6 +1138,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1168,6 +1189,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf02()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1218,6 +1240,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf03()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1268,6 +1291,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf04()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1318,6 +1342,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf05()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1367,6 +1392,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf06()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1417,6 +1443,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf07()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1467,6 +1494,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf08()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1517,6 +1545,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf09()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1567,6 +1596,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechKauf10()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

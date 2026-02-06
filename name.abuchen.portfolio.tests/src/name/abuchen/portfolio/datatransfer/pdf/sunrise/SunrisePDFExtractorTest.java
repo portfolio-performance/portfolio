@@ -83,6 +83,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -117,6 +118,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -151,6 +153,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -185,6 +188,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -219,6 +223,7 @@ public class SunrisePDFExtractorTest
     public void testDividende22()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

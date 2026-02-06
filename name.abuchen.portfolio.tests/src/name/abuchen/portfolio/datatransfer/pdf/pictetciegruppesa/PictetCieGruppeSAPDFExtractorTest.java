@@ -142,6 +142,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -192,6 +193,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -242,6 +244,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -292,6 +295,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

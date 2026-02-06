@@ -75,6 +75,7 @@ public class SolarisbankAGPDFExtractorTest
     public void testGiroKontoauszug02()
     {
         var extractor = new SolarisbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -99,6 +100,7 @@ public class SolarisbankAGPDFExtractorTest
     public void testGiroKontoauszug03()
     {
         var extractor = new SolarisbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -123,6 +125,7 @@ public class SolarisbankAGPDFExtractorTest
     public void testGiroKontoauszug04()
     {
         var extractor = new SolarisbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -155,6 +158,7 @@ public class SolarisbankAGPDFExtractorTest
     public void testReferenzkontoauszug01()
     {
         var extractor = new SolarisbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

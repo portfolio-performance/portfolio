@@ -91,6 +91,7 @@ public class RevolutLtdPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new RevolutLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

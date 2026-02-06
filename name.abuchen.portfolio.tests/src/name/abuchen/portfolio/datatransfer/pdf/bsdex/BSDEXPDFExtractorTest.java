@@ -34,6 +34,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -58,6 +59,12 @@ public class BSDEXPDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testTransaktionshistorie01()

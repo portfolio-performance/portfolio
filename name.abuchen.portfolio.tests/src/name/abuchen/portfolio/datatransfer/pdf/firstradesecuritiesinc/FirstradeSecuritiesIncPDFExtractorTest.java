@@ -82,6 +82,7 @@ public class FirstradeSecuritiesIncPDFExtractorTest
     public void testSecuritySale01()
     {
         var extractor = new FirstradeSecuritiesIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -116,6 +117,7 @@ public class FirstradeSecuritiesIncPDFExtractorTest
     public void testSecuritySale02()
     {
         var extractor = new FirstradeSecuritiesIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

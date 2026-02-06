@@ -115,6 +115,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte02()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -205,6 +206,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte03()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -239,6 +241,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte04()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -263,6 +266,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte05()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -360,6 +364,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte06()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -394,6 +399,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte07()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -314,6 +314,7 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement02()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -359,10 +360,12 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement03()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement03.txt"), errors);
+        extractor.setNegativeValue(negativeValue);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
@@ -716,10 +719,12 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement04()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement04.txt"), errors);
+        extractor.setNegativeValue(negativeValue);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(7L));
