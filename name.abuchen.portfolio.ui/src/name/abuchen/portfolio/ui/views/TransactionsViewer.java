@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -129,7 +130,9 @@ public final class TransactionsViewer implements ModificationListener
     @Inject
     private SelectionService selectionService;
 
-    private AbstractFinanceView owner;
+    private final String identifier;
+    private final Composite parent;
+    private final AbstractFinanceView owner;
     private Set<TransactionPair<?>> marked = new HashSet<>();
 
     private TableViewer tableViewer;
@@ -145,8 +148,14 @@ public final class TransactionsViewer implements ModificationListener
 
     public TransactionsViewer(String identifier, Composite parent, AbstractFinanceView owner)
     {
+        this.identifier = identifier;
+        this.parent = parent;
         this.owner = owner;
+    }
 
+    @PostConstruct
+    void init()
+    {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
