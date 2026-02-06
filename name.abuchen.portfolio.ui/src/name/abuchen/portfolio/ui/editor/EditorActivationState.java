@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationListener;
 import org.eclipse.jface.viewers.ColumnViewerEditorDeactivationEvent;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.ui.preferences.Experiments;
 
 /**
@@ -26,6 +27,9 @@ public class EditorActivationState
     @Inject
     private Experiments experiments;
 
+    @Inject
+    private NegativeValue negativeValue;
+
     private boolean isFeatureEnabled;
 
     private boolean isEditorActive = false;
@@ -40,6 +44,8 @@ public class EditorActivationState
     void init()
     {
         this.isFeatureEnabled = experiments.isEnabled(Experiments.Feature.JULY26_PREVENT_UPDATE_WHILE_EDITING_CELLS);
+        // set negative value feature in associated singleton
+        negativeValue.setNegativeValueAllowed(experiments.isEnabled(Experiments.Feature.JAN26_ALLOW_NEGATIVE_VALUES));
     }
 
     private void activateEditor()
