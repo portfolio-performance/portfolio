@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -79,6 +80,12 @@ public class SwissquotePDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    public void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testWertpapierKauf01()

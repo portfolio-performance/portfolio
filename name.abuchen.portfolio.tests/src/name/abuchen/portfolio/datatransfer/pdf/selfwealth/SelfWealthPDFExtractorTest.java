@@ -91,6 +91,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -141,6 +142,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy03()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -191,6 +193,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy04()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -241,6 +244,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -291,6 +295,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecuritySell02()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
