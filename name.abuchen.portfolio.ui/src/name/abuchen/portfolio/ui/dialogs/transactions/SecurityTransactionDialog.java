@@ -130,8 +130,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         // other input fields
 
-        Input shares = new Input(editArea, Messages.ColumnShares);
-        shares.bindValue(Properties.shares.name(), Messages.ColumnShares, Values.Share, true);
+        Input shares = new Input(editArea, getSharesLabel());
+        shares.bindValue(Properties.shares.name(), getSharesLabel(), Values.Share, true);
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
@@ -289,6 +289,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             }
         });
 
+        // make share/nominal input label depend on security quotation
+        model.addPropertyChangeListener(Properties.security.name(), event -> { // NOSONAR
+            shares.label.setText(getSharesLabel());
+            shares.label.requestLayout();
+        });
+
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
         warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
@@ -328,6 +334,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    private String getSharesLabel()
+    {
+        var security = model().getSecurity();
+        return (security != null && security.isPercentageQuoted()) ? Messages.ColumnNominal : Messages.ColumnShares;
     }
 
     @Override
