@@ -74,6 +74,7 @@ public class DABPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new DABPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);

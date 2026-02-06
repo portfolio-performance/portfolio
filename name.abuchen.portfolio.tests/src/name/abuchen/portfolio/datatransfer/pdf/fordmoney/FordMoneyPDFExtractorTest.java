@@ -41,6 +41,7 @@ public class FordMoneyPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new FordMoneyPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

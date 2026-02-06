@@ -42,6 +42,7 @@ public class ABNAMROGroupPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new ABNAMROGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -45,6 +45,7 @@ public class MLPBankingAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new MLPBankingAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -40,6 +40,7 @@ public class BarclaysBankIrelandPLCPDFExtractorTest
     public void testKreditKontoauszug01()
     {
         var extractor = new BarclaysBankIrelandPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

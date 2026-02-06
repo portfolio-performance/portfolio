@@ -62,6 +62,7 @@ public class DZBankGruppePDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new DZBankGruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

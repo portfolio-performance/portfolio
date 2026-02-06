@@ -91,6 +91,7 @@ public class TradeRepublicPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

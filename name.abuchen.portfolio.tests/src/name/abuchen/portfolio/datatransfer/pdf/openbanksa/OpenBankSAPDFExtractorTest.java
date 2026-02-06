@@ -40,6 +40,7 @@ public class OpenBankSAPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new OpenBankSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

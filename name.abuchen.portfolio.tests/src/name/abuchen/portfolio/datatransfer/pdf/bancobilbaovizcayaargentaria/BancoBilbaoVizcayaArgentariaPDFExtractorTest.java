@@ -57,6 +57,7 @@ public class BancoBilbaoVizcayaArgentariaPDFExtractorTest
     public void testValorCompra01()
     {
         var extractor = new BancoBilbaoVizcayaArgentariaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

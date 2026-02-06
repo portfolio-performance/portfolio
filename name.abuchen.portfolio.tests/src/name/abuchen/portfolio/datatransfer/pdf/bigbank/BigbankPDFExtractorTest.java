@@ -38,6 +38,7 @@ public class BigbankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new BigbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

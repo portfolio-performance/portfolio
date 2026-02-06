@@ -58,6 +58,7 @@ public class KBCGroupNVPDFExtractorTest
     public void testAankoop01()
     {
         var extractor = new KBCGroupNVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -47,6 +47,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new BasellandschaftlicheKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

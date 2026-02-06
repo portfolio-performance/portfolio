@@ -38,6 +38,7 @@ public class HargreavesLansdownPlcTest
     public void testWertpapierKauf01()
     {
         var extractor = new HargreavesLansdownPlcExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

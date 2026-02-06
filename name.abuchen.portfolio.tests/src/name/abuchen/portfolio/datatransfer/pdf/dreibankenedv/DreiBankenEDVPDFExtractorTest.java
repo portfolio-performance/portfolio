@@ -45,6 +45,7 @@ public class DreiBankenEDVPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new DreiBankenEDVPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

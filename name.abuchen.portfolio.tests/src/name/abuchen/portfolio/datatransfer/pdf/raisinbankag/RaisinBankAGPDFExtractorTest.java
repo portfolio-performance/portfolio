@@ -56,6 +56,7 @@ public class RaisinBankAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new RaisinBankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

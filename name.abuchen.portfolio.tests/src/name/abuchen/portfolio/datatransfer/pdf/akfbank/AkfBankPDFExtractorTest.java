@@ -43,6 +43,7 @@ public class AkfBankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new AkfBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

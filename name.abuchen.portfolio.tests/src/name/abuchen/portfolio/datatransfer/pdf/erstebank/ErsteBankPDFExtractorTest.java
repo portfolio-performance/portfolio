@@ -66,6 +66,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -37,6 +37,7 @@ public class SolarisbankAGPDFExtractorTest
     public void testGiroKontoauszug01()
     {
         var extractor = new SolarisbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

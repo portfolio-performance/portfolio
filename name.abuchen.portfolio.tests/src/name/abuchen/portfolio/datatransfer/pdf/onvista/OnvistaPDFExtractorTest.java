@@ -77,6 +77,7 @@ public class OnvistaPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new OnvistaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

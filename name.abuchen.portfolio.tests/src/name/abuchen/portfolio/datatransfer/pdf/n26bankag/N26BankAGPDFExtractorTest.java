@@ -41,6 +41,7 @@ public class N26BankAGPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new N26BankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

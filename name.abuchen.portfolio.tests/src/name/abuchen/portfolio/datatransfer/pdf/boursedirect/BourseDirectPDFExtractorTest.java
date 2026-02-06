@@ -52,6 +52,7 @@ public class BourseDirectPDFExtractorTest
     public void testReleveDeCompte01()
     {
         var extractor = new BourseDirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

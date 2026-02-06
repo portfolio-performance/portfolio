@@ -46,6 +46,7 @@ public class CreditMutuelAllianceFederalePDFExtractorTest
     public void testCompteAChat01()
     {
         var extractor = new CreditMutuelAllianceFederalePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

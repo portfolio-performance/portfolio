@@ -41,6 +41,7 @@ public class SimpelPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SimpelPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

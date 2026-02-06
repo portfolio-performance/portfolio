@@ -48,6 +48,7 @@ public class SydbankASPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new SydbankASPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

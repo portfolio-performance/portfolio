@@ -44,6 +44,7 @@ public class AlpacCapitalPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new AlpacCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

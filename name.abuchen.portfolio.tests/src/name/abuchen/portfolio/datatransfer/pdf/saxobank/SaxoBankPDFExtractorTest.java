@@ -53,6 +53,7 @@ public class SaxoBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

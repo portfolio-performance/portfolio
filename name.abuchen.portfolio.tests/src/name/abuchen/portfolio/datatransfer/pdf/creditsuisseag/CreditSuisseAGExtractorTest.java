@@ -39,6 +39,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

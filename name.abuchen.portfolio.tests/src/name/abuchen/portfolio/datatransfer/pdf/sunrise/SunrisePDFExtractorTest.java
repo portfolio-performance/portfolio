@@ -48,6 +48,7 @@ public class SunrisePDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SunrisePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

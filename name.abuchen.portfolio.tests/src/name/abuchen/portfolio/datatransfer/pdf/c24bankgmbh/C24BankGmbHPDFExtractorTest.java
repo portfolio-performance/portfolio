@@ -42,6 +42,7 @@ public class C24BankGmbHPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new C24BankGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

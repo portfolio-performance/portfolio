@@ -165,6 +165,7 @@ public class BSDEXPDFExtractorTest
     public void testTransaktionshistorie04()
     {
         var extractor = new BSDEXPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

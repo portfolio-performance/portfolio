@@ -72,6 +72,7 @@ public class Direkt1822BankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new Direkt1822BankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

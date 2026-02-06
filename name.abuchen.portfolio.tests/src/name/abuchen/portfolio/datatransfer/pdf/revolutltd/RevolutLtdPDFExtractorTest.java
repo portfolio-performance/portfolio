@@ -41,6 +41,7 @@ public class RevolutLtdPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new RevolutLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

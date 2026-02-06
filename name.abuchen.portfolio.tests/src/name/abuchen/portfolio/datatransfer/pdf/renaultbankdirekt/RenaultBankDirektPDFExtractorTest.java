@@ -39,6 +39,8 @@ public class RenaultBankDirektPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new RenaultBankDirektPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
+
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);

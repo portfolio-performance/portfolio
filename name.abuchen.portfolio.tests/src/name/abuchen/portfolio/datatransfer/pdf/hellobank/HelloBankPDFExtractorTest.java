@@ -45,6 +45,7 @@ public class HelloBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new HelloBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -39,6 +39,7 @@ public class EstateGuruPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new EstateGuruPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -76,6 +76,7 @@ public class INGDiBaPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new INGDiBaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

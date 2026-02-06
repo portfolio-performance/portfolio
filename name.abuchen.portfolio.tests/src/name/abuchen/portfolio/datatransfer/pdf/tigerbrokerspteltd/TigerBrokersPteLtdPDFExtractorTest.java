@@ -59,6 +59,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

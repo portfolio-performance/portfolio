@@ -41,6 +41,7 @@ public class JTDirektbankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new JTDirektbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

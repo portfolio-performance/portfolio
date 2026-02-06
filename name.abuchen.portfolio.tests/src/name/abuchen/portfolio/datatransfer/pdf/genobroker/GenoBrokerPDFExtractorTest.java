@@ -54,6 +54,7 @@ public class GenoBrokerPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new GenoBrokerPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

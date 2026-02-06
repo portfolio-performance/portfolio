@@ -82,6 +82,7 @@ public class PostfinancePDFExtractorTest
         var client = new Client();
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

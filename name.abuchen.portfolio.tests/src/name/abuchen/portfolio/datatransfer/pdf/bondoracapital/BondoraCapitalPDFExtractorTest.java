@@ -41,6 +41,7 @@ public class BondoraCapitalPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new BondoraCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -54,6 +54,7 @@ public class DirectaSimPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new DirectaSimPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

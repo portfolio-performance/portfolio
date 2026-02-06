@@ -43,6 +43,7 @@ public class NordaxBankABPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new NordaxBankABPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

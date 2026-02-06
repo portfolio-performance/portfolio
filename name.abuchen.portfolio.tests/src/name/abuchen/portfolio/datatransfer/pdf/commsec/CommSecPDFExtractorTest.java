@@ -40,6 +40,7 @@ public class CommSecPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new CommSecPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

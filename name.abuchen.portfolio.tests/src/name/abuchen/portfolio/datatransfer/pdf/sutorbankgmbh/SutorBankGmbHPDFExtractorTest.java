@@ -80,6 +80,7 @@ public class SutorBankGmbHPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SutorBankGmbHPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

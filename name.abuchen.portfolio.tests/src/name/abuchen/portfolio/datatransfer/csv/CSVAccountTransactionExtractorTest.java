@@ -763,6 +763,7 @@ public class CSVAccountTransactionExtractorTest
                         .toList();
 
         var extractor = new CSVAccountTransactionExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         var errors = new ArrayList<Exception>();
         // the extract method gets only the data rows -> use sub list

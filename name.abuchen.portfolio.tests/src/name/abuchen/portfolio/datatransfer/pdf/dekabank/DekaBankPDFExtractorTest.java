@@ -66,6 +66,7 @@ public class DekaBankPDFExtractorTest
     public void testTagesauszug01()
     {
         var extractor = new DekaBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

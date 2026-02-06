@@ -36,6 +36,7 @@ public class SberbankEuropeAGPDFExtractorTest
     public void testTagesgeldKontoauszug01()
     {
         var extractor = new SberbankEuropeAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

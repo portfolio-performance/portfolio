@@ -61,6 +61,7 @@ public class ComdirectPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new ComdirectPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

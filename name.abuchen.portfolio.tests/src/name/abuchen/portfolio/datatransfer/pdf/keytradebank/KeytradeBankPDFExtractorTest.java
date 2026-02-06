@@ -66,6 +66,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -66,6 +66,7 @@ public class SantanderConsumerBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SantanderConsumerBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -37,6 +37,7 @@ public class CrowdestorPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new CrowdestorPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

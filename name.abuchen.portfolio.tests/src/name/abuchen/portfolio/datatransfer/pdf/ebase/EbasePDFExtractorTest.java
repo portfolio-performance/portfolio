@@ -68,6 +68,7 @@ public class EbasePDFExtractorTest
     public void testDividende01()
     {
         var extractor = new EbasePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

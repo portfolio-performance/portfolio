@@ -42,6 +42,7 @@ public class AudiBankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new AudiBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

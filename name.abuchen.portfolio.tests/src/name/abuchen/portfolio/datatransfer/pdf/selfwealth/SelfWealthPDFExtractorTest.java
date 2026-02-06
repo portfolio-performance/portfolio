@@ -40,6 +40,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -49,6 +49,7 @@ public class KFintechPDFExtractorTest
     public void testConsolidatedAccountStatement01()
     {
         var extractor = new KFintechPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

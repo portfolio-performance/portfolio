@@ -47,6 +47,7 @@ public class AvivaPLCPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new AvivaPLCPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

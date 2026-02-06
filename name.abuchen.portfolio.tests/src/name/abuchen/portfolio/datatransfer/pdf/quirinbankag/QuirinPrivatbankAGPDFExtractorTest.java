@@ -72,6 +72,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new QuirinBankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -48,6 +48,7 @@ public class NorddeutscheLandesbankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new NorddeutscheLandesbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

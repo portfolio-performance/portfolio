@@ -72,6 +72,7 @@ public class ConsorsbankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new ConsorsbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

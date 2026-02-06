@@ -55,6 +55,7 @@ public class BoursoBankPDFExtractorTest
     public void testCompteAChat01()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

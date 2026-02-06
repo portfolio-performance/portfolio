@@ -37,6 +37,7 @@ public class BawagAgPDFExtractorTest
     public void testKreditKontoauszug01()
     {
         var extractor = new BawagAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

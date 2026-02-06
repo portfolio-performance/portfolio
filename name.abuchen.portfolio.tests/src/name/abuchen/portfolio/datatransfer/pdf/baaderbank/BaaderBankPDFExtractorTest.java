@@ -92,6 +92,7 @@ public class BaaderBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new BaaderBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

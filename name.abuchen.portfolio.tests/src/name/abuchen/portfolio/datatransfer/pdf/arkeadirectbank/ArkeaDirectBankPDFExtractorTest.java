@@ -50,6 +50,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat01()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

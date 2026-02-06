@@ -48,6 +48,7 @@ public class SchelhammerCapitalBankAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SchelhammerCapitalBankAG(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

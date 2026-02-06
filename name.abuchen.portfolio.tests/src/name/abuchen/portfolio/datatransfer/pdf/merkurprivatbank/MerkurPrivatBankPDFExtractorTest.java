@@ -66,6 +66,7 @@ public class MerkurPrivatBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new MerkurPrivatBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -47,6 +47,7 @@ public class AJBellSecuritiesLimitedPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new AJBellSecuritiesLimitedPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

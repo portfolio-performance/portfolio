@@ -70,6 +70,7 @@ public class DADATBankenhausPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new DADATBankenhausPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

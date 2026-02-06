@@ -48,6 +48,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

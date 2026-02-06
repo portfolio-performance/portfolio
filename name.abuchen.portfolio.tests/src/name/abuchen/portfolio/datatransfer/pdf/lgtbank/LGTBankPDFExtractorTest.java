@@ -59,6 +59,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

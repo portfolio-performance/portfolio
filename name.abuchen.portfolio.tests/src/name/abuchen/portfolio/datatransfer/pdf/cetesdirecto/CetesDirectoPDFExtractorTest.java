@@ -48,6 +48,7 @@ public class CetesDirectoPDFExtractorTest
     public void testWertpapierKauf27()
     {
         var extractor = new CetesDirectoPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -59,6 +59,7 @@ public class CommerzbankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new CommerzbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -66,6 +66,7 @@ public class FILFondbankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new FILFondbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

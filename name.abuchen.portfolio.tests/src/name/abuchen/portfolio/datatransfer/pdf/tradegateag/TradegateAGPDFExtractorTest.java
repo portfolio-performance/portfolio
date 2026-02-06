@@ -54,6 +54,7 @@ public class TradegateAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new TradegateAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

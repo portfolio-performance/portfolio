@@ -47,6 +47,7 @@ public class MeDirectBankPlcPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new MeDirectBankPlcPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -48,6 +48,7 @@ public class ApoBankPDFExtractorTest
     public void testKauf01()
     {
         var extractor = new ApoBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

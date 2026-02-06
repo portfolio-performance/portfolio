@@ -76,6 +76,7 @@ public class SBrokerPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new SBrokerPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

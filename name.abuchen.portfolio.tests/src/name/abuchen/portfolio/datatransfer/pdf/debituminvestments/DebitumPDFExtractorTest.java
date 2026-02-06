@@ -41,6 +41,7 @@ public class DebitumPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new DebitumInvestmentsPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

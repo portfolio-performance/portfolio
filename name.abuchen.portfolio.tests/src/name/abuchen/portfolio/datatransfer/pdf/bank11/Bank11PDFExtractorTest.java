@@ -38,6 +38,7 @@ public class Bank11PDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new Bank11PDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

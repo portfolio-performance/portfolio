@@ -41,6 +41,7 @@ public class PictetCieGruppeSAPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new PictetCieGruppeSAPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

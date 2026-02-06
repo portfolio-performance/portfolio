@@ -3303,6 +3303,7 @@ public class IBFlexStatementExtractorTest
     public void testIBFlexStatementFile24() throws IOException
     {
         var extractor = new IBFlexStatementExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         var activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile24.xml");
         var tempFile = createTempFile(activityStatement);

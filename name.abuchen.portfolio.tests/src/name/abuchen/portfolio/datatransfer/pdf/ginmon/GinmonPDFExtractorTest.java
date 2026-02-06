@@ -36,6 +36,7 @@ public class GinmonPDFExtractorTest
     public void testFeeInvoice01()
     {
         var extractor = new GinmonPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

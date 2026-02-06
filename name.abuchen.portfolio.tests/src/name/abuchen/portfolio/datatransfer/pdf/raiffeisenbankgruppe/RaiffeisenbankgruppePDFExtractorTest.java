@@ -74,6 +74,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

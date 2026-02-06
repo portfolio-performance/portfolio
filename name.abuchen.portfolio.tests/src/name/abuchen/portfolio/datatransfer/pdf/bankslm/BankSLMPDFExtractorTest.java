@@ -45,6 +45,7 @@ public class BankSLMPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new BankSLMPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

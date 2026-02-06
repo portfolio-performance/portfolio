@@ -45,6 +45,7 @@ public class NIBCBankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new NIBCBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

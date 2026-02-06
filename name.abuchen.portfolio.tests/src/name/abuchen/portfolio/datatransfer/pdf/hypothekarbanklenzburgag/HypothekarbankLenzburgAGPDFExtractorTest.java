@@ -50,6 +50,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

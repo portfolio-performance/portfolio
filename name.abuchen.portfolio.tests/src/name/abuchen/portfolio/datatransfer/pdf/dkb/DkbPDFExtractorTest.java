@@ -73,6 +73,7 @@ public class DkbPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new DkbPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

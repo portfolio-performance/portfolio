@@ -40,6 +40,7 @@ public class ModenaEstoniaPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new ModenaEstoniaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

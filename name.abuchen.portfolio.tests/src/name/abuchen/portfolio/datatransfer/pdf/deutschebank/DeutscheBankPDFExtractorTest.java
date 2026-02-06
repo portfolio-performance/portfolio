@@ -69,6 +69,7 @@ public class DeutscheBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new DeutscheBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

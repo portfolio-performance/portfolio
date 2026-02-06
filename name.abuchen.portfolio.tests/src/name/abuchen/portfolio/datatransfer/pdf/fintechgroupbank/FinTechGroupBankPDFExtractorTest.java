@@ -89,6 +89,7 @@ public class FinTechGroupBankPDFExtractorTest
     public void testFinTechSammelabrechnung01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -38,6 +38,7 @@ public class AdvanziaBankPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new AdvanziaBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

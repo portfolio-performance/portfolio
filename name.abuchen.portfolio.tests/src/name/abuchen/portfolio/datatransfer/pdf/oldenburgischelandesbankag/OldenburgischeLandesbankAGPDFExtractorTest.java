@@ -62,6 +62,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

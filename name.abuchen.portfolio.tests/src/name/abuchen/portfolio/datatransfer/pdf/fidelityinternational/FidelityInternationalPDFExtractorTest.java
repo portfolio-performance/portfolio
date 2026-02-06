@@ -47,6 +47,7 @@ public class FidelityInternationalPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new FidelityInternationalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

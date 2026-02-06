@@ -70,6 +70,7 @@ public class EasyBankAGPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new EasyBankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

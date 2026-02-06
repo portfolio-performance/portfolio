@@ -441,6 +441,7 @@ public class BisonPDFExtractorTest
     public void testVorabpauschale01()
     {
         var extractor = new BisonPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

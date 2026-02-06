@@ -70,6 +70,7 @@ public class PostbankPDFExtractorTest
     public void testWertpapierKauf01()
     {
         var extractor = new PostbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
