@@ -233,6 +233,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new QuirinBankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

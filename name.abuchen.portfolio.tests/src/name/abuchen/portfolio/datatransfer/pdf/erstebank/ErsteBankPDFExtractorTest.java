@@ -527,6 +527,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

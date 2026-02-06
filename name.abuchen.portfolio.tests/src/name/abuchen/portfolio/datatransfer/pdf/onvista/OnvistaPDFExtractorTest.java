@@ -186,6 +186,7 @@ public class OnvistaPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new OnvistaPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

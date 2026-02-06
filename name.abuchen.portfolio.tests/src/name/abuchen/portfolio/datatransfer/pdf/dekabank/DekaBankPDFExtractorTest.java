@@ -1163,6 +1163,7 @@ public class DekaBankPDFExtractorTest
         client.addSecurity(security5);
 
         var extractor = new DekaBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

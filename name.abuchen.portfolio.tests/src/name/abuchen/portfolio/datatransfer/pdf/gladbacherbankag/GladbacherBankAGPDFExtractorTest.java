@@ -200,6 +200,7 @@ public class GladbacherBankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new GladbacherBankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

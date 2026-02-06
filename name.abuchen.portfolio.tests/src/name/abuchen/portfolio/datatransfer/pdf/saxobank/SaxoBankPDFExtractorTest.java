@@ -96,6 +96,7 @@ public class SaxoBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SaxoBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

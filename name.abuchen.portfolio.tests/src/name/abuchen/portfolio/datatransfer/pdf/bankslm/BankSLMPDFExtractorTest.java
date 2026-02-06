@@ -106,6 +106,7 @@ public class BankSLMPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BankSLMPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

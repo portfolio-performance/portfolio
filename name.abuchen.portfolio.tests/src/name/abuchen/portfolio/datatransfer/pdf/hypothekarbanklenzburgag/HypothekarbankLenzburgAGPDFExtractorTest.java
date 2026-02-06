@@ -331,6 +331,7 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new HypothekarbankLenzburgAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -311,6 +311,7 @@ public class PostbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new PostbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

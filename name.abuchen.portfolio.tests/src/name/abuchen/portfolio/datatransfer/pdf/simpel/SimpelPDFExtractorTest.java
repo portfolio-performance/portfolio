@@ -144,6 +144,7 @@ public class SimpelPDFExtractorTest
         var client = new Client();
 
         var extractor = new SimpelPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

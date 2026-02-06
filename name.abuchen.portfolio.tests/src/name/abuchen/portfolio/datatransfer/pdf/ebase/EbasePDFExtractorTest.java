@@ -108,6 +108,7 @@ public class EbasePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new EbasePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

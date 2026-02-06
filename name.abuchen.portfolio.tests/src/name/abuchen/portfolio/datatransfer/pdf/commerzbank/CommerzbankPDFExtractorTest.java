@@ -307,6 +307,7 @@ public class CommerzbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new CommerzbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -87,6 +87,7 @@ public class StakeshopPtyLtdPDFExtractorTest
         client.addSecurity(flt);
 
         var extractor = new StakeshopPtyLtdPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

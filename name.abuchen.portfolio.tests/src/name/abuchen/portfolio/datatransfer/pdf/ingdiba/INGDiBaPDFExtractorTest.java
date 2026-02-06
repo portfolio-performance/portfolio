@@ -588,6 +588,7 @@ public class INGDiBaPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new INGDiBaPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

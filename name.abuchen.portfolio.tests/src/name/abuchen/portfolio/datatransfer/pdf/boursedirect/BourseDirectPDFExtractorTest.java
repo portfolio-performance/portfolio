@@ -323,6 +323,7 @@ public class BourseDirectPDFExtractorTest
         client.addSecurity(security2);
 
         var extractor = new BourseDirectPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

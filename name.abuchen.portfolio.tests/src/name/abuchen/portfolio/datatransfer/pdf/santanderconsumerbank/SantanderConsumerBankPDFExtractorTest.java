@@ -222,6 +222,7 @@ public class SantanderConsumerBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SantanderConsumerBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

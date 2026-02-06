@@ -751,6 +751,7 @@ public class DZBankGruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DZBankGruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

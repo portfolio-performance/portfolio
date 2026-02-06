@@ -204,6 +204,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

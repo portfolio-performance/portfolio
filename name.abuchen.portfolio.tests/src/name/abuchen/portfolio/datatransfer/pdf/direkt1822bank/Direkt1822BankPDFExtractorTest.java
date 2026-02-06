@@ -234,6 +234,7 @@ public class Direkt1822BankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new Direkt1822BankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

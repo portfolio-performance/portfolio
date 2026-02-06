@@ -384,6 +384,7 @@ public class ConsorsbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ConsorsbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

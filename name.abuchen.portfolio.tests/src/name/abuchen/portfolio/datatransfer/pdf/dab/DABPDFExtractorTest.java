@@ -281,6 +281,7 @@ public class DABPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DABPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

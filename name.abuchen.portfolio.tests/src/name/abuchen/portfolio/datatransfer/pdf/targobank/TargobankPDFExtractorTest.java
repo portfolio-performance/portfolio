@@ -487,6 +487,7 @@ public class TargobankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TargobankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

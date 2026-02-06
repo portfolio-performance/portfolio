@@ -206,6 +206,7 @@ public class ComdirectPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ComdirectPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -485,6 +485,7 @@ public class DkbPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DkbPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

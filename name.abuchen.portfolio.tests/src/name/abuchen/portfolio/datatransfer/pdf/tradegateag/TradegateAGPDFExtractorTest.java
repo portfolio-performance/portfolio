@@ -267,6 +267,7 @@ public class TradegateAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new TradegateAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

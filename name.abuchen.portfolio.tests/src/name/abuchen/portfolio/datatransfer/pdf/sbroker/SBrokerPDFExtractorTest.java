@@ -538,6 +538,7 @@ public class SBrokerPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new SBrokerPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

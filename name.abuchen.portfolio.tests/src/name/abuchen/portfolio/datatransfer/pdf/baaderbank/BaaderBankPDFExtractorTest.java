@@ -1365,6 +1365,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

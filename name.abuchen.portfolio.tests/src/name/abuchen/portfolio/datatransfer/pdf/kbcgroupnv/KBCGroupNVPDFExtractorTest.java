@@ -314,6 +314,7 @@ public class KBCGroupNVPDFExtractorTest
         client.addSecurity(security2);
 
         var extractor = new KBCGroupNVPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

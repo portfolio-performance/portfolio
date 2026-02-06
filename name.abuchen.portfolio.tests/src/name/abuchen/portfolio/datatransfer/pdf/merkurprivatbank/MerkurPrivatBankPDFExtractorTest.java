@@ -407,6 +407,7 @@ public class MerkurPrivatBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new MerkurPrivatBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

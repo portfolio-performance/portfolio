@@ -207,6 +207,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new OldenburgischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

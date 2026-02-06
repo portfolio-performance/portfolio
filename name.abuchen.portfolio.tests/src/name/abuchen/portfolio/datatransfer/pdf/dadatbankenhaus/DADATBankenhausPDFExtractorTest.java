@@ -645,6 +645,7 @@ public class DADATBankenhausPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DADATBankenhausPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

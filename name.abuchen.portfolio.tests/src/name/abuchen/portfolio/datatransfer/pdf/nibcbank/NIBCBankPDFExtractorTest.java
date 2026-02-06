@@ -152,6 +152,7 @@ public class NIBCBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new NIBCBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -267,6 +267,7 @@ public class BoursoBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BoursoBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

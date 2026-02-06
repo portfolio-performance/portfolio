@@ -295,6 +295,7 @@ public class DreiBankenEDVPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new DreiBankenEDVPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
