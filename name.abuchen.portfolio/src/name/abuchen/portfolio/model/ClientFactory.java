@@ -211,6 +211,12 @@ public class ClientFactory
         {
             new XmlSerialization(negativeValue, idReferences).save(client, output);
         }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
+        }
     }
 
     private static class PlainWriterZIP implements ClientPersister
@@ -239,9 +245,9 @@ public class ClientFactory
                 if (body == null)
                 {
                     if (entry.getName().endsWith(".portfolio")) //$NON-NLS-1$
-                        body = new ProtobufWriter();
+                        body = new ProtobufWriter(body.getNegativeValue());
                     else
-                        body = new PlainWriter();
+                        body = new PlainWriter(body.getNegativeValue());
                 }
 
                 Client client = body.load(zipin);
@@ -264,6 +270,12 @@ public class ClientFactory
                 body.save(client, zipout);
                 zipout.closeEntry();
             }
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return body.getNegativeValue();
         }
     }
 
@@ -367,9 +379,9 @@ public class ClientFactory
                     if (body == null)
                     {
                         if (contentType == 2)
-                            body = new ProtobufWriter();
+                            body = new ProtobufWriter(getNegativeValue());
                         else
-                            body = new PlainWriter();
+                            body = new PlainWriter(getNegativeValue());
                     }
 
                     // wrap with zip input stream
@@ -478,6 +490,12 @@ public class ClientFactory
             KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, keyLength);
             SecretKey tmp = factory.generateSecret(spec);
             return new SecretKeySpec(tmp.getEncoded(), AES);
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return body.getNegativeValue();
         }
     }
 
@@ -601,7 +619,8 @@ public class ClientFactory
         }
     }
 
-    public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
+    public static Client load(NegativeValue negativeValue, File file, char[] password, IProgressMonitor monitor)
+                    throws IOException
     {
         Set<SaveFlag> flags = getFlags(file);
 
@@ -619,7 +638,7 @@ public class ClientFactory
             try (InputStream input = new ProgressMonitorInputStream(
                             new BufferedInputStream(new FileInputStream(file), 65536), increment, monitor))
             {
-                ClientPersister persister = buildPersister(flags, password);
+                ClientPersister persister = buildPersister(negativeValue, flags, password);
                 Client client = persister.load(input);
 
                 PortfolioLog.info(String.format("Loaded %s with %s", file.getName(), client.getSaveFlags().toString())); //$NON-NLS-1$
@@ -636,9 +655,9 @@ public class ClientFactory
         }
     }
 
-    public static Client load(Reader input) throws IOException
+    public static Client load(NegativeValue negativeValue, Reader input) throws IOException
     {
-        return load(input, false);
+        return load(negativeValue, input, false);
     }
 
     @VisibleForTesting
@@ -656,18 +675,19 @@ public class ClientFactory
     }
 
     @VisibleForTesting
-    public static Client load(InputStream input) throws IOException
+    public static Client load(NegativeValue negativeValue, InputStream input) throws IOException
     {
-        return load(input, false);
+        return load(negativeValue, input, false);
     }
 
     @VisibleForTesting
-    public static Client load(InputStream input, boolean useIdReferences) throws IOException
+    public static Client load(NegativeValue negativeValue, InputStream input, boolean useIdReferences)
+                    throws IOException
     {
-        return load(new InputStreamReader(input, StandardCharsets.UTF_8), useIdReferences);
+        return load(negativeValue, new InputStreamReader(input, StandardCharsets.UTF_8), useIdReferences);
     }
 
-    public static void save(final Client client, final File file) throws IOException
+    public static void save(NegativeValue negativeValue, final Client client, final File file) throws IOException
     {
         Set<SaveFlag> flags = EnumSet.copyOf(client.getSaveFlags());
 
@@ -677,10 +697,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, null, flags, true);
+        writeFile(negativeValue, client, file, null, flags, true);
     }
 
-    public static void saveAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+    public static void saveAs(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags)
                     throws IOException
     {
         if (flags.isEmpty())
@@ -689,10 +710,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, password, flags, true);
+        writeFile(negativeValue, client, file, password, flags, true);
     }
 
-    public static void exportAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+    public static void exportAs(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags)
                     throws IOException
     {
         if (flags.isEmpty())
@@ -701,10 +723,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, password, flags, false);
+        writeFile(negativeValue, client, file, password, flags, false);
     }
 
-    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags,
+    private static void writeFile(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags,
                     boolean updateFlags) throws IOException
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
@@ -736,7 +759,7 @@ public class ClientFactory
                                 file.getAbsolutePath(), e.getMessage()));
             }
 
-            ClientPersister persister = buildPersister(flags, password);
+            ClientPersister persister = buildPersister(negativeValue, flags, password);
             persister.save(client, output);
 
             output.flush();
@@ -752,14 +775,14 @@ public class ClientFactory
         }
     }
 
-    private static ClientPersister buildPersister(Set<SaveFlag> flags, char[] password)
+    private static ClientPersister buildPersister(NegativeValue negativeValue, Set<SaveFlag> flags, char[] password)
     {
         ClientPersister body = null;
 
         if (flags.contains(SaveFlag.BINARY))
-            body = new ProtobufWriter();
+            body = new ProtobufWriter(negativeValue);
         else if (flags.contains(SaveFlag.XML))
-            body = new PlainWriter(flags.contains(SaveFlag.ID_REFERENCES));
+            body = new PlainWriter(negativeValue, flags.contains(SaveFlag.ID_REFERENCES));
 
         if (flags.contains(SaveFlag.ENCRYPTED))
             return new Decryptor(body, flags, password);
@@ -767,7 +790,7 @@ public class ClientFactory
             return new PlainWriterZIP(body);
 
         if (body == null)
-            return new PlainWriter();
+            return new PlainWriter(negativeValue);
         else
             return body;
     }

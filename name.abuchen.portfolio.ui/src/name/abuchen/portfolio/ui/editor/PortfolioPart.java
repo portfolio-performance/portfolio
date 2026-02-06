@@ -319,7 +319,8 @@ public class PortfolioPart implements ClientInputListener
             {
                 final String password = pwd.getText();
 
-                new LoadClientThread(clientInput, broker, new ProgressProvider(clientInput), password.toCharArray())
+                new LoadClientThread(negativeValue, clientInput, broker, new ProgressProvider(clientInput),
+                                password.toCharArray())
                                 .start();
             }
         });
