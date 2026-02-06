@@ -53,6 +53,7 @@ import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SwissquotePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -68,6 +69,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class SwissquotePDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client())
     {
         @Override

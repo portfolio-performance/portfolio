@@ -60,6 +60,7 @@ import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -76,6 +77,8 @@ import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client())
     {
         @Override

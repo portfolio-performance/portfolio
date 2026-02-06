@@ -53,6 +53,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -71,6 +72,8 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
         File tempFile = Files.createTempFile("IBFlexStatementExtractorTest", null).toFile();
