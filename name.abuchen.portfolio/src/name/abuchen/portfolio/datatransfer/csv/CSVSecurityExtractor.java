@@ -12,15 +12,14 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 /* package */class CSVSecurityExtractor extends BaseCSVExtractor
 {
-    /* package */ CSVSecurityExtractor(NegativeValue negativeValue, Client client)
+    /* package */ CSVSecurityExtractor(Client client)
     {
-        super(negativeValue, client, Messages.CSVDefSecurities);
+        super(client, Messages.CSVDefSecurities);
 
         var fields = getFields();
         fields.add(new Field("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$

@@ -36,6 +36,7 @@ public class CSVImportWizard extends Wizard
 {
     private static class ExtractorProxy implements Extractor
     {
+        private NegativeValue negativeValue;
         private final CSVImporter importer;
 
         public ExtractorProxy(CSVImporter importer)
@@ -59,6 +60,18 @@ public class CSVImportWizard extends Wizard
         public List<Item> extract(List<InputFile> file, List<Exception> errors)
         {
             return this.importer.createItems(errors);
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
+        }
+
+        @Override
+        public void setNegativeValue(NegativeValue negativeValue)
+        {
+            this.negativeValue = negativeValue;
         }
     }
 

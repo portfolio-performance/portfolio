@@ -22,7 +22,6 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -38,9 +37,9 @@ import name.abuchen.portfolio.money.Money;
     private String label;
     private List<Field> fields;
 
-    /* package */ BaseCSVExtractor(NegativeValue negativeValue, Client client, String label)
+    /* package */ BaseCSVExtractor(Client client, String label)
     {
-        super(negativeValue);
+        super();
         this.client = client;
         this.label = label;
         this.fields = new ArrayList<>();
@@ -240,4 +239,5 @@ import name.abuchen.portfolio.money.Money;
             transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
         }
     }
+
 }

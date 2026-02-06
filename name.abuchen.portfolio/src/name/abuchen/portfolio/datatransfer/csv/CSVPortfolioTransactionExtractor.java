@@ -16,7 +16,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -29,9 +28,9 @@ import name.abuchen.portfolio.money.Money;
 
 /* package */class CSVPortfolioTransactionExtractor extends BaseCSVExtractor
 {
-    /* package */ CSVPortfolioTransactionExtractor(NegativeValue negativeValue, Client client)
+    /* package */ CSVPortfolioTransactionExtractor(Client client)
     {
-        super(negativeValue, client, Messages.CSVDefPortfolioTransactions);
+        super(client, Messages.CSVDefPortfolioTransactions);
 
         var fields = getFields();
         fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$

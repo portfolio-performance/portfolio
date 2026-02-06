@@ -26,13 +26,12 @@ import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
 {
-    protected final NegativeValue negativeValue;
+    protected NegativeValue negativeValue;
 
     public abstract List<Field> getFields();
 
-    public CSVExtractor(NegativeValue negativeValue)
+    public CSVExtractor()
     {
-        this.negativeValue = negativeValue;
     }
 
     public Field getField(String code)
@@ -259,5 +258,17 @@ public abstract class CSVExtractor implements Extractor
                             .orElse(null);
         }
         return null;
+    }
+
+    @Override
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
+
+    @Override
+    public void setNegativeValue(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
     }
 }

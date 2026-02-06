@@ -11,7 +11,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -19,9 +18,9 @@ import name.abuchen.portfolio.model.SecurityPrice;
 {
     private List<Field> fields;
 
-    /* package */ CSVSecurityPriceExtractor(NegativeValue negativeValue)
+    /* package */ CSVSecurityPriceExtractor()
     {
-        super(negativeValue);
+        super();
         fields = new ArrayList<>();
         fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
         fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
