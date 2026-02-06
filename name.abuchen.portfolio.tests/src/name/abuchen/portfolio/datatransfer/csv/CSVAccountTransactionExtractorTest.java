@@ -49,6 +49,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -64,6 +65,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CSVAccountTransactionExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDividendTransactionPlusSecurityCreation() throws ParseException
     {
