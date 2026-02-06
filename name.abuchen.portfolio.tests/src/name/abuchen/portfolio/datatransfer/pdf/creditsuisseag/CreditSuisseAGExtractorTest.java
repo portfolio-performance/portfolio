@@ -104,6 +104,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -168,6 +169,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -216,6 +218,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -280,6 +283,7 @@ public class CreditSuisseAGExtractorTest
     public void testDividende01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -323,6 +327,7 @@ public class CreditSuisseAGExtractorTest
     public void testDividende02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

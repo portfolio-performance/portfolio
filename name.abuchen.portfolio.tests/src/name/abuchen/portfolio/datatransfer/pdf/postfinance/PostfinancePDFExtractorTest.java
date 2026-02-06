@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -75,6 +76,12 @@ public class PostfinancePDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    public void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testWertpapierKauf01()
@@ -135,6 +142,7 @@ public class PostfinancePDFExtractorTest
         var client = new Client();
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -187,6 +195,7 @@ public class PostfinancePDFExtractorTest
         var client = new Client();
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -247,6 +256,7 @@ public class PostfinancePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -296,6 +306,7 @@ public class PostfinancePDFExtractorTest
         var client = new Client();
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -356,6 +367,7 @@ public class PostfinancePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -403,6 +415,7 @@ public class PostfinancePDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -437,6 +450,7 @@ public class PostfinancePDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -473,6 +487,7 @@ public class PostfinancePDFExtractorTest
         var client = new Client();
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -523,6 +538,7 @@ public class PostfinancePDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -557,6 +573,7 @@ public class PostfinancePDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -598,6 +615,7 @@ public class PostfinancePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new PostfinancePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -659,6 +677,7 @@ public class PostfinancePDFExtractorTest
     public void testDividende01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -704,6 +723,7 @@ public class PostfinancePDFExtractorTest
     public void testDividende02()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -749,6 +769,7 @@ public class PostfinancePDFExtractorTest
     public void testDividende03()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -794,6 +815,7 @@ public class PostfinancePDFExtractorTest
     public void testZahlungsverkehr01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -818,6 +840,7 @@ public class PostfinancePDFExtractorTest
     public void testZahlungsverkehr02()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -842,6 +865,7 @@ public class PostfinancePDFExtractorTest
     public void testJahresgebuehr01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -877,6 +901,7 @@ public class PostfinancePDFExtractorTest
     public void testGiroKontoauszug10()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -901,6 +926,7 @@ public class PostfinancePDFExtractorTest
     public void testZinsabschluss01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -951,6 +977,7 @@ public class PostfinancePDFExtractorTest
     public void testZinsabschluss02()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1016,6 +1043,7 @@ public class PostfinancePDFExtractorTest
     public void testZinsabschluss03()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1066,6 +1094,7 @@ public class PostfinancePDFExtractorTest
     public void testZinsabschluss04()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1131,6 +1160,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1916,6 +1946,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2001,6 +2032,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2566,6 +2598,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug04()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2611,6 +2644,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug05()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2823,6 +2857,7 @@ public class PostfinancePDFExtractorTest
     public void testKontoauszug06()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
