@@ -82,6 +82,7 @@ public class AJBellSecuritiesLimitedPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new AJBellSecuritiesLimitedPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -116,6 +117,7 @@ public class AJBellSecuritiesLimitedPDFExtractorTest
     public void testSecurityBuy03()
     {
         var extractor = new AJBellSecuritiesLimitedPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -150,6 +152,7 @@ public class AJBellSecuritiesLimitedPDFExtractorTest
     public void testSecuritySale01()
     {
         var extractor = new AJBellSecuritiesLimitedPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -184,6 +187,7 @@ public class AJBellSecuritiesLimitedPDFExtractorTest
     public void testSecuritySale02()
     {
         var extractor = new AJBellSecuritiesLimitedPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
