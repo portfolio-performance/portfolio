@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Kontoauszug
+BestFlex Kontonummer: 99-12345-1234
+Kontoauszug Erstellungsdatum: 06.02.2026
+Kontoinhaber: Max Mustermann
+BestFlex Eröffnungsdatum: 19.01.2026
+Kontostand per 19.01.2026 Kontostand per 31.01.2026 Summe Gutschriften Summe Belastungen Zinserträge Steuern (KeSt bzw. QueSt)
+€ 0,00 € 31.775,89 € 31.777,95 € 2,06 € 8,24 € 2,06
+Buchungsdatum Valutadatum Betrag Saldo Buchungstext Verwendungszweck
+Einzahlung von Konto AT123456789012345678 lautend auf Max 
+21.01.2026 21.01.2026 10,00 10,00
+Mustermann, ASc
+Einzahlung von Konto  AT123456789012345678 lautend auf Max 
+21.01.2026 21.01.2026 5.000,00 5.010,00
+Mustermann, DFc
+Einzahlung von Konto  AT123456789012345678 lautend auf Max 
+21.01.2026 21.01.2026 3.700,00 8.710,00
+Mustermann, AFv
+Einzahlung von Konto AT123456789012345678 lautend auf Max 
+22.01.2026 22.01.2026 2.518,75 11.228,75
+Mustermann, MAa
+Einzahlung von Konto AT123456789012345678 lautend auf Max 
+26.01.2026 26.01.2026 400,00 11.628,75
+Mustermann, GLl
+Einzahlung von Konto  AT123456789012345678 lautend auf Max 
+30.01.2026 30.01.2026 20.140,96 31.769,71
+Mustermann, BKm
+31.01.2026 31.01.2026 8,24 31.777,95 Zinsgutschrift Habenzinsen
+31.01.2026 31.01.2026 -2,06 31.775,89 Kapitalertragsteuer
+Ihre Einlagen bei der Santander Consumer Bank GmbH sind geschützt durch die Einlagensicherung Austria GmbH (ESA). 
+Alle Ihre Einlagen bei unserem Kreditinstitut werden aufaddiert, und die Gesamtsumme der erstattungsfähigen Einlagen unterliegt der Obergrenze von EUR 100.000,00. Hier finden Sie alle 
+Informationen zur Einlagensicherung.
+Santander Consumer Bank GmbH, Postfach 1234, 7001 Eisenstadt Seite 1
+Santander Consumer Bank GmbH, Firmensitz 1220 Wien, Wagramer Straße 19, FN 62610 z Handelsgericht Wien, UID-Nr.: ATU15350108, santander.at
