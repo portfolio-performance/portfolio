@@ -390,4 +390,9 @@ public abstract class AbstractFinanceView
     {
         return stylingEngine;
     }
+
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
 }

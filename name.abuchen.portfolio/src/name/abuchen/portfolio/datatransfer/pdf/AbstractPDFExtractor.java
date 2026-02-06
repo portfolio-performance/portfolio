@@ -325,7 +325,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected long asShares(String value, String language, String country)
     {
-        return ExtractorUtils.asShares(value, language, country);
+        return ExtractorUtils.asShares(negativeValue, value, language, country);
     }
 
     protected String asCurrencyCode(String currency)

@@ -187,7 +187,8 @@ public class HistoricalPricesPane implements InformationPanePage
         if (security != null)
         {
             manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
-                Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), client, security);
+                Dialog dialog = new SecurityPriceDialog(negativeValue, Display.getDefault().getActiveShell(), client,
+                                security);
 
                 if (dialog.open() != Window.OK)
                     return;

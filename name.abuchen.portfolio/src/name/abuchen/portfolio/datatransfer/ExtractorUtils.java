@@ -449,9 +449,9 @@ public class ExtractorUtils
         }
     }
 
-    public static long asShares(String value, String language, String country)
+    public static long asShares(NegativeValue negativeValue, String value, String language, String country)
     {
-        return convertToNumberLong(value, Values.Share, language, country);
+        return convertToNumberLong(negativeValue, value, Values.Share, language, country);
     }
 
     public static LocalDateTime asDate(String value, Locale... hints)

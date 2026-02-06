@@ -119,10 +119,12 @@ public class ClientFactory
 
     /* package */ static class XmlSerialization
     {
+        private NegativeValue negativeValue;
         private boolean idReferences;
 
-        public XmlSerialization(boolean idReferences)
+        public XmlSerialization(NegativeValue negativeValue, boolean idReferences)
         {
+            this.negativeValue = negativeValue;
             this.idReferences = idReferences;
         }
 
@@ -146,7 +148,7 @@ public class ClientFactory
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                                     client.getVersion()));
 
-                upgradeModel(client);
+                upgradeModel(negativeValue, client);
 
                 return client;
             }
@@ -171,26 +173,30 @@ public class ClientFactory
         Client load(InputStream input) throws IOException;
 
         void save(Client client, OutputStream output) throws IOException;
+
+        NegativeValue getNegativeValue();
     }
 
     private static class PlainWriter implements ClientPersister
     {
+        private NegativeValue negativeValue;
         boolean idReferences;
 
-        public PlainWriter(boolean idReferences)
+        public PlainWriter(NegativeValue negativeValue, boolean idReferences)
         {
+            this.negativeValue = negativeValue;
             this.idReferences = idReferences;
         }
 
-        public PlainWriter()
+        public PlainWriter(NegativeValue negativeValue)
         {
-            this(false);
+            this(negativeValue, false);
         }
 
         @Override
         public Client load(InputStream input) throws IOException
         {
-            Client client = new XmlSerialization(idReferences)
+            Client client = new XmlSerialization(negativeValue, idReferences)
                             .load(new InputStreamReader(input, StandardCharsets.UTF_8));
             client.getSaveFlags().add(SaveFlag.XML);
             if (idReferences)
@@ -203,7 +209,7 @@ public class ClientFactory
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            new XmlSerialization(idReferences).save(client, output);
+            new XmlSerialization(negativeValue, idReferences).save(client, output);
         }
     }
 
@@ -636,11 +642,11 @@ public class ClientFactory
     }
 
     @VisibleForTesting
-    public static Client load(Reader input, boolean useIdReferences) throws IOException
+    public static Client load(NegativeValue negativeValue, Reader input, boolean useIdReferences) throws IOException
     {
         try
         {
-            return new XmlSerialization(useIdReferences).load(input);
+            return new XmlSerialization(negativeValue, useIdReferences).load(input);
         }
         finally
         {
@@ -766,7 +772,7 @@ public class ClientFactory
             return body;
     }
 
-    /* package */ static void upgradeModel(Client client)
+    /* package */ static void upgradeModel(NegativeValue negativeValue, Client client)
     {
         client.doPostLoadInitialization();
 
@@ -930,7 +936,7 @@ public class ClientFactory
             case 59: // NOSONAR
                 fixNullSecurityProperties(client);
             case 60: // NOSONAR
-                addInvestmentPlanTypes(client);
+                addInvestmentPlanTypes(negativeValue, client);
             case 61: // NOSONAR
                 removePortfolioReportMarketProperties(client);
             case 62: // NOSONAR
