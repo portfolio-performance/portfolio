@@ -10,6 +10,7 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.CostMethod;
@@ -25,10 +26,13 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest.class
+        Client client = ClientFactory.load(negativeValue,
+                        Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest.class
                         .getResourceAsStream("Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccounts.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

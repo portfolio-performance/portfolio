@@ -35,15 +35,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BasellandschaftlicheKantonalbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class BasellandschaftlicheKantonalbankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new BasellandschaftlicheKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -78,6 +82,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new BasellandschaftlicheKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -112,6 +117,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new BasellandschaftlicheKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -146,6 +152,7 @@ public class BasellandschaftlicheKantonalbankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new BasellandschaftlicheKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

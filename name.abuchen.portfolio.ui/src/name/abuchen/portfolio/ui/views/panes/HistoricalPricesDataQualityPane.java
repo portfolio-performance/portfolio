@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -46,6 +47,9 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class HistoricalPricesDataQualityPane implements InformationPanePage
 {
+    @Inject
+    private NegativeValue negativeValue;
+
     @Inject
     private IPreferenceStore preferences;
 
@@ -135,7 +139,8 @@ public class HistoricalPricesDataQualityPane implements InformationPanePage
                 return;
 
             manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
-                SecurityPriceDialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), client,
+                SecurityPriceDialog dialog = new SecurityPriceDialog(negativeValue,
+                                Display.getDefault().getActiveShell(), client,
                                 security);
                 dialog.setDate(((Interval) firstElement).getStart());
 

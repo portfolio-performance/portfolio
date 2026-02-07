@@ -124,6 +124,6 @@ public class MeDirectBankPlcPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "US");
     }
 }

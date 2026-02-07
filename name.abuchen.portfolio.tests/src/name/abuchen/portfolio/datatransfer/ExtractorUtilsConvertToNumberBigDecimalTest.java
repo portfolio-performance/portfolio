@@ -12,12 +12,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.Values;
 
 @RunWith(Parameterized.class)
 @SuppressWarnings("nls")
 public class ExtractorUtilsConvertToNumberBigDecimalTest
 {
+    NegativeValue negativeValue = new NegativeValue();
+
     private String input;
     private Locale locale;
     private BigDecimal expectedOutput;
@@ -49,7 +52,8 @@ public class ExtractorUtilsConvertToNumberBigDecimalTest
     @Test
     public void testConvertToNumberBigDecimal()
     {
-        BigDecimal actualOutput = ExtractorUtils.convertToNumberBigDecimal(input, null, locale.getLanguage(),
+        BigDecimal actualOutput = ExtractorUtils.convertToNumberBigDecimal(negativeValue, input, null,
+                        locale.getLanguage(),
                         locale.getCountry());
         assertEquals(expectedOutput, actualOutput);
     }
@@ -57,6 +61,7 @@ public class ExtractorUtilsConvertToNumberBigDecimalTest
     @Test(expected = IllegalArgumentException.class)
     public void testConvertToNumberBigDecimalWithInvalidInput()
     {
-        ExtractorUtils.convertToNumberBigDecimal("abc", Values.Share, locale.getLanguage(), locale.getCountry());
+        ExtractorUtils.convertToNumberBigDecimal(negativeValue, "abc", Values.Share, locale.getLanguage(),
+                        locale.getCountry());
     }
 }

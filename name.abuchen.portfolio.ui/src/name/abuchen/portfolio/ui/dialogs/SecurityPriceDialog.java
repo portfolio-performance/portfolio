@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -59,16 +60,19 @@ public class SecurityPriceDialog extends AbstractDialog
         }
     }
 
-    public SecurityPriceDialog(Shell parentShell, Client client, Security security)
+    private NegativeValue negativeValue;
+
+    public SecurityPriceDialog(NegativeValue negativeValue, Shell parentShell, Client client, Security security)
     {
         super(parentShell, Messages.LabelQuote, new SecurityPriceModel(client, security));
+        this.negativeValue = negativeValue;
     }
 
     @Override
     protected void createFormElements(Composite editArea)
     {
         bindings().bindDatePicker(editArea, Messages.ColumnDate, "date"); //$NON-NLS-1$
-        bindings().bindMandatoryQuoteInput(editArea, Messages.ColumnQuote, "price"); //$NON-NLS-1$
+        bindings().bindMandatoryQuoteInput(negativeValue, editArea, Messages.ColumnQuote, "price"); //$NON-NLS-1$
     }
 
     public void setDate(LocalDate date)

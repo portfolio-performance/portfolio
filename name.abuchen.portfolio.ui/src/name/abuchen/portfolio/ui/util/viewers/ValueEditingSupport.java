@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
@@ -17,15 +18,18 @@ import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
+    protected final NegativeValue negativeValue;
     private final StringToCurrencyConverter stringToLong;
     private final CurrencyToStringConverter longToString;
 
     private final Predicate<Number> validator;
 
-    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType,
+    public ValueEditingSupport(NegativeValue negativeValue, Class<?> subjectType, String attributeName,
+                    Values<? extends Number> valueType,
                     Predicate<Number> validator)
     {
         super(subjectType, attributeName);
+        this.negativeValue = negativeValue;
 
         this.validator = validator;
 
@@ -34,13 +38,14 @@ public class ValueEditingSupport extends PropertyEditingSupport
             throw new UnsupportedOperationException(String.format(
                             "Property %s needs to be of type long or int to serve as decimal", attributeName)); //$NON-NLS-1$
 
-        this.stringToLong = new StringToCurrencyConverter(valueType);
+        this.stringToLong = new StringToCurrencyConverter(valueType, negativeValue.isNegativeValueAllowed());
         this.longToString = new CurrencyToStringConverter(valueType);
     }
 
-    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType)
+    public ValueEditingSupport(NegativeValue negativeValue, Class<?> subjectType, String attributeName,
+                    Values<? extends Number> valueType)
     {
-        this(subjectType, attributeName, valueType, null);
+        this(negativeValue, subjectType, attributeName, valueType, null);
     }
 
     @Override
