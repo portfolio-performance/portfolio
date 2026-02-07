@@ -227,11 +227,22 @@ public class ClientFactory
          */
         private static final byte[] SIGNATURE = { 80, 75, 3, 4 };
 
+        private NegativeValue negativeValue;
         private ClientPersister body;
 
         public PlainWriterZIP(ClientPersister body)
         {
+            if (body == null)
+            {
+                throw new NullPointerException("Use alternative constructor"); //$NON-NLS-1$
+            }
+            this.negativeValue = body.getNegativeValue();
             this.body = body;
+        }
+
+        public PlainWriterZIP(NegativeValue negativeValue)
+        {
+            this.negativeValue = negativeValue;
         }
 
         @Override
@@ -245,9 +256,9 @@ public class ClientFactory
                 if (body == null)
                 {
                     if (entry.getName().endsWith(".portfolio")) //$NON-NLS-1$
-                        body = new ProtobufWriter(body.getNegativeValue());
+                        body = new ProtobufWriter(negativeValue);
                     else
-                        body = new PlainWriter(body.getNegativeValue());
+                        body = new PlainWriter(negativeValue);
                 }
 
                 Client client = body.load(zipin);
@@ -275,7 +286,7 @@ public class ClientFactory
         @Override
         public NegativeValue getNegativeValue()
         {
-            return body.getNegativeValue();
+            return negativeValue;
         }
     }
 
@@ -310,13 +321,26 @@ public class ClientFactory
         private static final int AES128_KEYLENGTH = 128;
         private static final int AES256_KEYLENGTH = 256;
 
+        private NegativeValue negativeValue;
         private ClientPersister body;
         private char[] password;
         private int keyLength;
 
         public Decryptor(ClientPersister body, Set<SaveFlag> flags, char[] password)
         {
+            if (body == null)
+            {
+                throw new NullPointerException("Use alternative constructor"); //$NON-NLS-1$
+            }
+            this.negativeValue = body.getNegativeValue();
             this.body = body;
+            this.password = password;
+            this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
+        }
+
+        public Decryptor(NegativeValue negativeValue, Set<SaveFlag> flags, char[] password)
+        {
+            this.negativeValue = negativeValue;
             this.password = password;
             this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
         }
@@ -495,7 +519,7 @@ public class ClientFactory
         @Override
         public NegativeValue getNegativeValue()
         {
-            return body.getNegativeValue();
+            return negativeValue;
         }
     }
 
@@ -785,9 +809,19 @@ public class ClientFactory
             body = new PlainWriter(negativeValue, flags.contains(SaveFlag.ID_REFERENCES));
 
         if (flags.contains(SaveFlag.ENCRYPTED))
-            return new Decryptor(body, flags, password);
+        {
+            if (body != null)
+                return new Decryptor(body, flags, password);
+            else
+                return new Decryptor(negativeValue, flags, password);
+        }
         else if (flags.contains(SaveFlag.COMPRESSED))
-            return new PlainWriterZIP(body);
+        {
+            if (body != null)
+                return new PlainWriterZIP(body);
+            else
+                return new PlainWriterZIP(negativeValue);
+        }
 
         if (body == null)
             return new PlainWriter(negativeValue);
