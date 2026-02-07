@@ -48,6 +48,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
@@ -87,6 +88,12 @@ public class BaaderBankPDFExtractorTest
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
+
+    @Before
+    public void init()
+    {
+        extractor.setNegativeValue(negativeValue);
+    }
 
     @Test
     public void testWertpapierKauf01()
@@ -1466,6 +1473,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1568,6 +1576,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1636,6 +1645,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1836,6 +1846,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2815,6 +2826,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3421,6 +3433,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3519,6 +3532,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3618,6 +3632,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3811,6 +3826,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3954,6 +3970,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4052,6 +4069,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4181,6 +4199,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4251,6 +4270,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4320,6 +4340,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4390,6 +4411,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4460,6 +4482,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4530,6 +4553,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4600,6 +4624,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4670,6 +4695,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4741,6 +4767,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4844,6 +4871,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4915,6 +4943,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4985,6 +5014,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5149,6 +5179,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5223,6 +5254,7 @@ public class BaaderBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new BaaderBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

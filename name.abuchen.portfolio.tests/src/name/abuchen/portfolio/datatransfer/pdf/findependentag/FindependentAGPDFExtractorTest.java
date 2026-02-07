@@ -209,6 +209,7 @@ public class FindependentAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new FindependentAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -317,6 +318,7 @@ public class FindependentAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new FindependentAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -391,6 +393,7 @@ public class FindependentAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new FindependentAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -465,6 +468,7 @@ public class FindependentAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new FindependentAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -607,6 +611,7 @@ public class FindependentAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new FindependentAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

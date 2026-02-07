@@ -932,6 +932,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1030,6 +1031,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1129,6 +1131,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1227,6 +1230,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1436,6 +1440,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1581,6 +1586,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new RaiffeisenBankgruppePDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
