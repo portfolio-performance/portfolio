@@ -62,13 +62,13 @@ public class BundesschatzPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszugFuerZeitraum01()
+    public void testKontoauszug01()
     {
         var extractor = new BundesschatzPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KontoauszugFurZeitraum01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -82,15 +82,15 @@ public class BundesschatzPDFExtractorTest
 
         assertThat(results, hasItem(interest( //
                         hasDate("2025-12-10"), hasShares(0), //
-                        hasSource("KontoauszugFurZeitraum01.txt"), //
-                        hasNote("Habenzinsen 1 Monat von 10.11.2025 bis 10.12.2025"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("10.11.2025 - 10.12.2025 (1 Monat)"), //
                         hasAmount("EUR", 2.78), hasGrossValue("EUR", 3.84), //
                         hasTaxes("EUR", 1.06), hasFees("EUR", 0.00))));
 
         assertThat(results, hasItem(interest( //
                         hasDate("2026-01-12"), hasShares(0), //
-                        hasSource("KontoauszugFurZeitraum01.txt"), //
-                        hasNote("Habenzinsen 1 Monat von 10.12.2025 bis 12.01.2026"), //
+                        hasSource("Kontoauszug01.txt"), //
+                        hasNote("10.12.2025 - 12.01.2026 (1 Monat)"), //
                         hasAmount("EUR", 3.07), hasGrossValue("EUR", 4.23), //
                         hasTaxes("EUR", 1.16), hasFees("EUR", 0.00))));
     }

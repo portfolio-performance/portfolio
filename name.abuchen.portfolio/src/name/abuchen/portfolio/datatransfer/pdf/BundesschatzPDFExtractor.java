@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -17,7 +19,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Bundesschatz");
 
-        addDepositRetrievalTransaction();
+        addDepositRemovalTransaction();
         addAccountStatementTransaction();
     }
 
@@ -27,7 +29,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         return "Bundesschatz";
     }
 
-    private void addDepositRetrievalTransaction()
+    private void addDepositRemovalTransaction()
     {
         final var type = new DocumentType("Ein- und Auszahlungen Bundesschatz", //
                         documentContext -> documentContext //
@@ -35,8 +37,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                                         // Währung: EUR Erstellt am: 16.01.2026 22:09:40
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^W.hrung: (?<currency>[A-Z]{3}) " + //
-                                                        "Erstellt am: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}:[\\d]{2}:[\\d]{2}$") //
+                                        .match("^W.hrung: (?<currency>[A-Z]{3}) Erstellt am:.*$") //
                                         .assign((ctx, v) -> ctx.put("currency", v.get("currency"))));
         this.addDocumentTyp(type);
 
@@ -60,7 +61,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -71,7 +72,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Auszahlung -[\\.,\\d]+ .*$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
-                        
+
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
@@ -85,7 +86,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -100,8 +101,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                                         // Währung: EUR Erstellt am: 16.01.2026 22:09:40
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^W.hrung: (?<currency>[A-Z]{3}) " + //
-                                                        "Erstellt am: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}:[\\d]{2}:[\\d]{2}$") //
+                                        .match("^W.hrung: (?<currency>[A-Z]{3}) Erstellt am:.*$") //
                                         .assign((ctx, v) -> ctx.put("currency", v.get("currency"))));
         this.addDocumentTyp(type);
 
@@ -111,9 +111,9 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
         var interestBlock = new Block("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " + //
                         "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " + //
                         "[\\.,\\d]+ " + //
-                        "[\\.,\\d]+ % " + //
+                        "[\\.,\\d]+[\s]*% " + //
                         "[\\.,\\d]+ " + //
-                        "[\\.,\\d]+% " + //
+                        "[\\.,\\d]+[\\s]*% " + //
                         "[\\.,\\d]+ " + //
                         "[\\.,\\d]+ " + //
                         "[\\.,\\d]+ " + //
@@ -127,23 +127,24 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("startDate", "endDate", "note", "amount", "tax") //
+                        .section("note1", "note2", "date", "tax", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<note>.*) (?<startDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " + //
-                                        "(?<endDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " + //
+                        .match("^(?<note1>.*) (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " + //
+                                        "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " + //
                                         "[\\.,\\d]+ " + //
-                                        "[\\.,\\d]+ % " + //
+                                        "[\\.,\\d]+[\\s]*% " + //
                                         "[\\.,\\d]+ " + //
-                                        "[\\.,\\d]+% " + //
+                                        "[\\.,\\d]+[\\s]*% " + //
                                         "(?<tax>[\\.,\\d]+) " + //
                                         "(?<amount>[\\.,\\d]+) " + //
                                         "[\\.,\\d]+ " + //
                                         "ja$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("endDate")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote("Habenzinsen " + v.get("note") + " von " + v.get("startDate") + " bis " + v.get("endDate"));
+                            t.setNote(v.get("note2") + " - " + v.get("date") + " (" + trim(v.get("note1")) + ")");
+
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
@@ -170,7 +171,7 @@ public class BundesschatzPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note"));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new));
