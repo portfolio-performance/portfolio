@@ -125,6 +125,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -175,6 +176,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -225,6 +227,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -328,6 +331,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -378,6 +382,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -428,6 +433,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -462,6 +468,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -496,6 +503,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -530,6 +538,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -564,6 +573,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf11()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -598,6 +608,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierKauf12()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -632,6 +643,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -682,6 +694,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -732,6 +745,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -782,6 +796,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -832,6 +847,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -877,6 +893,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende02()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -975,6 +992,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende03()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1075,6 +1093,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende04()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1175,6 +1194,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende05()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1274,6 +1294,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende06()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1320,6 +1341,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende07()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1365,6 +1387,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende08()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1399,6 +1422,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende09()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1476,6 +1500,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende10()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1510,6 +1535,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende11()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1544,6 +1570,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende12()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1622,6 +1649,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDividende13()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1656,6 +1684,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1852,6 +1881,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2187,6 +2217,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2252,6 +2283,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug04()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2317,6 +2349,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug05()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2349,6 +2382,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug06()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2401,6 +2435,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug07()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2556,6 +2591,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testKontoauszug08()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2595,6 +2631,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testDepotauszug01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2623,6 +2660,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testEinbuchung01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2743,6 +2781,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testFreierErhalt01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2779,6 +2818,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testFreierErhalt02()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2815,6 +2855,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
     public void testGebuehrenbelastung011()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
