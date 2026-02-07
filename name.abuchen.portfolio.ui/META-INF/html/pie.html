@@ -86,7 +86,7 @@ var thePieChart = {
         }
 
         this.path = pathGroup.selectAll("path.pie")
-            .data(this.piedata, function(d) { return d.data.uuid; });
+            .data(this.piedata);
 
         // Enter: create new paths
         this.path.enter()
@@ -132,7 +132,7 @@ var thePieChart = {
             .sort(function(p1, p2) { return p1.startAngle - p2.startAngle; });
 
         var labels = labelGroup.selectAll("text")
-            .data(labelData, function(d) { return d.data.uuid; });
+            .data(labelData);
 
         // Enter: create new labels
         labels.enter()
@@ -213,7 +213,7 @@ var thePieChart = {
             .sort(function(p1, p2) { return p1.startAngle - p2.startAngle; });
 
         this.valueLabels = labelGroup.selectAll("text")
-            .data(valueData, function(d) { return d.data.uuid; });
+            .data(valueData);
 
         // Enter: create new value labels
         this.valueLabels.enter()
