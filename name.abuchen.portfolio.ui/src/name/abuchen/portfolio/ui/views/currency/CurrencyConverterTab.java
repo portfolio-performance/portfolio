@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -193,6 +194,9 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
     }
 
     @Inject
+    protected NegativeValue negativeValue;
+
+    @Inject
     private IPreferenceStore preferences;
 
     private CurrencyConverterModel model;
@@ -226,9 +230,10 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(editArea);
 
         bindings.createErrorLabel(editArea);
-        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "baseValue", SWT.NONE, 10); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(negativeValue, editArea, Messages.ColumnAmount, "baseValue", SWT.NONE, 10); //$NON-NLS-1$
         bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnBaseCurrency, "baseCurrency", false); //$NON-NLS-1$
-        bindings.bindMandatoryAmountInput(editArea, Messages.ColumnConvertedAmount, "termValue", SWT.READ_ONLY, 10); //$NON-NLS-1$
+        bindings.bindMandatoryAmountInput(negativeValue, editArea, Messages.ColumnConvertedAmount, "termValue", //$NON-NLS-1$
+                        SWT.READ_ONLY, 10);
         bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnTermCurrency, "termCurrency", false); //$NON-NLS-1$
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date").setBackground(Colors.WHITE); //$NON-NLS-1$
 

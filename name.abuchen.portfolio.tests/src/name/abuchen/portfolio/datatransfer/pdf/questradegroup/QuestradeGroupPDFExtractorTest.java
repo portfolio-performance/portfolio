@@ -36,15 +36,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.QuestradeGroupPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class QuestradeGroupPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testSecurityBuy01()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -79,6 +83,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -113,6 +118,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy03()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -146,6 +152,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy04()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -179,6 +186,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy05()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -212,6 +220,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testSecurityBuy06()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -245,6 +254,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testDividend01()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -279,6 +289,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testDividend02()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -312,6 +323,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testDividend03()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -345,6 +357,7 @@ public class QuestradeGroupPDFExtractorTest
     public void testAccountTransaction01()
     {
         var extractor = new QuestradeGroupPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

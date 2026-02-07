@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -52,6 +53,9 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class HistoricalPricesPane implements InformationPanePage
 {
+    @Inject
+    protected NegativeValue negativeValue;
+
     @Inject
     private Client client;
 
@@ -161,7 +165,8 @@ public class HistoricalPricesPane implements InformationPanePage
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, SecurityPrice.class, "value", Values.Quote, //$NON-NLS-1$
+                        number -> number.longValue() != 0)
                         .addListener((e, o, n) -> client.markDirty()).attachTo(column);
         support.addColumn(column);
 
@@ -182,7 +187,8 @@ public class HistoricalPricesPane implements InformationPanePage
         if (security != null)
         {
             manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
-                Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), client, security);
+                Dialog dialog = new SecurityPriceDialog(negativeValue, Display.getDefault().getActiveShell(), client,
+                                security);
 
                 if (dialog.open() != Window.OK)
                     return;

@@ -21,6 +21,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -35,6 +36,7 @@ public class CSVImportWizard extends Wizard
 {
     private static class ExtractorProxy implements Extractor
     {
+        private NegativeValue negativeValue;
         private final CSVImporter importer;
 
         public ExtractorProxy(CSVImporter importer)
@@ -58,6 +60,18 @@ public class CSVImportWizard extends Wizard
         public List<Item> extract(List<InputFile> file, List<Exception> errors)
         {
             return this.importer.createItems(errors);
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
+        }
+
+        @Override
+        public void setNegativeValue(NegativeValue negativeValue)
+        {
+            this.negativeValue = negativeValue;
         }
     }
 
@@ -101,11 +115,11 @@ public class CSVImportWizard extends Wizard
     private ReviewExtractedItemsPage reviewPage;
     private SelectSecurityPage selectSecurityPage;
 
-    public CSVImportWizard(Client client, IPreferenceStore preferences, File inputFile)
+    public CSVImportWizard(NegativeValue negativeValue, Client client, IPreferenceStore preferences, File inputFile)
     {
         this.client = client;
         this.preferences = preferences;
-        this.importer = new CSVImporter(client, inputFile);
+        this.importer = new CSVImporter(negativeValue, client, inputFile);
 
         setupEncoding();
 

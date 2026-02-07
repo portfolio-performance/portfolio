@@ -11,6 +11,7 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -21,10 +22,12 @@ import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 
 public class Issue1898TradeIRRwithPortfolioTransfersTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException, TradeCollectorException
     {
-        Client client = ClientFactory.load(Issue1898TradeIRRwithPortfolioTransfersTest.class
+        Client client = ClientFactory.load(negativeValue, Issue1898TradeIRRwithPortfolioTransfersTest.class
                         .getResourceAsStream("Issue1898TradeIRRwithPortfolioTransfers.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

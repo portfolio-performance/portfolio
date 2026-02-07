@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -23,6 +24,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
 
+    protected final NegativeValue negativeValue;
     private final Client client;
 
     private InvestmentPlan source;
@@ -95,8 +97,9 @@ public class InvestmentPlanModel extends AbstractModel
         }
     }
 
-    public InvestmentPlanModel(Client client, InvestmentPlan.Type planType)
+    public InvestmentPlanModel(NegativeValue negativeValue, Client client, InvestmentPlan.Type planType)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
         this.planType = planType;
     }
@@ -347,9 +350,9 @@ public class InvestmentPlanModel extends AbstractModel
 
         long newGrossAmount = switch (planType)
         {
-            case PURCHASE_OR_DELIVERY -> Math.abs(amount - fees - taxes);
-            case INTEREST -> Math.abs(amount + taxes);
-            case DEPOSIT, REMOVAL -> Math.abs(amount);
+            case PURCHASE_OR_DELIVERY -> negativeValue.maybeAbs(amount - fees - taxes);
+            case INTEREST -> negativeValue.maybeAbs(amount + taxes);
+            case DEPOSIT, REMOVAL -> negativeValue.maybeAbs(amount);
             default -> throw new IllegalArgumentException();
         };
 
@@ -412,7 +415,7 @@ public class InvestmentPlanModel extends AbstractModel
         return switch (planType)
         {
             case PURCHASE_OR_DELIVERY -> grossAmount + fees + taxes;
-            case INTEREST -> Math.abs(grossAmount - taxes);
+            case INTEREST -> negativeValue.maybeAbs(grossAmount - taxes);
             case DEPOSIT, REMOVAL -> grossAmount;
             default -> throw new IllegalArgumentException();
         };

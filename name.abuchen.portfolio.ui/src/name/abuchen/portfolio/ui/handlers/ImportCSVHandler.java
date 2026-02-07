@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -22,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -31,8 +35,13 @@ import name.abuchen.portfolio.ui.editor.FilePathHelper;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 
+@Creatable
+@Singleton
 public class ImportCSVHandler
 {
+    @Inject
+    protected NegativeValue negativeValue;
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
@@ -50,7 +59,7 @@ public class ImportCSVHandler
                         configManager, index, client, null, null));
     }
 
-    public static void runImport(PortfolioPart part, Shell shell, IEclipseContext context,
+    public void runImport(PortfolioPart part, Shell shell, IEclipseContext context,
                     CSVConfigManager configManager,
                     @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index,
                     Client client, Account account, Portfolio portfolio)
@@ -82,7 +91,7 @@ public class ImportCSVHandler
 
         IPreferenceStore preferences = part.getPreferenceStore();
 
-        CSVImportWizard wizard = new CSVImportWizard(client, preferences, new File(fileName));
+        CSVImportWizard wizard = new CSVImportWizard(negativeValue, client, preferences, new File(fileName));
         ContextInjectionFactory.inject(wizard, context);
         if (account != null)
             wizard.setTarget(account);

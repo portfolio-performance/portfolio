@@ -29,16 +29,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DebitumInvestmentsPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class DebitumPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
 
     @Test
     public void testAccountStatement01()
     {
         var extractor = new DebitumInvestmentsPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -73,6 +76,7 @@ public class DebitumPDFExtractorTest
     public void testAccountStatement02()
     {
         var extractor = new DebitumInvestmentsPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

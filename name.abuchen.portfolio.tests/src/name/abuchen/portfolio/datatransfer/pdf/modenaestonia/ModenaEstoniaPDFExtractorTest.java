@@ -28,15 +28,19 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.ModenaEstoniaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class ModenaEstoniaPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testKontoauszug01()
     {
         var extractor = new ModenaEstoniaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -77,6 +81,7 @@ public class ModenaEstoniaPDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new ModenaEstoniaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -101,6 +106,7 @@ public class ModenaEstoniaPDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new ModenaEstoniaPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

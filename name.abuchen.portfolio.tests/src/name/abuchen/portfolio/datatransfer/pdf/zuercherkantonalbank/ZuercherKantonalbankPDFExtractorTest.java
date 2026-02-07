@@ -40,6 +40,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.ZuercherKantonalbankPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -50,10 +51,13 @@ import name.abuchen.portfolio.model.Security;
 @SuppressWarnings("nls")
 public class ZuercherKantonalbankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -96,6 +100,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -129,6 +134,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -171,6 +177,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -204,6 +211,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -238,6 +246,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -280,6 +289,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -313,6 +323,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -347,6 +358,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -381,6 +393,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -415,6 +428,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -457,6 +471,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -490,6 +505,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -532,6 +548,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -567,6 +584,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -609,6 +627,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -644,6 +663,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -685,6 +705,7 @@ public class ZuercherKantonalbankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ZuercherKantonalbankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -721,6 +742,7 @@ public class ZuercherKantonalbankPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

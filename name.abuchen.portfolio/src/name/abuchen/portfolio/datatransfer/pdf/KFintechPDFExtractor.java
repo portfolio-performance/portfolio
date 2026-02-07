@@ -395,13 +395,13 @@ public class KFintechPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "IN");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "IN");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "IN");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "IN");
     }
 
 }

@@ -227,6 +227,6 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
             country = "US";
         }
 
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, language, country);
     }
 }

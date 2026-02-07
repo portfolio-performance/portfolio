@@ -149,14 +149,14 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, Locale.ENGLISH.getLanguage(),
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, Locale.ENGLISH.getLanguage(),
                         Locale.ENGLISH.getCountry());
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, Locale.ENGLISH.getLanguage(),
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, Locale.ENGLISH.getLanguage(),
                         Locale.ENGLISH.getCountry());
     }
 

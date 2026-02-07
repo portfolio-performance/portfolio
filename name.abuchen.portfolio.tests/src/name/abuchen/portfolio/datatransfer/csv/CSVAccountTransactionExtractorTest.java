@@ -49,6 +49,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -64,12 +65,15 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CSVAccountTransactionExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDividendTransactionPlusSecurityCreation() throws ParseException
     {
         Client client = new Client();
 
-        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        var extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
@@ -103,6 +107,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
@@ -139,6 +144,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
@@ -166,6 +172,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -205,6 +212,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -229,6 +237,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -258,6 +267,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -278,6 +288,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
@@ -298,6 +309,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { "2013-01-01", "10:00",
@@ -326,6 +338,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { "2013-01-01", "",
@@ -345,6 +358,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -361,6 +375,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
@@ -386,6 +401,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
@@ -428,6 +444,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
@@ -502,6 +519,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
@@ -525,6 +543,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         // setup custom mapping from string -> type
 
@@ -572,6 +591,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<Exception>();
         Map<String, Column> field2column = buildField2Column(extractor);
@@ -607,6 +627,7 @@ public class CSVAccountTransactionExtractorTest
         Client client = new Client();
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
@@ -645,6 +666,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
@@ -684,6 +706,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
@@ -723,6 +746,7 @@ public class CSVAccountTransactionExtractorTest
         client.addSecurity(security);
 
         CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0, Arrays.<String[]>asList(new String[] { //
@@ -763,6 +787,7 @@ public class CSVAccountTransactionExtractorTest
                         .toList();
 
         var extractor = new CSVAccountTransactionExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         var errors = new ArrayList<Exception>();
         // the extract method gets only the data rows -> use sub list
