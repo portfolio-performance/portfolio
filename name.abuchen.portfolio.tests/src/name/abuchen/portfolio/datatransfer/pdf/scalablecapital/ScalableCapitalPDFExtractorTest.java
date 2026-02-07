@@ -44,16 +44,20 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.ScalableCapitalPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
 @SuppressWarnings("nls")
 public class ScalableCapitalPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -88,6 +92,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -122,6 +127,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -156,6 +162,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -190,6 +197,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -224,6 +232,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSecurityBuy01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -258,6 +267,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -292,6 +302,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testEffectKopen01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -326,6 +337,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testTitoliAcquisto01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -360,6 +372,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -394,6 +407,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -428,6 +442,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -462,6 +477,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -496,6 +512,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -530,6 +547,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf06()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -564,6 +582,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testWertpapierVerkauf07()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -606,6 +625,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -640,6 +660,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -674,6 +695,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -708,6 +730,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -742,6 +765,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung04()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -776,6 +800,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung05()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -810,6 +835,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung06()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -844,6 +870,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung07()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -878,6 +905,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung08()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -912,6 +940,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung09()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -946,6 +975,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung10()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -980,6 +1010,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung11()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1014,6 +1045,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung12()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1048,6 +1080,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung13()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1082,6 +1115,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung14()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1116,6 +1150,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung15()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1150,6 +1185,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSparplanausfuehrung16()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1184,6 +1220,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSavingsplan01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1218,6 +1255,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSavingsplan02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1252,6 +1290,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1293,6 +1332,7 @@ public class ScalableCapitalPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ScalableCapitalPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1321,6 +1361,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1362,6 +1403,7 @@ public class ScalableCapitalPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ScalableCapitalPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1390,6 +1432,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1424,6 +1467,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1465,6 +1509,7 @@ public class ScalableCapitalPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ScalableCapitalPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1493,6 +1538,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1534,6 +1580,7 @@ public class ScalableCapitalPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ScalableCapitalPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1562,6 +1609,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1603,6 +1651,7 @@ public class ScalableCapitalPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ScalableCapitalPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1631,6 +1680,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende07()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1665,6 +1715,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende08()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1699,6 +1750,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende09()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1733,6 +1785,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testDividende10()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1767,6 +1820,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testRechnungsabschluss01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1795,6 +1849,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testRechnungsabschluss02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1823,6 +1878,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testKontoauszug01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1884,6 +1940,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testKontoauszug02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1925,6 +1982,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testKontoauszug03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1953,6 +2011,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1977,6 +2036,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testSteuererstattung01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2001,6 +2061,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2035,6 +2096,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale02()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2069,6 +2131,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale03()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2103,6 +2166,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale04()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2137,6 +2201,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale05()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2173,6 +2238,7 @@ public class ScalableCapitalPDFExtractorTest
     public void testVorabpauschale06()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

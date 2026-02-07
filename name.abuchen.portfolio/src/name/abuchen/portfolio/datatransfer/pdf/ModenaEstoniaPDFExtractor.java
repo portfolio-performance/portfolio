@@ -116,6 +116,6 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "US");
     }
 }

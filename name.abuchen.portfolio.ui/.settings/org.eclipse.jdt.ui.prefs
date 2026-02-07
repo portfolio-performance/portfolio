@@ -1,7 +1,8 @@
 eclipse.preferences.version=1
 formatter_profile=_portfolio
-formatter_settings_version=13
+formatter_settings_version=23
 org.eclipse.jdt.ui.ignorelowercasenames=true
 org.eclipse.jdt.ui.importorder=java;javax;jakarta;org;com;
 org.eclipse.jdt.ui.ondemandthreshold=99
 org.eclipse.jdt.ui.staticondemandthreshold=99
+org.eclipse.jdt.ui.text.custom_code_templates=

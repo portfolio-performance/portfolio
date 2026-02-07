@@ -64,8 +64,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
     private void createModel(ExchangeRateProviderFactory factory, PortfolioTransaction.Type type) // NOSONAR
     {
         boolean isBuySell = type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.SELL;
-        AbstractSecurityTransactionModel model = isBuySell ? new BuySellModel(client, type)
-                        : new SecurityDeliveryModel(client, type);
+        AbstractSecurityTransactionModel model = isBuySell ? new BuySellModel(negativeValue, client, type)
+                        : new SecurityDeliveryModel(negativeValue, client, type);
         model.setExchangeRateProviderFactory(factory);
         setModel(model);
 

@@ -28,6 +28,7 @@ import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
@@ -57,6 +58,8 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
+    protected NegativeValue negativeValue;
+
     private final Client client;
     private SecurityCache securityCache;
 
@@ -71,6 +74,18 @@ public abstract class AbstractPDFExtractor implements Extractor
     public final Client getClient()
     {
         return client;
+    }
+
+    @Override
+    public final NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
+
+    @Override
+    public final void setNegativeValue(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
     }
 
     protected final void addDocumentTyp(DocumentType type)
@@ -310,7 +325,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected long asShares(String value, String language, String country)
     {
-        return ExtractorUtils.asShares(value, language, country);
+        return ExtractorUtils.asShares(negativeValue, value, language, country);
     }
 
     protected String asCurrencyCode(String currency)
@@ -348,7 +363,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     protected long asAmount(String value, String language, String country)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, language, country);
     }
 
     protected ExtrExchangeRate asExchangeRate(Map<String, String> data)

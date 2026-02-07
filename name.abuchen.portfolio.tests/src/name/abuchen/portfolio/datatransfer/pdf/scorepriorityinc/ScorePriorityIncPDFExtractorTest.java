@@ -25,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.ScorePriorityIncPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -37,6 +38,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ScorePriorityIncPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     /***
      * Information: Score Priority is a US-based financial services company. The
      * currency is US$. All security currencies are USD. CUSIP Number: The CUSIP
@@ -48,6 +51,7 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement01()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -310,6 +314,7 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement02()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -355,10 +360,12 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement03()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement03.txt"), errors);
+        extractor.setNegativeValue(negativeValue);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(11L));
@@ -712,10 +719,12 @@ public class ScorePriorityIncPDFExtractorTest
     public void testAccountStatement04()
     {
         var extractor = new ScorePriorityIncPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement04.txt"), errors);
+        extractor.setNegativeValue(negativeValue);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(7L));

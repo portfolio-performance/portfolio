@@ -17,6 +17,7 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -25,7 +26,13 @@ import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
 {
+    protected NegativeValue negativeValue;
+
     public abstract List<Field> getFields();
+
+    public CSVExtractor()
+    {
+    }
 
     public Field getField(String code)
     {
@@ -188,7 +195,7 @@ public abstract class CSVExtractor implements Extractor
         var value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
-        return Math.abs(value);
+        return negativeValue.maybeAbs(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -251,5 +258,17 @@ public abstract class CSVExtractor implements Extractor
                             .orElse(null);
         }
         return null;
+    }
+
+    @Override
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
+
+    @Override
+    public void setNegativeValue(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
     }
 }

@@ -620,18 +620,18 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "CA");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "CA");
     }
 
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "CA");
+        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "en", "CA");
     }
 }

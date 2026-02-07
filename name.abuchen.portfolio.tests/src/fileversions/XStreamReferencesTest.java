@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.ClientTestUtilities;
@@ -16,11 +17,14 @@ import name.abuchen.portfolio.model.ClientTestUtilities;
 @SuppressWarnings("nls")
 public class XStreamReferencesTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testReadingWithReferencesAndWritingWithoutReferences() throws IOException
     {
         Client withReferences = ClientFactory
-                        .load(XStreamReferencesTest.class.getResourceAsStream("client_with_relative_references.xml"));
+                        .load(negativeValue, XStreamReferencesTest.class
+                                        .getResourceAsStream("client_with_relative_references.xml"));
 
         // check that the first two securities have the same latest price object
         // (is a reference in the XML file)
@@ -29,7 +33,8 @@ public class XStreamReferencesTest
                         .getLatest(), is(true));
 
         String xml = ClientTestUtilities.toString(withReferences);
-        Client without = ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        Client without = ClientFactory.load(negativeValue,
+                        new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         assertThat(without.getSecurities().get(0).getLatest() == without.getSecurities().get(1).getLatest(), is(false));
     }
 
@@ -37,7 +42,8 @@ public class XStreamReferencesTest
     public void testReadingWithIdReferencesAndWritingWithoutIdReferences() throws IOException
     {
         Client withReferences = ClientFactory
-                        .load(XStreamReferencesTest.class.getResourceAsStream("client_with_id_references.xml"), true);
+                        .load(negativeValue, XStreamReferencesTest.class
+                                        .getResourceAsStream("client_with_id_references.xml"), true);
 
         // check that the first two securities have the same latest price object
         // (is a reference with "id" attribute in the XML file)
@@ -46,7 +52,8 @@ public class XStreamReferencesTest
                         .getLatest(), is(true));
 
         String xml = ClientTestUtilities.toString(withReferences, true);
-        Client without = ClientFactory.load(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        Client without = ClientFactory.load(negativeValue,
+                        new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         assertThat(without.getSecurities().get(0).getLatest() == without.getSecurities().get(1).getLatest(), is(false));
     }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -25,10 +26,12 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Issue4446FIFOMultipleTransfers
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDefaultSnapshot() throws IOException, TradeCollectorException
     {
-        Client client = ClientFactory.load(
+        Client client = ClientFactory.load(negativeValue,
                         Issue4446FIFOMultipleTransfers.class.getResourceAsStream("Issue4446FIFOMultipleTransfers.xml")); //$NON-NLS-1$
 
         Security security = client.getSecurities().get(0);
@@ -51,7 +54,7 @@ public class Issue4446FIFOMultipleTransfers
         // scenario: first a purchase (with a time in the transaction) and then
         // an outbound transfer (without time stamp) on the same day
 
-        Client client = ClientFactory.load(Issue4446FIFOMultipleTransfers.class
+        Client client = ClientFactory.load(negativeValue, Issue4446FIFOMultipleTransfers.class
                         .getResourceAsStream("Issue4446FIFOTransferWithSameDayPurchase.xml")); //$NON-NLS-1$
 
         Security security = client.getSecurities().get(0);

@@ -274,12 +274,12 @@ public class QuestradeGroupPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "CA");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "CA");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "CA");
     }
 }

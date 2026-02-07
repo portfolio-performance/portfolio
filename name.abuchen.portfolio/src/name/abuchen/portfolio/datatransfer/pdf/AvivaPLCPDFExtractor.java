@@ -148,12 +148,12 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "UK");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "UK");
     }
 }

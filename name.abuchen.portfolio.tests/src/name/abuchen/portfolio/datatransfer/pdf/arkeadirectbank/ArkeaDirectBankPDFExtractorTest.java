@@ -38,15 +38,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.ArkeaDirectBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class ArkeaDirectBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testCompteAchat01()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -81,6 +85,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat02()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -129,6 +134,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat03()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -163,6 +169,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat04()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -215,6 +222,7 @@ public class ArkeaDirectBankPDFExtractorTest
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
+        extractor.setNegativeValue(negativeValue);
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat05.txt"), errors);
 
@@ -249,6 +257,7 @@ public class ArkeaDirectBankPDFExtractorTest
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
+        extractor.setNegativeValue(negativeValue);
 
         var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
 
@@ -281,6 +290,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat07()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -315,6 +325,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat08()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -349,6 +360,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat09()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -447,6 +459,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat07WithAchatTaxesTreatment07()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -482,6 +495,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchat07WithTaxesTreatment07_SourceFilesReversed()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -517,6 +531,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testCompteAchatTaxesTreatment07()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -551,6 +566,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testDeposit01()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -616,6 +632,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -650,6 +667,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -684,6 +702,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -718,6 +737,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testTaxesTreatment01()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -752,6 +772,7 @@ public class ArkeaDirectBankPDFExtractorTest
     public void testTaxesTreatment02()
     {
         var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

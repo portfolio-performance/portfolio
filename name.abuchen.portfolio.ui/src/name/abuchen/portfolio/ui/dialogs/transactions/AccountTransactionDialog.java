@@ -78,7 +78,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     @PostConstruct
     private void createModel(ExchangeRateProviderFactory factory, AccountTransaction.Type type) // NOSONAR
     {
-        AccountTransactionModel m = new AccountTransactionModel(client, type);
+        AccountTransactionModel m = new AccountTransactionModel(negativeValue, client, type);
         m.setExchangeRateProviderFactory(factory);
         setModel(m);
 

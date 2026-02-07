@@ -74,6 +74,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -118,10 +119,12 @@ public class ClientFactory
 
     /* package */ static class XmlSerialization
     {
+        private NegativeValue negativeValue;
         private boolean idReferences;
 
-        public XmlSerialization(boolean idReferences)
+        public XmlSerialization(NegativeValue negativeValue, boolean idReferences)
         {
+            this.negativeValue = negativeValue;
             this.idReferences = idReferences;
         }
 
@@ -145,7 +148,7 @@ public class ClientFactory
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
                                     client.getVersion()));
 
-                upgradeModel(client);
+                upgradeModel(negativeValue, client);
 
                 return client;
             }
@@ -170,26 +173,30 @@ public class ClientFactory
         Client load(InputStream input) throws IOException;
 
         void save(Client client, OutputStream output) throws IOException;
+
+        NegativeValue getNegativeValue();
     }
 
     private static class PlainWriter implements ClientPersister
     {
+        private NegativeValue negativeValue;
         boolean idReferences;
 
-        public PlainWriter(boolean idReferences)
+        public PlainWriter(NegativeValue negativeValue, boolean idReferences)
         {
+            this.negativeValue = negativeValue;
             this.idReferences = idReferences;
         }
 
-        public PlainWriter()
+        public PlainWriter(NegativeValue negativeValue)
         {
-            this(false);
+            this(negativeValue, false);
         }
 
         @Override
         public Client load(InputStream input) throws IOException
         {
-            Client client = new XmlSerialization(idReferences)
+            Client client = new XmlSerialization(negativeValue, idReferences)
                             .load(new InputStreamReader(input, StandardCharsets.UTF_8));
             client.getSaveFlags().add(SaveFlag.XML);
             if (idReferences)
@@ -202,7 +209,13 @@ public class ClientFactory
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            new XmlSerialization(idReferences).save(client, output);
+            new XmlSerialization(negativeValue, idReferences).save(client, output);
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
         }
     }
 
@@ -214,11 +227,22 @@ public class ClientFactory
          */
         private static final byte[] SIGNATURE = { 80, 75, 3, 4 };
 
+        private NegativeValue negativeValue;
         private ClientPersister body;
 
         public PlainWriterZIP(ClientPersister body)
         {
+            if (body == null)
+            {
+                throw new NullPointerException("Use alternative constructor"); //$NON-NLS-1$
+            }
+            this.negativeValue = body.getNegativeValue();
             this.body = body;
+        }
+
+        public PlainWriterZIP(NegativeValue negativeValue)
+        {
+            this.negativeValue = negativeValue;
         }
 
         @Override
@@ -232,9 +256,9 @@ public class ClientFactory
                 if (body == null)
                 {
                     if (entry.getName().endsWith(".portfolio")) //$NON-NLS-1$
-                        body = new ProtobufWriter();
+                        body = new ProtobufWriter(negativeValue);
                     else
-                        body = new PlainWriter();
+                        body = new PlainWriter(negativeValue);
                 }
 
                 Client client = body.load(zipin);
@@ -257,6 +281,12 @@ public class ClientFactory
                 body.save(client, zipout);
                 zipout.closeEntry();
             }
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
         }
     }
 
@@ -291,13 +321,26 @@ public class ClientFactory
         private static final int AES128_KEYLENGTH = 128;
         private static final int AES256_KEYLENGTH = 256;
 
+        private NegativeValue negativeValue;
         private ClientPersister body;
         private char[] password;
         private int keyLength;
 
         public Decryptor(ClientPersister body, Set<SaveFlag> flags, char[] password)
         {
+            if (body == null)
+            {
+                throw new NullPointerException("Use alternative constructor"); //$NON-NLS-1$
+            }
+            this.negativeValue = body.getNegativeValue();
             this.body = body;
+            this.password = password;
+            this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
+        }
+
+        public Decryptor(NegativeValue negativeValue, Set<SaveFlag> flags, char[] password)
+        {
+            this.negativeValue = negativeValue;
             this.password = password;
             this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
         }
@@ -360,9 +403,9 @@ public class ClientFactory
                     if (body == null)
                     {
                         if (contentType == 2)
-                            body = new ProtobufWriter();
+                            body = new ProtobufWriter(getNegativeValue());
                         else
-                            body = new PlainWriter();
+                            body = new PlainWriter(getNegativeValue());
                     }
 
                     // wrap with zip input stream
@@ -471,6 +514,12 @@ public class ClientFactory
             KeySpec spec = new PBEKeySpec(password, SALT, ITERATION_COUNT, keyLength);
             SecretKey tmp = factory.generateSecret(spec);
             return new SecretKeySpec(tmp.getEncoded(), AES);
+        }
+
+        @Override
+        public NegativeValue getNegativeValue()
+        {
+            return negativeValue;
         }
     }
 
@@ -594,7 +643,8 @@ public class ClientFactory
         }
     }
 
-    public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
+    public static Client load(NegativeValue negativeValue, File file, char[] password, IProgressMonitor monitor)
+                    throws IOException
     {
         Set<SaveFlag> flags = getFlags(file);
 
@@ -612,7 +662,7 @@ public class ClientFactory
             try (InputStream input = new ProgressMonitorInputStream(
                             new BufferedInputStream(new FileInputStream(file), 65536), increment, monitor))
             {
-                ClientPersister persister = buildPersister(flags, password);
+                ClientPersister persister = buildPersister(negativeValue, flags, password);
                 Client client = persister.load(input);
 
                 PortfolioLog.info(String.format("Loaded %s with %s", file.getName(), client.getSaveFlags().toString())); //$NON-NLS-1$
@@ -629,17 +679,17 @@ public class ClientFactory
         }
     }
 
-    public static Client load(Reader input) throws IOException
+    public static Client load(NegativeValue negativeValue, Reader input) throws IOException
     {
-        return load(input, false);
+        return load(negativeValue, input, false);
     }
 
     @VisibleForTesting
-    public static Client load(Reader input, boolean useIdReferences) throws IOException
+    public static Client load(NegativeValue negativeValue, Reader input, boolean useIdReferences) throws IOException
     {
         try
         {
-            return new XmlSerialization(useIdReferences).load(input);
+            return new XmlSerialization(negativeValue, useIdReferences).load(input);
         }
         finally
         {
@@ -649,18 +699,19 @@ public class ClientFactory
     }
 
     @VisibleForTesting
-    public static Client load(InputStream input) throws IOException
+    public static Client load(NegativeValue negativeValue, InputStream input) throws IOException
     {
-        return load(input, false);
+        return load(negativeValue, input, false);
     }
 
     @VisibleForTesting
-    public static Client load(InputStream input, boolean useIdReferences) throws IOException
+    public static Client load(NegativeValue negativeValue, InputStream input, boolean useIdReferences)
+                    throws IOException
     {
-        return load(new InputStreamReader(input, StandardCharsets.UTF_8), useIdReferences);
+        return load(negativeValue, new InputStreamReader(input, StandardCharsets.UTF_8), useIdReferences);
     }
 
-    public static void save(final Client client, final File file) throws IOException
+    public static void save(NegativeValue negativeValue, final Client client, final File file) throws IOException
     {
         Set<SaveFlag> flags = EnumSet.copyOf(client.getSaveFlags());
 
@@ -670,10 +721,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, null, flags, true);
+        writeFile(negativeValue, client, file, null, flags, true);
     }
 
-    public static void saveAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+    public static void saveAs(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags)
                     throws IOException
     {
         if (flags.isEmpty())
@@ -682,10 +734,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, password, flags, true);
+        writeFile(negativeValue, client, file, password, flags, true);
     }
 
-    public static void exportAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+    public static void exportAs(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags)
                     throws IOException
     {
         if (flags.isEmpty())
@@ -694,10 +747,11 @@ public class ClientFactory
         if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        writeFile(client, file, password, flags, false);
+        writeFile(negativeValue, client, file, password, flags, false);
     }
 
-    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags,
+    private static void writeFile(NegativeValue negativeValue, final Client client, final File file, char[] password,
+                    Set<SaveFlag> flags,
                     boolean updateFlags) throws IOException
     {
         PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
@@ -729,7 +783,7 @@ public class ClientFactory
                                 file.getAbsolutePath(), e.getMessage()));
             }
 
-            ClientPersister persister = buildPersister(flags, password);
+            ClientPersister persister = buildPersister(negativeValue, flags, password);
             persister.save(client, output);
 
             output.flush();
@@ -745,27 +799,37 @@ public class ClientFactory
         }
     }
 
-    private static ClientPersister buildPersister(Set<SaveFlag> flags, char[] password)
+    private static ClientPersister buildPersister(NegativeValue negativeValue, Set<SaveFlag> flags, char[] password)
     {
         ClientPersister body = null;
 
         if (flags.contains(SaveFlag.BINARY))
-            body = new ProtobufWriter();
+            body = new ProtobufWriter(negativeValue);
         else if (flags.contains(SaveFlag.XML))
-            body = new PlainWriter(flags.contains(SaveFlag.ID_REFERENCES));
+            body = new PlainWriter(negativeValue, flags.contains(SaveFlag.ID_REFERENCES));
 
         if (flags.contains(SaveFlag.ENCRYPTED))
-            return new Decryptor(body, flags, password);
+        {
+            if (body != null)
+                return new Decryptor(body, flags, password);
+            else
+                return new Decryptor(negativeValue, flags, password);
+        }
         else if (flags.contains(SaveFlag.COMPRESSED))
-            return new PlainWriterZIP(body);
+        {
+            if (body != null)
+                return new PlainWriterZIP(body);
+            else
+                return new PlainWriterZIP(negativeValue);
+        }
 
         if (body == null)
-            return new PlainWriter();
+            return new PlainWriter(negativeValue);
         else
             return body;
     }
 
-    /* package */ static void upgradeModel(Client client)
+    /* package */ static void upgradeModel(NegativeValue negativeValue, Client client)
     {
         client.doPostLoadInitialization();
 
@@ -929,7 +993,7 @@ public class ClientFactory
             case 59: // NOSONAR
                 fixNullSecurityProperties(client);
             case 60: // NOSONAR
-                addInvestmentPlanTypes(client);
+                addInvestmentPlanTypes(negativeValue, client);
             case 61: // NOSONAR
                 removePortfolioReportMarketProperties(client);
             case 62: // NOSONAR
@@ -1699,7 +1763,7 @@ public class ClientFactory
         }
     }
 
-    private static void addInvestmentPlanTypes(Client client)
+    private static void addInvestmentPlanTypes(NegativeValue negativeValue, Client client)
     {
         for (InvestmentPlan plan : client.getPlans())
         {
@@ -1710,7 +1774,7 @@ public class ClientFactory
             else
             {
                 plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
-                plan.setAmount(Math.abs(plan.getAmount()));
+                plan.setAmount(negativeValue.maybeAbs(plan.getAmount()));
             }
         }
     }

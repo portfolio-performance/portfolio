@@ -96,12 +96,12 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "US");
     }
 
     @Override
     protected long asShares(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, "en", "US");
     }
 }

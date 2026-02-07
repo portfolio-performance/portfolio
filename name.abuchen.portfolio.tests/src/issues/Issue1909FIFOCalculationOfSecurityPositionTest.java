@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -26,10 +27,12 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Issue1909FIFOCalculationOfSecurityPositionTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testDefaultSnapshot() throws IOException
     {
-        Client client = ClientFactory.load(Issue1909FIFOCalculationOfSecurityPositionTest.class
+        Client client = ClientFactory.load(negativeValue, Issue1909FIFOCalculationOfSecurityPositionTest.class
                         .getResourceAsStream("Issue1909FIFOCalculationOfSecurityPosition.xml")); //$NON-NLS-1$
 
         Security security = client.getSecurities().get(0);

@@ -25,6 +25,7 @@ import com.google.protobuf.Any;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.ClientFactory.ClientPersister;
@@ -96,6 +97,13 @@ import name.abuchen.portfolio.money.Money;
 
     private static final byte[] SIGNATURE = new byte[] { 'P', 'P', 'P', 'B', 'V', '1' };
 
+    private NegativeValue negativeValue;
+
+    public ProtobufWriter(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
+    }
+
     @Override
     public Client load(InputStream input) throws IOException
     {
@@ -137,7 +145,7 @@ import name.abuchen.portfolio.money.Money;
 
         client.getSaveFlags().add(SaveFlag.BINARY);
 
-        ClientFactory.upgradeModel(client);
+        ClientFactory.upgradeModel(negativeValue, client);
 
         return client;
     }
@@ -1423,5 +1431,11 @@ import name.abuchen.portfolio.money.Money;
             String typeUrl = extension.getTypeUrl();
             PortfolioLog.info("Saved extension: " + typeUrl); //$NON-NLS-1$
         }
+    }
+
+    @Override
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
     }
 }

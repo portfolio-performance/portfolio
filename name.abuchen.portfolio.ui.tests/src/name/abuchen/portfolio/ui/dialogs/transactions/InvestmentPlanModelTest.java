@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Status;
 import org.junit.Test;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -16,12 +17,13 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 @SuppressWarnings("nls")
 public class InvestmentPlanModelTest
 {
+    NegativeValue negativeValue = new NegativeValue();
 
     @Test
     public void testNewRemovalPlan()
     {
         Client client = new Client();
-        InvestmentPlanModel model = new InvestmentPlanModel(client, InvestmentPlan.Type.REMOVAL);
+        InvestmentPlanModel model = new InvestmentPlanModel(negativeValue, client, InvestmentPlan.Type.REMOVAL);
         model.setAccount(new Account());
         model.setAmount(100L);
         model.setInterval(1);
@@ -45,7 +47,7 @@ public class InvestmentPlanModelTest
         investmentPlan.setAmount(100L);
         investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
 
-        InvestmentPlanModel model = new InvestmentPlanModel(new Client(), InvestmentPlan.Type.REMOVAL);
+        InvestmentPlanModel model = new InvestmentPlanModel(negativeValue, new Client(), InvestmentPlan.Type.REMOVAL);
         model.setSource(investmentPlan);
 
         assertThat(model.getAmount(), is(100L));

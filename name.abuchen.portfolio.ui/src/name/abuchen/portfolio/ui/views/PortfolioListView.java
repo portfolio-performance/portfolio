@@ -68,6 +68,9 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     private static final String FILTER_INACTIVE_PORTFOLIOS = "filter-retired-portfolios"; //$NON-NLS-1$
 
     @Inject
+    private ImportCSVHandler importCSVHandler;
+
+    @Inject
     private ExchangeRateProviderFactory factory;
 
     private TableViewer portfolios;
@@ -324,7 +327,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         {
             manager.add(new Separator());
 
-            manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
+            manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> importCSVHandler.runImport(getPart(),
                             Display.getDefault().getActiveShell(), getContext(), null, null,
                             getClient(), portfolio.getReferenceAccount(), portfolio)));
 
