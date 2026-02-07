@@ -93,6 +93,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -168,6 +169,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -243,6 +245,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -277,6 +280,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -352,6 +356,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -427,6 +432,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -502,6 +508,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -536,6 +543,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -570,6 +578,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -645,6 +654,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierKauf11()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -679,6 +689,7 @@ public class FindependentAGPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -713,6 +724,7 @@ public class FindependentAGPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -747,6 +759,7 @@ public class FindependentAGPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -781,6 +794,7 @@ public class FindependentAGPDFExtractorTest
     public void testEinzahlung01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -805,6 +819,7 @@ public class FindependentAGPDFExtractorTest
     public void testEinzahlung02()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -829,6 +844,7 @@ public class FindependentAGPDFExtractorTest
     public void testEinzahlung03()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -853,6 +869,7 @@ public class FindependentAGPDFExtractorTest
     public void testDepotgebuehren01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -877,6 +894,7 @@ public class FindependentAGPDFExtractorTest
     public void testVerwaltungsgebuehren01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -902,6 +920,7 @@ public class FindependentAGPDFExtractorTest
     public void testGebuehrenerstattung01()
     {
         var extractor = new FindependentAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

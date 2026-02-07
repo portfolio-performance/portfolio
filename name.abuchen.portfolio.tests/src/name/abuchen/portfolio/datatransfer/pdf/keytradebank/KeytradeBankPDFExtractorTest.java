@@ -117,6 +117,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -167,6 +168,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -217,6 +219,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -325,6 +328,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreAchat01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -375,6 +379,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreAchat02()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -425,6 +430,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreAchat03()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -475,6 +481,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreAchat04()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -525,6 +532,7 @@ public class KeytradeBankPDFExtractorTest
     public void testEffectAankoop01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -559,6 +567,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -609,6 +618,7 @@ public class KeytradeBankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -717,6 +727,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreVente01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -767,6 +778,7 @@ public class KeytradeBankPDFExtractorTest
     public void testTitreVente02()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -817,6 +829,7 @@ public class KeytradeBankPDFExtractorTest
     public void testEffectVerkoop01()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -892,6 +905,7 @@ public class KeytradeBankPDFExtractorTest
     public void testEffectVerkoop02()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1218,6 +1232,7 @@ public class KeytradeBankPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new KeytradeBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
