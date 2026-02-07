@@ -367,6 +367,40 @@ public class BoursoBankPDFExtractorTest
     }
 
     @Test
+    public void testCompteAchat08()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000120271"), hasWkn(null), hasTicker(null), //
+                        hasName("TOTALENERGIES SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-01-01T00:00:01"), hasShares(1.00), //
+                        hasSource("Achat08.txt"), //
+                        hasNote("au marché | Référence : 691879873038"), //
+                        hasAmount("EUR", 16.04), hasGrossValue("EUR", 10.99), //
+                        hasTaxes("EUR", 3.03), hasFees("EUR", 2.02))));
+    }
+
+    @Test
     public void testCompteVente01()
     {
         var extractor = new BoursoBankPDFExtractor(new Client());
@@ -393,7 +427,7 @@ public class BoursoBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-09-29T00:00"), hasShares(42.00), //
+                        hasDate("2023-09-29T12:36:04"), hasShares(42.00), //
                         hasSource("Vente01.txt"), //
                         hasNote("à cours limiteCours demandé : 20,5500 EUR | Référence : 493029272303"), //
                         hasAmount("EUR", 858.78), hasGrossValue("EUR", 863.10), //

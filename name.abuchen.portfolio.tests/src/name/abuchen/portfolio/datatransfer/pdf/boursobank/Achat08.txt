@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: linux | x86_64 | 00.0.0+00-Debian-0 | Debian
+-----------------------------------------
+OPERATION DE BOURSE
+le 01/01/2020
+ 000000
+P12345
+MR XXX XXX
+FORTERESSE DE LA BASTILLE
+75000 PARIS
+Références de votre compte titres
+99999 99999 00099999999 Compte PEA
+Résident Français
+ACHAT COMPTANT
+ACTION
+Date et heure
+locale d'exécution Quantité Informations sur la valeur Informations sur l'exécution
+01/01/2020 1 TOTALENERGIES SE Référence : 691879873038
+Type d'ordre : au marché
+00:00:01
+Code ISIN : FR0000120271 Cours exécuté : 10,99 EUR
+Lieu d'exécution : EURONEXT PARIS
+Montant brut Commission Frais (¨) Montant net au débit de votre compte
+10,99 EUR 2,02 EUR 3,03 EUR 16,04 EUR
+Sous réserve de bonne fin.
+(¨) Frais inhérents à la Taxe sur les Transactions Financières française
+Cet avis ne tient pas compte des frais inhérents aux Taxes sur les Transactions Financières européennes (hors France), s'ils doivent s'appliquer.
+ 
+Service Clientèle : 01 46 09 49 49 ou +33 146 09 49 49 depuis l'étranger, du lundi au vendredi de 8h à 20h et le samedi de 8h45 à 16h30 – www.boursobank.com
+Boursorama S.A. au capital de 53 576 889,20 € - RCS Nanterre 351 058 151 - TVA 69 351 058 151 - 44 rue Traversière - CS 80134 - 92772 Boulogne Billancourt Cedex
+AA1
+Adresse du médiateur : Médiateur de l'AMF - 17, place de la Bourse - 75082 PARIS CEDEX 02
+000000 F1 P18086 1/1
