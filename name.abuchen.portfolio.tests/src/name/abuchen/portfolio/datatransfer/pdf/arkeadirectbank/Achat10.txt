@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.4
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+AVIS D'OPÉRATIONS M puHPCA xdpsoRa
+Au 03 février 2026 12 Pyq lE IT IiGn DE jOfWvbT
+97496 oZeJS
+VOTRE COMPTE PEA-PME N° 012345678910 M ZnnqpM BMuiZGp
+Date
+opération Désignation Débit Crédit
+¢ OPCVM : IND.ET EXP.EUROPE SM.XC EUR 4D (LU1832174889)
+    Rétrocession perçue par Fortuneo* : 0,8502 %
+02-02-2026 Référence 94F7048294366804
+Sens Souscription OPC
+Transmission 30-01-2026 • 08:02:49
+Marché Comptant
+Lieu d'exécution COURS DIFFUSES
+Quantité 24,5 Val. Liquidative 237,36 €
+Montant Brut 5 815,32 €
+Taux Droits DE/DS 2,00 %
+Droits entrée/sortie 116,31 €
+Montant NET 5 931,63 € 5 931,63 €
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+* Fortuneo, en sa qualité de distributeur, perçoit des rétrocessions récurrentes de frais de gestion (sous forme de commissions sur
+encours), de la part de sociétés de gestion de portefeuille, dans le cadre de la commercialisation d'OPCVM et/ou de la FIA.
+Le taux indiqué est le taux réel calculé à la présente date. Une information détaillée peut être obtenue sur simple demande
+adressée à Fortuneo. Se reporter au PRIIPS/DICI de l'OPCVM pour toute information relative aux frais de gestion et leur assiette.
+Conformément à l’article 314-89 du règlement général de l’AMF, vous pouvez obtenir auprès du prestataire ayant effectué le présent
+compte-rendu :
+- le détail de chaque tranche en cas d’exécution fractionnée,
+- la ventilation par poste des commissions et frais facturés.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Trinity - 1bis, place de la Défense 92400 Courbevoie.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

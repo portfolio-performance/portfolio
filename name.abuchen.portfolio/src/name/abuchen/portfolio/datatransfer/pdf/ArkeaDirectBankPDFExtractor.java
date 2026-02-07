@@ -81,7 +81,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format01()
     {
-        var securityRange = new Block("^.* (ACTION|TRACKER) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$") //
+        var securityRange = new Block("^.* (ACTION|TRACKER|OPCVM) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$") //
                         .asRange(section -> section //
                                         // @formatter:off
                                         // ¢ ACTION : ORANGE (FR0000133308)
@@ -89,10 +89,13 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // ¢ TRACKER : AMUNDI MSCI WORLD UC.ETF EUR D (LU2655993207)
                                         // Quantité 7 Cours 30,24 €
+                                        //
+                                        // ¢ OPCVM : IND.ET EXP.EUROPE SM.XC EUR 4D (LU1832174889)
+                                        // Quantité 24,5 Val. Liquidative 237,36 €
                                         // @formatter:on
                                         .attributes("name", "isin", "currency") //
-                                        .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
-                                        .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$"));
+                                        .match("^.* (ACTION|TRACKER|OPCVM) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                        .match("^Quantit. [\\,\\d\\s]+ (Cours|Val\\. Liquidative) [\\,\\d\\s]+ (?<currency>\\p{Sc})$"));
 
         final var type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
         this.addDocumentTyp(type);
@@ -113,7 +116,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Vente" change from BUY to SELL
                         .section("type").optional() //
-                        .match(".* Sens (?<type>(Achat|Vente)).*$") //
+                        .match(".* Sens (?<type>(Achat|Vente|Souscription)).*$") //
                         .assign((t, v) -> {
                             if ("Vente".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -122,23 +125,32 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Quantité 46 Cours 10,646 €
                         // Quantité 1 450 Cours 5,4941 €
+                        // Quantité 24,5 Val. Liquidative 237,36 €
                         // @formatter:on
                         .section("shares") //
                         .documentRange("name", "isin", "currency") //
-                        .match("^Quantit. (?<shares>[\\d\\s]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
+                        .match("^Quantit. (?<shares>[\\,\\d\\s]+) (Cours|Val\\. Liquidative) [\\,\\d\\s]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        // @formatter:off
-                        // 26-03-2024 Référence 94R6134018440990
-                        // 16:27:35 Sens Achat - Exécution unique
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf(
+                                        // @formatter:off
+                                        // 26-03-2024 Référence 94R6134018440990
+                                        // 16:27:35 Sens Achat - Exécution unique
+                                        // @formatter:on
+                                        section -> section //
+                                            .attributes("date", "time") //
+                                            .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                            .match("^(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .* \\- .*$") //
+                                            .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+
+                                         // 02-02-2026 Référence 94F7048294366804
+                                         section -> section //
+                                             .attributes("date") //
+                                             .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) R.f.rence .*$") //
+                                             .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Montant NET 491,67 € 491,67 €
@@ -443,9 +455,10 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Courtage et Commission 1,95 €
+                        // Droits entrée/sortie 116,31 €
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Courtage et Commission (?<fee>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^(Courtage et Commission|Droits entr.e\\/sortie) (?<fee>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
