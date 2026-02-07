@@ -36,7 +36,7 @@ public class DetectDuplicatesActionTest
         var action = new DetectDuplicatesAction(new Client());
 
         new PropertyChecker<AccountTransaction>(
-                        AccountTransaction.class, "note", "source", "forex", "monetaryAmount", "updatedAt")
+                        AccountTransaction.class, "note", "source", "forex", "monetaryAmount", "dateEx", "updatedAt")
                                         .before((name, o, c) -> assertThat(name,
                                                         action.process(o, account(c)).getCode(), is(Code.WARNING)))
                                         .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),

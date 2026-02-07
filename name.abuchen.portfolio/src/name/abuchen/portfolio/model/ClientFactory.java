@@ -945,7 +945,8 @@ public class ClientFactory
                 fixLogoAttributeName(client);
             case 67: // NOSONAR
                 removeSourceAttributeFromTaxonomy(client);
-
+            case 68: // NOSONAR
+                // added exDate date field
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
