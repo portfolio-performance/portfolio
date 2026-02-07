@@ -263,7 +263,9 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Kapitalertrags(s)?teuer.*$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
                         .section("tax").optional() //
@@ -271,7 +273,9 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Solidarit.tszuschlag.*$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
                         .section("tax").optional() //
@@ -279,7 +283,9 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\-)?(?<tax>[\\.,\\d]+) [\\.,\\d]+ Kirchensteuer.*$") //
                         .assign((t, v) -> {
                             var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
                         .wrap(TransactionItem::new));
@@ -287,9 +293,9 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 19.05.2023 19.05.2023 34,00 34,01 Einzahlung von ...
         // @formatter:on
-        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ Einzahlung.*$");
-        type.addBlock(depositBlock);
-        depositBlock.set(new Transaction<AccountTransaction>()
+        var depositBlock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ Einzahlung.*$");
+        type.addBlock(depositBlock_Format01);
+        depositBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
@@ -300,6 +306,38 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount", "note") //
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+ Einzahlung (?<note>.*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // Einzahlung von Konto  AT123456789012345678 lautend auf Max
+        // 30.01.2026 30.01.2026 20.140,96 31.769,71
+        // Mustermann, BKm
+        //
+        // Einzahlung von Konto Lr976088571958963679 lautend auf
+        // 24.11.2025 24.11.2025 8,50 38.271,72 VOYfxcgsvJX BkOWWv
+        // xnqYrAv afHFrgoYY
+        // @formatter:on
+        var depositBlock_Format02 = new Block("^Einzahlung von Konto .* lautend auf.*$");
+        type.addBlock(depositBlock_Format02);
+        depositBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<note>Einzahlung von Konto .*) lautend auf.*$")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) [\\.,\\d]+.*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
