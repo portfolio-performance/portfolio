@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
@@ -26,11 +27,13 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Issue1498FifoCrossPortfolioTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory
-                        .load(Issue1498FifoCrossPortfolioTest.class.getResourceAsStream("Issue1498FifoCrossPortfolio.xml")); //$NON-NLS-1$
+        Client client = ClientFactory.load(negativeValue,
+                        Issue1498FifoCrossPortfolioTest.class.getResourceAsStream("Issue1498FifoCrossPortfolio.xml")); //$NON-NLS-1$
 
         Security lufthansa = client.getSecurities().get(0);
         assertThat(lufthansa.getName(), is("Deutsche Lufthansa AG")); //$NON-NLS-1$

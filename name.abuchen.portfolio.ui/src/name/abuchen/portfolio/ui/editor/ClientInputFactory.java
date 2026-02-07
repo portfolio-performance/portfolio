@@ -15,6 +15,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.selection.SelectionService;
@@ -24,6 +25,9 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 public class ClientInputFactory
 {
     private Map<ClientInput, AtomicInteger> cache = new HashMap<>();
+
+    @Inject
+    private NegativeValue negativeValue;
 
     @Inject
     private IEclipseContext context;
@@ -47,7 +51,7 @@ public class ClientInputFactory
         cache.put(answer, new AtomicInteger());
 
         if (!ClientFactory.isEncrypted(clientFile))
-            new LoadClientThread(answer, broker, new ProgressProvider(answer), null).start();
+            new LoadClientThread(negativeValue, answer, broker, new ProgressProvider(answer), null).start();
 
         return answer;
     }

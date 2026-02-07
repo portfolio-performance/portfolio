@@ -22,6 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SelfWealthPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -33,10 +34,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SelfWealthPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testSecurityBuy01()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -87,6 +91,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy02()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -137,6 +142,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy03()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -187,6 +193,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecurityBuy04()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -237,6 +244,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecuritySell01()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -287,6 +295,7 @@ public class SelfWealthPDFExtractorTest
     public void testSecuritySell02()
     {
         var extractor = new SelfWealthPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

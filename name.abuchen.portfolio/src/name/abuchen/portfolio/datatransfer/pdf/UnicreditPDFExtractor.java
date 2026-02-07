@@ -311,6 +311,6 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     @Override
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
+        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "de", "CH");
     }
 }

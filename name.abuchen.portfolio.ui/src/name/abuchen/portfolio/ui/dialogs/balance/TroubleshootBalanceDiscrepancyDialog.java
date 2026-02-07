@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.money.Money;
@@ -99,10 +100,14 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
 
     };
 
-    public TroubleshootBalanceDiscrepancyDialog(Shell parentShell, ClientInput clientInput, Account account)
+    protected final NegativeValue negativeValue;
+
+    public TroubleshootBalanceDiscrepancyDialog(NegativeValue negativeValue, Shell parentShell, ClientInput clientInput,
+                    Account account)
     {
         super(parentShell);
 
+        this.negativeValue = negativeValue;
         this.clientInput = clientInput;
         this.account = account;
 
@@ -266,7 +271,8 @@ public class TroubleshootBalanceDiscrepancyDialog extends Dialog
         });
         column.setEditingSupport(new ColumnEditingSupport()
         {
-            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount);
+            private final StringToCurrencyConverter stringToLong = new StringToCurrencyConverter(Values.Amount,
+                            negativeValue.isNegativeValueAllowed());
 
             @Override
             public void setValue(Object element, Object value) throws Exception

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import jakarta.inject.Inject;
+
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -52,6 +54,7 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -100,14 +103,16 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
         {
-            StringToCurrencyConverter converter = new StringToCurrencyConverter(values);
+            StringToCurrencyConverter converter = new StringToCurrencyConverter(values,
+                            negativeValue.isNegativeValueAllowed());
             UpdateValueStrategy<String, Long> strategy = new UpdateValueStrategy<>();
             strategy.setAfterGetValidator(converter);
             strategy.setConverter(converter);
             if (isMandatory)
             {
                 strategy.setAfterConvertValidator(
-                                convertedValue -> convertedValue != null && convertedValue.longValue() > 0
+                                convertedValue -> convertedValue != null && (negativeValue.isNegativeValueAllowed()
+                                                || convertedValue.longValue() > 0)
                                                 ? ValidationStatus.ok()
                                                 : ValidationStatus.error(MessageFormat
                                                                 .format(Messages.MsgDialogInputRequired, description)));
@@ -415,6 +420,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     }
 
     public static final int SAVE_AND_NEW_ID = 4711;
+
+    @Inject
+    protected NegativeValue negativeValue;
 
     protected AbstractModel model;
     protected DataBindingContext context = new DataBindingContext();

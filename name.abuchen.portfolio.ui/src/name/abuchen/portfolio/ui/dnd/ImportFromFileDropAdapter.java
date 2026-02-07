@@ -79,7 +79,8 @@ public class ImportFromFileDropAdapter extends AbstractDropAdapter
         DropTarget source = (DropTarget) event.getSource();
         Display display = source.getDisplay();
         display.asyncExec(() -> {
-            CSVImportWizard wizard = new CSVImportWizard(part.getClient(), part.getPreferenceStore(),
+            CSVImportWizard wizard = new CSVImportWizard(part.getNegativeValue(), part.getClient(),
+                            part.getPreferenceStore(),
                             new File(fileNames[0]));
             part.inject(wizard);
             Dialog wizwardDialog = new WizardDialog(ActiveShell.get(), wizard);

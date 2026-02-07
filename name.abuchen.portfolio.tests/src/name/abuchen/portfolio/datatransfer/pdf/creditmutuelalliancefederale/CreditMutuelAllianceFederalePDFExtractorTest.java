@@ -34,15 +34,19 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.CreditMutuelAllianceFederalePDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
 public class CreditMutuelAllianceFederalePDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testCompteAChat01()
     {
         var extractor = new CreditMutuelAllianceFederalePDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

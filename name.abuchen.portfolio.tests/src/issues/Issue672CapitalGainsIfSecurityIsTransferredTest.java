@@ -10,6 +10,7 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Portfolio;
@@ -26,10 +27,12 @@ import name.abuchen.portfolio.util.Interval;
 
 public class Issue672CapitalGainsIfSecurityIsTransferredTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(Issue371PurchaseValueWithTransfersTest.class
+        Client client = ClientFactory.load(negativeValue, Issue371PurchaseValueWithTransfersTest.class
                         .getResourceAsStream("Issue672CapitalGainsIfSecurityIsTransferred.xml")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

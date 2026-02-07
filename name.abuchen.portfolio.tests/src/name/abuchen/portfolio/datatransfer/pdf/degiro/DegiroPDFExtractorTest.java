@@ -47,6 +47,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -60,10 +61,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DegiroPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testKontoauszug01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        var extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -100,6 +104,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug02()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -187,6 +192,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug03()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -364,6 +370,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug04()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -394,6 +401,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug05()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -491,6 +499,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug06()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -536,6 +545,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug07()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -570,6 +580,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug08_minimal_example_two_currencies()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -622,6 +633,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug08()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -893,6 +905,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug09()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -993,6 +1006,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug10()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1089,6 +1103,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug11()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1173,6 +1188,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug12()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1383,6 +1399,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug13()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1447,6 +1464,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug14()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1700,6 +1718,7 @@ public class DegiroPDFExtractorTest
     public void testKontoauszug15()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2384,6 +2403,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2431,6 +2451,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht02()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2487,6 +2508,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht03()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2530,6 +2552,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht04()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2584,6 +2607,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht05()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2627,6 +2651,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht06()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2666,6 +2691,7 @@ public class DegiroPDFExtractorTest
     public void testRekeningoverzicht07()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2816,10 +2842,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(328.78))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(469.67))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(328.78))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(469.67))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.89))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2839,10 +2863,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(528.85))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(755.49))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(528.85))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(755.49))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(226.64))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2862,10 +2884,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(306.37))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(437.68))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(306.37))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(437.68))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(131.31))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2885,10 +2905,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(253.97))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(362.83))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(253.97))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(362.83))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(108.86))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2908,10 +2926,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(266.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(381.41))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(266.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(381.41))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(114.43))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2931,10 +2947,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(497.42))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(710.59))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(497.42))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(710.59))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(213.17))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2954,10 +2968,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(239.54))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(342.21))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(239.54))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(342.21))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(102.67))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -2977,10 +2989,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(81.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.20))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(81.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.20))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(34.87))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3000,10 +3010,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(343.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(404.69))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(343.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(404.69))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.71))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3023,10 +3031,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(898.93))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1057.56))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(898.93))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1057.56))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(158.63))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3046,10 +3052,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(284.73))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(334.97))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(284.73))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(334.97))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.24))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3069,10 +3073,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.06))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(387.14))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.06))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(387.14))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(58.08))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3092,10 +3094,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(280.28))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(280.28))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(280.28))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(280.28))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3115,10 +3115,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(315.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(370.97))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(315.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(370.97))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(55.64))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3138,10 +3136,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(467.31))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(549.78))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(467.31))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(549.78))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(82.47))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3161,10 +3157,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(151.09))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(151.09))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(151.09))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(151.09))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3184,10 +3178,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.39))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(373.39))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.39))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(373.39))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(56.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3207,10 +3199,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Rekeningoverzicht07.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(143.04))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(168.29))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(143.04))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(168.29))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.25))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -3397,6 +3387,7 @@ public class DegiroPDFExtractorTest
     public void testAccountStatement01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3514,6 +3505,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3637,6 +3629,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht02()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3722,6 +3715,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht03()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3821,6 +3815,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht04()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3893,6 +3888,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht05()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4010,6 +4006,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht06()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4105,7 +4102,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht07()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4176,6 +4173,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht08()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4249,6 +4247,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht09()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4356,6 +4355,7 @@ public class DegiroPDFExtractorTest
     public void testTransaktionsuebersicht10()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4468,7 +4468,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht11()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4515,7 +4515,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht12()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4682,7 +4682,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht13()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4751,7 +4751,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht14()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4798,7 +4798,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht15()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4864,7 +4864,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht16()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -4955,7 +4955,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht17()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5100,7 +5100,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht18()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5172,7 +5172,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht19()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -5502,7 +5502,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransaktionsuebersicht20()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6112,7 +6112,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransacties01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6208,7 +6208,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransacciones01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6312,7 +6312,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransacciones02()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6380,7 +6380,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransacciones03()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6543,7 +6543,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransacciones04()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6593,7 +6593,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransactions_english01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6818,7 +6818,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransakcje01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -6908,7 +6908,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransakcje02()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7042,7 +7042,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransakcje03()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7144,7 +7144,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testEstrattoConto01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7220,7 +7220,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testEstrattoConto02()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7769,7 +7769,7 @@ public class DegiroPDFExtractorTest
         Client client = new Client();
         client.addSecurity(security);
 
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7812,7 +7812,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testOperazioni01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7881,7 +7881,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7926,7 +7926,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransactions_french01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -7978,7 +7978,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransactions_french02()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8056,7 +8056,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testTransakce01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8135,7 +8135,7 @@ public class DegiroPDFExtractorTest
     @Test
     public void testEstadoDeCuenta01()
     {
-        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client()); extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8427,10 +8427,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.36))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8447,10 +8445,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(257.34))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.70))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(60.36))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8467,10 +8463,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.54))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(174.74))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.54))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(174.74))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.20))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8487,10 +8481,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.13))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.74))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.13))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.74))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.61))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8510,10 +8502,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.10))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.58))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.10))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8533,10 +8523,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.99))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.75))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(26.99))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.75))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.76))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8556,10 +8544,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.45))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.45))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.12))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8579,10 +8565,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(57.45))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(67.59))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(57.45))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(67.59))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.14))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8602,10 +8586,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.68))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.22))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.68))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.22))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.54))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8625,10 +8607,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.72))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.26))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.72))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.46))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8648,10 +8628,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.21))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8671,10 +8649,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("EstadoDeCuenta01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(267.05))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.69))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(267.05))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.69))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(62.64))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8757,6 +8733,7 @@ public class DegiroPDFExtractorTest
     public void testPrehleductu01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -8894,10 +8871,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.27))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.27))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.27))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.27))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8917,10 +8892,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.61))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.61))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.61))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.61))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8940,10 +8913,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.78))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.78))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.78))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(36.78))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8963,10 +8934,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.10))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.10))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.10))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.10))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -8986,10 +8955,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.33))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.33))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.33))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(33.33))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9009,10 +8976,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.62))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.62))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.62))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.62))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9032,10 +8997,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.85))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.85))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.85))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.85))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9055,10 +9018,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.41))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.41))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.41))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.41))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9078,10 +9039,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.09))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.09))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.09))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.09))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9101,10 +9060,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.98))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.98))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9124,10 +9081,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.79))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.79))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.79))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.79))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9147,10 +9102,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.19))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.19))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.19))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.19))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9170,10 +9123,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.74))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.74))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.74))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.74))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9193,10 +9144,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.63))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9216,10 +9165,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.86))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.86))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.86))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.86))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9239,10 +9186,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.32))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.32))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.32))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.32))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9262,10 +9207,8 @@ public class DegiroPDFExtractorTest
         assertThat(transaction.getSource(), is("Prehleductu01.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.04))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.04))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.04))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.04))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
@@ -9443,6 +9386,7 @@ public class DegiroPDFExtractorTest
     public void testTransacoes01()
     {
         DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -9517,5 +9461,5 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
-   
+
 }
