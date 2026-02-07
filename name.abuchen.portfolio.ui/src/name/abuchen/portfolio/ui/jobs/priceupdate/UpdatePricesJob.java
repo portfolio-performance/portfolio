@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,6 +59,10 @@ public class UpdatePricesJob extends AbstractClientJob
     private boolean suppressAuthenticationDialog = false;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    private final AtomicBoolean isModelUpdatePending = new AtomicBoolean(false);
+
+    private volatile boolean isDirtyAccumulated = false;
 
     public UpdatePricesJob(Client client, Set<Target> target)
     {
@@ -157,8 +162,30 @@ public class UpdatePricesJob extends AbstractClientJob
         // start periodic UI updates
         ScheduledFuture<?> periodicUpdate = scheduler.scheduleAtFixedRate(() -> {
             fireSnapshot(request);
+
             if (request.getAndResetDirty())
-                request.getClient().markDirty();
+                isDirtyAccumulated = true;
+
+            if (isDirtyAccumulated)
+            {
+                // Try to schedule a UI update. If one is already
+                // pending/running, compareAndSet returns false.
+                if (isModelUpdatePending.compareAndSet(false, true))
+                {
+                    isDirtyAccumulated = false;
+
+                    Display.getDefault().asyncExec(() -> {
+                        try
+                        {
+                            request.getClient().markDirty();
+                        }
+                        finally
+                        {
+                            isModelUpdatePending.set(false);
+                        }
+                    });
+                }
+            }
         }, 0, UI_PROGRESS_UPDATE_INTERVAL, TimeUnit.MILLISECONDS);
 
         JobGroup jobGroup = new JobGroup(Messages.JobLabelUpdating, 10, jobs.size());
@@ -179,7 +206,7 @@ public class UpdatePricesJob extends AbstractClientJob
         finally
         {
             periodicUpdate.cancel(false);
-            if (request.getAndResetDirty())
+            if (request.getAndResetDirty() || isDirtyAccumulated)
                 request.getClient().markDirty();
             fireSnapshot(request);
         }
