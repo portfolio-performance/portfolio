@@ -16,8 +16,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
@@ -1947,12 +1947,15 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
     private void fillContextMenu(IMenuManager manager) // NOSONAR
     {
-        RowElement row = (RowElement) ((IStructuredSelection) records.getSelection()).getFirstElement();
-        if (row == null || !row.isRecord())
-            return;
+        var selection = records.getStructuredSelection();
+        var securities = selection.stream() //
+                        .filter(e -> e instanceof RowElement re && re.isRecord())
+                        .map(e -> ((RowElement) e).performanceRecord.getSecurity()).toList();
 
-        Security security = row.performanceRecord.getSecurity();
-        new SecurityContextMenu(this).menuAboutToShow(manager, security);
+        if (!securities.isEmpty())
+        {
+            new SecurityContextMenu(this).menuAboutToShow(manager, securities, null);
+        }
     }
 
     private void hookKeyListener()

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -43,19 +45,26 @@ public class SecurityContextMenu
 
     public void menuAboutToShow(IMenuManager manager, final Security security)
     {
-        this.menuAboutToShow(manager, security, null);
+        menuAboutToShow(manager, security != null ? List.of(security) : List.of(), null);
     }
 
     public void menuAboutToShow(IMenuManager manager, final Security security, final Portfolio portfolio)
     {
+        menuAboutToShow(manager, security != null ? List.of(security) : List.of(), portfolio);
+    }
+
+    public void menuAboutToShow(IMenuManager manager, final List<Security> securities, final Portfolio portfolio)
+    {
         if (owner.getClient().getSecurities().isEmpty())
             return;
 
-        // if the security has no currency code, e.g. is an index, then show now
+        final Security security = !securities.isEmpty() ? securities.getFirst() : null;
+
+        // if the security has no currency code, e.g. is an index, then show no
         // menus to create transactions
         if (security != null && security.getCurrencyCode() == null)
         {
-            manager.add(new BookmarkMenu(owner.getPart(), security));
+            manager.add(new BookmarkMenu(owner.getPart(), securities));
             return;
         }
 
@@ -161,7 +170,7 @@ public class SecurityContextMenu
             manager.add(new EditSecurityAction(security));
 
             manager.add(new Separator());
-            manager.add(new BookmarkMenu(owner.getPart(), security));
+            manager.add(new BookmarkMenu(owner.getPart(), securities));
         }
     }
 
