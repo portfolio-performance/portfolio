@@ -37,6 +37,20 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+   <release version="0.81.5" date="2026-02-08">
+      <description>
+        <ul>
+          <li>New: Added dashboard widget for upcoming dividend events (ex-date and payment date).</li>
+          <li>New: Added PDF importers for Bundesschatz, Anadi Bank, and Nord LB (Norddeutsche Landesbank).</li>
+          <li>Improvement: Enhanced PDF importers for Scalable Capital, Trade Republic, DKB, Comdirect, flatexDEGIRO, BaaderBank, BoursoBank, ArkeaDirectBank, Santander Consumer Bank, Saxo Bank, Hypothekarbank Lenzburg, Tradegate, Questrade, apoBank, Audi Bank, Volkswagen Bank, and Nordax Bank.</li>
+          <li>Fix: Corrected pie chart display when an instrument is shared between classifications.</li>
+          <li xml:lang="de">Neu: Dashboard-Widget für bevorstehende Dividendenereignisse (Ex-Tag und Zahltag) hinzugefügt.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Bundesschatz, Anadi Bank und Nord LB (Norddeutsche Landesbank) hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer für Scalable Capital, Trade Republic, DKB, Comdirect, flatexDEGIRO, BaaderBank, BoursoBank, ArkeaDirectBank, Santander Consumer Bank, Saxo Bank, Hypothekarbank Lenzburg, Tradegate, Questrade, apoBank, Audi Bank, Volkswagen Bank und Nordax Bank verbessert.</li>
+          <li xml:lang="de">Fix: Kreisdiagramm korrigiert, wenn ein Wertpapier zwischen Klassifikationen geteilt wird.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.81.4" date="2026-01-26">
       <description>
         <ul>
