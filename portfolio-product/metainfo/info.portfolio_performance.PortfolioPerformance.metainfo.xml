@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.81.4" date="2026-01-26">
+      <description>
+        <ul>
+          <li>Fix: Reverts changes that attempted to reduce flickering when refreshing flare and pie charts.</li>
+          <li xml:lang="de">Fix: Macht Änderungen rückgängig, die versuchten, das Flackern beim Aktualisieren von Flächen- und Kreisdiagrammen zu reduzieren.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.81.3" date="2026-01-25">
       <description>
         <ul>
