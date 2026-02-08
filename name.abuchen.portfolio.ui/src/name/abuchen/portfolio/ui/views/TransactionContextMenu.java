@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -46,7 +47,7 @@ public class TransactionContextMenu
     {
         if (selection.isEmpty() && fullContextMenu)
         {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
+            new SecurityContextMenu(owner).menuAboutToShow(manager, List.of(), null);
         }
 
         if (selection.size() == 1)

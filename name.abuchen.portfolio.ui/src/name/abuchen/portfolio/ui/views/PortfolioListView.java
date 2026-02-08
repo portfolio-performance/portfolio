@@ -158,7 +158,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
             manager.add(new Separator());
 
             Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
-            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
+            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, List.of(), portfolio);
         }));
     }
 
@@ -318,7 +318,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         if (portfolio == null)
             return;
 
-        new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
+        new SecurityContextMenu(this).menuAboutToShow(manager, List.of(), portfolio);
 
         if (!portfolio.isRetired())
         {
