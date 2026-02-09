@@ -135,7 +135,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
-        quote.bindCurrency(Properties.securityCurrencyCode.name());
+        quote.bindCurrency(Properties.securityQuotation.name());
 
         Input grossValue = new Input(editArea, "="); //$NON-NLS-1$
         grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);

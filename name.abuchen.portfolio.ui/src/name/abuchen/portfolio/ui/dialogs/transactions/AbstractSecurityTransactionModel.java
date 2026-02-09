@@ -35,7 +35,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
         convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
-        calculationStatus;
+        securityQuotation, calculationStatus;
     }
 
     protected final Client client;
@@ -269,6 +269,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         String oldCurrencyCode = getSecurityCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+        String oldQuotation = getSecurityQuotation();
 
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
 
@@ -277,6 +278,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         getExchangeRateCurrencies());
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
+        firePropertyChange(Properties.securityQuotation.name(), oldQuotation,
+                        getSecurityQuotation());
 
         updateExchangeRate();
         updateSharesAndQuote();
@@ -635,6 +638,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public PortfolioTransaction.Type getType()
     {
         return type;
+    }
+
+    /**
+     * Returns either the currency code (for securities quoted with absolute
+     * values) or a percent sign (%).
+     */
+    public String getSecurityQuotation()
+    {
+        return (security != null && security.isPercentageQuoted()) ? "%" : getSecurityCurrencyCode(); //$NON-NLS-1$
     }
 
     protected long calculateConvertedGrossValue()
