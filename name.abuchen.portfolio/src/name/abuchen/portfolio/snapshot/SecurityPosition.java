@@ -101,6 +101,8 @@ public class SecurityPosition
                         .multiply(BigDecimal.valueOf(price.getValue()), Values.MC)
                         .movePointLeft(Values.Quote.precisionDeltaToMoney()) //
                         .setScale(0, RoundingMode.HALF_UP).longValue();
+        if (investment instanceof Security security && security.isPercentageQuoted())
+            marketValue /= 100;
         return Money.of(investment.getCurrencyCode(), marketValue);
     }
 
