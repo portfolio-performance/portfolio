@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDateEx;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -3221,7 +3222,7 @@ public class OnvistaPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-09-09"), hasShares(60), //
-                        /* hasDateEx("2021-12-02"), */
+                        hasDateEx("2019-08-30"),
                         hasSource("Dividende17.txt"), hasNote("Abrechnungs-Nr. 26128781"), //
                         hasAmount("EUR", 7.65), hasGrossValue("EUR", 15.73), //
                         hasTaxes("EUR", (39.00 / 9.9148) + 3.93 + 0.22), hasFees("EUR", 0.00), //
@@ -3260,10 +3261,9 @@ public class OnvistaPDFExtractorTest
                         hasCurrencyCode("EUR"))));
 
         // check dividends transaction
-        assertThat(results, hasItem(dividend/* WithExDate */( //
-                        /* asDate("2015-12-15").toLocalDate(), */
+        assertThat(results, hasItem(dividend(
                         hasDate("2015-12-17T00:00"), hasShares(156.729), //
-                        /* hasDateEx("2021-12-02"), */
+                        hasDateEx("2015-12-15"),
                         hasSource("Dividende18.txt"), //
                         hasNote("Abrechnungs-Nr. 70187215 | Ertrag für 2014/15"), //
                         hasAmount("EUR", 7.68), hasGrossValue("EUR", 11.84), //
