@@ -621,9 +621,9 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int DATEEX_FIELD_NUMBER = 18;
-  private com.google.protobuf.Timestamp dateEx_;
+  private long dateEx_ = 0L;
   /**
-   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+   * <code>optional int64 dateEx = 18;</code>
    * @return Whether the dateEx field is set.
    */
   @java.lang.Override
@@ -631,19 +631,12 @@ private static final long serialVersionUID = 0L;
     return ((bitField0_ & 0x00000040) != 0);
   }
   /**
-   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+   * <code>optional int64 dateEx = 18;</code>
    * @return The dateEx.
    */
   @java.lang.Override
-  public com.google.protobuf.Timestamp getDateEx() {
-    return dateEx_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : dateEx_;
-  }
-  /**
-   * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-   */
-  @java.lang.Override
-  public com.google.protobuf.TimestampOrBuilder getDateExOrBuilder() {
-    return dateEx_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : dateEx_;
+  public long getDateEx() {
+    return dateEx_;
   }
 
   public static final int CURRENCYCODE_FIELD_NUMBER = 10;
@@ -989,7 +982,7 @@ private static final long serialVersionUID = 0L;
       com.google.protobuf.GeneratedMessageV3.writeString(output, 17, source_);
     }
     if (((bitField0_ & 0x00000040) != 0)) {
-      output.writeMessage(18, getDateEx());
+      output.writeInt64(18, dateEx_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -1060,7 +1053,7 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000040) != 0)) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(18, getDateEx());
+        .computeInt64Size(18, dateEx_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1117,8 +1110,8 @@ private static final long serialVersionUID = 0L;
     }
     if (hasDateEx() != other.hasDateEx()) return false;
     if (hasDateEx()) {
-      if (!getDateEx()
-          .equals(other.getDateEx())) return false;
+      if (getDateEx()
+          != other.getDateEx()) return false;
     }
     if (!getCurrencyCode()
         .equals(other.getCurrencyCode())) return false;
@@ -1196,7 +1189,8 @@ private static final long serialVersionUID = 0L;
     }
     if (hasDateEx()) {
       hash = (37 * hash) + DATEEX_FIELD_NUMBER;
-      hash = (53 * hash) + getDateEx().hashCode();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getDateEx());
     }
     hash = (37 * hash) + CURRENCYCODE_FIELD_NUMBER;
     hash = (53 * hash) + getCurrencyCode().hashCode();
@@ -1358,7 +1352,6 @@ private static final long serialVersionUID = 0L;
               .alwaysUseFieldBuilders) {
         getOtherUpdatedAtFieldBuilder();
         getDateFieldBuilder();
-        getDateExFieldBuilder();
         getUnitsFieldBuilder();
         getUpdatedAtFieldBuilder();
       }
@@ -1384,11 +1377,7 @@ private static final long serialVersionUID = 0L;
         dateBuilder_.dispose();
         dateBuilder_ = null;
       }
-      dateEx_ = null;
-      if (dateExBuilder_ != null) {
-        dateExBuilder_.dispose();
-        dateExBuilder_ = null;
-      }
+      dateEx_ = 0L;
       currencyCode_ = "";
       amount_ = 0L;
       shares_ = 0L;
@@ -1492,9 +1481,7 @@ private static final long serialVersionUID = 0L;
             : dateBuilder_.build();
       }
       if (((from_bitField0_ & 0x00000200) != 0)) {
-        result.dateEx_ = dateExBuilder_ == null
-            ? dateEx_
-            : dateExBuilder_.build();
+        result.dateEx_ = dateEx_;
         to_bitField0_ |= 0x00000040;
       }
       if (((from_bitField0_ & 0x00000400) != 0)) {
@@ -1579,7 +1566,7 @@ private static final long serialVersionUID = 0L;
         mergeDate(other.getDate());
       }
       if (other.hasDateEx()) {
-        mergeDateEx(other.getDateEx());
+        setDateEx(other.getDateEx());
       }
       if (!other.getCurrencyCode().isEmpty()) {
         currencyCode_ = other.currencyCode_;
@@ -1761,13 +1748,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00020000;
               break;
             } // case 138
-            case 146: {
-              input.readMessage(
-                  getDateExFieldBuilder().getBuilder(),
-                  extensionRegistry);
+            case 144: {
+              dateEx_ = input.readInt64();
               bitField0_ |= 0x00000200;
               break;
-            } // case 146
+            } // case 144
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -2543,123 +2528,44 @@ private static final long serialVersionUID = 0L;
       return dateBuilder_;
     }
 
-    private com.google.protobuf.Timestamp dateEx_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> dateExBuilder_;
+    private long dateEx_ ;
     /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+     * <code>optional int64 dateEx = 18;</code>
      * @return Whether the dateEx field is set.
      */
+    @java.lang.Override
     public boolean hasDateEx() {
       return ((bitField0_ & 0x00000200) != 0);
     }
     /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+     * <code>optional int64 dateEx = 18;</code>
      * @return The dateEx.
      */
-    public com.google.protobuf.Timestamp getDateEx() {
-      if (dateExBuilder_ == null) {
-        return dateEx_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : dateEx_;
-      } else {
-        return dateExBuilder_.getMessage();
-      }
+    @java.lang.Override
+    public long getDateEx() {
+      return dateEx_;
     }
     /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+     * <code>optional int64 dateEx = 18;</code>
+     * @param value The dateEx to set.
+     * @return This builder for chaining.
      */
-    public Builder setDateEx(com.google.protobuf.Timestamp value) {
-      if (dateExBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        dateEx_ = value;
-      } else {
-        dateExBuilder_.setMessage(value);
-      }
+    public Builder setDateEx(long value) {
+
+      dateEx_ = value;
       bitField0_ |= 0x00000200;
       onChanged();
       return this;
     }
     /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-     */
-    public Builder setDateEx(
-        com.google.protobuf.Timestamp.Builder builderForValue) {
-      if (dateExBuilder_ == null) {
-        dateEx_ = builderForValue.build();
-      } else {
-        dateExBuilder_.setMessage(builderForValue.build());
-      }
-      bitField0_ |= 0x00000200;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-     */
-    public Builder mergeDateEx(com.google.protobuf.Timestamp value) {
-      if (dateExBuilder_ == null) {
-        if (((bitField0_ & 0x00000200) != 0) &&
-          dateEx_ != null &&
-          dateEx_ != com.google.protobuf.Timestamp.getDefaultInstance()) {
-          getDateExBuilder().mergeFrom(value);
-        } else {
-          dateEx_ = value;
-        }
-      } else {
-        dateExBuilder_.mergeFrom(value);
-      }
-      bitField0_ |= 0x00000200;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
+     * <code>optional int64 dateEx = 18;</code>
+     * @return This builder for chaining.
      */
     public Builder clearDateEx() {
       bitField0_ = (bitField0_ & ~0x00000200);
-      dateEx_ = null;
-      if (dateExBuilder_ != null) {
-        dateExBuilder_.dispose();
-        dateExBuilder_ = null;
-      }
+      dateEx_ = 0L;
       onChanged();
       return this;
-    }
-    /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-     */
-    public com.google.protobuf.Timestamp.Builder getDateExBuilder() {
-      bitField0_ |= 0x00000200;
-      onChanged();
-      return getDateExFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-     */
-    public com.google.protobuf.TimestampOrBuilder getDateExOrBuilder() {
-      if (dateExBuilder_ != null) {
-        return dateExBuilder_.getMessageOrBuilder();
-      } else {
-        return dateEx_ == null ?
-            com.google.protobuf.Timestamp.getDefaultInstance() : dateEx_;
-      }
-    }
-    /**
-     * <code>optional .google.protobuf.Timestamp dateEx = 18;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
-        getDateExFieldBuilder() {
-      if (dateExBuilder_ == null) {
-        dateExBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
-                getDateEx(),
-                getParentForChildren(),
-                isClean());
-        dateEx_ = null;
-      }
-      return dateExBuilder_;
     }
 
     private java.lang.Object currencyCode_ = "";

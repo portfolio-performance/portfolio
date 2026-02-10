@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import com.google.protobuf.ByteString;
@@ -38,6 +40,16 @@ public class ProtobufUtil
     public static Instant fromUpdatedAtTimestamp(Timestamp ts)
     {
         return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos());
+    }
+
+    public static LocalDate fromLong(long longValue)
+    {
+        return LocalDate.ofInstant(Instant.ofEpochMilli(longValue), ZoneOffset.UTC);
+    }
+
+    public static long toLong(LocalDate localDate)
+    {
+        return localDate.atStartOfDay(ZoneId.ofOffset("", ZoneOffset.UTC)).toInstant().toEpochMilli(); //$NON-NLS-1$
     }
 
     public static PDecimalValue asDecimalValue(BigDecimal number)

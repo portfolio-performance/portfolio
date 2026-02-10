@@ -134,14 +134,6 @@ public class ExtractorMatchers
                             && tx.getSubject() instanceof AccountTransaction atx && atx.getType() == type ? atx : null,
                             properties);
         }
-
-        public AccountTransactionMatcher(String label, AccountTransaction.Type type, LocalDate dateEx,
-                        Matcher<Transaction>[] properties)
-        {
-            super(label, item -> item instanceof TransactionItem tx //
-                            && tx.getSubject() instanceof AccountTransaction atx && atx.getType() == type
-                            && atx.getDateEx() == dateEx ? atx : null, properties);
-        }
     }
 
     private static class TransactionSecurityMatcher extends TypeSafeDiagnosingMatcher<Transaction>
@@ -260,12 +252,6 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> dividend(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("dividend", AccountTransaction.Type.DIVIDENDS, properties); //$NON-NLS-1$
-    }
-
-    @SafeVarargs
-    public static Matcher<Extractor.Item> dividendWithExDate(LocalDate dateEx, Matcher<Transaction>... properties)
-    {
-        return new AccountTransactionMatcher("dividend", AccountTransaction.Type.DIVIDENDS, dateEx, properties); //$NON-NLS-1$
     }
 
     @SafeVarargs
@@ -410,16 +396,14 @@ public class ExtractorMatchers
                         Transaction::getDateTime);
     }
 
-    // public static Matcher<Extractor.Item> hasDateEx(String dateString)
-    // {
-    // //LocalDate expectecd = LocalDate.parse(dateString);
-    //
-    // return new AccountTransactionMatcher("dividends",
-    // AccountTransaction.Type.DIVIDENDS, dateString, properties); //$NON-NLS-1$
-    //
-    //// return new PropertyMatcher<>("dateEx", //$NON-NLS-1$ expectecd, //
-    //// null );
-    // }
+    public static Matcher<Transaction> hasDateEx(String dateString)
+    {
+        var expected = LocalDate.parse(dateString);
+
+        return new PropertyMatcher<>("exDate", //$NON-NLS-1$
+                        expected, //
+                        t -> ((AccountTransaction) t).getDateEx());
+    }
 
     public static Matcher<Transaction> hasShares(double value)
     {

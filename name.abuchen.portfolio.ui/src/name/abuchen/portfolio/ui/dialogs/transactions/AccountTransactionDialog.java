@@ -123,13 +123,17 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         dateTime.bindTime(Properties.time.name());
         dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
-        Label lblDateEx = new Label(editArea, SWT.RIGHT);
-        lblDateEx.setText(Messages.ColumnExDate);
-        DatePicker dateEx = new DatePicker(editArea);
-        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(dateEx.getControl());
-        IObservableValue<?> modelDate = BeanProperties.value(Properties.dateEx.name()).observe(model);
-        context.bindValue(targetDate, modelDate);
-        // dateEx.setSelection(null);
+        Label lblDateEx = null;
+        DatePicker dateEx = null;
+        if (model().supportsShares())
+        {
+            lblDateEx = new Label(editArea, SWT.RIGHT);
+            lblDateEx.setText(Messages.ColumnExDate);
+            dateEx = new DatePicker(editArea);
+            IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(dateEx.getControl());
+            IObservableValue<?> modelDate = BeanProperties.value(Properties.dateEx.name()).observe(model);
+            context.bindValue(targetDate, modelDate);
+        }
 
         // shares
 
@@ -261,7 +265,10 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         startingWith(dateTime.date.getControl()).thenRight(dateTime.time).thenRight(dateTime.button, 0);
 
-        startingWith(dateTime.button).thenRight(lblDateEx).thenRight(dateEx.getControl());
+        if (model().supportsShares())
+        {
+            startingWith(dateTime.button).thenRight(lblDateEx).thenRight(dateEx.getControl());
+        }
 
         // shares [- amount per share]
         forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //

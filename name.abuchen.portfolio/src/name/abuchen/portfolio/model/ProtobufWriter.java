@@ -5,8 +5,10 @@ import static name.abuchen.portfolio.util.ProtobufUtil.asDecimalValue;
 import static name.abuchen.portfolio.util.ProtobufUtil.asTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.asUpdatedAtTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromLong;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromUpdatedAtTimestamp;
+import static name.abuchen.portfolio.util.ProtobufUtil.toLong;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -475,7 +477,7 @@ import name.abuchen.portfolio.money.Money;
                     AccountTransaction dividend = new AccountTransaction(newTransaction.getUuid());
                     dividend.setType(AccountTransaction.Type.DIVIDENDS);
                     if (newTransaction.hasDateEx())
-                        dividend.setDateEx(fromTimestamp(newTransaction.getDateEx()).toLocalDate());
+                        dividend.setDateEx(fromLong(newTransaction.getDateEx()));
                     loadCommonTransaction(newTransaction, dividend, lookup, false);
 
                     // If the dividend has no instrument, convert it to an
@@ -1129,7 +1131,7 @@ import name.abuchen.portfolio.money.Money;
             case DIVIDENDS:
                 newTransaction.setTypeValue(PTransaction.Type.DIVIDEND_VALUE);
                 if (t.getDateEx() != null)
-                    newTransaction.setDateEx(asTimestamp(t.getDateEx().atStartOfDay()));
+                    newTransaction.setDateEx(toLong(t.getDateEx()));
                 break;
             case FEES:
                 newTransaction.setTypeValue(PTransaction.Type.FEE_VALUE);

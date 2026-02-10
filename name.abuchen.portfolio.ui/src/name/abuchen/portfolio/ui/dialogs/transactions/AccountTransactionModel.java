@@ -235,6 +235,7 @@ public class AccountTransactionModel extends AbstractModel
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
+        this.dateEx = transaction.getDateEx();
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -457,7 +458,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setDateEx(LocalDate dateEx)
     {
-        this.dateEx = dateEx;
+        firePropertyChange(Properties.dateEx.name(), this.dateEx, this.dateEx = dateEx); // NOSONAR
     }
 
     public long getShares()

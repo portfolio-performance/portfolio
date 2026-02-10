@@ -13,7 +13,6 @@
       <attributes>
         <map/>
       </attributes>
-      <events/>
       <isRetired>false</isRetired>
       <updatedAt>2026-02-04T21:30:37.744832272Z</updatedAt>
     </security>
@@ -37,16 +36,10 @@
           <source>2019-05-24_Wertpapierertrag 24.05.2019_DE000CBK1001.pdf</source>
           <units>
             <unit type="TAX">
-              <amount currency="EUR" amount="343"/>
-            </unit>
-            <unit type="TAX">
-              <amount currency="EUR" amount="19"/>
-            </unit>
-            <unit type="TAX">
-              <amount currency="EUR" amount="31"/>
+              <amount currency="EUR" amount="393"/>
             </unit>
           </units>
-          <updatedAt>2026-02-04T22:54:03.661392364Z</updatedAt>
+          <updatedAt>2026-02-10T13:50:10.694859420Z</updatedAt>
           <type>DIVIDENDS</type>
           <dateEx>2019-05-23</dateEx>
         </account-transaction>

@@ -66,13 +66,6 @@ public class AccountTransaction extends Transaction
         this.type = type;
     }
 
-    public AccountTransaction(LocalDateTime date, LocalDate dateEx, String currencyCode, long amount, Security security,
-                    Type type)
-    {
-        new AccountTransaction(date, currencyCode, amount, security, type);
-        this.dateEx = dateEx;
-    }
-
     public Type getType()
     {
         return type;
@@ -92,6 +85,7 @@ public class AccountTransaction extends Transaction
     public void setDateEx(LocalDate dateEx)
     {
         this.dateEx = dateEx;
+        setUpdatedAt(Instant.now());
     }
 
     /**
