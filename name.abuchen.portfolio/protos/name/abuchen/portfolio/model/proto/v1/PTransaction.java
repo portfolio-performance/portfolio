@@ -897,6 +897,32 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int EXDATE_FIELD_NUMBER = 18;
+  private name.abuchen.portfolio.model.proto.v1.PLocalDateTime exDate_;
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   * @return Whether the exDate field is set.
+   */
+  @java.lang.Override
+  public boolean hasExDate() {
+    return ((bitField0_ & 0x00000400) != 0);
+  }
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   * @return The exDate.
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PLocalDateTime getExDate() {
+    return exDate_ == null ? name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance() : exDate_;
+  }
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   */
+  @java.lang.Override
+  public name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder getExDateOrBuilder() {
+    return exDate_ == null ? name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance() : exDate_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -961,6 +987,9 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000200) != 0)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 17, source_);
+    }
+    if (((bitField0_ & 0x00000400) != 0)) {
+      output.writeMessage(18, getExDate());
     }
     getUnknownFields().writeTo(output);
   }
@@ -1028,6 +1057,10 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000200) != 0)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, source_);
+    }
+    if (((bitField0_ & 0x00000400) != 0)) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(18, getExDate());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -1113,6 +1146,11 @@ private static final long serialVersionUID = 0L;
       if (!getSource()
           .equals(other.getSource())) return false;
     }
+    if (hasExDate() != other.hasExDate()) return false;
+    if (hasExDate()) {
+      if (!getExDate()
+          .equals(other.getExDate())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -1185,6 +1223,10 @@ private static final long serialVersionUID = 0L;
     if (hasSource()) {
       hash = (37 * hash) + SOURCE_FIELD_NUMBER;
       hash = (53 * hash) + getSource().hashCode();
+    }
+    if (hasExDate()) {
+      hash = (37 * hash) + EXDATE_FIELD_NUMBER;
+      hash = (53 * hash) + getExDate().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -1318,6 +1360,7 @@ private static final long serialVersionUID = 0L;
         getDateFieldBuilder();
         getUnitsFieldBuilder();
         getUpdatedAtFieldBuilder();
+        getExDateFieldBuilder();
       }
     }
     @java.lang.Override
@@ -1359,6 +1402,11 @@ private static final long serialVersionUID = 0L;
         updatedAtBuilder_ = null;
       }
       source_ = "";
+      exDate_ = null;
+      if (exDateBuilder_ != null) {
+        exDateBuilder_.dispose();
+        exDateBuilder_ = null;
+      }
       return this;
     }
 
@@ -1470,6 +1518,12 @@ private static final long serialVersionUID = 0L;
         result.source_ = source_;
         to_bitField0_ |= 0x00000200;
       }
+      if (((from_bitField0_ & 0x00020000) != 0)) {
+        result.exDate_ = exDateBuilder_ == null
+            ? exDate_
+            : exDateBuilder_.build();
+        to_bitField0_ |= 0x00000400;
+      }
       result.bitField0_ |= to_bitField0_;
     }
 
@@ -1578,6 +1632,9 @@ private static final long serialVersionUID = 0L;
         source_ = other.source_;
         bitField0_ |= 0x00010000;
         onChanged();
+      }
+      if (other.hasExDate()) {
+        mergeExDate(other.getExDate());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -1704,6 +1761,13 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00010000;
               break;
             } // case 138
+            case 146: {
+              input.readMessage(
+                  getExDateFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00020000;
+              break;
+            } // case 146
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -3217,6 +3281,125 @@ private static final long serialVersionUID = 0L;
       bitField0_ |= 0x00010000;
       onChanged();
       return this;
+    }
+
+    private name.abuchen.portfolio.model.proto.v1.PLocalDateTime exDate_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder> exDateBuilder_;
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     * @return Whether the exDate field is set.
+     */
+    public boolean hasExDate() {
+      return ((bitField0_ & 0x00020000) != 0);
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     * @return The exDate.
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLocalDateTime getExDate() {
+      if (exDateBuilder_ == null) {
+        return exDate_ == null ? name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance() : exDate_;
+      } else {
+        return exDateBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public Builder setExDate(name.abuchen.portfolio.model.proto.v1.PLocalDateTime value) {
+      if (exDateBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        exDate_ = value;
+      } else {
+        exDateBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00020000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public Builder setExDate(
+        name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder builderForValue) {
+      if (exDateBuilder_ == null) {
+        exDate_ = builderForValue.build();
+      } else {
+        exDateBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00020000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public Builder mergeExDate(name.abuchen.portfolio.model.proto.v1.PLocalDateTime value) {
+      if (exDateBuilder_ == null) {
+        if (((bitField0_ & 0x00020000) != 0) &&
+          exDate_ != null &&
+          exDate_ != name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance()) {
+          getExDateBuilder().mergeFrom(value);
+        } else {
+          exDate_ = value;
+        }
+      } else {
+        exDateBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00020000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public Builder clearExDate() {
+      bitField0_ = (bitField0_ & ~0x00020000);
+      exDate_ = null;
+      if (exDateBuilder_ != null) {
+        exDateBuilder_.dispose();
+        exDateBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder getExDateBuilder() {
+      bitField0_ |= 0x00020000;
+      onChanged();
+      return getExDateFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    public name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder getExDateOrBuilder() {
+      if (exDateBuilder_ != null) {
+        return exDateBuilder_.getMessageOrBuilder();
+      } else {
+        return exDate_ == null ?
+            name.abuchen.portfolio.model.proto.v1.PLocalDateTime.getDefaultInstance() : exDate_;
+      }
+    }
+    /**
+     * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder> 
+        getExDateFieldBuilder() {
+      if (exDateBuilder_ == null) {
+        exDateBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            name.abuchen.portfolio.model.proto.v1.PLocalDateTime, name.abuchen.portfolio.model.proto.v1.PLocalDateTime.Builder, name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder>(
+                getExDate(),
+                getParentForChildren(),
+                isClean());
+        exDate_ = null;
+      }
+      return exDateBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

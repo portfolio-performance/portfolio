@@ -26,9 +26,8 @@ public class ReadingHistoricClientFilesTest
     public static Collection<Object[]> getFiles()
     {
         return Arrays.asList(new Object[][] { // NOSONAR
-                        { "client52", 52 }, { "client53", 53 } });
+                        { "client52", 52 }, { "client53", 53 }, { "client69", 69 } });
     }
-
 
     private String file;
     private int versionOnDisk;
@@ -55,10 +54,16 @@ public class ReadingHistoricClientFilesTest
         String binaryEncrypted = ClientTestUtilities.toString(binaryEncryptedClient);
         assertThat(binaryEncryptedClient.getFileVersionAfterRead(), is(versionOnDisk));
 
-        Client xmlEncrpytedClient = ClientFactory.load(find(file + ".xml+pwd.portfolio"), "123456".toCharArray(),
-                        new NullProgressMonitor());
-        String xmlEncrpyted = ClientTestUtilities.toString(xmlEncrpytedClient);
-        assertThat(xmlEncrpytedClient.getFileVersionAfterRead(), is(versionOnDisk));
+        String xmlEncrpyted = null;
+        if (versionOnDisk < 60)
+        {
+            // encrypted files where the content is stored as XML are not
+            // supported anymore
+            Client xmlEncrpytedClient = ClientFactory.load(find(file + ".xml+pwd.portfolio"), "123456".toCharArray(),
+                            new NullProgressMonitor());
+            xmlEncrpyted = ClientTestUtilities.toString(xmlEncrpytedClient);
+            assertThat(xmlEncrpytedClient.getFileVersionAfterRead(), is(versionOnDisk));
+        }
 
         if (!xml.equals(binary))
         {
@@ -76,7 +81,7 @@ public class ReadingHistoricClientFilesTest
                             is(xml.substring(pos, Math.min(pos + 100, xml.length()))));
         }
 
-        if (!xml.equals(xmlEncrpyted))
+        if (xmlEncrpyted != null && !xml.equals(xmlEncrpyted))
         {
             int pos = ClientTestUtilities.indexOfDifference(xml, xmlEncrpyted);
             assertThat("encrypted xml is not identical to xml " + pos,

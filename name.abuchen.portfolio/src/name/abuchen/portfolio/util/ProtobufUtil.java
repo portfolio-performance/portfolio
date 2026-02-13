@@ -4,13 +4,16 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 
 import name.abuchen.portfolio.model.proto.v1.PDecimalValue;
+import name.abuchen.portfolio.model.proto.v1.PLocalDateTime;
 
 public class ProtobufUtil
 {
@@ -50,5 +53,17 @@ public class ProtobufUtil
     {
         MathContext mc = new MathContext(number.getPrecision());
         return new BigDecimal(new BigInteger(number.getValue().toByteArray()), number.getScale(), mc);
+    }
+
+    public static PLocalDateTime asLocalDateTime(LocalDateTime dateTime)
+    {
+        return PLocalDateTime.newBuilder().setEpochDay(dateTime.toLocalDate().toEpochDay())
+                        .setSecondOfDay(dateTime.toLocalTime().toSecondOfDay()).build();
+    }
+
+    public static LocalDateTime fromLocalDateTime(PLocalDateTime dateTime)
+    {
+        return LocalDateTime.of(LocalDate.ofEpochDay(dateTime.getEpochDay()),
+                        LocalTime.ofSecondOfDay(dateTime.getSecondOfDay()));
     }
 }

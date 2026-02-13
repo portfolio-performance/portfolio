@@ -2,9 +2,11 @@ package name.abuchen.portfolio.model;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 import static name.abuchen.portfolio.util.ProtobufUtil.asDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.asLocalDateTime;
 import static name.abuchen.portfolio.util.ProtobufUtil.asTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.asUpdatedAtTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromDecimalValue;
+import static name.abuchen.portfolio.util.ProtobufUtil.fromLocalDateTime;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.fromUpdatedAtTimestamp;
 
@@ -474,6 +476,8 @@ import name.abuchen.portfolio.money.Money;
                 case DIVIDEND:
                     AccountTransaction dividend = new AccountTransaction(newTransaction.getUuid());
                     dividend.setType(AccountTransaction.Type.DIVIDENDS);
+                    if (newTransaction.hasExDate())
+                        dividend.setExDate(fromLocalDateTime(newTransaction.getExDate()));
                     loadCommonTransaction(newTransaction, dividend, lookup, false);
 
                     // If the dividend has no instrument, convert it to an
@@ -1126,6 +1130,8 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DIVIDENDS:
                 newTransaction.setTypeValue(PTransaction.Type.DIVIDEND_VALUE);
+                if (t.getExDate() != null)
+                    newTransaction.setExDate(asLocalDateTime(t.getExDate()));
                 break;
             case FEES:
                 newTransaction.setTypeValue(PTransaction.Type.FEE_VALUE);

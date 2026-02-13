@@ -47,6 +47,8 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
+    private LocalDateTime exDate;
+
     public AccountTransaction()
     {
         // needed for xstream de-serialization
@@ -71,6 +73,17 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
+    }
+
+    public LocalDateTime getExDate()
+    {
+        return exDate;
+    }
+
+    public void setExDate(LocalDateTime exDate)
+    {
+        this.exDate = exDate;
         setUpdatedAt(Instant.now());
     }
 

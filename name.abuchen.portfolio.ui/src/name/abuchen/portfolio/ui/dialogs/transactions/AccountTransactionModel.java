@@ -122,6 +122,7 @@ public class AccountTransactionModel extends AbstractModel
 
                 // preserve the source field from the original transaction
                 t.setSource(sourceTransaction.getSource());
+                t.setExDate(sourceTransaction.getExDate());
 
                 sourceTransaction = null;
                 sourceAccount = null;

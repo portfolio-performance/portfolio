@@ -263,4 +263,19 @@ public interface PTransactionOrBuilder extends
    */
   com.google.protobuf.ByteString
       getSourceBytes();
+
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   * @return Whether the exDate field is set.
+   */
+  boolean hasExDate();
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   * @return The exDate.
+   */
+  name.abuchen.portfolio.model.proto.v1.PLocalDateTime getExDate();
+  /**
+   * <code>optional .name.abuchen.portfolio.PLocalDateTime exDate = 18;</code>
+   */
+  name.abuchen.portfolio.model.proto.v1.PLocalDateTimeOrBuilder getExDateOrBuilder();
 }

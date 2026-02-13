@@ -16,6 +16,11 @@ message PDecimalValue {
   bytes value = 3;
 }
 
+message PLocalDateTime {
+  int64 epoch_day = 1;
+  int32 second_of_day = 2;
+}
+
 message PAnyValue {
   oneof kind {
     google.protobuf.NullValue null = 1;
@@ -184,6 +189,7 @@ message PTransaction {
   google.protobuf.Timestamp updatedAt = 16;
   
   optional string source = 17;
+  optional PLocalDateTime exDate = 18;
 }
 
 message PInvestmentPlan {
