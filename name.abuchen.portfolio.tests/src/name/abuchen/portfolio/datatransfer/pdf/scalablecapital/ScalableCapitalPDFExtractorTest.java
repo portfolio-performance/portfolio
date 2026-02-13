@@ -2203,4 +2203,38 @@ public class ScalableCapitalPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
+    @Test
+    public void testPreliminaryLumpSum01()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PreliminaryLumpSum01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3YLTY66"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR MSCI ACW IM UCITS ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-02"), hasShares(613), //
+                        hasSource("PreliminaryLumpSum01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 110.11), hasGrossValue("EUR", 110.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
 }

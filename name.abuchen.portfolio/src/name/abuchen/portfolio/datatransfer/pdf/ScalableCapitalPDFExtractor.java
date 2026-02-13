@@ -638,7 +638,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*(Seite|Pagina) 1 \\/ [\\d]$");
+        var firstRelevantLine = new Block("^.*(Seite|Pagina|Page) 1 \\/ [\\d]$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -657,20 +657,36 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)[\\s]*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
+                        
+                        .oneOf(
                         // @formatter:off
-                        // Berechtigte Anzahl 1 Angefallen im
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                                        // Berechtigte Anzahl 1 Angefallen im
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get(
+                                                                        "shares")))),
 
+                                        // @formatter:off
+                                        // Entitled quantity 613 Considered year 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Entitled quantity (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get(
+                                                                        "shares"))))
+                        )
+                        
+                        
                         .oneOf( //
                         // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR 
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Steuerabbuchung .*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Steuerabbuchung|Tax deduction) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
 
                                         // @formatter:off
@@ -685,10 +701,11 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                         // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
+                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR 
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Steuerabbuchung [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Steuerabbuchung|Tax deduction) [\\.,\\d]+ [A-Z]{3} (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})[\\s]*$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
