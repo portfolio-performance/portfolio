@@ -396,6 +396,17 @@ public class ExtractorMatchers
                         Transaction::getDateTime);
     }
 
+    public static Matcher<Transaction> hasExDate(String dateString)
+    {
+        var expected = dateString.contains("T") //$NON-NLS-1$
+                        ? LocalDateTime.parse(dateString)
+                        : LocalDate.parse(dateString).atStartOfDay();
+
+        return new PropertyMatcher<>("exDate", //$NON-NLS-1$
+                        expected, //
+                        t -> ((AccountTransaction) t).getExDate());
+    }
+
     public static Matcher<Transaction> hasShares(double value)
     {
         // work with BigDecimal to have better assertion failed messages
