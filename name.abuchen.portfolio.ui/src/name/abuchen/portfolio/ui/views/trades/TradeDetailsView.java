@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -52,6 +53,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -173,6 +175,7 @@ public final class TradeDetailsView extends AbstractFinanceView
 
             update();
             updateFilterButtonImage(theMenu);
+            updateClientFilterEnablement();
         }
     }
 
@@ -181,6 +184,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final Input preselectedInput;
         private final boolean useSecCurrency;
         private final CurrencyConverter jobConverter;
+        private final Client jobFilteredClient;
         private final boolean onlyOpen;
         private final boolean onlyClosed;
         private final boolean onlyProfitable;
@@ -190,14 +194,16 @@ public final class TradeDetailsView extends AbstractFinanceView
         private final boolean hideTotalsAtTheTopJob;
         private final boolean hideTotalsAtTheBottomJob;
 
-        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, CurrencyConverter converter, boolean onlyOpen,
-                        boolean onlyClosed, boolean onlyProfitable, boolean onlyLossMaking, Pattern filterPattern,
-                        Taxonomy taxonomy, boolean hideTotalsAtTheTop, boolean hideTotalsAtTheBottom)
+        UpdateTradesJob(Input preselectedInput, boolean useSecCurrency, CurrencyConverter converter,
+                        Client filteredClient, boolean onlyOpen, boolean onlyClosed, boolean onlyProfitable,
+                        boolean onlyLossMaking, Pattern filterPattern, Taxonomy taxonomy, boolean hideTotalsAtTheTop,
+                        boolean hideTotalsAtTheBottom)
         {
             super(Messages.LabelTrades);
             this.preselectedInput = preselectedInput;
             this.useSecCurrency = useSecCurrency;
             this.jobConverter = converter;
+            this.jobFilteredClient = filteredClient;
             this.onlyOpen = onlyOpen;
             this.onlyClosed = onlyClosed;
             this.onlyProfitable = onlyProfitable;
@@ -217,7 +223,7 @@ public final class TradeDetailsView extends AbstractFinanceView
             try
             {
                 Input data = preselectedInput != null ? preselectedInput
-                                : collectAllTrades(useSecCurrency, jobConverter);
+                                : collectAllTrades(useSecCurrency, jobConverter, jobFilteredClient);
 
                 if (monitor != null && monitor.isCanceled())
                     return Status.CANCEL_STATUS;
@@ -293,6 +299,7 @@ public final class TradeDetailsView extends AbstractFinanceView
 
     private Input input;
 
+    private ClientFilterDropDown clientFilterDropDown;
     private CurrencyConverter converter;
     private TradesTableViewer table;
     private Taxonomy taxonomy;
@@ -400,6 +407,11 @@ public final class TradeDetailsView extends AbstractFinanceView
 
         addFilterButton(toolBarManager);
 
+        this.clientFilterDropDown = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        TradeDetailsView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBarManager.add(clientFilterDropDown);
+        updateClientFilterEnablement();
+
         toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
                         manager -> manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
                                         a -> new TableViewerCSVExporter(table.getTableViewer())
@@ -448,6 +460,16 @@ public final class TradeDetailsView extends AbstractFinanceView
 
             manager.add(action);
         }));
+    }
+
+    /**
+     * Enable the client filter only if the user is not using the preselected
+     * trades (because only then the trades are recalculated and the filter can
+     * be applied)
+     */
+    private void updateClientFilterEnablement()
+    {
+        clientFilterDropDown.setEnabled(usePreselectedTrades.isFalse());
     }
 
     private void updateFilterButtonImage(DropDown dropDown)
@@ -676,8 +698,16 @@ public final class TradeDetailsView extends AbstractFinanceView
 
         Input preselectedInput = usePreselectedTrades.isTrue() ? input : null;
 
+        // the client filter is applied while collecting the trades. If the
+        // trades are preselected, they are not recalculated and therefore the
+        // filter must not be applied to the information panes either
+
+        Client filteredClient = preselectedInput != null ? getClient()
+                        : clientFilterDropDown.getSelectedFilter().filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
         currentUpdateJob = new UpdateTradesJob(preselectedInput, this.useSecurityCurrency, this.converter,
-                        this.onlyOpen.isTrue(), this.onlyClosed.isTrue(), this.onlyProfitable.isTrue(),
+                        filteredClient, this.onlyOpen.isTrue(), this.onlyClosed.isTrue(), this.onlyProfitable.isTrue(),
                         this.onlyLossMaking.isTrue(), this.filterPattern, this.taxonomy, this.hideTotalsAtTheTop,
                         this.hideTotalsAtTheBottom);
         currentUpdateJob.setSystem(true);
@@ -795,7 +825,7 @@ public final class TradeDetailsView extends AbstractFinanceView
         return false;
     }
 
-    private Input collectAllTrades(boolean useSecCurrency, CurrencyConverter currentConverter)
+    private Input collectAllTrades(boolean useSecCurrency, CurrencyConverter currentConverter, Client filteredClient)
     {
         List<Trade> trades = new ArrayList<>();
         List<TradeCollectorException> errors = new ArrayList<>();
@@ -805,7 +835,7 @@ public final class TradeDetailsView extends AbstractFinanceView
                 CurrencyConverter converterToUse = useSecCurrency && s.getCurrencyCode() != null
                                 ? currentConverter.with(s.getCurrencyCode())
                                 : currentConverter;
-                var collector = new TradeCollector(getClient(), converterToUse);
+                var collector = new TradeCollector(filteredClient, converterToUse);
                 trades.addAll(collector.collect(s));
             }
             catch (TradeCollectorException e)
