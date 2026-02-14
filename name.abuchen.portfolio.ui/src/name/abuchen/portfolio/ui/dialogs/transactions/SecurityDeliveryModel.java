@@ -76,14 +76,18 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         }
         else
         {
+            entry = new TransactionPair<>(portfolio, new PortfolioTransaction());
+            portfolio.addTransaction(entry.getTransaction());
+
             if (source != null)
             {
                 source.getOwner().deleteTransaction(source.getTransaction(), client);
+
+                // preserve the source field from the original transaction
+                entry.getTransaction().setSource(source.getTransaction().getSource());
                 source = null;
             }
 
-            entry = new TransactionPair<>(portfolio, new PortfolioTransaction());
-            portfolio.addTransaction(entry.getTransaction());
         }
 
         PortfolioTransaction transaction = entry.getTransaction();

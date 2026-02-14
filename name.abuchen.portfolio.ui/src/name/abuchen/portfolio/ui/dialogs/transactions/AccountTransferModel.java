@@ -76,19 +76,24 @@ public class AccountTransferModel extends AbstractModel
         }
         else
         {
+            t = new AccountTransferEntry(sourceAccount, targetAccount);
+            t.getSourceTransaction().setCurrencyCode(sourceAccount.getCurrencyCode());
+            t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
+            t.insert();
+
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
                 TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
                                 .getOwner(source.getSourceTransaction());
                 owner.deleteTransaction(source.getSourceTransaction(), client);
+
+                // preserve the source field from the original transaction
+                t.setSource(source.getSource());
+
                 source = null;
             }
 
-            t = new AccountTransferEntry(sourceAccount, targetAccount);
-            t.getSourceTransaction().setCurrencyCode(sourceAccount.getCurrencyCode());
-            t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
-            t.insert();
         }
 
         t.setDate(LocalDateTime.of(date, time));
@@ -139,7 +144,7 @@ public class AccountTransferModel extends AbstractModel
         this.source = entry;
         presetFromSource(entry);
     }
-    
+
     public void presetFromSource(AccountTransferEntry entry)
     {
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
@@ -165,7 +170,6 @@ public class AccountTransferModel extends AbstractModel
             this.exchangeRate = BigDecimal.ONE;
         }
     }
-
 
     @Override
     public IStatus getCalculationStatus()

@@ -78,17 +78,22 @@ public class SecurityTransferModel extends AbstractModel
         }
         else
         {
+            t = new PortfolioTransferEntry(sourcePortfolio, targetPortfolio);
+            t.insert();
+
             if (source != null)
             {
                 @SuppressWarnings("unchecked")
                 TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) source
                                 .getOwner(source.getSourceTransaction());
                 owner.deleteTransaction(source.getSourceTransaction(), client);
+
+                // preserve the source field from the original transaction
+                t.setSource(source.getSource());
+
                 source = null;
             }
 
-            t = new PortfolioTransferEntry(sourcePortfolio, targetPortfolio);
-            t.insert();
         }
 
         t.setSecurity(security);
@@ -171,7 +176,7 @@ public class SecurityTransferModel extends AbstractModel
         this.source = entry;
         presetFromSource(entry);
     }
-    
+
     public void presetFromSource(PortfolioTransferEntry entry)
     {
         this.sourcePortfolio = (Portfolio) entry.getOwner(entry.getSourceTransaction());
@@ -186,7 +191,6 @@ public class SecurityTransferModel extends AbstractModel
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
     }
-
 
     @Override
     public IStatus getCalculationStatus()
