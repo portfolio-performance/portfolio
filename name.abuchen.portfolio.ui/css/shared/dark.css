@@ -103,11 +103,35 @@ SecuritiesChart {
 	shares-held-color: #ffaf4d;
 }
 
+SecuritiesChart.blueorange {
+	purchase-event-color: #2D9CFF;
+	sale-event-color: #FF7A00;
+
+	extreme-marker-high-color: #4DA3FF;
+	extreme-marker-low-color: #FF8A50;
+}
+
+SecuritiesChart.asia {
+	quote-area-positive-color: #e25b5a;
+	quote-area-negative-color: #23b0d7;
+
+	purchase-event-color: #ff2b30;
+	sale-event-color: #1fd127;
+
+	extreme-marker-high-color: #A8272A;
+	extreme-marker-low-color: #1aad21;
+}
+
 PortfolioBalanceChart {
 	invested-capital-color: #ffaf4d;
 	absolute-delta-color: #4ddaff;
 	delta-area-positive-color: #23b0d7;
 	delta-area-negative-color: #e25b5a;
+}
+
+PortfolioBalanceChart.asia {
+	delta-area-positive-color: #e25b5a;
+	delta-area-negative-color: #23b0d7;
 }
 
 * {

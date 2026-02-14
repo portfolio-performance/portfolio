@@ -5,6 +5,7 @@ import org.eclipse.e4.ui.css.core.engine.CSSEngine;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 
 @SuppressWarnings("restriction")
@@ -30,7 +31,7 @@ public class PortfolioBalanceChartElementAdapter extends ElementAdapter
     @Override
     public String getCSSClass()
     {
-        return null;
+        return ValueColorScheme.current().getIdentifier();
     }
 
     @Override
