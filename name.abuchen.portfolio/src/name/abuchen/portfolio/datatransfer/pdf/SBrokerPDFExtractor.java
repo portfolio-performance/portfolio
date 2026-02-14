@@ -297,7 +297,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) unserer Ertr.gnisgutschrift .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         // @formatter:off
                         // If we have a positive amount and a gross reinvestment,
@@ -455,7 +455,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                                 var fxAmount = Money.of(asCurrencyCode(t.getSecurity().getCurrencyCode()), t.getMonetaryAmount().getAmount());
                                                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), fxAmount, BigDecimal.ONE));
 
-                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                             }
                                                         }))
 
@@ -688,7 +688,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -868,7 +868,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getDateTime() == null && t.getNote() == null)
                                 return null;
@@ -998,7 +998,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));
@@ -1161,7 +1161,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return item;
@@ -1279,7 +1279,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return item;
@@ -1390,7 +1390,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return item;
@@ -1475,7 +1475,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));
@@ -1544,7 +1544,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));

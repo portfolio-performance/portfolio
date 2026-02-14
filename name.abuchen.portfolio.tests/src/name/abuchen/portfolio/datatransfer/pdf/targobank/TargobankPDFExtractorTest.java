@@ -356,7 +356,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2023-01-03T12:04:02"), hasShares(4000.00), //
                                         hasSource("SteuerbehandlungVonVerkauf03.txt"), //
@@ -772,7 +772,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-06-11T00:00"), hasShares(61.00), //
                                         hasSource("SteuerbehandlungVonDividende02.txt"), //
@@ -818,7 +818,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-06-11T00:00"), hasShares(61.00), //
                                         hasSource("SteuerbehandlungVonDividende02.txt"), //
@@ -864,7 +864,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-06-11T00:00"), hasShares(61.00), //
                                         hasSource("SteuerbehandlungVonDividende02.txt"), //
@@ -1208,7 +1208,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-07-08T00:00"), hasShares(1790.00), //
                                         hasSource("SteuerbehandlungVonDividende04.txt"), //
@@ -1254,7 +1254,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-07-08T00:00"), hasShares(1790.00), //
                                         hasSource("SteuerbehandlungVonDividende04.txt"), //
@@ -1300,7 +1300,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-07-08T00:00"), hasShares(1790.00), //
                                         hasSource("SteuerbehandlungVonDividende04.txt"), //
@@ -1414,7 +1414,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-08-21T00:00"), hasShares(235.00), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //
@@ -1461,7 +1461,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-08-21T00:00"), hasShares(235.00), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //
@@ -1515,7 +1515,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-08-21T00:00"), hasShares(235.00), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //
@@ -1568,7 +1568,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-08-21T00:00"), hasShares(235.00), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //
@@ -1622,7 +1622,7 @@ public class TargobankPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2020-08-21T00:00"), hasShares(235.00), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //

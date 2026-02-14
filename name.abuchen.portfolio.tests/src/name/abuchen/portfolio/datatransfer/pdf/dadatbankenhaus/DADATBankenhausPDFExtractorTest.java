@@ -233,7 +233,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -265,7 +265,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -297,7 +297,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -329,7 +329,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -361,7 +361,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -393,7 +393,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));
@@ -425,7 +425,7 @@ public class DADATBankenhausPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-08-23T00:00")));

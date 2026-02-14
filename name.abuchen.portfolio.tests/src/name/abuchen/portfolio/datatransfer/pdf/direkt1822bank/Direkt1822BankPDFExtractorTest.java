@@ -925,7 +925,7 @@ public class Direkt1822BankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2022-03-30T00:00"), hasShares(3.00), //
                                         hasSource("Depotuebertrag01.txt"), //
@@ -979,7 +979,7 @@ public class Direkt1822BankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         fee( //
                                         hasDate("2025-02-28T00:00"), hasShares(0.00), //
                                         hasSource("Kontoauszug02.txt"), //

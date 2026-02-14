@@ -3419,7 +3419,7 @@ public class DABPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2018-12-04T00:00"), hasShares(1.5884), //
                                         hasSource("Split01.txt"), //
@@ -3455,7 +3455,7 @@ public class DABPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2022-02-04T00:00"), hasShares(1000.00), //
                                         hasSource("Ausbuchung01.txt"), //

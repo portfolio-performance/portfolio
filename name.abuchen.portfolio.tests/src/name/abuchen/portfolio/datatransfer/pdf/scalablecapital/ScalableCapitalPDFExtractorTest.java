@@ -2160,7 +2160,7 @@ public class ScalableCapitalPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2026-01-02"), hasShares(430), //
                                         hasSource("Vorabpauschale05.txt"), //

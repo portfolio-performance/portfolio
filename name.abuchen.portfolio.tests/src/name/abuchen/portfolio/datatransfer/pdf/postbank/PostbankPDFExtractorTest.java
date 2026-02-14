@@ -1901,7 +1901,7 @@ public class PostbankPDFExtractorTest
                         hasCurrencyCode("USD"))));
 
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2024-05-17"), hasShares(60.00), //
                                         hasSource("DividendeStorno01.txt"), //
@@ -1939,7 +1939,7 @@ public class PostbankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2024-05-17"), hasShares(60.00), //
                                         hasSource("DividendeStorno01.txt"), //

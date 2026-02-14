@@ -924,7 +924,7 @@ public class SwissquotePDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2024-04-08T00:00"), hasShares(100.00), //
                                         hasSource("OptionVerfall01.txt"), //

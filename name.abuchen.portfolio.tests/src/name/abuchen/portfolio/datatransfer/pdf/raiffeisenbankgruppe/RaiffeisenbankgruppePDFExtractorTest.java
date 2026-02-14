@@ -2684,7 +2684,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2023-03-10T00:00")));
@@ -2709,7 +2709,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2023-03-10T00:00")));
@@ -2755,7 +2755,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         inboundDelivery( //
                                         hasDate("2022-03-18"), hasShares(550), //
                                         hasSource("FreierErhalt01.txt"), //
@@ -2791,7 +2791,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2022-07-08"), hasShares(200), //
                                         hasSource("FreierErhalt02.txt"), //

@@ -96,7 +96,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Stornierung Wertpapierabrechnung Kauf Fonds
                         .section("type").optional() //
                         .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -955,7 +955,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) Ertragsmitteilung.*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -1936,7 +1936,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));
@@ -2004,7 +2004,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));
@@ -2035,7 +2035,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.INTEREST);
 
                             // Set transaction cancellation
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -2503,7 +2503,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -2563,7 +2563,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             var item = new TransactionItem(t);
 
-                            item.setFailureMessage(Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                            item.setFailureMessage(Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
 
                             return item;
                         });
@@ -3627,7 +3627,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -3650,7 +3650,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
 
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
@@ -3703,7 +3703,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 
@@ -3728,7 +3728,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 
@@ -3752,7 +3752,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 
@@ -3776,7 +3776,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 
@@ -3800,7 +3800,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 
@@ -3824,7 +3824,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (!tax.isZero() && !tax.getCurrencyCode().equals(transactionCurrency) && type.getCurrentContext().getType(ExtrExchangeRate.class).isEmpty())
                                 {
-                                    v.getTransactionContext().put(FAILURE, Messages.PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex);
+                                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionMissingExchangeRateIfInForex);
                                     return;
                                 }
 

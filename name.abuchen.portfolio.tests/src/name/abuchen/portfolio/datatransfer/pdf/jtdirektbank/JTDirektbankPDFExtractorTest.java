@@ -159,7 +159,7 @@ public class JTDirektbankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         interestCharge(hasDate("2023-05-03"), hasAmount("EUR", 13.44), //
                                         hasSource("Kontoauszug04.txt"), hasNote(null)))));
 

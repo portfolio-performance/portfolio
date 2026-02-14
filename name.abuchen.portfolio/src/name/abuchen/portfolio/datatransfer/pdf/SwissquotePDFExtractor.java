@@ -697,7 +697,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
                         .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) \\-$") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             t.setSecurity(getOrCreateSecurity(v));
 

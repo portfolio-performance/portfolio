@@ -477,7 +477,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         purchase( //
                                         hasDate("2023-09-15T18:18:08"), hasShares(0.563027), //
                                         hasSource("StornoKauf01.txt"), //
@@ -692,7 +692,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2023-09-13T00:00"), hasShares(95.967357), //
                                         hasSource("StornoDividende01.txt"), //
@@ -796,7 +796,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(255.212216), //
                                         hasSource("Vorabpauschale03.txt"), //
@@ -928,7 +928,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2024-02-02T00:00"), hasShares(255.212216), //
                                         hasSource("Fusion01.txt"), //

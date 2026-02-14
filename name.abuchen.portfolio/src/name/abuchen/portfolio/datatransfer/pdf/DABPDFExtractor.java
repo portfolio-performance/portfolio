@@ -695,7 +695,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^(?<type>Freie Lieferung) .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }),
@@ -706,7 +706,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^Wir haben Ihrem Depot im (?<type>Verh.ltnis) [\\d]+ : [\\d]+ .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }))

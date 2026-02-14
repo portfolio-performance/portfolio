@@ -2185,7 +2185,7 @@ public class INGDiBaPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(60.00), //
                                         hasSource("Vorabpauschale03.txt"), //
@@ -3884,7 +3884,7 @@ public class INGDiBaPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-04-17T00:00")));
@@ -4084,7 +4084,7 @@ public class INGDiBaPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2023-11-03T00:00"), hasShares(4.00), //
                                         hasSource("SteuerrelevanterUmtausch01.txt"), //
@@ -4120,7 +4120,7 @@ public class INGDiBaPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2023-08-25T00:00"), hasShares(16.0648), //
                                         hasSource("UmtauschEingang01.txt"), //
@@ -4156,7 +4156,7 @@ public class INGDiBaPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         outboundDelivery( //
                                         hasDate("2023-08-25T00:00"), hasShares(2.00), //
                                         hasSource("UmtauschAusgang01.txt"), //

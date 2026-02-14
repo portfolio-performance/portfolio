@@ -194,7 +194,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .match("^(?<type>Fondsertrag) .*$") //
                         .assign((t, v) -> {
                             if ("Fondsertrag".equals(v.get("type")))
-                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.PDFSkipMissingDetails);
+                                type.getCurrentContext().put(SKIP_TRANSACTION, Messages.MsgErrorTransactionSkipIfDetailsMissing);
                         })
 
                         .oneOf( //

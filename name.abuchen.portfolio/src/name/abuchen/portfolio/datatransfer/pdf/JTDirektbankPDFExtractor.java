@@ -123,7 +123,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency", "year") //
                         .match(regex) //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                             assignmentsProvider(t, v);
                         })

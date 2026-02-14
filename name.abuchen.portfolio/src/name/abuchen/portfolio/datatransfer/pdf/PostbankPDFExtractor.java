@@ -286,7 +286,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^(?<type>Storno) einer Ertragsgutschrift$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -577,7 +577,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> t.getAmount() == 0
-                                        ? new SkippedItem(new TransactionItem(t), Messages.PDFSkipNoPayableAmount)
+                                        ? new SkippedItem(new TransactionItem(t), Messages.MsgErrorTransactionTypeNotSupportedOrRequired)
                                         : new TransactionItem(t));
     }
 

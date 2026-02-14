@@ -1439,7 +1439,7 @@ public class DkbPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2021-01-05T00:00")));
@@ -2913,7 +2913,7 @@ public class DkbPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-15T00:00"), hasShares(9.6469), //
                                         hasSource("Vorabpauschale02.txt"), //

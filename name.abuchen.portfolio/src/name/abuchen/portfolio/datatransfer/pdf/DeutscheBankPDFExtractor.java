@@ -560,7 +560,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if ("Saldo der Abschlussposten".equals(v.get("note1")))
                                                                 type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.PDFSkipMissingDetails);
+                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -573,7 +573,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
                                                                 type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.PDFSkipMissingDetails);
+                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
                                                         }),
                                         // @formatter:off
                                         // 01.12. 01.12. SEPA Dauerauftrag an - 40,00
@@ -641,7 +641,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                                 if ("Saldo der Abschlussposten".equals(v.get("note1")))
                                                                 type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.PDFSkipMissingDetails);
+                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
 
                                                             // @formatter:off
                                                             // If we have security transaction, then we skip the transaction
@@ -654,14 +654,14 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if (v.get("note1").contains("WERTPAPIER") || v.get("note1").contains("DEPOT-NR:") || v.get("note1").contains("STK/NOM"))
                                                                 type.getCurrentContext().put(SKIP_TRANSACTION,
-                                                                                Messages.PDFSkipMissingDetails);
+                                                                                Messages.MsgErrorTransactionSkipIfDetailsMissing);
                                                         }))
 
                     .wrap(t -> {
                         var item = new TransactionItem(t);
 
                         if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                         if (type.getCurrentContext().containsKey(SKIP_TRANSACTION))
                         {

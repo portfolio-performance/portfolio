@@ -1722,7 +1722,7 @@ public class ConsorsbankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         purchase( //
                                         hasDate("2024-06-03T09:30:09"), hasShares(4.09855), //
                                         hasSource("Kauf28.txt"), //
@@ -4837,7 +4837,7 @@ public class ConsorsbankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-01-27T00:00")));
@@ -4954,7 +4954,7 @@ public class ConsorsbankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2022-04-22T00:00"), hasShares(333.00000), //
                                         hasSource("UebertragEingang01.txt"), //
@@ -4990,7 +4990,7 @@ public class ConsorsbankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2023-12-22T00:00"), hasShares(300.00000), //
                                         hasSource("UebertragAusgang01.txt"), //
@@ -5026,7 +5026,7 @@ public class ConsorsbankPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2007-03-22T00:00"), hasShares(333.00000), //
                                         hasSource("Anschaffung01.txt"), //

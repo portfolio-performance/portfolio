@@ -3672,7 +3672,7 @@ public class EasyBankAGPDFExtractorTest
                         hasCurrencyCode("USD"))));
 
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2021-01-04T00:00"), hasShares(180.00), //
                                         hasSource("DividendeStorno01.txt"), //
@@ -3709,7 +3709,7 @@ public class EasyBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         dividend( //
                                         hasDate("2021-01-04T00:00"), hasShares(180.00), //
                                         hasSource("DividendeStorno01.txt"), //
@@ -4022,7 +4022,7 @@ public class EasyBankAGPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2025-02-18T00:00"), hasShares(27.00), //
                                         hasSource("Umtausch01.txt"), //
@@ -4059,7 +4059,7 @@ public class EasyBankAGPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         inboundDelivery( //
                                         hasDate("2021-10-25T00:00"), hasShares(4.00), //
                                         hasSource("AusbuchungWegenTitelumtausch01.txt"), //
@@ -4096,7 +4096,7 @@ public class EasyBankAGPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        Messages.MsgErrorTransactionSplitUnsupported, //
                         outboundDelivery( //
                                         hasDate("2022-01-28T00:00"), hasShares(50.00), //
                                         hasSource("KapitalmaßnahmeWegenEntflechtung01.txt"), //

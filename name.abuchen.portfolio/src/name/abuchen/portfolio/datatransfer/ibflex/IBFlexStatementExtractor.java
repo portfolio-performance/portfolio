@@ -660,14 +660,14 @@ public class IBFlexStatementExtractor implements Extractor
                     portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                     break;
                 case "BUY (Ca.)":
-                    portfolioTransaction.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                    portfolioTransaction.setNote(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                     portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                     break;
                 case "SELL":
                     portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
                     break;
                 case "SELL (Ca.)":
-                    portfolioTransaction.setNote(Messages.MsgErrorOrderCancellationUnsupported);
+                    portfolioTransaction.setNote(Messages.MsgErrorTransactionOrderCancellationUnsupported);
                     portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
                     break;
                 default:
@@ -721,7 +721,7 @@ public class IBFlexStatementExtractor implements Extractor
             portfolioTransaction.getPortfolioTransaction().addUnit(taxUnit);
 
             // Set note
-            if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
+            if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorTransactionOrderCancellationUnsupported))
             {
                 portfolioTransaction.setNote(extractNote(element));
             }
@@ -732,11 +732,11 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
-                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
             }
-            else if (Messages.MsgErrorOrderCancellationUnsupported.equals(portfolioTransaction.getPortfolioTransaction().getNote()))
+            else if (Messages.MsgErrorTransactionOrderCancellationUnsupported.equals(portfolioTransaction.getPortfolioTransaction().getNote()))
             {
-                item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
+                item.setFailureMessage(Messages.MsgErrorTransactionOrderCancellationUnsupported);
             }
         };
 

@@ -301,7 +301,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("type").optional() //
                         .match("^Gesch.ftsart: (?<type>Ertrag \\- STORNO).*$") //
-                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off
@@ -498,7 +498,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                 item.setFailureMessage(ctx.getString(FAILURE));
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         });
@@ -955,11 +955,11 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "|Kapitalmaßnahme wegen Entflechtung)).*$") //
                         .assign((t, v) -> {
                             if ("Umtausch/Bezug".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             else if ("Ausbuchung wegen Titelumtausch".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
                             else if ("Kapitalmaßnahme wegen Entflechtung".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionSplitUnsupported);
 
                         })
 

@@ -975,7 +975,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2021-01-04T00:00"), hasShares(0.216), //
                                         hasSource("KaufSteuerbehandlung01.txt"), //
@@ -2227,7 +2227,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2015-05-05T00:00"), hasShares(0.049), //
                                         hasSource("SteuerbehandlungOhneVerkauf01.txt"), //
@@ -2860,7 +2860,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2018-04-16T00:00"), hasShares(165.933), //
                                         hasSource("SteuerbehandlungVonDividende09.txt"), //
@@ -4827,7 +4827,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         dividend( //
                                         hasDate("2017-08-31T00:00"), hasShares(3100.000), //
                                         hasSource("Dividende25.txt"), //
@@ -4864,7 +4864,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2016-07-08T00:00"), hasShares(3100.000), //
                                         hasSource("SteuerbehandlungVonDividende26.txt"), //
@@ -4900,7 +4900,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         dividend( //
                                         hasDate("2006-10-02T00:00"), hasShares(67.000), //
                                         hasSource("Dividende27.txt"), //
@@ -5259,7 +5259,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2023-11-16T00:00"), hasShares(10.512), //
                                         hasSource("SteuerbehandlungVonDividende29.txt"), //
@@ -5477,7 +5477,7 @@ public class ComdirectPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2023-09-13T00:00"), hasShares(2.867), //
                                         hasSource("SteuerbehandlungVonDividende30.txt"), //
@@ -7527,7 +7527,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2021-01-04T00:00"), hasShares(2432.087), //
                                         hasSource("VorabpauschaleSteuerbehandlung02.txt"), //
@@ -7537,7 +7537,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2021-01-04T00:00"), hasShares(2432.087), //
                                         hasSource("VorabpauschaleSteuerbehandlung02.txt"), //
@@ -8460,7 +8460,7 @@ public class ComdirectPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2022-10-04T00:00"), hasShares(5.00), //
                                         hasSource("KaufMitSteuerbehandlung14.txt"), //
