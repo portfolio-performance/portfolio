@@ -37,7 +37,13 @@ public final class ValueColorScheme
         blueOrange.setUpArrow("scheme/blueorange/light/up_arrow.svg"); //$NON-NLS-1$
         blueOrange.setDownArrow("scheme/blueorange/light/down_arrow.svg"); //$NON-NLS-1$
 
-        schemes = List.of(standard, blueOrange);
+        var asia = new ValueColorScheme("asia"); //$NON-NLS-1$
+        asia.setPositiveForeground(Colors.DARK_RED.getRGBA());
+        asia.setNegativeForeground(Colors.DARK_GREEN.getRGBA());
+        asia.setUpArrow("scheme/asia/light/up_arrow.svg"); //$NON-NLS-1$
+        asia.setDownArrow("scheme/asia/light/down_arrow.svg"); //$NON-NLS-1$
+
+        schemes = List.of(standard, blueOrange, asia);
         currentScheme = standard;
     }
 

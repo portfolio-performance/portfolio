@@ -108,6 +108,13 @@ ValueColorScheme.blueorange {
 	down-arrow: "scheme/blueorange/light/down_arrow.svg";
 }
 
+ValueColorScheme.asia {
+	positive-foreground: #7f0000;
+	negative-foreground: #377500;
+	up-arrow: "scheme/asia/light/up_arrow.svg";
+	down-arrow: "scheme/asia/light/down_arrow.svg";
+}
+
 SecuritiesChart {
 	quote-color: #6a58db;
 	quote-area-positive-color: #8396f2;
