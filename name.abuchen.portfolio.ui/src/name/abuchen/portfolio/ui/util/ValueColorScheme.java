@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGBA;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.ColorConversion;
 
 /**
@@ -25,19 +26,19 @@ public final class ValueColorScheme
     {
         // initialize value color scheme with values in case CSS cannot be read
 
-        var standard = new ValueColorScheme(STANDARD_SCHEME);
+        var standard = new ValueColorScheme(STANDARD_SCHEME, Messages.ValueColorSchemeStandard);
         standard.setPositiveForeground(Colors.DARK_GREEN.getRGBA());
         standard.setNegativeForeground(Colors.DARK_RED.getRGBA());
         standard.setUpArrow("scheme/standard/light/up_arrow.svg"); //$NON-NLS-1$
         standard.setDownArrow("scheme/standard/light/down_arrow.svg"); //$NON-NLS-1$
 
-        var blueOrange = new ValueColorScheme("blueorange"); //$NON-NLS-1$
+        var blueOrange = new ValueColorScheme("blueorange", Messages.ValueColorSchemeBlueOrange); //$NON-NLS-1$
         blueOrange.setPositiveForeground(ColorConversion.hex2RGBA("#0066CC")); //$NON-NLS-1$
         blueOrange.setNegativeForeground(ColorConversion.hex2RGBA("#B36E3A")); //$NON-NLS-1$
         blueOrange.setUpArrow("scheme/blueorange/light/up_arrow.svg"); //$NON-NLS-1$
         blueOrange.setDownArrow("scheme/blueorange/light/down_arrow.svg"); //$NON-NLS-1$
 
-        var asia = new ValueColorScheme("asia"); //$NON-NLS-1$
+        var asia = new ValueColorScheme("asia", Messages.ValueColorSchemeAsia); //$NON-NLS-1$
         asia.setPositiveForeground(Colors.DARK_RED.getRGBA());
         asia.setNegativeForeground(Colors.DARK_GREEN.getRGBA());
         asia.setUpArrow("scheme/asia/light/up_arrow.svg"); //$NON-NLS-1$
@@ -48,20 +49,27 @@ public final class ValueColorScheme
     }
 
     private final String identifier;
+    private final String name;
 
     private Color positiveForeground;
     private Color negativeForeground;
     private Image upArrow;
     private Image downArrow;
 
-    private ValueColorScheme(String identifier)
+    private ValueColorScheme(String identifier, String name)
     {
         this.identifier = identifier;
+        this.name = name;
     }
 
     public String getIdentifier()
     {
         return identifier;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     public Color positiveForeground()

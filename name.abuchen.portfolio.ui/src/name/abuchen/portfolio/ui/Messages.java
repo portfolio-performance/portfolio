@@ -647,6 +647,7 @@ public class Messages extends NLS
     public static String LabelColonSeparated;
     public static String LabelColorBy;
     public static String LabelColorSchema;
+    public static String LabelColorValueScheme;
     public static String LabelColumns;
     public static String LabelColumnsInReverseOrder;
     public static String LabelCommon;
@@ -1451,6 +1452,9 @@ public class Messages extends NLS
     public static String TransactionFilterTransfers;
     public static String Url;
     public static String MsgWarningWayland;
+    public static String ValueColorSchemeAsia;
+    public static String ValueColorSchemeBlueOrange;
+    public static String ValueColorSchemeStandard;
     public static String WatchlistDelete;
     public static String WatchlistEditDialog;
     public static String WatchlistEditDialogMsg;

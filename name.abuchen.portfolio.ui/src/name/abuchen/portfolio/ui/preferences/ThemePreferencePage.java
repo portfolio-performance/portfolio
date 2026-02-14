@@ -162,7 +162,7 @@ public final class ThemePreferencePage extends PreferencePage
         // color value scheme selection
 
         label = new Label(area, SWT.NONE);
-        label.setText("Color Value Scheme");
+        label.setText(Messages.LabelColorValueScheme);
         GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(label);
 
         var selectedSchemaId = getPreferenceStore().getString(UIConstants.Preferences.VALUE_COLOR_SCHEME);
@@ -322,7 +322,7 @@ public final class ThemePreferencePage extends PreferencePage
     private Button createSchemeOption(Composite parent, ValueColorScheme scheme)
     {
         var radioButton = new Button(parent, SWT.RADIO);
-        radioButton.setText(scheme.getIdentifier());
+        radioButton.setText(scheme.getName());
         GridDataFactory.fillDefaults().span(2, 1).applyTo(radioButton);
 
         // Color preview composite
