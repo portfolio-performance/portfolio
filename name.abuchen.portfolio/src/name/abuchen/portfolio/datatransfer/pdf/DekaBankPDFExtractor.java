@@ -586,7 +586,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .assign((t, v) -> {
                     t.setSecurity(getOrCreateSecurity(v));
 
-                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                    v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                     t.setCurrencyCode(CurrencyUnit.EUR);
                     t.setAmount(0L);
                 })
@@ -902,7 +902,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             t.setType(PortfolioTransaction.Type.SELL);
 
                                         if ("Storno Lastschrifteinzug".equals(v.get("type")))
-                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
@@ -1010,7 +1010,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                             t.setType(PortfolioTransaction.Type.SELL);
 
                                         if ("Storno Lastschrifteinzug".equals(v.get("note")))
-                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         Optional<SecurityItem> securityItem = securityListHelper.findItemByLineNoStart(v.getStartLineNumber());
@@ -1078,7 +1078,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 BuySellEntryItem item = new BuySellEntryItem(t);
 
                 if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() == 0)
-                    item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                    item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                 if (ctx.getString(FAILURE) != null)
                     item.setFailureMessage(ctx.getString(FAILURE));
@@ -1269,7 +1269,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     TransactionItem item = new TransactionItem(t);
 
                     if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                     return item;
                 }));
@@ -1314,7 +1314,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         DocumentContext context = type.getCurrentContext();
 
                                         if ("Ertragsausschüttung-Storno".equals(v.get("type")))
-                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         SharesListHelper sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
@@ -1382,7 +1382,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                                         DocumentContext context = type.getCurrentContext();
 
                                         if ("Ertragsausschüttung-Storno".equals(v.get("type")))
-                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                                         SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class).orElseGet(SecurityListHelper::new);
                                         SharesListHelper sharesListHelper = context.getType(SharesListHelper.class).orElseGet(SharesListHelper::new);
@@ -1432,7 +1432,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                     TransactionItem item = new TransactionItem(t);
 
                     if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                     if (ctx.getString(FAILURE) != null)
                         item.setFailureMessage(ctx.getString(FAILURE));
@@ -1605,7 +1605,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(t -> {
                     TransactionItem item = new TransactionItem(t);
                     if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                        item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                     return item;
                 }));
     }

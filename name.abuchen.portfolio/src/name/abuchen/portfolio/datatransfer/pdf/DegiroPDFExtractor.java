@@ -543,7 +543,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                             // Dividend refund
                                             if ("-".equals(trim(v.get("type"))))
-                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
+                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                                             Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 

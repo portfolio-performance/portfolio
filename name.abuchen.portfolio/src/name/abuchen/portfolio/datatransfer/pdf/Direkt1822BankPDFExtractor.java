@@ -473,7 +473,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                             var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             return item;
                         }));
@@ -510,7 +510,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .match("(?<name1>.*)$") //
                         .match("Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
 
                             if (!v.get("name1").startsWith("Wertpapierrechnung"))
                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));

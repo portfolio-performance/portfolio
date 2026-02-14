@@ -1630,7 +1630,7 @@ public class IBFlexStatementExtractorTest
                         is(LocalDateTime.parse("2022-12-02T06:26:11")));
         assertThat(cancellation.getPortfolioTransaction().getShares(), is(Values.Share.factorize(450)));
         assertNull(cancellation.getSource());
-        assertThat(cancellation.getNote(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getNote(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(cancellation.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2444.40))));

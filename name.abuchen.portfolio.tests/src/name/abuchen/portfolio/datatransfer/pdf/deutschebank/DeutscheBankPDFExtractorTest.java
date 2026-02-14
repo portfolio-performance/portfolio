@@ -2234,7 +2234,7 @@ public class DeutscheBankPDFExtractorTest
 
         // assert skipped item
         var skipped = (SkippedItem) results.stream().filter(SkippedItem.class::isInstance).findFirst().get();
-        assertThat(skipped.getSkipReason(), is(Messages.PDFSkipMissingDetails));
+        assertThat(skipped.getSkipReason(), is(Messages.MsgErrorTransactionSkipIfDetailsMissing));
         assertThat(skipped.getDate(), is(LocalDateTime.parse("2020-12-31T00:00")));
         assertThat(skipped.getAmount(), is(Money.of("EUR", Values.Amount.factorize(13.47))));
         assertThat(skipped.getTypeInformation(), is(AccountTransaction.Type.REMOVAL.toString()));

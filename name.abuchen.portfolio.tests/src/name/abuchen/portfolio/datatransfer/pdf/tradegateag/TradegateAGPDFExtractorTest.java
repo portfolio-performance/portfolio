@@ -488,7 +488,7 @@ public class TradegateAGPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2025-01-02T00:00"), hasShares(220.00), //
                                         hasSource("Vorabpauschale01.txt"), //

@@ -816,7 +816,7 @@ public class DegiroPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
         assertThat(cancellation.getSource(), is("Kontoauszug08.txt"));
 
         // check 2nd cancellation (Storno) transaction
@@ -825,7 +825,7 @@ public class DegiroPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
         assertThat(cancellation.getSource(), is("Kontoauszug08.txt"));
     }
 
@@ -7764,7 +7764,7 @@ public class DegiroPDFExtractorTest
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
         assertThat(cancellation.getSource(), is("EstadoDeCuenta01.txt"));
 
         // check 1st dividende transaction

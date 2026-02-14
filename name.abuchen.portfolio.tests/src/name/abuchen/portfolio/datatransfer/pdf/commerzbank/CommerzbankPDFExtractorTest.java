@@ -283,7 +283,7 @@ public class CommerzbankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2025-03-13T00:00"), hasShares(70.00), //
                                         hasSource("SteuerbehandlungVonKauf06.txt"), //
@@ -320,7 +320,7 @@ public class CommerzbankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2025-03-13T00:00"), hasShares(70.00), //
                                         hasSource("SteuerbehandlungVonKauf06.txt"), //
@@ -1484,7 +1484,7 @@ public class CommerzbankPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2025-03-05T00:00"), hasShares(329.817), //
                                         hasSource("SteuerbehandlungVonDividende05.txt"), //

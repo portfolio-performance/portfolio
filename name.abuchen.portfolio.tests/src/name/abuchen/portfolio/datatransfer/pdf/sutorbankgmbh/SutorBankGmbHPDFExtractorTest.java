@@ -942,7 +942,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2023-05-25T00:00"), hasShares(500.00), //
                                         hasSource("Kapitalveraenderung01.txt"), //
@@ -978,7 +978,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2023-12-14T00:00"), hasShares(50.00), //
                                         hasSource("Uebernahme01.txt"), //
@@ -3127,7 +3127,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2021-06-01T00:00"), hasShares(241), //
                                         hasSource("Depotauszug04.txt"), //
@@ -3137,7 +3137,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2021-06-01T00:00"), hasShares(37), //
                                         hasSource("Depotauszug04.txt"), //
@@ -3147,7 +3147,7 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check unsupported transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2021-06-01T00:00"), hasShares(295), //
                                         hasSource("Depotauszug04.txt"), //
@@ -3218,7 +3218,7 @@ public class SutorBankGmbHPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2020-06-22T13:31")));

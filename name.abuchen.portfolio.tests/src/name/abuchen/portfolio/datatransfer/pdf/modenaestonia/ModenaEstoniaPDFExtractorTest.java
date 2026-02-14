@@ -122,7 +122,7 @@ public class ModenaEstoniaPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interestCharge( //
                                         hasDate("2025-05-12T07:30:56"), //
                                         hasSource("Kontoauszug03.txt"), //

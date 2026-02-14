@@ -2141,7 +2141,7 @@ public class SBrokerPDFExtractorTest
 
         // check cancellation (Amount = 0,00) transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2017-12-31"), hasShares(6.064), //
                                         hasSource("Dividende12.txt"), //
@@ -2469,7 +2469,7 @@ public class SBrokerPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(8.781), //
                                         hasSource("Vorabpauschale02.txt"), //
@@ -2505,7 +2505,7 @@ public class SBrokerPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         taxes( //
                                         hasDate("2024-01-02T00:00"), hasShares(12.2335), //
                                         hasSource("Vorabpauschale03.txt"), //
@@ -2549,7 +2549,7 @@ public class SBrokerPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2016-06-15T00:00")));
@@ -2603,7 +2603,7 @@ public class SBrokerPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.TAX_REFUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2018-01-15T00:00")));
@@ -2724,7 +2724,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2023-03-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug01.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.01.2023 bis 31.03.2023")))));
@@ -3026,7 +3026,7 @@ public class SBrokerPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-09-30T00:00")));
@@ -3357,7 +3357,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2018-12-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug08.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.10.2018 bis 31.12.2018")))));
@@ -3399,7 +3399,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug09.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019")))));
@@ -3455,7 +3455,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2014-06-30"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug10.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.04.2014 bis 30.06.2014")))));
@@ -3495,7 +3495,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2015-06-30"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug11.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015")))));
@@ -3695,7 +3695,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug15.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019")))));
@@ -3839,7 +3839,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2022-12-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug17.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.10.2022 bis 31.12.2022")))));
@@ -4109,7 +4109,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2012-12-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug24.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.10.2012 bis 31.12.2012")))));
@@ -4177,7 +4177,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2011-06-30"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug25.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.04.2011 bis 30.06.2011")))));
@@ -4699,7 +4699,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2019-03-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug34.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.01.2019 bis 31.03.2019")))));
@@ -5162,7 +5162,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2019-12-31"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug39.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.10.2019 bis 31.12.2019")))));
@@ -5305,7 +5305,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2020-06-30"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug40.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.04.2020 bis 30.06.2020")))));
@@ -5521,7 +5521,7 @@ public class SBrokerPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         interest(hasDate("2016-06-30"), hasAmount("EUR", 0.00), //
                                         hasSource("GiroKontoauszug42.txt"),
                                         hasNote("Abrechnungszeitraum vom 01.04.2016 bis 30.06.2016")))));

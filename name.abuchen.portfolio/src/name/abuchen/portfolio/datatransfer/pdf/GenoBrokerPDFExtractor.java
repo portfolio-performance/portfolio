@@ -354,7 +354,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
 
                             // No amount available
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupportedOrRequired);
                             t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(0);
                         })

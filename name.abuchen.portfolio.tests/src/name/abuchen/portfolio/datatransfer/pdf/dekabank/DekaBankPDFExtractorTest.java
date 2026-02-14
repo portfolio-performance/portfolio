@@ -3891,7 +3891,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -3916,7 +3916,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -3941,7 +3941,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -3966,7 +3966,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -3991,7 +3991,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -4016,7 +4016,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -4041,7 +4041,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -5646,7 +5646,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-05-28T00:00")));
@@ -5671,7 +5671,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2021-05-28T00:00")));
@@ -5809,7 +5809,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2022-05-20T00:00")));
@@ -6013,7 +6013,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2022-05-20T00:00")));
@@ -7535,7 +7535,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
@@ -7563,7 +7563,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
@@ -7591,7 +7591,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -7619,7 +7619,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -7647,7 +7647,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -7675,7 +7675,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
@@ -9110,7 +9110,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
@@ -9138,7 +9138,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
@@ -9166,7 +9166,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2005-09-09T00:00")));
@@ -9194,7 +9194,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2005-09-14T00:00")));
@@ -9461,7 +9461,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
@@ -9485,7 +9485,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2005-12-30T00:00")));
@@ -9510,7 +9510,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionOrderCancellationUnsupported));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2005-08-22T00:00")));
@@ -9534,7 +9534,7 @@ public class DekaBankPDFExtractorTest
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2005-09-09T00:00")));
@@ -9558,7 +9558,7 @@ public class DekaBankPDFExtractorTest
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2005-09-14T00:00")));
@@ -10319,7 +10319,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
@@ -10347,7 +10347,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
@@ -10517,7 +10517,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
@@ -10542,7 +10542,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2006-12-29T00:00")));
@@ -11408,7 +11408,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2008-10-01T00:00")));
@@ -11436,7 +11436,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2008-06-30T00:00")));
@@ -11589,7 +11589,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2008-10-01T00:00")));
@@ -11613,7 +11613,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2008-06-30T00:00")));
@@ -12113,7 +12113,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2009-07-02T00:00")));
@@ -12141,7 +12141,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2009-10-01T00:00")));
@@ -12169,7 +12169,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2009-12-30T00:00")));
@@ -12322,7 +12322,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2009-07-02T00:00")));
@@ -12346,7 +12346,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2009-10-01T00:00")));
@@ -12370,7 +12370,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2009-12-30T00:00")));
@@ -12836,7 +12836,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2010-07-01T00:00")));
@@ -12864,7 +12864,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -12892,7 +12892,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -12920,7 +12920,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -12948,7 +12948,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2010-12-30T00:00")));
@@ -13149,7 +13149,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-07-01T00:00")));
@@ -13173,7 +13173,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -13197,7 +13197,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -13221,7 +13221,7 @@ public class DekaBankPDFExtractorTest
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-10-01T00:00")));
@@ -13245,7 +13245,7 @@ public class DekaBankPDFExtractorTest
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-12-30T00:00")));
@@ -13269,7 +13269,7 @@ public class DekaBankPDFExtractorTest
                         .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
@@ -13293,7 +13293,7 @@ public class DekaBankPDFExtractorTest
                         .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
@@ -13318,7 +13318,7 @@ public class DekaBankPDFExtractorTest
                         .skip(7).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2010-12-31T00:00")));
@@ -13730,7 +13730,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2011-07-01T00:00")));
@@ -13758,7 +13758,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
@@ -13786,7 +13786,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
@@ -13814,7 +13814,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2011-12-30T00:00")));
@@ -14015,7 +14015,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2011-07-01T00:00")));
@@ -14039,7 +14039,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
@@ -14063,7 +14063,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2011-10-04T00:00")));
@@ -14087,7 +14087,7 @@ public class DekaBankPDFExtractorTest
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2011-12-30T00:00")));
@@ -14472,7 +14472,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
@@ -14500,7 +14500,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14528,7 +14528,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14556,7 +14556,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14584,7 +14584,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
@@ -14753,7 +14753,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2012-07-02T00:00")));
@@ -14777,7 +14777,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14801,7 +14801,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14825,7 +14825,7 @@ public class DekaBankPDFExtractorTest
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2012-10-01T00:00")));
@@ -14849,7 +14849,7 @@ public class DekaBankPDFExtractorTest
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2012-12-28T00:00")));
@@ -15319,7 +15319,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15347,7 +15347,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15375,7 +15375,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15403,7 +15403,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15431,7 +15431,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15459,7 +15459,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15487,7 +15487,7 @@ public class DekaBankPDFExtractorTest
                         is(PortfolioTransaction.Type.BUY));
         assertThat(((BuySellEntry) cancellation.getSubject()).getAccountTransaction().getType(),
                         is(AccountTransaction.Type.BUY));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((BuySellEntry) cancellation.getSubject()).getPortfolioTransaction().getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15768,7 +15768,7 @@ public class DekaBankPDFExtractorTest
                         .findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15792,7 +15792,7 @@ public class DekaBankPDFExtractorTest
                         .skip(1).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15816,7 +15816,7 @@ public class DekaBankPDFExtractorTest
                         .skip(2).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15840,7 +15840,7 @@ public class DekaBankPDFExtractorTest
                         .skip(3).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15864,7 +15864,7 @@ public class DekaBankPDFExtractorTest
                         .skip(4).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15888,7 +15888,7 @@ public class DekaBankPDFExtractorTest
                         .skip(5).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -15912,7 +15912,7 @@ public class DekaBankPDFExtractorTest
                         .skip(6).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation1.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation1.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation1.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2017-12-29T00:00")));
@@ -16923,7 +16923,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -16948,7 +16948,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -16973,7 +16973,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -16998,7 +16998,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -17023,7 +17023,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -17048,7 +17048,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -17073,7 +17073,7 @@ public class DekaBankPDFExtractorTest
 
         assertThat(((PortfolioTransaction) cancellation.getSubject()).getType(),
                         is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-03-18T00:00")));
@@ -17097,7 +17097,7 @@ public class DekaBankPDFExtractorTest
                         .skip(7).findFirst().orElseThrow(IllegalArgumentException::new);
 
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.FEES));
-        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupported));
+        assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorTransactionTypeNotSupportedOrRequired));
 
         assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
                         is(LocalDateTime.parse("2020-12-31T00:00")));
@@ -20101,7 +20101,7 @@ public class DekaBankPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorOrderCancellationUnsupported, //
+        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionOrderCancellationUnsupported, //
                         sale( //
                                         hasDate("2020-12-01"), hasShares(5.036), //
                                         hasSource("Quartalsbericht24.txt"), hasNote(null), //
@@ -20704,7 +20704,7 @@ public class DekaBankPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupported, //
+        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         fee( //
                                         hasDate("2020-12-31"), hasShares(0), //
                                         hasSource("Quartalsbericht24.txt"), hasNote("Depotpreis 2020"), //

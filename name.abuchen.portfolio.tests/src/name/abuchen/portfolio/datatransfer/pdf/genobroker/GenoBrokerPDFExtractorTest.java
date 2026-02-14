@@ -735,7 +735,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         inboundDelivery( //
                                         hasDate("2023-08-07"), hasShares(23.19), //
                                         hasSource("Fusion01.txt"), //
@@ -745,7 +745,7 @@ public class GenoBrokerPDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorTransactionTypeNotSupportedOrRequired, //
                         outboundDelivery( //
                                         hasDate("2023-08-07"), hasShares(50.00), //
                                         hasSource("Fusion01.txt"), //

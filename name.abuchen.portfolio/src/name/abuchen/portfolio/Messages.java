@@ -5,6 +5,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.messages"; //$NON-NLS-1$
+
     public static String AttributesAcquisitionFeeColumn;
     public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
@@ -78,8 +79,8 @@ public class Messages extends NLS
     public static String CSVFormatMMMDDYYYY;
     public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
-    public static String CSVFormatYYYYMMDDSlashes;
     public static String CSVFormatYYYYMMDDDot;
+    public static String CSVFormatYYYYMMDDSlashes;
     public static String CSVFormatYYYYMMDDTHHMM;
     public static String CSVImportedSecurityLabel;
     public static String CSVImportGenericColumnLabel;
@@ -222,8 +223,8 @@ public class Messages extends NLS
     public static String LabelTradeCalendarLSE;
     public static String LabelTradeCalendarMICEXRTS;
     public static String LabelTradeCalendarNYSE;
-    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarSix;
+    public static String LabelTradeCalendarSSE;
     public static String LabelTradeCalendarTARGET2;
     public static String LabelTradeCalendarTLV;
     public static String LabelTradeCalendarTSX;
@@ -258,7 +259,6 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
-    public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
@@ -289,17 +289,20 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorNotAValidTime;
     public static String MsgErrorNumberOfDateAndCloseRecordsDoNotMatch;
-    public static String MsgErrorOrderCancellationUnsupported;
     public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorQuandlMissingAPIKey;
     public static String MsgErrorQuandlMissingCode;
     public static String MsgErrorSecurityHasMalformedURL;
-    public static String MsgErrorSplitTransactionsNotSupported;
     public static String MsgErrorTradeCollector_MissingHoldingsForSell;
     public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
     public static String MsgErrorTradeCollector_NoHoldingsForSell;
     public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
-    public static String MsgErrorTransactionTypeNotSupported;
+    public static String MsgErrorTransactionAlternativeDocumentRequired;
+    public static String MsgErrorTransactionMissingExchangeRateIfInForex;
+    public static String MsgErrorTransactionOrderCancellationUnsupported;
+    public static String MsgErrorTransactionSkipIfDetailsMissing;
+    public static String MsgErrorTransactionSplitUnsupported;
+    public static String MsgErrorTransactionTypeNotSupportedOrRequired;
     public static String MsgErrorTwelveDataAPIKeyMissing;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
@@ -336,12 +339,8 @@ public class Messages extends NLS
     public static String OAuthOngoingAuthentication;
     public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
-    public static String PDFMsgErrorDoNotProcessMissingExchangeRateIfInForex;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;
-    public static String PDFSkipMissingDetails;
-    public static String PDFSkipNoPayableAmount;
-    public static String PDFSkipNotImportable;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String VINISAppValueCapitalGainsCurrentYear;
