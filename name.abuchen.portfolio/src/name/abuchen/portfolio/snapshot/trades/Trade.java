@@ -25,6 +25,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
@@ -257,7 +258,7 @@ public class Trade implements Adaptable
 
     public Portfolio getPortfolio()
     {
-        return portfolio;
+        return portfolio instanceof ReadOnlyPortfolio p ? p.unwrap() : portfolio;
     }
 
     public Optional<LocalDateTime> getEnd()
