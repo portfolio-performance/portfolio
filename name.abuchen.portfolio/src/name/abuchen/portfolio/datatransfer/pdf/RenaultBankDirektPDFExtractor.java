@@ -22,10 +22,10 @@ public class RenaultBankDirektPDFExtractor extends AbstractPDFExtractor
     private static final String INTEREST_2021 = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [H]";
     private static final String INTEREST_CHARGE_2021 = "^(?<date>\\d+.\\d+.) ([\\d]{2}\\.[\\d]{2}\\.) (Storno Abschluss)(\\s*)(?<amount>[\\.,\\d]+) [S]";
 
-    private static final String DEPOSIT_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zahlungseingang) (\\w+) (?<amount>[\\.,\\d]+) (.*)$";
-    private static final String REMOVAL_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (.berweisung) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
+    private static final String DEPOSIT_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) +(Zahlungseingang) (\\w+) (?<amount>[\\.,\\d]+) (.*)$";
+    private static final String REMOVAL_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) +(.berweisung) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
     private static final String INTEREST_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) +(\\w+zinsen) (\\w+) (?<amount>[\\.,\\d]+) (.*)";
-    private static final String TAXES_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
+    private static final String TAXES_AT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) +(Kapitalertragsteuer) (\\w+) (\\-)(?<amount>[\\.,\\d]+) (.*)$";
 
     private static final String CONTEXT_KEY_YEAR = "year";
     private static final String CONTEXT_KEY_CURRENCY = "currency";

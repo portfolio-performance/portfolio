@@ -3,7 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.renaultbankdirekt;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
@@ -386,6 +390,72 @@ public class RenaultBankDirektPDFExtractorTest
 
         assertThat(results, hasItem(interest(hasDate("2025-11-28"), hasAmount("EUR", 0.01), //
                         hasSource("Kontoauszug11.txt"))));
+
+    }
+
+    @Test
+    public void testKontoauszug12()
+    {
+        var extractor = new RenaultBankDirektPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(11L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(11));
+        new AssertImportActions().check(results, "EUR");
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-08"), hasAmount("EUR", 2362.66), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-08"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-09"), hasAmount("EUR", 1300.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-01-09"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-13"), hasAmount("EUR", 2531.91), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-13"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2026-01-14"), hasAmount("EUR", 2500.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-01-19"), hasAmount("EUR", 5000.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(removal( //
+                        hasDate("2026-01-20"), hasAmount("EUR", 3700.00), //
+                        hasSource("Kontoauszug12.txt"))));
+
+        assertThat(results, hasItem(interest( //
+                        hasDate("2026-01-30"), hasShares(0.0), //
+                        hasSource("Kontoauszug12.txt"), //
+                        hasAmount("EUR", 2.93), hasGrossValue("EUR", 2.93), //
+                        hasTaxes("EUR", 0.0), hasFees("EUR", 0.0))));
+
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2026-01-30"), hasAmount("EUR", 0.73), //
+                        hasSource("Kontoauszug12.txt"))));
 
     }
 
