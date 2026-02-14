@@ -87,6 +87,8 @@ public class WithoutTaxesFilter implements ClientFilter
         Money taxes = t.getUnitSum(Unit.Type.TAX);
 
         BuySellEntry copy = new BuySellEntry(readOnlyPortfolio, readOnlyAccount);
+        copy.getPortfolioTransaction().setOriginalTransaction(buySell.getPortfolioTransaction());
+        copy.getAccountTransaction().setOriginalTransaction(buySell.getAccountTransaction());
 
         copy.setDate(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
@@ -108,6 +110,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
         // correct the taxes on the account
         AccountTransaction at = new AccountTransaction();
+        at.setOriginalTransaction(buySell.getAccountTransaction());
         at.setType(AccountTransaction.Type.REMOVAL);
         at.setDateTime(t.getDateTime());
         at.setMonetaryAmount(taxes);
@@ -121,6 +124,7 @@ public class WithoutTaxesFilter implements ClientFilter
         Money taxes = deliveryT.getUnitSum(Unit.Type.TAX);
 
         PortfolioTransaction copy = new PortfolioTransaction();
+        copy.setOriginalTransaction(deliveryT);
         copy.setType(deliveryT.getType());
         copy.setDateTime(deliveryT.getDateTime());
         copy.setCurrencyCode(deliveryT.getCurrencyCode());
@@ -195,6 +199,7 @@ public class WithoutTaxesFilter implements ClientFilter
         }
 
         AccountTransaction copy = new AccountTransaction();
+        copy.setOriginalTransaction(t);
         copy.setType(t.getType());
         copy.setDateTime(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
@@ -209,6 +214,7 @@ public class WithoutTaxesFilter implements ClientFilter
         readOnlyAccount.internalAddTransaction(copy);
 
         AccountTransaction removal = new AccountTransaction();
+        removal.setOriginalTransaction(t);
         removal.setType(AccountTransaction.Type.REMOVAL);
         removal.setDateTime(t.getDateTime());
         removal.setMonetaryAmount(taxes);
@@ -221,6 +227,7 @@ public class WithoutTaxesFilter implements ClientFilter
             throw new UnsupportedOperationException();
 
         AccountTransaction clone = new AccountTransaction();
+        clone.setOriginalTransaction(t);
         clone.setType(type);
         clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());

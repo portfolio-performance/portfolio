@@ -264,18 +264,32 @@ public final class TransactionsViewer implements ModificationListener
         });
 
         ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
-        new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
+        new DateTimeEditingSupport(Transaction.class, "dateTime") //$NON-NLS-1$
+                        .setCanEditCheck(
+                                        t -> ((TransactionPair<?>) t).getTransaction().getOriginalTransaction() == null)
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
-        column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> {
+        var typeLabelProvider = new TransactionLabelProvider(t -> {
             if (t instanceof PortfolioTransaction pt)
                 return pt.getType().toString();
             else if (t instanceof AccountTransaction at)
                 return at.getType().toString();
             else
                 return null;
-        }));
+        })
+        {
+            @Override
+            public Image getImage(Object element)
+            {
+                return element instanceof TransactionPair<?> pair
+                                && pair.getTransaction().getOriginalTransaction() != null ? Images.CALCULATOR.image()
+                                                : null;
+            }
+        };
+
+        column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
+        column.setLabelProvider(typeLabelProvider);
         ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             if (t instanceof PortfolioTransaction pt)
@@ -285,7 +299,16 @@ public final class TransactionsViewer implements ModificationListener
             else
                 return null;
         }).attachTo(column);
-        new TransactionTypeEditingSupport(owner.getClient()).addListener(this).attachTo(column);
+        new TransactionTypeEditingSupport(owner.getClient())
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TransactionPair<?>) element).getTransaction().getOriginalTransaction() != null)
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnSecurity, SWT.None, 250); //$NON-NLS-1$
@@ -340,12 +363,14 @@ public final class TransactionsViewer implements ModificationListener
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getShares()).attachTo(column);
         new ValueEditingSupport(Transaction.class, "shares", Values.Share) //$NON-NLS-1$
-                        .setCanEditCheck(e -> ((TransactionPair<?>) e).getTransaction() instanceof PortfolioTransaction
-                                        || (((TransactionPair<?>) e).getTransaction() instanceof AccountTransaction
-                                                        && ((AccountTransaction) ((TransactionPair<?>) e)
-                                                                        .getTransaction())
-                                                                                        .getType() == AccountTransaction.Type.DIVIDENDS))
-                        .addListener(this).attachTo(column);
+                        .setCanEditCheck(e -> {
+                            var tx = (TransactionPair<?>) e;
+                            if (tx.getTransaction().getOriginalTransaction() != null)
+                                return false;
+                            return tx.isPortfolioTransaction() || tx.withAccountTransaction().map(
+                                            ta -> ta.getTransaction().getType() == AccountTransaction.Type.DIVIDENDS)
+                                            .orElse(false);
+                        }).addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -409,7 +434,15 @@ public final class TransactionsViewer implements ModificationListener
             }
         });
         new TransactionOwnerListEditingSupport(owner.getClient(), TransactionOwnerListEditingSupport.EditMode.OWNER)
-                        .addListener(this).attachTo(column);
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TransactionPair<?>) element).getTransaction().getOriginalTransaction() != null)
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(this).attachTo(column);
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getOwner().toString()).attachTo(column);
         support.addColumn(column);
 
@@ -420,7 +453,16 @@ public final class TransactionsViewer implements ModificationListener
                                         ? t.getTransaction().getCrossEntry().getCrossOwner(t.getTransaction())
                                         : null));
         new TransactionOwnerListEditingSupport(owner.getClient(),
-                        TransactionOwnerListEditingSupport.EditMode.CROSSOWNER).addListener(this).attachTo(column);
+                        TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TransactionPair<?>) element).getTransaction().getOriginalTransaction() != null)
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(this).attachTo(column);
         ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
@@ -457,7 +499,9 @@ public final class TransactionsViewer implements ModificationListener
             }
         });
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
-        new StringEditingSupport(Transaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(Transaction.class, "note") //$NON-NLS-1$
+                        .setCanEditCheck(t -> ((Transaction) t).getOriginalTransaction() == null).addListener(this)
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column("source", Messages.ColumnSource, SWT.None, 200); //$NON-NLS-1$
