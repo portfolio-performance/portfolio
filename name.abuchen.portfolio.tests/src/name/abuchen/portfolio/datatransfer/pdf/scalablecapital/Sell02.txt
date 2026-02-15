@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.5
+Portfolio Performance Version: 0.80.4
+System: linux | x86_64 | 25.0.2 | Arch Linux
+-----------------------------------------
+Scalable Capital Bank GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+gCdNlpA meCflJ onWXThIgZoB
+PdaDZPDRHVh. 7 
+07452 DonW Date 12.02.2026
+Germany Page 1 / 2
+Contract note 
+for client order 
+Type MARKET Order ID SCAL8o2jPH8xFe4
+Execution 12.02.2026 08:29:36 Exchange ID 7613Q2C8Ta202602
+Trading venue EIX Country of custody Germany
+Securities account 2871338420 Kind of custody Collective safe custody 
+Type Security Quantity Price Amount
+Sell Moderna 63.00 pc. 33.675 EUR 2,121.53 EUR
+US60770K1079
+Taxes -26.26 EUR
+Credit 2,095.27 EUR
+The amount will be settled via the clearing account ANONYMISIERT (Value: 16.02.2026). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 1 / 2
+Contract note 
+Sell 63.00 pc. Moderna 
+Calculation of tax-relevant income
+Type Amount
+Profit 99.54 EUR
+To be taxed 99.54 EUR
+Taxes incurred 
+Type Amount
+Capital gains tax 24.89 EUR
+Solidarity surcharge 1.37 EUR
+Taxes incurred 26.26 EUR
+Scalable Capital Bank GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Florian Prucker, Martin Krebs, Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Dirk Franzmeyer 2 / 2

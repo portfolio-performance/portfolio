@@ -657,7 +657,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^f.r (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)[\\s]*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        
+
                         .oneOf(
                         // @formatter:off
                                         // Berechtigte Anzahl 1 Angefallen im
@@ -677,12 +677,12 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get(
                                                                         "shares"))))
                         )
-                        
-                        
+
+
                         .oneOf( //
                         // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
-                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR 
+                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
@@ -701,7 +701,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                         // @formatter:off
                                         // 24.01.2026 02.01.2026 Steuerabbuchung 0,09 EUR 0,01 EUR
-                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR 
+                                        // 24.01.2026 02.01.2026 Tax deduction 596.41 EUR 110.11 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
@@ -830,6 +830,26 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Belastingen op financi.le transacties \\+(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("positive"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Capital gains tax 24.89 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Capital gains tax (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("positive"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Solidarity surcharge 1.37 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarity surcharge (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("positive"))
                                 processTaxEntries(t, v, type);
