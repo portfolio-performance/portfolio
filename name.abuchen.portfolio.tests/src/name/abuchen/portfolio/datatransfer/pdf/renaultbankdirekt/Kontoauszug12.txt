@@ -1,0 +1,93 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.5.qualifier
+System: linux | x86_64 | 21.0.8+9-LTS | Eclipse Adoptium
+-----------------------------------------
+Ihre Kontodaten
+BIC RCNOATW1
+IBAN AT123456789012345678
+Herrn
+Max Mustermann MITTEILUNG
+Musterstraße 342 Kontonummer 123456-001-1
+1234 sgsörfegg
+Kontoeigner Mustermann Max
+Verfügernummer 1234556788
+Wien, am 31.01.2026
+Kunden Service Center
+Tel.: 01 / 7200270
+Kontoauszug Tagesgeld
+Saldo zu Ihren Gunsten in EUR 6,44
+Datum Informationen Referenz Betrag in EUR Valuta Kontostand in EUR
+01.01.2026 Anfangssaldo 9,67
+08.01.2026  Zahlungseingang Z2601583A 2.362,66 08.01.2026 2.372,33
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+08.01.2026  Zahlungseingang Z2601284B 2.000,00 08.01.2026 4.372,33
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+09.01.2026  Zahlungseingang Z2601316C 1.300,00 09.01.2026 5.672,33
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+09.01.2026  Überweisung Z2601408C -2.500,00 09.01.2026 3.172,33
+Begünstigter: Max Mustermann
+Musterstraße 1245 21233 Musterstadt
+Österreich
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+Verwendungszweck: Auszahlung
+Seite 1 von 3
+Datum Informationen Referenz Betrag in EUR Valuta Kontostand in EUR
+13.01.2026  Zahlungseingang Z2601643E 2.531,91 13.01.2026 5.704,24
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+13.01.2026  Zahlungseingang Z2601822E 500,00 13.01.2026 6.204,24
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+Verwendungszweck: Tagesgeld
+14.01.2026  Zahlungseingang Z2601915F 2.500,00 14.01.2026 8.704,24
+Auftraggeber: Max Mustermann,
+ABc
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+19.01.2026  Überweisung Z2601526J -5.000,00 19.01.2026 3.704,24
+Begünstigter: Max Mustermann
+Musterstraße 1245 21233 Musterstadt
+Österreich
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+Verwendungszweck: Auszahlung
+20.01.2026  Überweisung Z2601763K -3.700,00 20.01.2026 4,24
+Begünstigter: Max Mustermann
+Musterstraße 1245 21233 Musterstadt
+Österreich
+Konto: AT1234567890123456789
+Kontof. Inst.: ASDFWSDFSDF
+Verwendungszweck: Auszahlung
+30.01.2026  Habenzinsen A2601JABQ 2,93 31.01.2026 7,17
+30.01.2026  Kapitalertragsteuer A2601JABQ -0,73 31.01.2026 6,44
+Schlusssaldo in EUR 6,44
+Bitte überprüfen Sie alle Angaben auf Vollständigkeit und Richtigkeit. Wenn vorstehende Aufstellung mit dem Hinweis 
+Schlusssaldo gekennzeichnet ist, wurden die im vertraglich vereinbarten Abrechnungszeitraum entstandenen 
+wechselseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach dem Abrechnungsdatum 
+entstehen, werden erst in der folgenden Abrechnung berücksichtigt. Einwendungen gegen den Inhalt dieses 
+Kontoauszuges sind längstens binnen 6 Wochen nach Zugang dieses Kontoauszuges an die Bank zu richten. Wenn Sie 
+innerhalb dieser Frist keine Einwendungen gegen den Inhalt dieses Kontoauszuges erheben, anerkennen Sie diesen 
+damit. 
+Seite 2 von 3
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der Einlagen 
+(Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem französischen 
+Einlagensicherungsfonds FGDR angeschlossen. Der französische Einlagensicherungsfonds FGDR sichert Einlagen bis 
+100.000 Euro pro Person zu 100 Prozent ab. 
+Nähere Informationen zum FGDR können Sie auf unserer Website unter dem Menüpunkt "Über uns" im Untermenü 
+"Einlagensicherung" entnehmen. 
+Seite 3 von 3
