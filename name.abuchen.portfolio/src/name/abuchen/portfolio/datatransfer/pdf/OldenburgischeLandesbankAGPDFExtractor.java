@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
-import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -382,7 +381,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
                                                             // @formatter:on
-                                                            if ("-".equals(trim(v.get("type"))))
+                                                            if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
@@ -404,7 +403,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
                                                             // @formatter:on
-                                                            if ("-".equals(trim(v.get("type"))))
+                                                            if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));

@@ -917,7 +917,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                                         + "(\\-)?(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // Is type is "-" change from DEPOSIT to REMOVAL
-                                                            if ("Auszahlung".equals(trim(v.get("type"))) || "Überweisung".equals(trim(v.get("type"))))
+                                                            if ("Auszahlung".equals(v.get("type")) || "Überweisung".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                                                             t.setDateTime(asDate(v.get("date")));

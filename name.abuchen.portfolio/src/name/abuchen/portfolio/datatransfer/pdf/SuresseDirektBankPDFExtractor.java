@@ -55,15 +55,15 @@ public class SuresseDirektBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "sign", "amount", "currency", "note") //
+                        .section("date", "type", "amount", "currency", "note") //
                         .documentContext("year") //
-                        .match("^[\\d]+ (?<date>[\\d]{2}\\-[\\d]{2}) [\\d]{2}\\-[\\d]{2} .*.berweisung.*(?<sign>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^[\\d]+ (?<date>[\\d]{2}\\-[\\d]{2}) [\\d]{2}\\-[\\d]{2} .*.berweisung.*(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .match("^(?<note>Referenz : .*)$") //
                         .assign((t, v) -> {
                             // @formatter:off
-                            // Is sign --> "-" change from DEPOSIT to REMOVAL
+                            // Is type --> "-" change from DEPOSIT to REMOVAL
                             // @formatter:on
-                            if ("-".equals(trim(v.get("sign"))))
+                            if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date") + "-" + v.get("year")));

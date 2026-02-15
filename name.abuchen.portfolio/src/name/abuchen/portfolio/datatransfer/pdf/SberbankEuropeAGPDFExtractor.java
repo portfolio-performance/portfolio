@@ -60,16 +60,18 @@ public class SberbankEuropeAGPDFExtractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
-                        .section("date", "note", "amount", "sign") //
+                        .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.) " //
                                         + "(?<note>.berweisungsgutschr\\.) " //
                                         + "(?<amount>[\\.,\\d]+) " //
-                                        + "(?<sign>[S|H])$")
+                                        + "(?<type>[S|H])$")
                         .assign((t, v) -> {
-                            // Is sign --> "S" change from DEPOSIT to REMOVAL
-                            if ("S".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("S".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             // create a long date from the year in the context

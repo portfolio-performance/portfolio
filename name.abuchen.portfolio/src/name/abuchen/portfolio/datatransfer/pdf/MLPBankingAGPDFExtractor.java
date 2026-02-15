@@ -318,7 +318,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* (?<note1>(DEPOTPREIS|DEPOTENTGELT|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) [\\d]+ (?<note2>[\\w]{2}\\/[\\d]{4}) .*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
-                                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                                            // Is type --> "S" change from FEES_REFUND to FEES
                                                             // @formatter:on
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);
@@ -351,7 +351,7 @@ public class MLPBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* (?<note1>(DEPOTPREIS|DEPOTENTGELT|VERWALTUNGSENTGELT|VERMOEGENSDEPOT)) VERW\\.G\\. (?<note2>[\\d]{4}) (?<note3>QUARTAL .*)$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
-                                                            // Is sign --> "S" change from FEES_REFUND to FEES
+                                                            // Is type --> "S" change from FEES_REFUND to FEES
                                                             // @formatter:on
                                                             if ("S".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.FEES);

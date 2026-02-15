@@ -538,7 +538,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                          // Is type --> "-" change from TAXES to TAX_REFUND
-                            if ("-".equals(trim(v.get("type"))))
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
                             t.setDateTime(asDate(v.get("date")));
@@ -569,7 +569,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                          v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
 
                          // Is type --> "-" change from INTEREST to INTEREST_CHARGE
-                            if ("-".equals(trim(v.get("type"))))
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
                             t.setDateTime(asDate(v.get("date")));

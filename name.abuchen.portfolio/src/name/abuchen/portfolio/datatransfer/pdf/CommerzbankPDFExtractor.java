@@ -463,9 +463,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                         // abgeführte Steuern EUR 0 , 0 0
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "sign", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
+                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "type", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
                                                         .match("^Zu Ihren (Gunsten|Lasten) vor Steuern:[\\s]{1,}(?<currencyBeforeTaxes>[A-Z]{3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^Steuerbemessungsgrundlage vor Verlustverrechnung[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>[A-Z]{3})(?<sign>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
+                                                        .match("^Steuerbemessungsgrundlage vor Verlustverrechnung[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>[A-Z]{3})(?<type>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
                                                         .match("^abgef.hrte Steuern[\\s]{1,}(?<currencyDeductedTaxes>[A-Z]{3})[\\-\\s]{1,}(?<deductedTaxes>[\\.,\\d\\s]+).*$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -473,7 +473,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                                             var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(stripBlanks(v.get("deductedTaxes"))));
 
                                                             // Calculate the taxes
-                                                            if (!grossBeforeTaxes.isZero() && grossTaxesBaseBeforeLossOffset.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("sign"))))
+                                                            if (!grossBeforeTaxes.isZero() && grossTaxesBaseBeforeLossOffset.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
                                                             {
                                                                 t.setMonetaryAmount(grossTaxesBaseBeforeLossOffset.subtract(grossBeforeTaxes).add(deductedTaxes));
 
