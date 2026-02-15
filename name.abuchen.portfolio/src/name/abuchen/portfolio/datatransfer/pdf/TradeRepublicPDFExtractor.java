@@ -3711,7 +3711,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) . .*(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
-                                                            // Is sign --> "-" change from TAX_REFUND to TAXES
+                                                            // Is type --> "-" change from TAX_REFUND to TAXES
                                                             // @formatter:on
                                                             if ("-".equals(trim(v.get("type"))))
                                                                 t.setType(AccountTransaction.Type.TAXES);

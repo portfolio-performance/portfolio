@@ -866,14 +866,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         //                                                                 90,61
                         // @formatter:on
 
-                        .section("amount", "sign") //
+                        .section("amount", "type") //
                         .find("^[\\s]*Erstattung\\/Belastung \\(\\-\\) von Steuern.*") //
-                        .match("[\\s]*(?<amount>[\\.,\\d]+)(?<sign>(\\-)?).*") //
+                        .match("[\\s]*(?<amount>[\\.,\\d]+)(?<type>(\\-)?).*") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-
-                            if ("-".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type --> "-" change from TAX_REFUND to TAXES
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAXES);
+
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> {

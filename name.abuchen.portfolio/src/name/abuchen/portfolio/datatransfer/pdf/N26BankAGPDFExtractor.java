@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -58,7 +56,7 @@ public class N26BankAGPDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Is type is "-" change from DEPOSIT to REMOVAL
                             // @formatter:on
-                            if ("-".equals(trim(v.get("type"))))
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date")));

@@ -806,7 +806,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // 27.08. 27.08. Auszahlung girocard PN:931                                           20,00 S
                         // 08.06. 08.06. Überweisung SEPA                                                      4,00 S
                         // @formatter:on
-                        .section("day", "month", "note", "amount", "sign").optional() //
+                        .section("day", "month", "note", "amount", "type").optional() //
                         .documentContext("currency", "nr", "year") //
                         .match("^(?i)[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. " //
                                         + "(?<note>Einnahmen" //
@@ -823,14 +823,14 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         + "|UEBERTRAG) " //
                                         + ".* " //
                                         + "(?<amount>[\\.,\\d]+) " //
-                                        + "(?<sign>[S|H])$") //
+                                        + "(?<type>[S|H])$") //
                         .match("^(?![\\s]+ [Dividende]).*$") //
                         .match("^(?![\\s]+ [Dividende]).*$") //
                         .assign((t, v) -> {
                             // @formatter:off
-                            // Is sign --> "H" change from DEPOSIT to REMOVAL
+                            // Is type --> "H" change from DEPOSIT to REMOVAL
                             // @formatter:on
-                            if ("H".equals(v.get("sign")))
+                            if ("H".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
                             dateTranactionHelper(t, v);
@@ -877,16 +877,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         //  DEU 495522500131 EUR 5,52
                         //  Umsatz vom 23.04.2024 MC Hauptkarte
                         // @formatter:on
-                        .section("day", "month", "note", "note2", "amount", "sign").optional() //
+                        .section("day", "month", "note", "note2", "amount", "type").optional() //
                         .documentContext("currency", "nr", "year") //
-                        .match("^(?i)[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note>.*) PN:4444 (?<amount>[\\.,\\d]+) (?<sign>[S|H])$") //
+                        .match("^(?i)[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note>.*) PN:4444 (?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
                         .match("^.*$") //
                         .match("^ (?<note2>.*)$") //
                         .assign((t, v) -> {
                             // @formatter:off
-                            // Is sign --> "H" change from DEPOSIT to REMOVAL
+                            // Is type --> "H" change from DEPOSIT to REMOVAL
                             // @formatter:on
-                            if ("H".equals(v.get("sign")))
+                            if ("H".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
                             dateTranactionHelper(t, v);
@@ -943,11 +943,11 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // 30.04. 30.04. Abschluss lt. Anlage 1 PN:905 0,11 S
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "amount", "sign") //
+                                                        .attributes("day", "month", "amount", "type") //
                                                         .documentContext("currency", "nr", "year") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). Abschluss lt\\. Anlage [\\d] .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). Abschluss lt\\. Anlage [\\d] .* (?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
                                                         .assign((t, v) -> {
-                                                            if ("S".equals(v.get("sign")))
+                                                            if ("S".equals(v.get("type")))
                                                                 t.setType(Type.INTEREST_CHARGE);
 
                                                             dateTranactionHelper(t, v);
@@ -1030,9 +1030,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         //          Kontoführungsentgelt        3112       1,95S
                         // Abschluss vom 01.10.2020 bis 31.12.2020
                         // @formatter:on
-                        .section("day", "month", "sign", "amount1", "amount2", "amount3", "note").optional() //
+                        .section("day", "month", "type", "amount1", "amount2", "amount3", "note").optional() //
                         .documentContext("currency", "nr", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ (?<sign>[S|H])$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ (?<type>[S|H])$") //
                         .match("^[\\s]+ Buchungen Online .* (?<amount1>[\\.,\\d]+)[S|H]$") //
                         .match("^[\\s]+ Buchungen automatisch .* (?<amount2>[\\.,\\d]+)[S|H]$") //
                         .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount3>[\\.,\\d]+)[S|H]$") //
@@ -1041,7 +1041,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Is type --> "H" change from FEES to FEES_REFUND
                             // @formatter:on
-                            if ("H".equals(v.get("sign")))
+                            if ("H".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
                             dateTranactionHelper(t, v);
@@ -1057,9 +1057,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         //          Kontoführungsentgelt        2345       1,95S
                         // Abschluss vom 30.07.2021 bis 31.08.2021
                         // @formatter:on
-                        .section("day", "month", "sign", "amount1", "amount2", "note").optional() //
+                        .section("day", "month", "type", "amount1", "amount2", "note").optional() //
                         .documentContext("currency", "nr", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ (?<sign>[S|H])$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ (?<type>[S|H])$") //
                         .match("^[\\s]+ Buchungen automatisch .* (?<amount1>[\\.,\\d]+)[S|H]$") //
                         .match("^[\\s]+ Kontof.hrungsentgelt .* (?<amount2>[\\.,\\d]+)[S|H]$") //
                         .match("^[\\s]+ (?<note>Abschluss vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
@@ -1067,7 +1067,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // Is type --> "H" change from FEES to FEES_REFUND
                             // @formatter:on
-                            if ("H".equals(v.get("sign")))
+                            if ("H".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
                             dateTranactionHelper(t, v);

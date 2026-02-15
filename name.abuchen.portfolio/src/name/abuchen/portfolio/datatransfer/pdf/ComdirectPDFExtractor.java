@@ -1215,9 +1215,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         //  ab g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _  _ _ _ _ __  __0_,_0 _0
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "sign", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
+                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "type", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<type>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -1225,7 +1225,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
 
                                                             // Calculate the taxes
-                                                            if (!grossBeforeTaxes.isZero() && grossTaxesBaseBeforeLossOffset.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("sign"))))
+                                                            if (!grossBeforeTaxes.isZero() && grossTaxesBaseBeforeLossOffset.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
                                                             {
                                                                 t.setMonetaryAmount(grossTaxesBaseBeforeLossOffset.subtract(grossBeforeTaxes).add(deductedTaxes));
 
@@ -1292,11 +1292,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // a b g e f ü h rt e S t e u er n                                                                                                                    E_ U_ R_ _ _ _ _ _ _ _  _ _ _ _ _ _ _0_,_0_ 0_
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "sign", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
+                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "type", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})(?<type>[\\-\\s]{1,})(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -1304,7 +1304,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
 
                                                             // Calculate the taxes and store gross amount
-                                                            if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("sign"))))
+                                                            if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes) && !"-".equals(trim(v.get("type"))))
                                                             {
                                                                 t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
 
@@ -1843,7 +1843,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
-                            // Is sign --> "-" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:off
+                            // Is type --> "-" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:on
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
 
@@ -1902,7 +1904,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
-                            // Is sign --> "-" change from TAX_REFUND to TAXES
+                            // @formatter:off
+                            // Is type --> "-" change from TAX_REFUND to TAXES
+                            // @formatter:on
                             if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.TAXES);
 
