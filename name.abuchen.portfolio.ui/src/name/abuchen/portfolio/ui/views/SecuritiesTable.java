@@ -277,6 +277,26 @@ public final class SecuritiesTable implements ModificationListener
         new BooleanEditingSupport(Security.class, "retired").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
+
+        column = new Column("percentage-quotation", Messages.ColumnPercentageQuotation, SWT.LEFT, 40); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return ((Security) e).isPercentageQuoted() ? Images.CHECK.image() : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "percentageQuoted")); //$NON-NLS-1$
+        new BooleanEditingSupport(Security.class, "percentageQuoted").addListener(this).attachTo(column); //$NON-NLS-1$
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     private void addColumnLatestPrice() // NOSONAR

@@ -261,6 +261,7 @@ public class Messages extends NLS
     public static String ColumnName;
     public static String ColumnNetValue;
     public static String ColumnNextDate;
+    public static String ColumnNominal;
     public static String ColumnNote;
     public static String ColumnNumberOfTransactions;
     public static String ColumnOffsetAccount;
@@ -269,6 +270,7 @@ public class Messages extends NLS
     public static String ColumnPctOfTotal;
     public static String ColumnPctOfTotal_MenuLabel;
     public static String ColumnPeer;
+    public static String ColumnPercentageQuotation;
     public static String ColumnPerShare;
     public static String ColumnPerShare_Description;
     public static String ColumnPersonalDividendYield;

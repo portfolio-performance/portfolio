@@ -204,9 +204,57 @@ public abstract class AbstractPDFExtractor implements Extractor
                         MessageFormat.format(Messages.PDFMsgFileNotSupported, filename, getLabel()));
     }
 
+    /**
+     * Creates a new {@link Security} object or fetches one from the internal
+     * cache in case there is one for the specified security already.
+     * <p>
+     * The following keys from the {@code values} map are recognized:
+     * <ul>
+     * <li>{@code isin}</li>
+     * <li>{@code tickerSymbol}</li>
+     * <li>{@code wkn}</li>
+     * <li>{@code name}</li>
+     * <li>{@code nameContinued}</li>
+     * <li>{@code currency}</li>
+     * <li>{@code percent}</li>
+     * <ul>
+     *
+     * @param values
+     *            Map of key/value pairs for the identification and construction
+     *            of the Security object.
+     * @return New or cached Security
+     */
     protected Security getOrCreateSecurity(Map<String, String> values)
     {
-        return getOrCreateSecurity(values, () -> new Security(null, asCurrencyCode(values.get("currency")))); //$NON-NLS-1$
+        return getOrCreateSecurity(values, () -> {
+            Security security = new Security(null, asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+            security.setPercentageQuoted(values.containsKey("percent"));  //$NON-NLS-1$
+            return security;
+        });
+    }
+
+    /**
+     * Creates a new percentage-quoted {@link Security} object or fetches an
+     * already registered Security from the internal cache in case there is one
+     * for the specified security already.
+     * <p>
+     * For the reason of backward compatibility with older portfolios,
+     * pre-existing securities will be fetched and return unaltered even if they
+     * do not have {@link Security#isPercentageQuoted()} set to true.
+     *
+     * @param values
+     *            Map of key/value pairs for the identification and construction
+     *            of the Security object.
+     * @return New or cached Security
+     * @see #getOrCreateSecurity(Map)
+     */
+    protected Security getOrCreatePercentageQuotedSecurity(Map<String, String> values)
+    {
+        return getOrCreateSecurity(values, () -> {
+            Security security = new Security(null, asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+            security.setPercentageQuoted(true);
+            return security;
+        });
     }
 
     /**

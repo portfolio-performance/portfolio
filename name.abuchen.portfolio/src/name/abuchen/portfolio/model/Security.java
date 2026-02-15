@@ -101,6 +101,8 @@ public final class Security implements Attributable, InvestmentVehicle
 
     private Instant updatedAt;
 
+    private boolean percentageQuoted = false;
+
     @Deprecated
     private String type;
 
@@ -934,6 +936,8 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.updatedAt = updatedAt;
 
+        answer.percentageQuoted = percentageQuoted;
+
         return answer;
     }
 
@@ -964,6 +968,29 @@ public final class Security implements Attributable, InvestmentVehicle
     private boolean notEmpty(String s)
     {
         return s != null && s.length() > 0;
+    }
+
+    /**
+     * Enables percentage-based quoting of prices.
+     * <p>
+     * By default, price quotes are given in absolute values per share. A
+     * percentage-based price is applied as a factor (after deduction of 100) to
+     * the nominal value.
+     * <p>
+     * Note that a change of the setting after the first transaction involving
+     * this security is likely to distort statistics.
+     *
+     * @param percentageQuoted
+     *            Enable/disable percentage-quotation.
+     */
+    public void setPercentageQuoted(boolean percentageQuoted)
+    {
+        this.percentageQuoted = percentageQuoted;
+    }
+
+    public boolean isPercentageQuoted()
+    {
+        return this.percentageQuoted;
     }
 
 }

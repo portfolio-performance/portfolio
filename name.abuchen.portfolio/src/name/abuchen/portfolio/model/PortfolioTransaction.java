@@ -200,6 +200,8 @@ public class PortfolioTransaction extends Transaction
                         .divide(BigDecimal.valueOf(getShares()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
 
+        if (getSecurity().isPercentageQuoted())
+            grossPrice *= 100;
         return Quote.of(getCurrencyCode(), grossPrice);
     }
 
@@ -225,6 +227,8 @@ public class PortfolioTransaction extends Transaction
                         .movePointRight(Values.Share.precision()) //
                         .divide(BigDecimal.valueOf(getShares()), Values.MC) //
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
+        if (getSecurity().isPercentageQuoted())
+            grossPrice *= 100;
         return Quote.of(converter.getTermCurrency(), grossPrice);
     }
 

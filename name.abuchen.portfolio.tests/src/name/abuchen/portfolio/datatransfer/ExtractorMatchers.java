@@ -519,4 +519,9 @@ public class ExtractorMatchers
                         s -> s.getPropertyValue(SecurityProperty.Type.FEED, name).orElse(null));
     }
 
+    public static Matcher<Security> isPercentageQuoted(boolean percentageQuoted)
+    {
+        return new PropertyMatcher<Security, Boolean>("percentageQuoted", percentageQuoted, //$NON-NLS-1$
+                        s -> s.isPercentageQuoted());
+    }
 }

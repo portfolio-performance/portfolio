@@ -35,7 +35,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
         convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
-        calculationStatus;
+        securityQuotation, calculationStatus;
     }
 
     protected final Client client;
@@ -200,10 +200,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     /**
      * Check whether calculation works out. The separate validation is needed
      * because the model does prevent negative values in methods
-     * {@link #calcGrossValue(long, long, long)} and
-     * {@link #calcTotal(long, long, long)}. Due to the limited precision of the
-     * quote (2 digits currently) and the exchange rate (4 digits), the gross
-     * value and converted gross value are checked against a range.
+     * {@link #calcGrossValue(long, long, long)} and {@link #calculateTotal()}.
+     * Due to the limited precision of the quote (2 digits currently) and the
+     * exchange rate (4 digits), the gross value and converted gross value are
+     * checked against a range.
      */
     private IStatus calculateStatus()
     {
@@ -215,9 +215,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                             .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnSubTotal));
 
         // check whether gross value is in range
-        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
+        long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue()
+                        / ((security != null && security.isPercentageQuoted()) ? 100.0 : 1) * Values.Amount.factor()
                         / Values.Share.divider());
-        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue() * Values.Amount.factor()
+        long upper = Math.round(shares * quote.add(BigDecimal.valueOf(0.01)).doubleValue()
+                        / ((security != null && security.isPercentageQuoted()) ? 100.0 : 1) * Values.Amount.factor()
                         / Values.Share.divider());
         if (grossValue < lower || grossValue > upper)
             return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
@@ -267,6 +269,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         String oldCurrencyCode = getSecurityCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
+        String oldQuotation = getSecurityQuotation();
 
         firePropertyChange(Properties.security.name(), this.security, this.security = security);
 
@@ -275,6 +278,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                         getExchangeRateCurrencies());
         firePropertyChange(Properties.inverseExchangeRateCurrencies.name(), oldInverseExchangeRateCurrencies,
                         getInverseExchangeRateCurrencies());
+        firePropertyChange(Properties.securityQuotation.name(), oldQuotation,
+                        getSecurityQuotation());
 
         updateExchangeRate();
         updateSharesAndQuote();
@@ -388,7 +393,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (quote.doubleValue() != 0)
         {
             triggerGrossValue(
-                            Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+                            Math.round(shares * quote.doubleValue()
+                                            / ((security != null && security.isPercentageQuoted()) ? 100.0 : 1.0)
+                                            * Values.Amount.factor() / Values.Share.divider()));
         }
         else if (grossValue != 0 && shares != 0)
         {
@@ -411,7 +418,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         firePropertyChange(Properties.quote.name(), this.quote, this.quote = newValue); // NOSONAR
 
         triggerGrossValue(
-                        Math.round(shares * newValue.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+                        Math.round(shares * newValue.doubleValue()
+                                        / ((security != null && security.isPercentageQuoted()) ? 100.0 : 1.0)
+                                        * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
@@ -629,6 +638,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public PortfolioTransaction.Type getType()
     {
         return type;
+    }
+
+    /**
+     * Returns either the currency code (for securities quoted with absolute
+     * values) or a percent sign (%).
+     */
+    public String getSecurityQuotation()
+    {
+        return (security != null && security.isPercentageQuoted()) ? "%" : getSecurityCurrencyCode(); //$NON-NLS-1$
     }
 
     protected long calculateConvertedGrossValue()

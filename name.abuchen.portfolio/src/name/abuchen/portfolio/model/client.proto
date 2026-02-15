@@ -95,6 +95,8 @@ message PSecurity {
   bool isRetired = 20;
 
   google.protobuf.Timestamp updatedAt = 21;
+
+  bool isPercentageQuoted = 22;
 }
 
 message PWatchlist {
