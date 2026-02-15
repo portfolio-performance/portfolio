@@ -1231,12 +1231,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendWithNegativeAmountTransaction()
     {
-        final var type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds");
+        final var type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( (transparenter|intransparenter))? Fonds");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds$");
+        var firstRelevantLine = new Block("^Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( (transparenter|intransparenter))? Fonds$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1766,24 +1766,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // 29.01.     29.01.  Überweisung                                       1.100,00+
-        // 19.11.     19.11.  Lastschrift                                          50,00+
-        // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
-        // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
-        // 19.11.     19.11.  R-Transaktion                                       -53,00-
-        // 07.04.     07.04.  /REC/FC:MAX                                       2.250,00+
-        //                    MUSTERMANN,//MUSTERSTR 2 MUSTERHAUSEN GERMANY /
-        //                    SOGEFRPPHCM/
-        // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
-        //                    Stanley-Aktion
-        // 13.02.     13.02.  Gutschrift aus Kulanz                                 1,88+
-        // 05.11. 05.11. fs939468989892221962 150,00+
-        // @formatter:on
-        var depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+        var depositRemovalblock_Format01 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                         + "(.berweisung" //
                         + "|Lastschrift" //
-                        + "|[A-Za-z]{2}[A-Z0-9]{11,30}" //
+                        + "|[A-Za-z0-9]{10,30}" //
                         + "|CASH .*" //
                         + "|EINZAHLUNG .*" //
                         + "|\\/REC\\/.*" //
@@ -1791,8 +1777,104 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         + "|R\\-Transaktion" //
                         + "|Gutschrift aus Kulanz)" //
                         + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-].*$");
-        type.addBlock(depositRemovalblock);
-        depositRemovalblock.set(new Transaction<AccountTransaction>()
+        type.addBlock(depositRemovalblock_Format01);
+        depositRemovalblock_Format01.setMaxSize(2);
+        depositRemovalblock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 07.10. 07.10. qoPYsm1pGTT 1.000,00+
+                                        // Iz840881600557395584
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "[A-Za-z0-9]{10,30}[\\s]{1,}" //
+                                                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-]).*$") //
+                                                        .match("(?<note>[A-Za-z0-9]{10,30})$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+
+                                                            // Formatting some notes
+                                                            if (v.get("note").startsWith("Prämie"))
+                                                                v.put("note", "Prämie");
+
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 29.01.     29.01.  Überweisung                                       1.100,00+
+                                        // 19.11.     19.11.  Lastschrift                                          50,00+
+                                        // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
+                                        // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
+                                        // 19.11.     19.11.  R-Transaktion                                       -53,00-
+                                        // 07.04.     07.04.  /REC/FC:MAX                                       2.250,00+
+                                        //                    MUSTERMANN,//MUSTERSTR 2 MUSTERHAUSEN GERMANY /
+                                        //                    SOGEFRPPHCM/
+                                        // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
+                                        //                    Stanley-Aktion
+                                        // 13.02.     13.02.  Gutschrift aus Kulanz                                 1,88+
+                                        // 05.11. 05.11. fs939468989892221962 150,00+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>(.berweisung" //
+                                                                        + "|Lastschrift" //
+                                                                        + "|[A-Za-z0-9]{10,30}" //
+                                                                        + "|CASH .*" //
+                                                                        + "|EINZAHLUNG .*" //
+                                                                        + "|AUSZAHLUNG .*" //
+                                                                        + "|\\/REC\\/.*" //
+                                                                        + "|Pr.mie .*" //
+                                                                        + "|R\\-Transaktion"
+                                                                        + "|Gutschrift aus Kulanz))" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+
+                                                            // Formatting some notes
+                                                            if (v.get("note").startsWith("Prämie"))
+                                                                v.put("note", "Prämie");
+
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 01.10. 01.10. BIIWATWWXXX
+        // Mn132692519750748439 3.000,00-
+        // HEoVS yjYhmWXs
+        // @formatter:on
+        var depositRemovalblock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[A-Za-z0-9]{10,30}$");
+        type.addBlock(depositRemovalblock_Format02);
+        depositRemovalblock_Format02.setMaxSize(2);
+        depositRemovalblock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
@@ -1802,17 +1884,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
-                                        + "(?<note>(.berweisung" //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}[A-Za-z0-9]{10,12}$") //
+                        .match("(?<note>(.berweisung" //
                                         + "|Lastschrift" //
-                                        + "|[A-Za-z]{2}[A-Z0-9]{11,30}" //
+                                        + "|[A-Za-z0-9]{10,30}" //
                                         + "|CASH .*" //
                                         + "|EINZAHLUNG .*" //
                                         + "|AUSZAHLUNG .*" //
                                         + "|\\/REC\\/.*" //
                                         + "|Pr.mie .*" //
-                                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+" //
                                         + "|R\\-Transaktion"
                                         + "|Gutschrift aus Kulanz))" //
                                         + "[\\s]{1,}" //
