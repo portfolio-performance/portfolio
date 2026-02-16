@@ -81,7 +81,7 @@ public class NEON3aPDFExtractor extends AbstractPDFExtractor
                         // Secur.Nr. 1/039,462,806 Secur. Cur CHF
                         // @formatter:on
                         .section("name", "valor", "currency") //
-                        .match("^(?!Unit |Rate )(?<name>[A-Za-z].*)$") //
+                        .match("^(?!Secur\\.Nr\\.)(?!Unit )(?!Rate )(?<name>.+)$") //
                         .match("^Secur\\.Nr\\. 1\\/(?<valor>[\\d,]+) Secur\\. Cur (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             v.put("isin", valorToIsin(v.get("valor")));
