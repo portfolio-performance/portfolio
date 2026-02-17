@@ -20,7 +20,6 @@ public class StockSplitModel extends BindingHelper.Model
     private LocalDate exDate = LocalDate.now();
     private BigDecimal newShares = BigDecimal.ONE;
     private BigDecimal oldShares = BigDecimal.ONE;
-    private BigDecimal stockMultiplier = BigDecimal.ONE;
 
     private boolean changeTransactions = true;
     private boolean changeHistoricalQuotes = true;
@@ -60,7 +59,6 @@ public class StockSplitModel extends BindingHelper.Model
     public void setNewShares(BigDecimal newShares)
     {
         firePropertyChange("newShares", this.newShares, this.newShares = newShares); //$NON-NLS-1$
-        calculateStockMultiplier();
     }
 
     public BigDecimal getOldShares()
@@ -71,7 +69,6 @@ public class StockSplitModel extends BindingHelper.Model
     public void setOldShares(BigDecimal oldShares)
     {
         firePropertyChange("oldShares", this.oldShares, this.oldShares = oldShares); //$NON-NLS-1$
-        calculateStockMultiplier();
     }
 
     public boolean isChangeTransactions()
@@ -96,23 +93,18 @@ public class StockSplitModel extends BindingHelper.Model
                         this.changeHistoricalQuotes = changeHistoricalQuotes);
     }
 
-    private void calculateStockMultiplier()
-    {
-        stockMultiplier =  newShares.divide(oldShares, Values.MC);
-    }
-    
     public long calculateNewStock(long oldStock)
     {
-        return BigDecimal.valueOf(oldStock).multiply(stockMultiplier)
+        return BigDecimal.valueOf(oldStock).multiply(newShares).divide(oldShares, Values.MC)
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
-    
+
     public long calculateNewQuote(long oldQuote)
     {
-        return BigDecimal.valueOf(oldQuote).divide(stockMultiplier, Values.MC) // when stock is multiplied, quote must be divided
+        return BigDecimal.valueOf(oldQuote).multiply(oldShares).divide(newShares, Values.MC)
                         .setScale(0, RoundingMode.HALF_EVEN).longValue();
     }
-    
+
     @Override
     public void applyChanges()
     {
