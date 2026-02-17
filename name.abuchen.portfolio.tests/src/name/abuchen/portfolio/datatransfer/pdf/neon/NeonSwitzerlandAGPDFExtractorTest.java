@@ -355,7 +355,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
     @Test
     public void testSell02()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
