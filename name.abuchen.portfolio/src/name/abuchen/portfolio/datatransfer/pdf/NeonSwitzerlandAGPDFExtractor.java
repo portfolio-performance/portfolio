@@ -17,10 +17,13 @@ import name.abuchen.portfolio.money.Values;
  * Extractor for 3a account documents from Neon Switzerland AG
  * 
  * Neon Switzerland AG partners with Hypothekarbank Lenzburg AG for their regular investment offering. 
- * However, their 3a accounts are a seperate product managed by Simply3a and held by
- * Lienhardt & Partner Privatbank Zürich AG. 
+ * However, their 3a accounts are a separate product held by Simply3a and managed by
+ * Lienhardt & Partner Privatbank Zürich AG.
+ * 
  * The PDF statements for 3a accounts from Neon thus cannot be extracted by
  * {@link HypothekarbankLenzburgAGPDFExtractor}.
+ * 
+ * @see <a href="https://www.neon-free.ch/en/saeule3a">Neon 3a Account Information</a>
  * @formatter:on
  */
 @SuppressWarnings("nls")
