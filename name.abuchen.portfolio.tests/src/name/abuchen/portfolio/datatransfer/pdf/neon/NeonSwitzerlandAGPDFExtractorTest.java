@@ -416,7 +416,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Deposit1.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Deposit01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -428,7 +428,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
         // check deposit
         assertThat(results, hasItem(deposit( //
                         hasDate("2025-11-18"), //
-                        hasSource("Deposit1.txt"), //
+                        hasSource("Deposit01.txt"), //
                         hasAmount("CHF", 1000.00))));
     }
 
@@ -484,7 +484,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
     @Test
     public void testNormalizNsin_WithCommas()
     {
-        // Swiss Valor format: 039,462,806
+        // Swiss Valor format with delimiters: 039,462,806
         String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039,462,806");
         assertThat(normalized, is("039462806"));
     }
