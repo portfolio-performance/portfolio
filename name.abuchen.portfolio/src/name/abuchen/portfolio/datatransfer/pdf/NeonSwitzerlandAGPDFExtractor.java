@@ -12,10 +12,21 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * Extractor for 3a account documents from Neon Switzerland AG
+ * 
+ * Neon Switzerland AG partners with Hypothekarbank Lenzburg AG for their regular investment offering. 
+ * However, their 3a accounts are a seperate product managed by Simply3a and held by
+ * Lienhardt & Partner Privatbank Zürich AG. 
+ * The PDF statements for 3a accounts from Neon thus cannot be extracted by
+ * {@link HypothekarbankLenzburgAGPDFExtractor}.
+ * @formatter:on
+ */
 @SuppressWarnings("nls")
-public class NEON3aPDFExtractor extends AbstractPDFExtractor
+public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
 {
-    public NEON3aPDFExtractor(Client client)
+    public NeonSwitzerlandAGPDFExtractor(Client client)
     {
         super(client);
 
@@ -38,7 +49,7 @@ public class NEON3aPDFExtractor extends AbstractPDFExtractor
                                         .match("^Currency (?<currency>[A-Z]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
-        this.addDocumentTyp(type);
+        this.addDocumentType(type);
 
         addFundBuySellBlock(type);
         addDepositBlock(type);
@@ -84,7 +95,8 @@ public class NEON3aPDFExtractor extends AbstractPDFExtractor
                         .match("^(?!Unit |Rate )(?<name>[A-Za-z].*)$") //
                         .match("^Secur\\.Nr\\. 1\\/(?<valor>[\\d,]+) Secur\\. Cur (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            v.put("isin", valorToIsin(v.get("valor")));
+                            // NEON exclusively offers Swisscanto (CH) securities: https://www.neon-free.ch/en/strategien
+                            v.put("isin", toIsin("CH", v.get("valor")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -170,54 +182,85 @@ public class NEON3aPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
     }
-
+    
     /**
-     * Converts a Swiss valor number to an ISIN using the Luhn mod N algorithm.
-     *
-     * @param valor
-     *            the valor number with commas (e.g., "039,462,806")
-     * @return the complete 12-character ISIN (e.g., "CH0394628066")
+     * Normalize an NSIN according to ISO 6166:
+     * - Uppercase A–Z
+     * - Strip spaces, hyphens, commas, periods
+     * - Pad to 9 characters (left padded with '0')
      */
-    static String valorToIsin(String valor)
-    {
-        var clean = valor.replace(",", "");
-
-        while (clean.length() < 9)
-            clean = "0" + clean;
-
-        var body = "CH" + clean;
-
-        // Expand letters to digit sequences (A=10, B=11, ..., Z=35)
-        var expanded = new StringBuilder();
-        for (var c : body.toCharArray())
-        {
-            if (Character.isLetter(c))
-                expanded.append(Character.getNumericValue(c));
-            else
-                expanded.append(c);
+    public static String normalizeNsin(String nsin) {
+        if (nsin == null || nsin.isBlank()) {
+            throw new IllegalArgumentException("NSIN must not be null or empty.");
         }
 
-        // Compute check digit using Luhn algorithm on expanded digit string
-        var digits = expanded.toString();
-        var sum = 0;
-        var doubleDigit = true;
+        // Remove whitespace, hyphens, commas, periods and uppercase everything
+        String cleaned = nsin.replaceAll("[\\s-,.]", "").toUpperCase();
 
-        for (var i = digits.length() - 1; i >= 0; i--)
-        {
-            var d = digits.charAt(i) - '0';
+        // Pad to 9 characters (ISO 6166 requires an NSIN of exactly 9 chars)
+        if (cleaned.length() > 9) {
+            throw new IllegalArgumentException("NSIN longer than 9 characters: " + cleaned);
+        }
 
-            if (doubleDigit)
-            {
-                d *= 2;
-                if (d > 9)
-                    d -= 9;
+        return String.format("%9s", cleaned).replace(' ', '0');
+    }
+
+    /**
+     * Luhn calculation per ISO 6166 (ISIN standard).
+     *
+     * ISIN specifics:
+     * - Letters are expanded to digits: A=10 → "10", B=11 → "11", ..., Z=35 → "35"
+     * - After expansion, apply Luhn mod‑10 algorithm.
+     */
+    public static String computeCheckDigit(String partialIsin) {
+        StringBuilder expanded = new StringBuilder();
+
+        // Expand letters into digits
+        for (char ch : partialIsin.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                expanded.append(ch);
+            } else if (Character.isLetter(ch)) {
+                int value = Character.toUpperCase(ch) - 'A' + 10;
+                expanded.append(value);
+            } else {
+                throw new IllegalArgumentException("Invalid character in ISIN: " + ch);
+            }
+        }
+
+        int sum = 0;
+        boolean doubleDigit = true; // right-to-left, first is doubled
+
+        for (int i = expanded.length() - 1; i >= 0; i--) {
+            int digit = expanded.charAt(i) - '0';
+
+            if (doubleDigit) {
+                digit *= 2;
             }
 
-            sum += d;
+            sum += digit / 10 + digit % 10;
             doubleDigit = !doubleDigit;
         }
 
-        var checkDigit = (10 - (sum % 10)) % 10;
+        int check = (10 - (sum % 10)) % 10;
+        return Integer.toString(check);
+    }
+
+    /**
+     * Create a complete ISO 6166 ISIN.
+     *
+     * @param countryCode 2-letter ISO code (DE, CH, US, GB, ...)
+     * @param nsin National security identifier (WKN, Valor, SEDOL…)
+     */
+    public static String toIsin(String countryCode, String nsin) {
+        if (countryCode == null || countryCode.length() != 2) {
+            throw new IllegalArgumentException("Country code must be exactly 2 letters.");
+        }
+
+        String normalizedCountry = countryCode.toUpperCase();
+        String normalizedNsin = normalizeNsin(nsin);
+
+        String body = normalizedCountry + normalizedNsin; // 11 chars
+        String checkDigit = computeCheckDigit(body);
 
         return body + checkDigit;
     }

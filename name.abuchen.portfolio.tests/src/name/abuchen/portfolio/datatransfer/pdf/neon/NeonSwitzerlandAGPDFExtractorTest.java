@@ -30,17 +30,17 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.NEON3aPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.NeonSwitzerlandAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class NEON3aPDFExtractorTest
+public class NeonSwitzerlandAGPDFExtractorTest
 {
     @Test
     public void testBuy01()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -105,7 +105,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testBuy02()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testBuy03()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -209,7 +209,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testBuy04()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -274,7 +274,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testSell01()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -412,7 +412,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testDeposit01()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -435,7 +435,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testDeposit02()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -458,7 +458,7 @@ public class NEON3aPDFExtractorTest
     @Test
     public void testFees01()
     {
-        var extractor = new NEON3aPDFExtractor(new Client());
+        var extractor = new NeonSwitzerlandAGPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -477,5 +477,179 @@ public class NEON3aPDFExtractorTest
                         hasSource("Fees01.txt"), //
                         hasNote("Assessment from 24.11.25 - 31.12.25"), //
                         hasAmount("CHF", 0.47))));
+    }
+
+    // ========== Unit Tests for ISIN Conversion Utility Methods ==========
+
+    @Test
+    public void testNormalizNsin_WithCommas()
+    {
+        // Swiss Valor format: 039,462,806
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039,462,806");
+        assertThat(normalized, is("039462806"));
+    }
+
+    @Test
+    public void testNormalizNsin_WithSpaces()
+    {
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039 462 806");
+        assertThat(normalized, is("039462806"));
+    }
+
+    @Test
+    public void testNormalizNsin_WithMixedSeparators()
+    {
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039-462.806");
+        assertThat(normalized, is("039462806"));
+    }
+
+    @Test
+    public void testNormalizNsin_AlreadyNormalized()
+    {
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039462806");
+        assertThat(normalized, is("039462806"));
+    }
+
+    @Test
+    public void testNormalizNsin_LessThan9Digits()
+    {
+        // Should be padded with leading zeros
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("123456");
+        assertThat(normalized, is("000123456"));
+    }
+
+    @Test
+    public void testNormalizNsin_IgnoresCaseAndWhitespace()
+    {
+        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("  ABC def 123  ");
+        // Should uppercase and remove whitespace, then pad to 9 chars
+        assertThat(normalized, is("ABCDEF123"));
+    }
+
+    @Test
+    public void testComputeCheckDigit_RealIsin1()
+    {
+        // CH0394628066 (Money Market Fund)
+        // Body is: CH039462806 (11 chars)
+        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH039462806");
+        assertThat(checkDigit, is("6"));
+    }
+
+    @Test
+    public void testComputeCheckDigit_RealIsin2()
+    {
+        // CH0215804714 (Large Caps Switzerland)
+        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH021580471");
+        assertThat(checkDigit, is("4"));
+    }
+
+    @Test
+    public void testComputeCheckDigit_RealIsin3()
+    {
+        // CH0132501898 (Small & Mid Caps Switzerland)
+        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH013250189");
+        assertThat(checkDigit, is("8"));
+    }
+
+    @Test
+    public void testComputeCheckDigit_RealIsin4()
+    {
+        // CH0117044906 (World ex CH)
+        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH011704490");
+        assertThat(checkDigit, is("6"));
+    }
+
+    @Test
+    public void testComputeCheckDigit_RealIsin5()
+    {
+        // CH0117044971 (Emerging Markets)
+        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH011704497");
+        assertThat(checkDigit, is("1"));
+    }
+
+    @Test
+    public void testToIsin_MoneyMarketFund()
+    {
+        // Valor 039,462,806 should produce CH0394628066
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "039,462,806");
+        assertThat(isin, is("CH0394628066"));
+    }
+
+    @Test
+    public void testToIsin_EquityWorldExCH()
+    {
+        // Valor 011,704,490 should produce CH0117044906
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,704,490");
+        assertThat(isin, is("CH0117044906"));
+    }
+
+    @Test
+    public void testToIsin_EquityEmergingMarkets()
+    {
+        // Valor 011,704,497 should produce CH0117044971
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,704,497");
+        assertThat(isin, is("CH0117044971"));
+    }
+
+    @Test
+    public void testToIsin_EquityLargeCapsSwitzerland()
+    {
+        // Valor 021,580,471 should produce CH0215804714
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "021,580,471");
+        assertThat(isin, is("CH0215804714"));
+    }
+
+    @Test
+    public void testToIsin_EquitySmallMidCapsSwitzerland()
+    {
+        // Valor 013,250,189 should produce CH0132501898
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "013,250,189");
+        assertThat(isin, is("CH0132501898"));
+    }
+
+    @Test
+    public void testToIsin_BondCorporateWorld()
+    {
+        // Valor 011,705,251 should produce CH0117052511
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,705,251");
+        assertThat(isin, is("CH0117052511"));
+    }
+
+    @Test
+    public void testToIsin_RealEstateSwitzerland()
+    {
+        // Valor 011,705,254 should produce CH0117052545
+        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,705,254");
+        assertThat(isin, is("CH0117052545"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testToIsin_InvalidCountryCode()
+    {
+        NeonSwitzerlandAGPDFExtractor.toIsin("XYZ", "012345678");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testToIsin_NullCountryCode()
+    {
+        NeonSwitzerlandAGPDFExtractor.toIsin(null, "012345678");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNormalizNsin_Null()
+    {
+        NeonSwitzerlandAGPDFExtractor.normalizeNsin(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNormalizNsin_Empty()
+    {
+        NeonSwitzerlandAGPDFExtractor.normalizeNsin("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNormalizNsin_TooLong()
+    {
+        NeonSwitzerlandAGPDFExtractor.normalizeNsin("1234567890123");
     }
 }
