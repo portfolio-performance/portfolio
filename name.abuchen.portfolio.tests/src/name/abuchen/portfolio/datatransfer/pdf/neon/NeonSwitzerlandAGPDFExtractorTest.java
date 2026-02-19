@@ -7,12 +7,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -55,7 +55,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 1st security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0394628066"), //
+                        hasWkn("39462806"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Inv.II Mo.Re.Opp"))));
 
@@ -71,7 +71,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 2nd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0215804714"), //
+                        hasWkn("21580471"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind EqLar Cap CH"))));
 
@@ -87,7 +87,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 3rd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0132501898"), //
+                        hasWkn("13250189"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Eq S&Mid Caps CH"))));
 
@@ -120,7 +120,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 1st security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044971"), //
+                        hasWkn("11704497"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc F. V Eq Emer. M."))));
 
@@ -136,7 +136,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 2nd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044906"), //
+                        hasWkn("11704490"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind Eq Wo.ex.CH"))));
 
@@ -169,7 +169,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 1st security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044906"), //
+                        hasWkn("11704490"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind Eq Wo.ex.CH"))));
 
@@ -185,7 +185,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 2nd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044971"), //
+                        hasWkn("11704497"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc F. V Eq Emer. M."))));
 
@@ -224,7 +224,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 1st security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0394628066"), //
+                        hasWkn("39462806"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Inv.II Mo.Re.Opp"))));
 
@@ -240,7 +240,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 2nd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0215804714"), //
+                        hasWkn("21580471"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind EqLar Cap CH"))));
 
@@ -256,7 +256,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 3rd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0132501898"), //
+                        hasWkn("13250189"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Eq S&Mid Caps CH"))));
 
@@ -289,7 +289,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 1st security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044906"), //
+                        hasWkn("11704490"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind Eq Wo.ex.CH"))));
 
@@ -305,7 +305,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 2nd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0117044971"), //
+                        hasWkn("11704497"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc F. V Eq Emer. M."))));
 
@@ -321,7 +321,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 3rd security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0132501898"), //
+                        hasWkn("13250189"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Eq S&Mid Caps CH"))));
 
@@ -337,7 +337,7 @@ public class NeonSwitzerlandAGPDFExtractorTest
 
         // check 4th security
         assertThat(results, hasItem(security( //
-                        hasIsin("CH0215804714"), //
+                        hasWkn("21580471"), //
                         hasCurrencyCode("CHF"), //
                         hasName("Sc Ind EqLar Cap CH"))));
 
@@ -368,6 +368,12 @@ public class NeonSwitzerlandAGPDFExtractorTest
         assertThat(results.size(), is(8));
         new AssertImportActions().check(results, "CHF");
 
+        // check 1st security
+        assertThat(results, hasItem(security( //
+                        hasWkn("11704490"), //
+                        hasCurrencyCode("CHF"), //
+                        hasName("Sc Ind Eq Wo.ex.CH"))));
+        
         // check 1st sell
         assertThat(results, hasItem(sale( //
                         hasDate("2025-12-04"), //
@@ -378,6 +384,12 @@ public class NeonSwitzerlandAGPDFExtractorTest
                         hasTaxes("CHF", 0.00), //
                         hasFees("CHF", 0.00))));
 
+        // check 2st security
+        assertThat(results, hasItem(security( //
+                        hasWkn("11704497"), //
+                        hasCurrencyCode("CHF"), //
+                        hasName("Sc F. V Eq Emer. M."))));
+        
         // check 2nd sell
         assertThat(results, hasItem(sale( //
                         hasDate("2025-12-04"), //
@@ -387,7 +399,13 @@ public class NeonSwitzerlandAGPDFExtractorTest
                         hasGrossValue("CHF", 0.03), //
                         hasTaxes("CHF", 0.00), //
                         hasFees("CHF", 0.00))));
-
+        
+        // check 3rd security
+        assertThat(results, hasItem(security( //
+                        hasWkn("13250189"), //
+                        hasCurrencyCode("CHF"), //
+                        hasName("Sc Eq S&Mid Caps CH"))));
+        
         // check 3rd sell
         assertThat(results, hasItem(sale( //
                         hasDate("2025-12-04"), //
@@ -398,6 +416,12 @@ public class NeonSwitzerlandAGPDFExtractorTest
                         hasTaxes("CHF", 0.00), //
                         hasFees("CHF", 0.00))));
 
+        // check 4th security
+        assertThat(results, hasItem(security( //
+                        hasWkn("21580471"), //
+                        hasCurrencyCode("CHF"), //
+                        hasName("Sc Ind EqLar Cap CH"))));
+        
         // check 4th sell
         assertThat(results, hasItem(sale( //
                         hasDate("2025-12-04"), //
@@ -477,179 +501,5 @@ public class NeonSwitzerlandAGPDFExtractorTest
                         hasSource("Fees01.txt"), //
                         hasNote("Assessment from 24.11.25 - 31.12.25"), //
                         hasAmount("CHF", 0.47))));
-    }
-
-    // ========== Unit Tests for ISIN Conversion Utility Methods ==========
-
-    @Test
-    public void testNormalizNsin_WithCommas()
-    {
-        // Swiss Valor format with delimiters: 039,462,806
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039,462,806");
-        assertThat(normalized, is("039462806"));
-    }
-
-    @Test
-    public void testNormalizNsin_WithSpaces()
-    {
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039 462 806");
-        assertThat(normalized, is("039462806"));
-    }
-
-    @Test
-    public void testNormalizNsin_WithMixedSeparators()
-    {
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039-462.806");
-        assertThat(normalized, is("039462806"));
-    }
-
-    @Test
-    public void testNormalizNsin_AlreadyNormalized()
-    {
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("039462806");
-        assertThat(normalized, is("039462806"));
-    }
-
-    @Test
-    public void testNormalizNsin_LessThan9Digits()
-    {
-        // Should be padded with leading zeros
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("123456");
-        assertThat(normalized, is("000123456"));
-    }
-
-    @Test
-    public void testNormalizNsin_IgnoresCaseAndWhitespace()
-    {
-        String normalized = NeonSwitzerlandAGPDFExtractor.normalizeNsin("  ABC def 123  ");
-        // Should uppercase and remove whitespace, then pad to 9 chars
-        assertThat(normalized, is("ABCDEF123"));
-    }
-
-    @Test
-    public void testComputeCheckDigit_RealIsin1()
-    {
-        // CH0394628066 (Money Market Fund)
-        // Body is: CH039462806 (11 chars)
-        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH039462806");
-        assertThat(checkDigit, is("6"));
-    }
-
-    @Test
-    public void testComputeCheckDigit_RealIsin2()
-    {
-        // CH0215804714 (Large Caps Switzerland)
-        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH021580471");
-        assertThat(checkDigit, is("4"));
-    }
-
-    @Test
-    public void testComputeCheckDigit_RealIsin3()
-    {
-        // CH0132501898 (Small & Mid Caps Switzerland)
-        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH013250189");
-        assertThat(checkDigit, is("8"));
-    }
-
-    @Test
-    public void testComputeCheckDigit_RealIsin4()
-    {
-        // CH0117044906 (World ex CH)
-        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH011704490");
-        assertThat(checkDigit, is("6"));
-    }
-
-    @Test
-    public void testComputeCheckDigit_RealIsin5()
-    {
-        // CH0117044971 (Emerging Markets)
-        String checkDigit = NeonSwitzerlandAGPDFExtractor.computeCheckDigit("CH011704497");
-        assertThat(checkDigit, is("1"));
-    }
-
-    @Test
-    public void testToIsin_MoneyMarketFund()
-    {
-        // Valor 039,462,806 should produce CH0394628066
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "039,462,806");
-        assertThat(isin, is("CH0394628066"));
-    }
-
-    @Test
-    public void testToIsin_EquityWorldExCH()
-    {
-        // Valor 011,704,490 should produce CH0117044906
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,704,490");
-        assertThat(isin, is("CH0117044906"));
-    }
-
-    @Test
-    public void testToIsin_EquityEmergingMarkets()
-    {
-        // Valor 011,704,497 should produce CH0117044971
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,704,497");
-        assertThat(isin, is("CH0117044971"));
-    }
-
-    @Test
-    public void testToIsin_EquityLargeCapsSwitzerland()
-    {
-        // Valor 021,580,471 should produce CH0215804714
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "021,580,471");
-        assertThat(isin, is("CH0215804714"));
-    }
-
-    @Test
-    public void testToIsin_EquitySmallMidCapsSwitzerland()
-    {
-        // Valor 013,250,189 should produce CH0132501898
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "013,250,189");
-        assertThat(isin, is("CH0132501898"));
-    }
-
-    @Test
-    public void testToIsin_BondCorporateWorld()
-    {
-        // Valor 011,705,251 should produce CH0117052511
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,705,251");
-        assertThat(isin, is("CH0117052511"));
-    }
-
-    @Test
-    public void testToIsin_RealEstateSwitzerland()
-    {
-        // Valor 011,705,254 should produce CH0117052545
-        String isin = NeonSwitzerlandAGPDFExtractor.toIsin("CH", "011,705,254");
-        assertThat(isin, is("CH0117052545"));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToIsin_InvalidCountryCode()
-    {
-        NeonSwitzerlandAGPDFExtractor.toIsin("XYZ", "012345678");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToIsin_NullCountryCode()
-    {
-        NeonSwitzerlandAGPDFExtractor.toIsin(null, "012345678");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNormalizNsin_Null()
-    {
-        NeonSwitzerlandAGPDFExtractor.normalizeNsin(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNormalizNsin_Empty()
-    {
-        NeonSwitzerlandAGPDFExtractor.normalizeNsin("");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNormalizNsin_TooLong()
-    {
-        NeonSwitzerlandAGPDFExtractor.normalizeNsin("1234567890123");
     }
 }
