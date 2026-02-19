@@ -101,6 +101,7 @@ public class PDFImportAssistant
         extractors.add(new MLPBankingAGPDFExtractor(client));
         extractors.add(new ModenaEstoniaPDFExtractor(client));
         extractors.add(new N26BankAGPDFExtractor(client));
+        extractors.add(new NeonSwitzerlandAGPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new NordaxBankABPDFExtractor(client));
         extractors.add(new NorddeutscheLandesbankPDFExtractor(client));
