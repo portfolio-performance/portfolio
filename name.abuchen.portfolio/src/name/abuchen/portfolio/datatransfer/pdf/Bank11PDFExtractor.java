@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -10,9 +9,6 @@ import name.abuchen.portfolio.model.Client;
 @SuppressWarnings("nls")
 public class Bank11PDFExtractor extends AbstractPDFExtractor
 {
-    private static final String DEPOSIT = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*gutschr\\.?)[\\s]{1,}(?<amount>[\\.,\\d]+) [H]";
-    private static final String REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(Umbuchung|.*berweisungsauftrag))[\\s]{1,}(?<amount>[\\.,\\d]+) [S]";
-    private static final String INTEREST = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}(?<amount>[\\.,\\d]+) [H]";
 
     public Bank11PDFExtractor(Client client)
     {
@@ -20,7 +16,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Bank11 für Privatkunden und Handel GmbH");
 
-        addTransactions();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -29,9 +25,9 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
         return "Bank11 für Privatkunden und Handel GmbH";
     }
 
-    private void addTransactions()
+    private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType(".*-Konto Kontonummer", //
+        final var type = new DocumentType(".*-Konto Kontonummer", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Hammer Landstr. 91, 41460 Neuss Kontoauszug Nr.  1/2022
@@ -44,93 +40,96 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
                                         // EUR-Konto Kontonummer 764783800
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^(?<currency>[\\w]{3})\\-Konto Kontonummer.*$") //
+                                        .match("^(?<currency>[A-Z]{3})\\-Konto Kontonummer.*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block(DEPOSIT);
-        depositBlock.set(depositTransaction(type, DEPOSIT));
+        // @formatter:off
+        // 19.10. 19.10. Überweisungsgutschr.                                                       18.500,00 H
+        // @formatter:on
+        var depositBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .*gutschr\\.?[\\s]{1,}[\\.,\\d]+ [H]");
         type.addBlock(depositBlock);
-
-        Block removalBlock = new Block(REMOVAL);
-        removalBlock.set(removalTransaction(type, REMOVAL));
-        type.addBlock(removalBlock);
-
-        Block interestBlock = new Block(INTEREST);
-        interestBlock.set(interestTransaction(type, INTEREST));
-        type.addBlock(interestBlock);
-    }
-
-    private Transaction<AccountTransaction> depositTransaction(DocumentType type, String regex)
-    {
-        return new Transaction<AccountTransaction>()
+        depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
-                        .match(regex) //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*gutschr\\.?)[\\s]{1,}(?<amount>[\\.,\\d]+) [H]") //
                         .assign((t, v) -> {
-                            assignmentsProvider(t, v);
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            if ("Überweisungsgutschr.".equals(v.get("note")))
+                                v.put("note", "Überweisungsgutschrift");
+
+                            t.setNote(v.get("note"));
                         })
 
-                        .wrap(TransactionItem::new);
-    }
+                        .wrap(TransactionItem::new));
 
-    private Transaction<AccountTransaction> removalTransaction(DocumentType type, String regex)
-    {
-        return new Transaction<AccountTransaction>()
+        // @formatter:off
+        // 31.10. 31.10. Überweisungsauftrag                                               3.000,00 S
+        // 21.11. 21.11. Umbuchung                                                           200,00 S
+        // @formatter:on
+        var removalBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Umbuchung|.*berweisungsauftrag)[\\s]{1,}[\\.,\\d]+ [S]");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
 
                         .section("date", "note", "amount") //
                         .documentContext("currency", "year") //
-                        .match(regex) //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(Umbuchung|.*berweisungsauftrag))[\\s]{1,}(?<amount>[\\.,\\d]+) [S]") //
                         .assign((t, v) -> {
-                            assignmentsProvider(t, v);
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            if ("Überweisungsgutschr.".equals(v.get("note")))
+                                v.put("note", "Überweisungsgutschrift");
+
+                            t.setNote(v.get("note"));
                         })
 
-                        .wrap(TransactionItem::new);
-    }
+                        .wrap(TransactionItem::new));
 
-    private Transaction<AccountTransaction> interestTransaction(DocumentType type, String regex)
-    {
-        return new Transaction<AccountTransaction>()
+
+        // @formatter:off
+        // 30.12. 31.12. Abschluss lt. Anlage 1                                                         52,66 H
+        // 31.03. 31.03. Abschluss                                                                      56,88 H
+        // @formatter:on
+        var interestBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}[\\.,\\d]+ [H]");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
 
                         .section("date", "amount") //
                         .documentContext("currency", "year") //
-                        .match(regex) //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}(?<amount>[\\.,\\d]+) [H]") //
                         .assign((t, v) -> {
-                            assignmentsProvider(t, v);
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(TransactionItem::new);
-    }
-
-    private void assignmentsProvider(AccountTransaction t, ParsedData v)
-    {
-        t.setDateTime(asDate(v.get("date") + v.get("year")));
-        t.setAmount(asAmount(v.get("amount")));
-        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-        // Formatting some notes
-        if ("Überweisungsgutschr.".equals(v.get("note")))
-            v.put("note", "Überweisungsgutschrift");
-
-        t.setNote(v.get("note"));
+                        .wrap(TransactionItem::new));
     }
 }
