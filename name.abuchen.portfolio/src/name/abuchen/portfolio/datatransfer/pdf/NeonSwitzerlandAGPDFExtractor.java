@@ -52,7 +52,11 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                                         .match("^Currency (?<currency>[A-Z]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
+<<<<<<< HEAD
         this.addDocumentType(type);
+=======
+        this.addDocumentTyp(type);
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
 
         addFundBuySellBlock(type);
         addDepositBlock(type);
@@ -98,7 +102,9 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                         .match("^(?!Unit |Rate )(?<name>[A-Za-z].*)$") //
                         .match("^Secur\\.Nr\\. 1\\/(?<valor>[\\d,]+) Secur\\. Cur (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
-                            // NEON exclusively offers Swisscanto (CH) securities: https://www.neon-free.ch/en/strategien
+                            // NEON exclusively offers Swisscanto (CH)
+                            // securities:
+                            // https://www.neon-free.ch/en/strategien
                             v.put("isin", toIsin("CH", v.get("valor")));
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -185,6 +191,7 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new);
     }
+<<<<<<< HEAD
     
     /**
      * Normalize an NSIN according to ISO 6166:
@@ -195,20 +202,39 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
     public static String normalizeNsin(String nsin) {
         if (nsin == null || nsin.isBlank()) {
             throw new IllegalArgumentException("NSIN must not be null or empty.");
+=======
+
+    /**
+     * Normalize an NSIN according to ISO 6166: - Uppercase A–Z - Strip spaces,
+     * hyphens, commas, periods - Pad to 9 characters (left padded with '0')
+     */
+    public static String normalizeNsin(String nsin)
+    {
+        if (nsin == null || nsin.isBlank())
+        { 
+            throw new IllegalArgumentException("NSIN must not be null or empty."); 
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
         }
 
         // Remove whitespace, hyphens, commas, periods and uppercase everything
         String cleaned = nsin.replaceAll("[\\s-,.]", "").toUpperCase();
 
         // Pad to 9 characters (ISO 6166 requires an NSIN of exactly 9 chars)
+<<<<<<< HEAD
         if (cleaned.length() > 9) {
             throw new IllegalArgumentException("NSIN longer than 9 characters: " + cleaned);
+=======
+        if (cleaned.length() > 9)
+        { 
+            throw new IllegalArgumentException("NSIN longer than 9 characters: " + cleaned); 
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
         }
 
         return String.format("%9s", cleaned).replace(' ', '0');
     }
 
     /**
+<<<<<<< HEAD
      * Luhn calculation per ISO 6166 (ISIN standard).
      *
      * ISIN specifics:
@@ -226,6 +252,30 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                 int value = Character.toUpperCase(ch) - 'A' + 10;
                 expanded.append(value);
             } else {
+=======
+     * Luhn calculation per ISO 6166 (ISIN standard). ISIN specifics: - Letters
+     * are expanded to digits: A=10 → "10", B=11 → "11", ..., Z=35 → "35" -
+     * After expansion, apply Luhn mod‑10 algorithm.
+     */
+    public static String computeCheckDigit(String partialIsin)
+    {
+        StringBuilder expanded = new StringBuilder();
+
+        // Expand letters into digits
+        for (char ch : partialIsin.toCharArray())
+        {
+            if (Character.isDigit(ch))
+            {
+                expanded.append(ch);
+            }
+            else if (Character.isLetter(ch))
+            {
+                int value = Character.toUpperCase(ch) - 'A' + 10;
+                expanded.append(value);
+            }
+            else
+            {
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
                 throw new IllegalArgumentException("Invalid character in ISIN: " + ch);
             }
         }
@@ -233,10 +283,19 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
         int sum = 0;
         boolean doubleDigit = true; // right-to-left, first is doubled
 
+<<<<<<< HEAD
         for (int i = expanded.length() - 1; i >= 0; i--) {
             int digit = expanded.charAt(i) - '0';
 
             if (doubleDigit) {
+=======
+        for (int i = expanded.length() - 1; i >= 0; i--)
+        {
+            int digit = expanded.charAt(i) - '0';
+
+            if (doubleDigit)
+            {
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
                 digit *= 2;
             }
 
@@ -251,12 +310,25 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
     /**
      * Create a complete ISO 6166 ISIN.
      *
+<<<<<<< HEAD
      * @param countryCode 2-letter ISO code (DE, CH, US, GB, ...)
      * @param nsin National security identifier (WKN, Valor, SEDOL…)
      */
     public static String toIsin(String countryCode, String nsin) {
         if (countryCode == null || countryCode.length() != 2) {
             throw new IllegalArgumentException("Country code must be exactly 2 letters.");
+=======
+     * @param countryCode
+     *            2-letter ISO code (DE, CH, US, GB, ...)
+     * @param nsin
+     *            National security identifier (WKN, Valor, SEDOL…)
+     */
+    public static String toIsin(String countryCode, String nsin)
+    {
+        if (countryCode == null || countryCode.length() != 2)
+        { 
+            throw new IllegalArgumentException("Country code must be exactly 2 letters."); 
+>>>>>>> 917d862fecc4058dd824ccee5e9f6ba756a58fe0
         }
 
         String normalizedCountry = countryCode.toUpperCase();
