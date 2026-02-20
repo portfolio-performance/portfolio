@@ -1,0 +1,24 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.6.qualifier
+-----------------------------------------
+Your contact:
+neon Switzerland AG Mr.
+service@neon-free.ch mYzGoi bbaL ALzkym
+Badenerstrasse 23
+8004 Zürich
+Zurich, 18 November 2025
+Account/custody account number 170'544'001
+Insured person mYzGoi bbaL ALzkym
+IBAN CH93 0076 2011 6238 5295 7
+Currency CHF
+Product neon Offensive 100 Swiss
+Investment strategy neon Offensive 100 Swiss
+Investment account simply3a: Daily statement nr.  1  18.11.2025
+Date Detail Value date Debit Credit Balance
+Balance carried forward  0.00
+18.11.2025 Deposit 18.11.2025  1'000.00  1'000.00
+Mister mYzGoi bbaL ALzkym
+d54ae02f0403453eb04ad43e283e3274
+Transaction volume  0.00  1'000.00
+New balance  1'000.00
+Account-/custody-account-holding bank: Lienhardt & Partner Privatbank Zürich AG
