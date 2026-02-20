@@ -582,6 +582,11 @@ public class Messages extends NLS
     public static String LabelBiggerSize;
     public static String LabelBlueGrayOrange;
     public static String LabelCapitalGains;
+    public static String LabelAccumulatedCapitalGains;
+    public static String LabelRealizedCapitalGains;
+    public static String LabelAccumulatedRealizedCapitalGains;
+    public static String LabelUnrealizedCapitalGains;
+    public static String LabelAccumulatedUnrealizedCapitalGains;
     public static String LabelCapitalGainsMethod;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartDevelopment;

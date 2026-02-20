@@ -162,12 +162,16 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     sold -= soldShares;
                 }
 
+                // In case of short selling, we need to calculate the gain for the remaining shares
                 if (sold > 0)
                 {
-                    // Report that more was sold than bought to log
-                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                                    Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
+                    // Calculate short selling gain
+                    long shortSellingValue = Math.round((double) sold / t.getShares() * value);
+                    
+                    // Add to realized gains
+                    realizedCapitalGains.addCapitalGains(Money.of(termCurrency, shortSellingValue));
+                    realizedCapitalGains.addCapitalGainsTrail(txTrail //
+                                    .fraction(Money.of(termCurrency, shortSellingValue), sold, t.getShares()));
                 }
 
                 break;
@@ -285,8 +289,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         LocalDateTime valuationAtEndDate = valuationsAtEnd.get(0).getDateTime();
 
-        Money endValue = valuationsAtEnd.stream().map(
-                        item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
+        Money endValue = valuationsAtEnd.stream()
+                        .filter(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).getShares() > 0)
+                        .map(item -> item.getSecurityPosition().orElseThrow(IllegalArgumentException::new).calculateValue())
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
         TrailRecord endTrail = TrailRecord.of(valuationsAtEnd.stream()
                         .map(item -> TrailRecord.ofPosition(valuationAtEndDate.toLocalDate(),

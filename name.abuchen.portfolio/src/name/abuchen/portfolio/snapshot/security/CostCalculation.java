@@ -145,14 +145,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     sold -= n;
                 }
 
-                if (sold > 0)
-                {
-                    // FIXME Oops. More sold than bought.
-                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
-                                    Values.Share.format(sold), t.getSecurity().getName(),
-                                    Values.DateTime.format(t.getDateTime())));
-                }
-
                 break;
 
             case TRANSFER_IN:
