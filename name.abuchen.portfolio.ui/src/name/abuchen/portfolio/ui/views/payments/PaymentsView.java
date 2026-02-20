@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CostMethod;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -85,7 +87,7 @@ public class PaymentsView extends AbstractFinanceView
         loadSavedFilterIdAndSetFilteredClientToModel();
 
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
-                        viewInput.isUseConsolidateRetired());
+                        viewInput.isUseConsolidateRetired(), viewInput.getCostMethod());
 
         model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
         model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
@@ -95,6 +97,7 @@ public class PaymentsView extends AbstractFinanceView
             viewInput.setMode(model.getMode());
             viewInput.setUseGrossValue(model.usesGrossValue());
             viewInput.setUseConsolidateRetired(model.usesConsolidateRetired());
+            viewInput.setCostMethod(model.getCostMethod());
         });
     }
 
@@ -191,6 +194,24 @@ public class PaymentsView extends AbstractFinanceView
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }
+
+            EnumSet<Mode> supportCostMethod = EnumSet.of(Mode.TRADES, Mode.ALL);
+            if (supportCostMethod.contains(model.getMode()))
+            {
+                manager.add(new LabelOnly(Messages.LabelCostMethod));
+
+                Action action = new SimpleAction(CostMethod.FIFO.getLabel(),
+                                a -> model.setCostMethod(CostMethod.FIFO));
+                action.setChecked(model.getCostMethod().useFifo());
+                manager.add(action);
+
+                action = new SimpleAction(CostMethod.MOVING_AVERAGE.getLabel(),
+                                a -> model.setCostMethod(CostMethod.MOVING_AVERAGE));
+                action.setChecked(!model.getCostMethod().useFifo());
+                manager.add(action);
+            }
+
+            manager.add(new Separator());
 
             Action action = new SimpleAction(Messages.LabelPaymentsUseConsolidateRetired,
                             a -> model.setUseConsolidateRetired(!model.usesConsolidateRetired()));
