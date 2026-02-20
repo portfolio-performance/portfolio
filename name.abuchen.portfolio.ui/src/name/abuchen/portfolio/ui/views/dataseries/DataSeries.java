@@ -54,6 +54,12 @@ public final class DataSeries implements Adaptable
         FEES_ACCUMULATED(Messages.LabelFeesAccumulated), //
         TAXES(Messages.ColumnTaxes), //
         TAXES_ACCUMULATED(Messages.LabelAccumulatedTaxes), //
+        CAPITAL_GAINS(Messages.LabelCapitalGains), //
+        CAPITAL_GAINS_ACCUMULATED(Messages.LabelAccumulatedCapitalGains), //
+        REALIZED_CAPITAL_GAINS(Messages.LabelRealizedCapitalGains), //
+        REALIZED_CAPITAL_GAINS_ACCUMULATED(Messages.LabelAccumulatedRealizedCapitalGains), //
+        UNREALIZED_CAPITAL_GAINS(Messages.LabelUnrealizedCapitalGains), //
+        UNREALIZED_CAPITAL_GAINS_ACCUMULATED(Messages.LabelAccumulatedUnrealizedCapitalGains), //
 
         DELTA_PERCENTAGE(Messages.LabelAggregationDaily);
 
