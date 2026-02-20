@@ -934,7 +934,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
             country = "US";
         }
 
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, language, country);
     }
 
     @Override
@@ -953,6 +953,6 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
             country = "US";
         }
 
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, language, country);
     }
 }

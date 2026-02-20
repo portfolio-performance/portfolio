@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -27,6 +28,8 @@ import name.abuchen.portfolio.util.Interval;
 @SuppressWarnings("nls")
 public class AccountPerformanceTaxRefundTestCase
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     /**
      * Feature: when calculating the performance of an account, do include taxes
      * and tax refunds but only those that are not paid for a security.
@@ -35,7 +38,8 @@ public class AccountPerformanceTaxRefundTestCase
     public void testAccountPerformanceTaxRefund() throws IOException
     {
         Client client = ClientFactory
-                        .load(SecurityTestCase.class.getResourceAsStream("account_performance_tax_refund.xml"));
+                        .load(negativeValue, SecurityTestCase.class
+                                        .getResourceAsStream("account_performance_tax_refund.xml"));
 
         Account account = client.getAccounts().get(0);
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));

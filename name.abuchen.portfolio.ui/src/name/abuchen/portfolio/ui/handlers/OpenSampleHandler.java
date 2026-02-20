@@ -29,6 +29,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
@@ -49,6 +50,9 @@ import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
 
 public class OpenSampleHandler
 {
+    @Inject
+    private NegativeValue negativeValue;
+
     @Inject
     private UISynchronize sync;
 
@@ -78,7 +82,7 @@ public class OpenSampleHandler
                                         new InputStreamReader(inputStream, StandardCharsets.UTF_8),
                                         buildResourcesTokenResolver());
 
-                        final Client client = ClientFactory.load(replacingReader);
+                        final Client client = ClientFactory.load(negativeValue, replacingReader);
 
                         fixTaxonomyLabels(client);
                         fixDashboardLabels(client);

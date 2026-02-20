@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -126,9 +128,14 @@ public final class TransactionsViewer implements ModificationListener
     }
 
     @Inject
+    protected NegativeValue negativeValue;
+
+    @Inject
     private SelectionService selectionService;
 
-    private AbstractFinanceView owner;
+    private final String identifier;
+    private final Composite parent;
+    private final AbstractFinanceView owner;
     private Set<TransactionPair<?>> marked = new HashSet<>();
 
     private TableViewer tableViewer;
@@ -144,8 +151,14 @@ public final class TransactionsViewer implements ModificationListener
 
     public TransactionsViewer(String identifier, Composite parent, AbstractFinanceView owner)
     {
+        this.identifier = identifier;
+        this.parent = parent;
         this.owner = owner;
+    }
 
+    @PostConstruct
+    void init()
+    {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
@@ -342,7 +355,7 @@ public final class TransactionsViewer implements ModificationListener
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getShares()).attachTo(column);
-        new ValueEditingSupport(Transaction.class, "shares", Values.Share) //$NON-NLS-1$
+        new ValueEditingSupport(negativeValue, Transaction.class, "shares", Values.Share) //$NON-NLS-1$
                         .setCanEditCheck(e -> ((TransactionPair<?>) e).getTransaction() instanceof PortfolioTransaction
                                         || (((TransactionPair<?>) e).getTransaction() instanceof AccountTransaction
                                                         && ((AccountTransaction) ((TransactionPair<?>) e)

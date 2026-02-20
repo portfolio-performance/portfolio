@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -12,14 +13,17 @@ import name.abuchen.portfolio.ui.UIConstants;
 
 /* package */ class LoadClientThread extends Thread
 {
+    private final NegativeValue negativeValue;
     private final ClientInput clientInput;
     private final IEventBroker broker;
     private final ProgressProvider progressProvider;
     private final char[] password;
 
-    public LoadClientThread(ClientInput clientInput, IEventBroker broker, ProgressProvider progressProvider,
+    public LoadClientThread(NegativeValue negativeValue, ClientInput clientInput, IEventBroker broker,
+                    ProgressProvider progressProvider,
                     char[] password)
     {
+        this.negativeValue = negativeValue;
         this.clientInput = clientInput;
         this.broker = broker;
         this.progressProvider = progressProvider;
@@ -31,7 +35,8 @@ import name.abuchen.portfolio.ui.UIConstants;
     {
         try
         {
-            Client client = ClientFactory.load(clientInput.getFile(), password, progressProvider.createMonitor());
+            Client client = ClientFactory.load(negativeValue, clientInput.getFile(), password,
+                            progressProvider.createMonitor());
 
             Display.getDefault().asyncExec(() -> clientInput.setClient(client));
 

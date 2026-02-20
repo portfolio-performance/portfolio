@@ -42,6 +42,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.LiechtensteinischeLandesbankAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -52,10 +53,13 @@ import name.abuchen.portfolio.model.Security;
 @SuppressWarnings("nls")
 public class LiechtensteinischeLandesbankAGPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -90,6 +94,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -124,6 +129,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -158,6 +164,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -200,6 +207,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -233,6 +241,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -275,6 +284,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -308,6 +318,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -342,6 +353,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -384,6 +396,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -417,6 +430,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -459,6 +473,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -494,6 +509,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -536,6 +552,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -571,6 +588,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testKontoauzug01()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -595,6 +613,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractorTest
     public void testDepotauszug01()
     {
         var extractor = new LiechtensteinischeLandesbankAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

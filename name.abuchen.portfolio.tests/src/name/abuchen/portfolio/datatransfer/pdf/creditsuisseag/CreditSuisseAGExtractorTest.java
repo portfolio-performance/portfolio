@@ -21,6 +21,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.CreditSuisseAGPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -32,10 +33,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CreditSuisseAGExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -100,6 +104,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -164,6 +169,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -212,6 +218,7 @@ public class CreditSuisseAGExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -276,6 +283,7 @@ public class CreditSuisseAGExtractorTest
     public void testDividende01()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -319,6 +327,7 @@ public class CreditSuisseAGExtractorTest
     public void testDividende02()
     {
         var extractor = new CreditSuisseAGPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

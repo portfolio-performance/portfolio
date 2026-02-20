@@ -41,6 +41,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TigerBrokersPteLtdPDFExtractor;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -52,10 +53,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class TigerBrokersPteLtdPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testAccountStatement01()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -262,6 +266,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement02()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -355,6 +360,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement03()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -405,6 +411,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement04()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -587,6 +594,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement05()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -707,6 +715,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement06()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -756,6 +765,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement07()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -827,6 +837,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement08()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -947,6 +958,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement09()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -999,6 +1011,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement10()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1031,6 +1044,7 @@ public class TigerBrokersPteLtdPDFExtractorTest
     public void testAccountStatement11()
     {
         var extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

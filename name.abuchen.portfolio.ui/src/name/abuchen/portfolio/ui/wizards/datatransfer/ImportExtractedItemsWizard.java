@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -100,6 +101,19 @@ public final class ImportExtractedItemsWizard extends Wizard
                             public List<Item> extract(List<InputFile> file, List<Exception> errors)
                             {
                                 return entry.getValue();
+                            }
+
+                            @Override
+                            public NegativeValue getNegativeValue()
+                            {
+                                // dummy implementation
+                                return null;
+                            }
+
+                            @Override
+                            public void setNegativeValue(NegativeValue negativeValue)
+                            {
+                                // dummy implementation
                             }
                         }) //
                         .forEach(extractor -> {

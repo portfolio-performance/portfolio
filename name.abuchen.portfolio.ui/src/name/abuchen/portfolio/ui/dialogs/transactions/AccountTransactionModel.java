@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +9,7 @@ import java.time.LocalTime;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -39,6 +39,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public static final Security EMPTY_SECURITY = new Security("-----", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
+    protected final NegativeValue negativeValue;
     private final Client client;
     private AccountTransaction.Type type;
 
@@ -69,8 +70,9 @@ public class AccountTransactionModel extends AbstractModel
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public AccountTransactionModel(Client client, AccountTransaction.Type type)
+    public AccountTransactionModel(NegativeValue negativeValue, Client client, AccountTransaction.Type type)
     {
+        this.negativeValue = negativeValue;
         this.client = client;
         this.type = type;
 
@@ -295,11 +297,19 @@ public class AccountTransactionModel extends AbstractModel
         long upper = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(0.0001)).doubleValue());
         long lower = Math.round(fxGrossAmount * exchangeRate.add(BigDecimal.valueOf(-0.0001)).doubleValue());
 
+        if (negativeValue.isNegativeValueAllowed())
+        {
+            long newUpper = Math.max(upper, lower);
+            lower = Math.min(upper, lower);
+            upper = newUpper;
+        }
         if (grossAmount < lower || grossAmount > upper)
             return ValidationStatus.error(Messages.MsgErrorConvertedAmount);
 
+        /* allow grossAmount to be zero in case of fees/taxes only transactions
         if (grossAmount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
+        */
 
         return ValidationStatus.ok();
     }
@@ -547,7 +557,7 @@ public class AccountTransactionModel extends AbstractModel
         if (fxGrossAmount != 0)
         {
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxGrossAmount), 10,
-                            RoundingMode.HALF_UP);
+                            RoundingMode.HALF_UP).abs();
             BigDecimal oldInverseRate = getInverseExchangeRate();
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate); // NOSONAR
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
@@ -648,7 +658,7 @@ public class AccountTransactionModel extends AbstractModel
 
     protected BigDecimal calculateDividendAmount()
     {
-        if (shares > 0)
+        if (shares > 0 || negativeValue.isNegativeValueAllowed())
             return BigDecimal.valueOf(
                             (fxGrossAmount * Values.Share.factor()) / (double) shares / Values.Amount.divider());
         else
@@ -671,6 +681,10 @@ public class AccountTransactionModel extends AbstractModel
     {
         long totalFees = fees + Math.round(exchangeRate.doubleValue() * fxFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
+        if (negativeValue.isNegativeValueAllowed())
+        {
+            return grossAmount - totalTaxes - totalFees;
+        }
         return Math.max(0, grossAmount - totalTaxes - totalFees);
     }
 

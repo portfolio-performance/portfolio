@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -22,10 +23,12 @@ import name.abuchen.portfolio.util.Interval;
 
 public class IssueCurrencyGainsRoundingErrorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testPurchaseValueOfSecurityPositionWithTransfers() throws IOException
     {
-        Client client = ClientFactory.load(IssueCurrencyGainsRoundingErrorTest.class
+        Client client = ClientFactory.load(negativeValue, IssueCurrencyGainsRoundingErrorTest.class
                         .getResourceAsStream("IssueCurrencyGainsRoundingError.xml")); //$NON-NLS-1$
 
         Interval period = Interval.of(LocalDate.parse("2015-01-09"), //$NON-NLS-1$

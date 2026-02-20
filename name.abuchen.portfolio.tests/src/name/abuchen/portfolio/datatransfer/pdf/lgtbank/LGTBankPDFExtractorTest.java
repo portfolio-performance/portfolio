@@ -41,6 +41,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.LGTBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -52,10 +53,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class LGTBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -106,6 +110,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -156,6 +161,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -190,6 +196,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -224,6 +231,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -258,6 +266,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -292,6 +301,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -326,6 +336,7 @@ public class LGTBankPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -360,6 +371,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -405,6 +417,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -439,6 +452,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -473,6 +487,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -507,6 +522,7 @@ public class LGTBankPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new LGTBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -46,6 +46,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -84,6 +85,7 @@ import name.abuchen.portfolio.util.Pair;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
 {
+    protected NegativeValue negativeValue;
 
     // The client associated with this extractor
     private final Client client;
@@ -1456,11 +1458,23 @@ public class IBFlexStatementExtractor implements Extractor
 
     protected long asAmount(String value)
     {
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, "en", "US");
     }
 
     protected BigDecimal asExchangeRate(String value)
     {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "US");
+        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, "en", "US");
+    }
+
+    @Override
+    public NegativeValue getNegativeValue()
+    {
+        return negativeValue;
+    }
+
+    @Override
+    public void setNegativeValue(NegativeValue negativeValue)
+    {
+        this.negativeValue = negativeValue;
     }
 }

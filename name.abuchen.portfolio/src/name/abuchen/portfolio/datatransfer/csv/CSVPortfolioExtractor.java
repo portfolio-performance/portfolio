@@ -94,7 +94,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.setSecurity(security);
         entry.setDate(date);
-        entry.setAmount(Math.abs(valuation.getAmount()));
+        entry.setAmount(negativeValue.maybeAbs(valuation.getAmount()));
         entry.setCurrencyCode(valuation.getCurrencyCode());
         entry.setShares(shares);
         entry.setNote(note);

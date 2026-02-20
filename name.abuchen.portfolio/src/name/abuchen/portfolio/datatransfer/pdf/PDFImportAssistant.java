@@ -16,6 +16,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 
 public class PDFImportAssistant
@@ -24,7 +25,7 @@ public class PDFImportAssistant
     private final List<File> files;
     private final List<Extractor> extractors = new ArrayList<>();
 
-    public PDFImportAssistant(Client client, List<File> files)
+    public PDFImportAssistant(NegativeValue negativeValue, Client client, List<File> files)
     {
         this.client = client;
         this.files = files;
@@ -154,6 +155,11 @@ public class PDFImportAssistant
         extractors.add(new WitheBoxGmbHPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
         extractors.add(new ZuercherKantonalbankPDFExtractor(client));
+
+        for (Extractor e : extractors)
+        {
+            e.setNegativeValue(negativeValue);
+        }
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

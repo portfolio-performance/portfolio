@@ -46,6 +46,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.ErsteBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -59,10 +60,13 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ErsteBankPDFExtractorTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Test
     public void testWertpapierKauf01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -113,6 +117,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf02()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -163,6 +168,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf03()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -213,6 +219,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf04()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -263,6 +270,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf05()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -313,6 +321,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf06()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -363,6 +372,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf07()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -413,6 +423,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf08()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -463,6 +474,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf09()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -523,6 +535,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -570,6 +583,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf10()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -630,6 +644,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -677,6 +692,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf11()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -737,6 +753,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -784,6 +801,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf12()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -834,6 +852,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf13()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -884,6 +903,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf14()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -944,6 +964,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -991,6 +1012,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf15()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1041,6 +1063,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf16()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1083,6 +1106,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf17()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1117,6 +1141,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierKauf18()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1151,6 +1176,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1201,6 +1227,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf02()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1251,6 +1278,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf03()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1301,6 +1329,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf04()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1351,6 +1380,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf05()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1401,6 +1431,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf06()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1451,6 +1482,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf07()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1511,6 +1543,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1558,6 +1591,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf08()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1607,6 +1641,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf09()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1657,6 +1692,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf10()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1707,6 +1743,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf11()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1757,6 +1794,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf12()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1807,6 +1845,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf13()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1857,6 +1896,7 @@ public class ErsteBankPDFExtractorTest
     public void testWertpapierVerkauf14()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1906,6 +1946,7 @@ public class ErsteBankPDFExtractorTest
     public void testSammelabrechnungKaufVerkauf01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -1986,6 +2027,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2041,6 +2083,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2084,6 +2127,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende02()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2129,6 +2173,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende03()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2174,6 +2219,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende04()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2228,6 +2274,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2270,6 +2317,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende05()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2315,6 +2363,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende06()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2360,6 +2409,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende07()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2405,6 +2455,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende08()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2450,6 +2501,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende09()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2496,6 +2548,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende10()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2550,6 +2603,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2592,6 +2646,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende11()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2637,6 +2692,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende12()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2682,6 +2738,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende13()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2727,6 +2784,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende14()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2772,6 +2830,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende15()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2817,6 +2876,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende16()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2851,6 +2911,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende17()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2892,6 +2953,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2927,6 +2989,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende18()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -2968,6 +3031,7 @@ public class ErsteBankPDFExtractorTest
         client.addSecurity(security);
 
         var extractor = new ErsteBankPDFExtractor(client);
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3003,6 +3067,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende19()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3037,6 +3102,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende20()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3071,6 +3137,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende21()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3105,6 +3172,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende22()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3139,6 +3207,7 @@ public class ErsteBankPDFExtractorTest
     public void testDividende23()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 
@@ -3173,6 +3242,7 @@ public class ErsteBankPDFExtractorTest
     public void testVerlustbescheinigung01()
     {
         var extractor = new ErsteBankPDFExtractor(new Client());
+        extractor.setNegativeValue(negativeValue);
 
         List<Exception> errors = new ArrayList<>();
 

@@ -2260,7 +2260,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Amount, language, country);
     }
 
     @Override
@@ -2288,7 +2288,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberLong(negativeValue, value, Values.Share, language, country);
     }
 
     @Override
@@ -2316,6 +2316,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             }
         }
 
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+        return ExtractorUtils.convertToNumberBigDecimal(negativeValue, value, Values.Share, language, country);
     }
 }

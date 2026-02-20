@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.ClientTestUtilities;
@@ -22,6 +23,8 @@ import name.abuchen.portfolio.model.ClientTestUtilities;
 @SuppressWarnings("nls")
 public class ReadingHistoricClientFilesTest
 {
+    private NegativeValue negativeValue = new NegativeValue();
+
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getFiles()
     {
@@ -42,20 +45,23 @@ public class ReadingHistoricClientFilesTest
     @Test
     public void compare() throws IOException
     {
-        Client xmlClient = ClientFactory.load(find(file + ".xml"), null, new NullProgressMonitor());
+        Client xmlClient = ClientFactory.load(negativeValue, find(file + ".xml"), null, new NullProgressMonitor());
         String xml = ClientTestUtilities.toString(xmlClient);
         assertThat(xmlClient.getFileVersionAfterRead(), is(versionOnDisk));
 
-        Client binaryClient = ClientFactory.load(find(file + ".binary.portfolio"), null, new NullProgressMonitor());
+        Client binaryClient = ClientFactory.load(negativeValue, find(file + ".binary.portfolio"), null,
+                        new NullProgressMonitor());
         String binary = ClientTestUtilities.toString(binaryClient);
         assertThat(binaryClient.getFileVersionAfterRead(), is(versionOnDisk));
 
-        Client binaryEncryptedClient = ClientFactory.load(find(file + ".binary+pwd.portfolio"), "123456".toCharArray(),
+        Client binaryEncryptedClient = ClientFactory.load(negativeValue, find(file + ".binary+pwd.portfolio"),
+                        "123456".toCharArray(),
                         new NullProgressMonitor());
         String binaryEncrypted = ClientTestUtilities.toString(binaryEncryptedClient);
         assertThat(binaryEncryptedClient.getFileVersionAfterRead(), is(versionOnDisk));
 
-        Client xmlEncrpytedClient = ClientFactory.load(find(file + ".xml+pwd.portfolio"), "123456".toCharArray(),
+        Client xmlEncrpytedClient = ClientFactory.load(negativeValue, find(file + ".xml+pwd.portfolio"),
+                        "123456".toCharArray(),
                         new NullProgressMonitor());
         String xmlEncrpyted = ClientTestUtilities.toString(xmlEncrpytedClient);
         assertThat(xmlEncrpytedClient.getFileVersionAfterRead(), is(versionOnDisk));

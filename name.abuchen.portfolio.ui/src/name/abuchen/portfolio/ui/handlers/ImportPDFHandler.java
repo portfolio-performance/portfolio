@@ -172,7 +172,7 @@ public class ImportPDFHandler
             Map<Extractor, List<Extractor.Item>> result = new HashMap<>();
 
             IRunnableWithProgress operation = monitor -> {
-                PDFImportAssistant assistent = new PDFImportAssistant(client, files);
+                PDFImportAssistant assistent = new PDFImportAssistant(part.getNegativeValue(), client, files);
                 result.putAll(assistent.run(monitor, errors));
             };
 

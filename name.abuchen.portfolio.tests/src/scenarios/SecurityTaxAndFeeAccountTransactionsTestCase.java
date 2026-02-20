@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.math.NegativeValue;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -49,10 +50,12 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
     private static Interval interval = Interval.of(LocalDate.parse("2016-12-31"), LocalDate.parse("2017-01-31"));
 
+    private static NegativeValue negativeValue = new NegativeValue();
+
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(
+        client = ClientFactory.load(negativeValue,
                         SecurityTestCase.class.getResourceAsStream("security_tax_and_fee_account_transactions.xml"));
 
         adidas = client.getSecurities().stream().filter(s -> "Adidas AG".equals(s.getName())).findAny()
