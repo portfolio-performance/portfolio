@@ -6262,6 +6262,43 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroDividende16()
+    {
+        var extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(1L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US57636Q1040"), hasWkn("A0F602"), hasTicker(null), //
+                        hasName("MASTERCARD INC. A"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction has failure message because of missing
+        // exchange rate for EUR taxes
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionMissingExchangeRateIfInForex, //
+                        dividend( //
+                                        hasDate("2026-02-09T00:00"), hasShares(3.00), //
+                                        hasSource("FlatExDegiroDividende16.txt"), //
+                                        hasNote("Transaktion-Nr. : 4773716165"), //
+                                        hasAmount("USD", 1.95), hasGrossValue("USD", 2.34), //
+                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00)))));
+    }
+
+    @Test
     public void testFlatExDegiroDividendeStorno01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
