@@ -212,6 +212,14 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.* Art der Dividende (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
+                        // @formatter:off
+                        // Ex-Tag 20.05.2021 Art der Dividende Quartalsdividende
+                        // Ex-Tag 06.05.2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);

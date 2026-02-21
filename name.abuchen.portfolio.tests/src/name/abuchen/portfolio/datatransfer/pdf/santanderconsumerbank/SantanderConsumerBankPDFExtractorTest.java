@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -194,6 +195,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -240,6 +242,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-06-16T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 00000000000 | Quartalsdividende"));
@@ -291,6 +294,7 @@ public class SantanderConsumerBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-05-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-05-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(2)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 0000000000"));
@@ -333,7 +337,8 @@ public class SantanderConsumerBankPDFExtractorTest
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
                         hasForexGrossValue("USD", 360.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasExDate("2023-06-15T00:00"))));
     }
 
     @Test
@@ -369,6 +374,7 @@ public class SantanderConsumerBankPDFExtractorTest
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        hasExDate("2023-06-15T00:00"), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
@@ -410,7 +416,8 @@ public class SantanderConsumerBankPDFExtractorTest
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //
                         hasForexGrossValue("USD", 390.48), //
-                        hasTaxes("EUR", 62.15 + 3.41 + 5.59), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 62.15 + 3.41 + 5.59), hasFees("EUR", 0.00), //
+                        hasExDate("2024-06-13T00:00"))));
     }
 
     @Test
@@ -446,6 +453,7 @@ public class SantanderConsumerBankPDFExtractorTest
                         hasNote("Abrechnungsnr. 00000000000"), //
                         hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //
                         hasTaxes("EUR", 62.15 + 3.41 + 5.59), hasFees("EUR", 0.00), //
+                        hasExDate("2024-06-13T00:00"), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
