@@ -1102,6 +1102,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidCurrency;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
+    public static String MsgExDateNotAllowed;
     public static String MsgErrorAccountNotExist;
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorConvertToBuySellCurrencyMismatch;
