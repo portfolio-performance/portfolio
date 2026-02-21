@@ -2609,6 +2609,34 @@ public class RaiffeisenbankgruppePDFExtractorTest
     }
 
     @Test
+    public void testDepotauszug02()
+    {
+        var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-09-05"), hasAmount("EUR", 200.00), //
+                        hasSource("Depotauszug02.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-09-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Depotauszug02.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testEinbuchung01()
     {
         var extractor = new RaiffeisenBankgruppePDFExtractor(new Client());

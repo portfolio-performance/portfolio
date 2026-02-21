@@ -29,7 +29,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Raiffeisenbank");
-        addBankIdentifier("RB Augsburger Land West eG");
+        addBankIdentifier("RB ");
         addBankIdentifier("Raiffeisenlandesbank");
         addBankIdentifier("Freisinger Bank eG");
         addBankIdentifier("VR Bank");
@@ -190,8 +190,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount", "currency") //
                                                         .match("^(Zu (Lasten|Gunsten) .*|Ausmachender Betrag) (\\-)?(?<amount>[\\.,\\d]+)(\\-)? (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
                                         // Belastung Valuta 23.03.2022 CHF 399.95
@@ -200,8 +200,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "amount") //
                                                         .match("^Belastung Valuta .* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)[\\s]*$") //
                                                         .assign((t, v) -> {
-                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         // @formatter:off
@@ -410,8 +410,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount", "currency") //
                                                         .match("^(Zu Gunsten .*|Ausmachender Betrag) (?<amount>[\\.,\\d]+)(\\+)? (?<currency>[A-Z]{3}).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
                                         // Zu Lasten IBAN AT44 4649 0000 0110 3051 -156,32 EUR
@@ -425,8 +425,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             t.setType(AccountTransaction.Type.TAXES);
 
-                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
                                         // Gutschrift Valuta 11. September 2024 CHF 392.94
@@ -435,8 +435,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount", "currency") //
                                                         .match("^Gutschrift Valuta .* (?<currency>[A-Z]{3}) (?<amount>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
-                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .optionalOneOf( //
@@ -1112,9 +1112,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            var t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            return t;
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
                         .section("date", "note", "amount") //
@@ -1125,6 +1125,32 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 30.09 Abschluss per 30.09.2025
+        //       0,01 % p.a. Habenzinsen      ab 01.07.25       0110             0,01
+        // @formatter:on
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2} Abschluss per [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.INTEREST);
+                            return t;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^.*Abschluss per (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^.*[\\.,\\d]+ % p\\.a\\. Habenzinsen .* (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(TransactionItem::new));
