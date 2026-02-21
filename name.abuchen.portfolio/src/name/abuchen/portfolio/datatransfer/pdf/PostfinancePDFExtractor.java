@@ -39,6 +39,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("PostFinance");
+        addBankIdentifier("PostFinance AG");
 
         addBuySellTransaction();
         addBuySellCryptoTransaction();
@@ -182,6 +183,15 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Bestand Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Transaktionsabrechnung: Rücknahme ganzer Bestand
+                                        // Depot 72-963473-7 Datum: 13.03.2024 Seite: 2 / 2
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .find("Transaktionsabrechnung: R.cknahme ganzer Bestand.*") //
+                                                        .match("^.* Datum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -258,8 +268,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Börsentransaktion: Kauf Unsere Referenz: 153557048
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
+                        .match("^B.rsentransaktion: (Kauf|Verkauf) Unsere Referenz: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + trim(v.get("note")), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
@@ -352,12 +362,12 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final var type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final var type = new DocumentType("(Dividende|Kapitalgewinn|Aussch.ttung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^(Dividende|Kapitalgewinn) Unsere Referenz: .*$");
+        var firstRelevantLine = new Block("^.* (Unsere Referenz:|Referenznummer) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -389,21 +399,55 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]*NKN: [\\d]+ [\\.'\\d\\s]+.*$") //
                                                         .match("^(Dividende|Kapitalgewinn) [\\.'\\d\\s]+ (?<currency>[A-Z]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Position Anzahl
+                                        // iShares J.P. Morgan USD EM Bond CHF Hedged ETF 275.000
+                                        // ISIN IE00B9M04V95
+                                        // Ausführung 12.10.2023
+                                        // Ausschüttung CHF 0.0148000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("Position (Anzahl|St.ckzahl).*") //
+                                                        .match("^(?<name>.*) [\\.'\\d]+.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Aussch.ttung (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Anzahl 60
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Anzahl (?<shares>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Anzahl 60
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Anzahl (?<shares>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Position Anzahl
+                                        // iShares J.P. Morgan USD EM Bond CHF Hedged ETF 275.000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Position (Anzahl|St.ckzahl).*") //
+                                                        .match("^.* (?<shares>[\\.'\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Valutadatum 05.06.2019
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valutadatum 05.06.2019
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Der Totalbetrag von  CHF 4.07 wurde Ihrem Konto  Mt81 2178 7268 7541 8815 5 mit Valuta  25.10.2023 gutgeschrieben .
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match(".* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Total EUR 20.93
@@ -415,13 +459,23 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Dividende Unsere Referenz: 169933304
-                        // Kapitalgewinn Unsere Referenz: 149619136
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^(Dividende|Kapitalgewinn) Unsere (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Dividende Unsere Referenz: 169933304
+                                        // Kapitalgewinn Unsere Referenz: 149619136
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.* Unsere Referenz: (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Depot 84-662894-6 Referenznummer 7790541
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Referenznummer (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
 
                         .wrap(TransactionItem::new);
 
@@ -477,8 +531,8 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Zahlungsverkehr - Gutschrift Unsere Referenz: 391377700
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.* (?<note>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .match("^.* Referenz: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
     }
@@ -521,20 +575,20 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Jahresgebühr Unsere Referenz: 161333839
                         // @formatter:on
                         .section("note1", "note2") //
-                        .match("^(?<note1>Jahresgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " | ")))
+                        .match("^(?<note1>Jahresgeb.hr) Unsere Referenz: (?<note2>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), "Ref.-Nr.: " + v.get("note2"), " | ")))
 
                         .wrap(TransactionItem::new);
     }
 
     private void addDepotFeesTransaction()
     {
-        final var type = new DocumentType("Depotgeb.hr");
+        final var type = new DocumentType("(Depotgeb.hr|Geb.hrenbelastung)");
         this.addDocumentTyp(type);
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^Depotgeb.hr Unsere Referenz: .*$");
+        var firstRelevantLine = new Block("^.* (Unsere Referenz:|Rechnungsnummer) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -546,27 +600,58 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Depotgebühr Unsere Referenz: 464973467
-                        // Valutadatum 01.01.2024
-                        // Betrag belastet CHF 18.00
-                        // @formatter:on
-                        .section("date", "currency", "amount") //
-                        .find("Depotgeb.hr .*") //
-                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Depotgebühr Unsere Referenz: 464973467
+                                        // Valutadatum 01.01.2024
+                                        // Betrag belastet CHF 18.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "currency", "amount") //
+                                                        .find("Depotgeb.hr .*") //
+                                                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Der Totalbetrag von  CHF 16.12 wurde Ihrem Konto  fs90 9946 3107 5727 7006 2 mit Valuta  30.12.2023 belastet.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount", "date") //
+                                                        .match("^.* (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d\\s]+) .* Valuta[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                        // @formatter:off
-                        // Depotgebühr Unsere Referenz: 464973467
-                        // @formatter:on
-                        .section("note1", "note2") //
-                        .match("^(?<note1>Depotgeb.hr) Unsere (?<note2>Referenz: .*)$") //
-                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Depotgebühr Unsere Referenz: 464973467
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^(?<note1>Depotgeb.hr) Unsere Referenz: (?<note2>.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), "Ref.-Nr.: " + v.get("note2"), " | "))),
+                                        // @formatter:off
+                                        // Depot 82-879012-4 Rechnungsnummer 2705944
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Rechnungsnummer (?<note>.*)$") //
+                                                        .assign((t, v) -> t.setNote("R-Nr.: " + trim(v.get("note")))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abrechnung vom  01.10.2023 bis  31.12.2023 :
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^Abrechnung vom[\\s]{1,}(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*(?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //)
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " - " + v.get("note2"), " | "))))
 
                         .wrap(TransactionItem::new);
     }

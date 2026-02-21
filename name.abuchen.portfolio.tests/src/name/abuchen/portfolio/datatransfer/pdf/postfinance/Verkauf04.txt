@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Ronja Geiser und Team Post CH AG 
+Telefon +41 848 888 700 
+www.postfinance.ch P.P. CH-4808 Zofingen A-PRIORITY 
+sxtl 
+CbK JcRYj 
+TGJLd CKG OpMlwtOvdvUe 57 
+vDHYGdHK 8679 KEZkVyNe 
+Transaktionsabrechnung: Rücknahme  Seite: 1 / 2 
+ganzer Bestand Datum: 13.03.2024 
+E-Vermögensverwaltung 
+Depot 25-325745-7 Ort der Ausführung Over-the-Counter 
+Auftrag 16621393 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Anteile Währung Kurs 
+Credit Suisse Index Fund (CH) II - Gold Blue - QB 0.211 USD 1 785.93 
+ISIN CH0352765355 
+Kurswert in Handelswährung USD 376.83 
+Total USD 376.83 
+Total in Kontowährung zum Kurs von USD/CHF 0.8729000 CHF 328.93 
+Der Totalbetrag von  CHF 328.93 wurde Ihrem Konto  mG66 9605 6849 7844 3093 2 mit Valuta  14.03.2024 gutgeschrieben. 
+01521 DE   000036.00 
+Transaktionsabrechnung: Rücknahme ganzer Bestand 
+Depot 72-963473-7 Datum: 13.03.2024 Seite: 2 / 2 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Freundliche Grüsse 
+PostFinance AG 
+01521 DE   000036.00
