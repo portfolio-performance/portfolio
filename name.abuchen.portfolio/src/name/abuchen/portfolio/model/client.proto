@@ -172,6 +172,7 @@ message PTransaction {
   optional google.protobuf.Timestamp otherUpdatedAt = 8;
 	
   google.protobuf.Timestamp date = 9;
+  optional int64 dateEx = 18;
 	
   string currencyCode = 10;
   int64 amount = 11;

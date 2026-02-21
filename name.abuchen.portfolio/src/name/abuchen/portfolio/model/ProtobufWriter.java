@@ -474,6 +474,8 @@ import name.abuchen.portfolio.money.Money;
                 case DIVIDEND:
                     AccountTransaction dividend = new AccountTransaction(newTransaction.getUuid());
                     dividend.setType(AccountTransaction.Type.DIVIDENDS);
+                    if (newTransaction.hasDateEx())
+                        dividend.setDateEx(LocalDate.ofEpochDay(newTransaction.getDateEx()));
                     loadCommonTransaction(newTransaction, dividend, lookup, false);
 
                     // If the dividend has no instrument, convert it to an
@@ -1126,6 +1128,8 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DIVIDENDS:
                 newTransaction.setTypeValue(PTransaction.Type.DIVIDEND_VALUE);
+                if (t.getDateEx() != null)
+                    newTransaction.setDateEx(t.getDateEx().toEpochDay());
                 break;
             case FEES:
                 newTransaction.setTypeValue(PTransaction.Type.FEE_VALUE);

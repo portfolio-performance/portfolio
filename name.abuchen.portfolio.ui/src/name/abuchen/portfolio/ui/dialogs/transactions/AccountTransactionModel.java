@@ -32,7 +32,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, dateEx, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, fxFees, fees, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -41,6 +41,7 @@ public class AccountTransactionModel extends AbstractModel
 
     private final Client client;
     private AccountTransaction.Type type;
+    private LocalDate dateEx;
 
     private Account sourceAccount;
     private AccountTransaction sourceTransaction;
@@ -103,6 +104,9 @@ public class AccountTransactionModel extends AbstractModel
         if (account == null)
             throw new UnsupportedOperationException(Messages.MsgMissingAccount);
 
+        if (dateEx != null && type != Type.DIVIDENDS)
+            throw new UnsupportedOperationException(Messages.MsgExDateNotAllowed);
+
         AccountTransaction t;
 
         if (sourceTransaction != null && sourceAccount.equals(account))
@@ -129,6 +133,7 @@ public class AccountTransactionModel extends AbstractModel
         }
 
         t.setDateTime(LocalDateTime.of(date, time));
+        t.setDateEx(dateEx);
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -181,6 +186,7 @@ public class AccountTransactionModel extends AbstractModel
         setFxTaxes(0);
         setNote(null);
         setTime(PresetValues.getTime());
+        setDateEx(null);
     }
 
     public boolean supportsShares()
@@ -233,6 +239,7 @@ public class AccountTransactionModel extends AbstractModel
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
         this.time = transactionDate.toLocalTime();
+        this.dateEx = transaction.getDateEx();
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -446,6 +453,16 @@ public class AccountTransactionModel extends AbstractModel
     public void setTime(LocalTime time)
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time); // NOSONAR
+    }
+
+    public LocalDate getDateEx()
+    {
+        return dateEx;
+    }
+
+    public void setDateEx(LocalDate dateEx)
+    {
+        firePropertyChange(Properties.dateEx.name(), this.dateEx, this.dateEx = dateEx); // NOSONAR
     }
 
     public long getShares()

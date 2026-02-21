@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
@@ -47,6 +48,8 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
+    private LocalDate dateEx;
+
     public AccountTransaction()
     {
         // needed for xstream de-serialization
@@ -71,6 +74,17 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
+    }
+
+    public LocalDate getDateEx()
+    {
+        return dateEx;
+    }
+
+    public void setDateEx(LocalDate dateEx)
+    {
+        this.dateEx = dateEx;
         setUpdatedAt(Instant.now());
     }
 
