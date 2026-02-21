@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -858,6 +859,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-04-30T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-04-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertNull(transaction.getNote());
@@ -903,6 +905,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 85127406360 | Quartalsdividende"));
@@ -949,6 +952,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-01T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 85127406360 | Quartalsdividende"));
@@ -1000,6 +1004,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 88888888888 | Quartalsdividende"));
@@ -1047,6 +1052,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-28T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-10-04T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 88888888888 | Quartalsdividende"));
@@ -1099,6 +1105,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-10-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 80642931040 | Quartalsdividende"));
@@ -1146,6 +1153,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-11-03T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-10-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(400)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 80642931040 | Quartalsdividende"));
@@ -1198,6 +1206,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2023-01-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(221)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1244,6 +1253,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2023-01-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(221)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertNull(transaction.getNote());
@@ -1296,6 +1306,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-09T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-12-19T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(70)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertNull(transaction.getNote());
@@ -1342,6 +1353,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-04-12T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2023-04-06T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(111)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 66666666666"));
@@ -1414,6 +1426,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-04-15T00:00"), hasShares(221), //
+                        hasExDate("2020-04-15T00:00"), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), //
@@ -1449,6 +1462,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-04-15T00:00"), hasShares(221), //
+                        hasExDate("2020-04-15T00:00"), //
                         hasSource("Dividende09.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), //
@@ -1490,6 +1504,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-08-16T00:00"), hasShares(7.01), //
+                        hasExDate("2021-08-16T00:00"), //
                         hasSource("Dividende10.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 5.59), hasGrossValue("EUR", 8.34), //
@@ -1524,6 +1539,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2024-05-02T00:00"), hasShares(25.00), //
+                        hasExDate("2024-04-29T00:00"), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Abrechnungsnr. 76560429680"), //
                         hasAmount("EUR", 40.50), hasGrossValue("EUR", 55.00), //
@@ -1558,6 +1574,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-25T00:00"), hasShares(29.00), //
+                        hasExDate("2023-08-30T00:00"), //
                         hasSource("Dividende12.txt"), //
                         hasNote("Abrechnungsnr. 76560429680 | Quartalsdividende"), //
                         hasAmount("EUR", 16.16), hasGrossValue("EUR", 21.71), //
@@ -1594,6 +1611,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-25T00:00"), hasShares(29.00), //
+                        hasExDate("2023-08-30T00:00"), //
                         hasSource("Dividende12.txt"), //
                         hasNote("Abrechnungsnr. 76560429680 | Quartalsdividende"), //
                         hasAmount("EUR", 16.16), hasGrossValue("EUR", 21.71), //
@@ -1635,6 +1653,7 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2024-09-11T00:00"), hasShares(254.00), //
+                        hasExDate("2024-09-06T00:00"), //
                         hasSource("Dividende13.txt"), //
                         hasNote("Ref.-Nr.: 17518731738"), //
                         hasAmount("CHF", 392.94), hasGrossValue("CHF", 604.52), //
