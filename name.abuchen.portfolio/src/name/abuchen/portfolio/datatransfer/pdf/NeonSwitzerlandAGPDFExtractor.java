@@ -100,7 +100,6 @@ public class NeonSwitzerlandAGPDFExtractor extends AbstractPDFExtractor
                         // 04.12.2025 Fund sell 04.12.2025  0.15 -0.32
                         // @formatter:on
                         .section("date") //
-                        .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Fund (buy|sell).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
