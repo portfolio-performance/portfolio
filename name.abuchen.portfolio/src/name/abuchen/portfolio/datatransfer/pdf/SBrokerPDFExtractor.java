@@ -383,6 +383,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
+                        // @formatter:off
+                        // Ex-Tag 22.12.2021 Art der Dividende Quartalsdividende
+                        // Ex-Tag 22.12.2021
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .oneOf( //
                                         // @formatter:off
                                         // Wert Konto-Nr. Betrag zu Ihren Gunsten
