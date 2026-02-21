@@ -97,6 +97,10 @@ public class TransactionPair<T extends Transaction> implements Adaptable
             return type.cast(transaction);
         else if (type == Transaction.class)
             return type.cast(transaction);
+        else if (type == AccountTransaction.class && transaction instanceof AccountTransaction)
+            return type.cast(transaction);
+        else if (type == PortfolioTransaction.class && transaction instanceof PortfolioTransaction)
+            return type.cast(transaction);
         else if (type == Named.class)
             return type.cast(transaction.getSecurity());
         else if (type == Security.class)

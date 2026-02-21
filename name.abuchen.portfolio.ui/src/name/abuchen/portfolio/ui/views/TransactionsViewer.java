@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +52,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ExDateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -459,14 +461,28 @@ public final class TransactionsViewer implements ModificationListener
                 return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });
-        ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
+        ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column);
         new StringEditingSupport(Transaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("exdate", Messages.ColumnExDate, SWT.None, 80); //$NON-NLS-1$
+        Function<Transaction, LocalDateTime> exDateProvider = tx -> tx instanceof AccountTransaction atx
+                        ? atx.getExDate()
+                        : null;
+        column.setLabelProvider(new TransactionLabelProvider(tx -> {
+            var exDate = exDateProvider.apply(tx);
+            return exDate != null ? Values.Date.format(exDate.toLocalDate()) : null;
+        }));
+        ColumnViewerSorter.create(e -> exDateProvider.apply(((TransactionPair<?>) e).getTransaction()))
+                        .attachTo(column);
+        new ExDateEditingSupport().addListener(this).attachTo(column);
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("source", Messages.ColumnSource, SWT.None, 200); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(Transaction::getSource));
         ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource())
-                        .attachTo(column); // $NON-NLS-1$
+                        .attachTo(column);
         support.addColumn(column);
     }
 
