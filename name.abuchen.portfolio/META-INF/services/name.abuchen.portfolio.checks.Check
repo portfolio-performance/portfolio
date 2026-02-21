@@ -14,3 +14,4 @@ name.abuchen.portfolio.checks.impl.FixWrongTransfersCheck
 name.abuchen.portfolio.checks.impl.FixDepositsWithSecurityCheck
 name.abuchen.portfolio.checks.impl.NegativeExchangeRateCheck
 name.abuchen.portfolio.checks.impl.MissingTransactionDateCheck
+name.abuchen.portfolio.checks.impl.OnlyDividendsCanHaveExDateCheck
