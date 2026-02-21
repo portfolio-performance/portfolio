@@ -209,6 +209,13 @@ public class GladbacherBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^.*Art der Dividende (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note"), " | ")))
 
+                        // @formatter:off
+                        // Ex-Tag 07.12.2023 Art der Dividende Quartalsdividende
+                        // @formatter:on
+                        .section("exDate").optional() //
+                        .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
