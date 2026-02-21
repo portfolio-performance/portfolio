@@ -51,8 +51,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         // 29.01. 29.01. Spar/Fest/Termingeld 5.000,00 S
         // 08.03. 08.03. Umbuchung  1.100,00 S
         // @formatter:on
-        var depositRemovalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.*gutschr\\.?|.berweisungsauftrag|Spar/Fest/Termingeld|Umbuchung)[\s]{1,}[\\.,\\d]+ [S|H]$");
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (.*gutschr\\.?|.berweisungsauftrag|Spar/Fest/Termingeld|Umbuchung)[\s]{1,}[\\.,\\d]+ [S|H]$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -64,7 +63,12 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency", "year") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>(.*gutschr\\.?|.berweisungsauftrag|Spar/Fest/Termingeld|Umbuchung))[\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
+                                        + "(?<note>(.*gutschr\\.?" //
+                                        + "|.berweisungsauftrag" //
+                                        + "|Spar/Fest/Termingeld" //
+                                        + "|Umbuchung))[\s]{1,}" //
+                                        + "(?<amount>[\\.,\\d]+) (?<type>[S|H])$") //
                         .assign((t, v) -> {
                         // @formatter:off
                             // Is type is "S" change from DEPOSIT to REMOVAL
@@ -91,8 +95,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 04.05. 30.04. Abschluss lt. Anlage 1 11,69 H
         // @formatter:on
-        var interestBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss lt\\. Anlage [\\d][\\s]{1,}[\\.,\\d]+ [H]$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss lt\\. Anlage [\\d][\\s]{1,}[\\.,\\d]+ [H]$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -112,13 +115,12 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
-        
+
 
         // @formatter:off
         // 03.05. 30.04. Storno Abschluss  13,44 S
         // @formatter:on
-        var interestCancellation = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Storno .*[\\s]{1,}[\\.,\\d]+ [S]$");
+        var interestCancellation = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Storno .*[\\s]{1,}[\\.,\\d]+ [S]$");
         type.addBlock(interestCancellation);
         interestCancellation.set(new Transaction<AccountTransaction>()
 
@@ -132,8 +134,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. Storno .*[\\s]{1,}(?<amount>[\\.,\\d]+) [S]$") //
                         .assign((t, v) -> {
-                            v.getTransactionContext().put(FAILURE,
-                                            Messages.MsgErrorTransactionOrderCancellationUnsupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionOrderCancellationUnsupported);
 
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -141,7 +142,7 @@ public class JTDirektbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));

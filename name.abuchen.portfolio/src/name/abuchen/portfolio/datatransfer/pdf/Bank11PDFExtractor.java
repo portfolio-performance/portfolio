@@ -47,8 +47,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 19.10. 19.10. Überweisungsgutschr.                                                       18.500,00 H
         // @formatter:on
-        var depositBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .*gutschr\\.?[\\s]{1,}[\\.,\\d]+ [H]");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .*gutschr\\.?[\\s]{1,}[\\.,\\d]+ [H]");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -78,8 +77,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
         // 31.10. 31.10. Überweisungsauftrag                                               3.000,00 S
         // 21.11. 21.11. Umbuchung                                                           200,00 S
         // @formatter:on
-        var removalBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Umbuchung|.*berweisungsauftrag)[\\s]{1,}[\\.,\\d]+ [S]");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Umbuchung|.*berweisungsauftrag)[\\s]{1,}[\\.,\\d]+ [S]");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -110,8 +108,7 @@ public class Bank11PDFExtractor extends AbstractPDFExtractor
         // 30.12. 31.12. Abschluss lt. Anlage 1                                                         52,66 H
         // 31.03. 31.03. Abschluss                                                                      56,88 H
         // @formatter:on
-        var interestBlock = new Block(
-                        "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}[\\.,\\d]+ [H]");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.*[\\s]{1,}[\\.,\\d]+ [H]");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
