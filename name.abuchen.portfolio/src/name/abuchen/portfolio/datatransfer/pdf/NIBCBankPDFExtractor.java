@@ -160,6 +160,11 @@ public class NIBCBankPDFExtractor extends AbstractPDFExtractor
                 .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$")
                 .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                // Ex-Tag 12.12.2019 fonds) 0,208116300 USD
+                .section("exDate").optional()
+                .match("^Ex\\-Tag (?<exDate>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                .assign((t, v) -> t.setExDate(asDate(v.get("exDate"))))
+
                 // Ausmachender Betrag 24,03+ EUR
                 .section("amount", "currency")
                 .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$")
