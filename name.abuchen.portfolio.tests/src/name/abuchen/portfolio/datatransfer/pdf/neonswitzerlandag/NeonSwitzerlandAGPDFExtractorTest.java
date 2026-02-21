@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.neon;
+package name.abuchen.portfolio.datatransfer.pdf.neonswitzerlandag;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
