@@ -343,6 +343,17 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Dividende|Kapitalgewinn) [\\.'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // GLOBAL X RUSSELL 2000 CVRED CALL ET F ISIN: US37954Y4594 300
+                                        // NKN: 47537082
+                                        // Dividende pro Aktie USD 0.1627
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^NKN: (?<wkn>[A-Z0-9]{5,9}).*$") //
+                                                        .match("^Dividende pro Aktie (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // SIMPLIFY BITCOIN STGY INC ETF ISIN: US82889N6739
                                         // Dividende pro Aktie USD 0.1
                                         // @formatter:on
