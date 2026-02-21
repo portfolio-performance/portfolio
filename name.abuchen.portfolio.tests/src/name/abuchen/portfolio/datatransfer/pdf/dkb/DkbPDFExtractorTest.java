@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -1539,6 +1540,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-07T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2016-04-07T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 59717175720"));
@@ -1584,6 +1586,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-07T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-11-30T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(216)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 84033925310"));
@@ -1630,6 +1633,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-05-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234"));
@@ -1676,6 +1680,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-15T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-05-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 63136911234"));
@@ -1727,6 +1732,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-06-01T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-05-12T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
@@ -1772,6 +1778,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-12-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.3517)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11111"));
@@ -1818,6 +1825,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2018-12-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(16.3517)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 11111"));
@@ -1914,6 +1922,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-05-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(92)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 63736123456"));
@@ -1959,6 +1968,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2015-01-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 8127381273"));
@@ -2005,6 +2015,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2015-01-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 8127381273"));
@@ -2056,6 +2067,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-04T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-09-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789"));
@@ -2102,6 +2114,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-04T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-09-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789"));
@@ -2153,6 +2166,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-02-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789 | Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
@@ -2199,6 +2213,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-02-09T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 123456789 | Quartalsdividende"));
         assertThat(transaction.getSource(), is("Dividende11.txt"));
@@ -2250,6 +2265,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-03-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 111111111 | Schlussdividende"));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
@@ -2297,6 +2313,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-03-27T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 111111111 | Schlussdividende"));
         assertThat(transaction.getSource(), is("Dividende12.txt"));
@@ -2349,6 +2366,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-13T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2015-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(450)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901 | Zwischendividende"));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
@@ -2395,6 +2413,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-10-13T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2015-09-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(450)));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901 | Zwischendividende"));
         assertThat(transaction.getSource(), is("Dividende13.txt"));
@@ -2446,6 +2465,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-02-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
@@ -2493,6 +2513,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-05T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-02-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(935)));
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 12345678901"));
@@ -2642,6 +2663,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-05-14T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2014-05-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(200)));
         assertThat(transaction.getSource(), is("Dividende16.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. 63310000000"));
@@ -2680,6 +2702,7 @@ public class DkbPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-19T00:00"), hasShares(497.00), //
+                        hasExDate("2023-12-07T00:00"), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungsnr. 85345940130 | Monatliche Dividende"), //
                         hasAmount("EUR", 141.90), hasGrossValue("EUR", 192.24), //
@@ -2716,6 +2739,7 @@ public class DkbPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-19T00:00"), hasShares(497.00), //
+                        hasExDate("2023-12-07T00:00"), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Abrechnungsnr. 85345940130 | Monatliche Dividende"), //
                         hasAmount("EUR", 141.90), hasGrossValue("EUR", 192.24), //
