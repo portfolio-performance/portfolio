@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.6
+Portfolio Performance Version: 0.81.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 8682241 - TRADING
+IBAN: Na9896999375663704988
+Herrn SvRPzM lpXRqw zeXZK hHuottyrgp
+Olp gwG WHxxTFtiNtZ 15
+DE-84809 vzLJfwxgvxG
+Gland, 27.01.2026
+Dividende Unsere Referenz: 2011421839 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+VIRTUS INFRCP US PRERD STCK ETF ISIN: US26923G8226 900
+NKN: 13983992
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 942223458
+Ausführungsdatum 20.01.2026
+Valutadatum 27.01.2026
+Anzahl 900
+Dividende pro Aktie USD 0.1725 
+Bezeichnung Währung Referenzwährung
+Betrag USD 155.25 CHF 120.69
+Quellensteuer 15.00% (US) USD 23.29 CHF 18.11
+Total USD 131.96 CHF 102.58
+Wechselkurs USD / CHF : 0.77738
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

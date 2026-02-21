@@ -1472,7 +1472,7 @@ public class SwissquotePDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US82889N6739"), hasWkn(null), hasTicker(null), //
+                        hasIsin("US82889N6739"), hasWkn("122171132"), hasTicker(null), //
                         hasName("SIMPLIFY BITCOIN STGY INC ETF"), //
                         hasCurrencyCode("USD"))));
 
@@ -1490,6 +1490,7 @@ public class SwissquotePDFExtractorTest
     {
         var security = new Security("SIMPLIFY BITCOIN STGY INC ETF", "CHF");
         security.setIsin("US82889N6739");
+        security.setWkn("122171132");
 
         var client = new Client();
         client.addSecurity(security);
@@ -1548,7 +1549,7 @@ public class SwissquotePDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US37954Y4594"), hasWkn(null), hasTicker(null), //
+                        hasIsin("US37954Y4594"), hasWkn("47537082"), hasTicker(null), //
                         hasName("GLOBAL X RUSSELL 2000 CVRED CALL ET F"), //
                         hasCurrencyCode("USD"))));
 
@@ -1566,6 +1567,7 @@ public class SwissquotePDFExtractorTest
     {
         var security = new Security("GLOBAL X RUSSELL 2000 CVRED CALL ET F", "CHF");
         security.setIsin("US37954Y4594");
+        security.setWkn("47537082");
 
         var client = new Client();
         client.addSecurity(security);
@@ -1624,7 +1626,7 @@ public class SwissquotePDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US87612E1064"), hasWkn(null), hasTicker(null), //
+                        hasIsin("US87612E1064"), hasWkn("1036943"), hasTicker(null), //
                         hasName("TARGET ORD"), //
                         hasCurrencyCode("USD"))));
 
@@ -1642,6 +1644,7 @@ public class SwissquotePDFExtractorTest
     {
         var security = new Security("TARGET ORD", "CHF");
         security.setIsin("US87612E1064");
+        security.setWkn("1036943");
 
         var client = new Client();
         client.addSecurity(security);
@@ -1700,7 +1703,7 @@ public class SwissquotePDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("US30303M1027"), hasWkn(null), hasTicker(null), //
+                        hasIsin("US30303M1027"), hasWkn("14917609"), hasTicker(null), //
                         hasName("META PLATFORMS CL A ORD"), //
                         hasCurrencyCode("USD"))));
 
@@ -1718,6 +1721,7 @@ public class SwissquotePDFExtractorTest
     {
         var security = new Security("META PLATFORMS CL A ORD", "CHF");
         security.setIsin("US30303M1027");
+        security.setWkn("14917609");
 
         var client = new Client();
         client.addSecurity(security);
@@ -1775,7 +1779,7 @@ public class SwissquotePDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("SE0015811955"), hasWkn(null), hasTicker(null), //
+                        hasIsin("SE0015811955"), hasWkn("111465893"), hasTicker(null), //
                         hasName("INVESTOR ORD"), //
                         hasCurrencyCode("SEK"))));
 
@@ -1794,6 +1798,7 @@ public class SwissquotePDFExtractorTest
     {
         var security = new Security("INVESTOR ORD", "CHF");
         security.setIsin("SE0015811955");
+        security.setWkn("111465893");
 
         var client = new Client();
         client.addSecurity(security);
@@ -1897,6 +1902,76 @@ public class SwissquotePDFExtractorTest
                         hasAmount("USD", 39.70), hasGrossValue("USD", 39.70), //
                         hasForexGrossValue("CHF", 39.81), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende14()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US26923G8226"), hasWkn("13983992"), hasTicker(null), //
+                        hasName("VIRTUS INFRCP US PRERD STCK ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-01-27T00:00"), hasShares(900.00), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote("Referenz: 2011421839"), //
+                        hasAmount("USD", 131.96), hasGrossValue("USD", 155.26), //
+                        hasTaxes("USD", 23.30), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende14WithSecurityInCHF()
+    {
+        var security = new Security("VIRTUS INFRCP US PRERD STCK ETF", "CHF");
+        security.setIsin("US26923G8226");
+        security.setWkn("13983992");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2026-01-27T00:00"), hasShares(900.00), //
+                        hasSource("Dividende14.txt"), //
+                        hasNote("Referenz: 2011421839"), //
+                        hasAmount("USD", 131.96), hasGrossValue("USD", 155.26), //
+                        hasForexGrossValue("CHF", 120.69), //
+                        hasTaxes("USD", 23.30), hasFees("USD", 0.00))));
     }
 
     @Test
