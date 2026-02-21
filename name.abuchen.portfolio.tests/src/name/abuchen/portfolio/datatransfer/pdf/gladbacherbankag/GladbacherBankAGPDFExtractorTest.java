@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -177,7 +178,8 @@ public class GladbacherBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-28T00:00"), hasShares(52), //
+                        hasDate("2023-12-28T00:00"), hasExDate("2023-12-07T00:00"), //
+                        hasShares(52), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
@@ -186,7 +188,7 @@ public class GladbacherBankAGPDFExtractorTest
     }
 
     @Test
-    public void testDividende02WithSecurityInEUR()
+    public void testDividende01WithSecurityInEUR()
     {
         var security = new Security("AMETEK INC. REGISTERED SHARES DL -,01", "EUR");
         security.setIsin("US0311001004");
@@ -213,7 +215,8 @@ public class GladbacherBankAGPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-28T00:00"), hasShares(52), //
+                        hasDate("2023-12-28T00:00"), hasExDate("2023-12-07T00:00"), //
+                        hasShares(52), //
                         hasSource("Dividende01.txt"), //
                         hasNote("Abrechnungsnr.: 86148344230 | Quartalsdividende"), //
                         hasAmount("EUR", 8.71), hasGrossValue("EUR", 11.70), //
