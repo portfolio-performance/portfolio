@@ -85,6 +85,7 @@ public class PDFImportAssistant
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new FirstradeSecuritiesIncPDFExtractor(client));
         extractors.add(new FordMoneyPDFExtractor(client));
+        extractors.add(new FreiburgerKantonalbankPDFExtractor(client));
         extractors.add(new GenoBrokerPDFExtractor(client));
         extractors.add(new GinmonPDFExtractor(client));
         extractors.add(new GladbacherBankAGPDFExtractor(client));
