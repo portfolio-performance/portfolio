@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -113,7 +114,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Referenz: 153557048"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 153557048"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(2850.24))));
@@ -165,7 +166,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-10-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(87)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertThat(entry.getNote(), is("Referenz: 155571206"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 155571206"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2998.95))));
@@ -217,7 +218,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Referenz: 122007844"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 122007844"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2968.50))));
@@ -268,7 +269,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-03-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertThat(entry.getNote(), is("Referenz: 122007844"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 122007844"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(2968.50))));
@@ -503,7 +504,7 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-09-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(308)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertThat(entry.getNote(), is("Referenz: 153327044"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 153327044"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(7467.50))));
@@ -540,7 +541,7 @@ public class PostfinancePDFExtractorTest
                         hasName("UBS Index Fund - Bonds"), //
                         hasCurrencyCode("CHF"))));
 
-        // check dividends transaction
+        // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-04-16T00:00"), hasShares(0.074), //
                         hasSource("Verkauf02.txt"), //
@@ -574,7 +575,7 @@ public class PostfinancePDFExtractorTest
                         hasName("Pictet - Short-Term Money Market"), //
                         hasCurrencyCode("JPY"))));
 
-        // check dividends transaction
+        // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2025-06-18T00:00"), hasShares(0.553), //
                         hasSource("Verkauf03.txt"), //
@@ -613,6 +614,73 @@ public class PostfinancePDFExtractorTest
                         hasSource("Verkauf03.txt"), //
                         hasNote("Auftrag 21796086"), //
                         hasAmount("CHF", 310.79), hasGrossValue("CHF", 310.79), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf04()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0352765355"), hasWkn(null), hasTicker(null), //
+                        hasName("Credit Suisse Index Fund (CH) II - Gold Blue - QB"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-03-13T00:00"), hasShares(0.211), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftrag 16621393"), //
+                        hasAmount("CHF", 328.93), hasGrossValue("CHF", 328.93), //
+                        hasForexGrossValue("USD", 376.83), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testtestWertpapierVerkauf04WithSecurityInCHF()
+    {
+        var security = new Security("Credit Suisse Index Fund (CH) II - Gold Blue - QB", "CHF");
+        security.setIsin("CH0352765355");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-03-13T00:00"), hasShares(0.211), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftrag 16621393"), //
+                        hasAmount("CHF", 328.93), hasGrossValue("CHF", 328.93), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
@@ -688,7 +756,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertThat(transaction.getNote(), is("Referenz: 169933304"));
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 169933304"));
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.93))));
         assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(24.62))));
@@ -733,7 +801,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertThat(transaction.getNote(), is("Referenz: 130516418"));
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 130516418"));
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(36.69))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
@@ -778,12 +846,80 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertThat(transaction.getNote(), is("Referenz: 149619136"));
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 149619136"));
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(26.60))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B9M04V95"), hasWkn(null), hasTicker(null), //
+                        hasName("iShares J.P. Morgan USD EM Bond CHF Hedged ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-10-25T00:00"), hasShares(275.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Ref.-Nr.: 7790541"), //
+                        hasAmount("CHF", 4.07), hasGrossValue("CHF", 4.07), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0105994401"), hasWkn(null), hasTicker(null), //
+                        hasName("UBS ETF - SXI Real Estate Funds"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-13T00:00"), hasShares(42.00), //
+                        hasSource("Dividende05.txt"), //
+                        hasNote("Ref.-Nr.: 7600589"), //
+                        hasAmount("CHF", 3.28), hasGrossValue("CHF", 5.04), //
+                        hasTaxes("CHF", 1.76), hasFees("CHF", 0.00))));
     }
 
     @Test
@@ -807,7 +943,7 @@ public class PostfinancePDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-05-02"), hasAmount("CHF", 1200.00), //
-                        hasSource("Zahlungsverkehr01.txt"), hasNote("Referenz: 391377700"))));
+                        hasSource("Zahlungsverkehr01.txt"), hasNote("Ref.-Nr.: 391377700"))));
     }
 
     @Test
@@ -831,7 +967,7 @@ public class PostfinancePDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2017-01-31"), hasAmount("CHF", 5675.50), //
-                        hasSource("Zahlungsverkehr02.txt"), hasNote("Referenz: 119387423"))));
+                        hasSource("Zahlungsverkehr02.txt"), hasNote("Ref.-Nr.: 119387423"))));
     }
 
     @Test
@@ -861,7 +997,7 @@ public class PostfinancePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
         assertThat(transaction.getSource(), is("Jahresgebuehr01.txt"));
-        assertThat(transaction.getNote(), is("Jahresgebühr | Referenz: 161333839"));
+        assertThat(transaction.getNote(), is("Jahresgebühr | Ref.-Nr.: 161333839"));
 
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(90.00))));
@@ -870,7 +1006,7 @@ public class PostfinancePDFExtractorTest
     }
 
     @Test
-    public void testGiroKontoauszug10()
+    public void testDepotgebuehr01()
     {
         var extractor = new PostfinancePDFExtractor(new Client());
 
@@ -890,7 +1026,31 @@ public class PostfinancePDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-01-01"), hasAmount("CHF", 18.00), //
-                        hasSource("Depotgebuehr01.txt"), hasNote("Depotgebühr | Referenz: 464973467"))));
+                        hasSource("Depotgebuehr01.txt"), hasNote("Depotgebühr | Ref.-Nr.: 464973467"))));
+    }
+
+    @Test
+    public void testDepotgebuehr02()
+    {
+        var extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehr02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countAccountTransfers(results), is(0L));
+        assertThat(countItemsWithFailureMessage(results), is(0L));
+        assertThat(countSkippedItems(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-12-30"), hasAmount("CHF", 16.12), //
+                        hasSource("Depotgebuehr02.txt"), hasNote("R-Nr.: 2705944 | 01.10.2023 - 31.12.2023"))));
     }
 
     @Test
