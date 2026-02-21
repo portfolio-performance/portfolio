@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -1481,6 +1482,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1528,6 +1530,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1580,6 +1583,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1627,6 +1631,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(150)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1679,6 +1684,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-11-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1726,6 +1732,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-12-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-11-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(250)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr."));
@@ -1778,6 +1785,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. | Quartalsdividende"));
@@ -1825,6 +1833,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-01-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2021-12-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Abrechnungsnr. | Quartalsdividende"));
@@ -1877,6 +1886,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2023-01-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(57)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -1923,6 +1933,7 @@ public class SBrokerPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-31T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2023-01-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(57)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertNull(transaction.getNote());
@@ -2108,6 +2119,7 @@ public class SBrokerPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-05-09T00:00"), hasShares(28), //
+                        hasExDate("2023-04-28T00:00"), //
                         hasSource("Dividende11.txt"), //
                         hasNote("Abrechnungsnr. 12345678 | Zwischendividende"), //
                         hasAmount("EUR", 9.10), hasGrossValue("EUR", 14.00), //
@@ -2214,6 +2226,7 @@ public class SBrokerPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-08T00:00"), hasShares(105.000), //
+                        hasExDate("2023-11-27T00:00"), //
                         hasSource("Dividende14.txt"), //
                         hasNote("Abrechnungsnr. 84528768080 | Quartalsdividende"), //
                         hasAmount("EUR", 43.51), hasGrossValue("EUR", 58.89), //
@@ -2250,6 +2263,7 @@ public class SBrokerPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-08T00:00"), hasShares(105.000), //
+                        hasExDate("2023-11-27T00:00"), //
                         hasSource("Dividende14.txt"), //
                         hasNote("Abrechnungsnr. 84528768080 | Quartalsdividende"), //
                         hasAmount("EUR", 43.51), hasGrossValue("EUR", 58.89), //
@@ -2291,6 +2305,7 @@ public class SBrokerPDFExtractorTest
         // check dividende transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-14T00:00"), hasShares(47.00), //
+                        hasExDate("2023-11-15T00:00"), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Abrechnungsnr. 84953682750 | Quartalsdividende"), //
                         hasAmount("EUR", 23.64), hasGrossValue("EUR", 31.99), //
@@ -2327,6 +2342,7 @@ public class SBrokerPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-12-14T00:00"), hasShares(47.00), //
+                        hasExDate("2023-11-15T00:00"), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Abrechnungsnr. 84953682750 | Quartalsdividende"), //
                         hasAmount("EUR", 23.64), hasGrossValue("EUR", 31.99), //
