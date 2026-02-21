@@ -8,6 +8,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyC
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasExDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -1897,6 +1898,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-05-08T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2014-05-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(360)));
         assertThat(transaction.getSource(), is("FinTechDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 716759781"));
@@ -1942,6 +1944,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-01-15T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2014-01-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(99)));
         assertThat(transaction.getSource(), is("FinTechDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
@@ -1987,6 +1990,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-23T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-06-21T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(transaction.getSource(), is("FinTechDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1236644834"));
@@ -2032,6 +2036,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-25T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-08-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
         assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
         assertNull(transaction.getNote());
@@ -2079,6 +2084,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-25T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-08-08T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
         assertThat(transaction.getSource(), is("FinTechDividende04.txt"));
         assertNull(transaction.getNote());
@@ -2130,6 +2136,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-20T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2017-11-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(180)));
         assertThat(transaction.getSource(), is("FinTechDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 0000000000"));
@@ -2175,6 +2182,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-28T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2016-04-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("FinTechDividende06.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 111111111"));
@@ -3724,6 +3732,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-04-10T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-03-28T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
         assertThat(transaction.getSource(), is("FlatExDividende01.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567890"));
@@ -3769,6 +3778,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
@@ -3816,6 +3826,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-12T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2019-11-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
         assertThat(transaction.getSource(), is("FlatExDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1757281127"));
@@ -3868,6 +3879,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(31.89)));
         assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
@@ -3914,6 +3926,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(31.89)));
         assertThat(transaction.getSource(), is("FlatExDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2222222222"));
@@ -3965,6 +3978,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
         assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
@@ -4012,6 +4026,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-02T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-09-14T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(197)));
         assertThat(transaction.getSource(), is("FlatExDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 2041157988"));
@@ -4064,6 +4079,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
@@ -4111,6 +4127,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende05.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
@@ -4163,6 +4180,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2020-05-20T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
         assertThat(transaction.getSource(), is("FlatExDividende06.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 1111111111"));
@@ -5463,6 +5481,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-02-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
@@ -5482,6 +5501,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
+        assertNull(transaction.getExDate());
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
@@ -5525,6 +5545,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-02-17T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891"));
@@ -5541,6 +5562,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-03-02T00:00")));
+        assertNull(transaction.getExDate());
         assertThat(transaction.getShares(), is(Values.Share.factorize(162.19)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende02.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr.: 1234567891 | Bruttoausschüttung 34,66 USD"));
@@ -5592,6 +5614,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
@@ -5640,6 +5663,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende03.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924522"));
@@ -5693,6 +5717,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-06-17T00:00")));
+        assertThat(transaction.getExDate(), is(LocalDateTime.parse("2022-06-02T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(10)));
         assertThat(transaction.getSource(), is("FlatExDegiroDividende04.txt"));
         assertThat(transaction.getNote(), is("Transaktion-Nr. : 2877924406"));
@@ -5943,7 +5968,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasDate("2023-03-22T00:00"), hasShares(96.00), //
                         hasSource("FlatExDegiroDividende08.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
                         hasAmount("USD", 244.72), hasGrossValue("USD", 244.72), //
-                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
+                        hasExDate("2023-03-13T00:00"))));
     }
 
     @Test
@@ -5976,7 +6002,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasDate("2022-06-25T00:00"), hasShares(117.82), //
                         hasSource("FlatExDegiroDividende09.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
                         hasAmount("CHF", 188.93), hasGrossValue("CHF", 231.71), //
-                        hasTaxes("CHF", 42.78), hasFees("CHF", 0.00))));
+                        hasTaxes("CHF", 42.78), hasFees("CHF", 0.00), //
+                        hasExDate("2022-06-10T00:00"))));
     }
 
     @Test
@@ -6011,7 +6038,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr.: 3415691892"), //
                         hasAmount("EUR", 109.86), hasGrossValue("EUR", 151.53), //
                         hasForexGrossValue("USD", 162.50), //
-                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00), //
+                        hasExDate("2023-09-11T00:00"))));
     }
 
     @Test
@@ -6046,7 +6074,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende10.txt"), //
                         hasNote("Transaktion-Nr.: 3415691892"), //
                         hasAmount("EUR", 109.86), hasGrossValue("EUR", 151.53), //
-                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 41.67), hasFees("EUR", 0.00), //
+                        hasExDate("2023-09-11T00:00"))));
     }
 
     @Test
@@ -6082,7 +6111,8 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasSource("FlatExDegiroDividende11.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 2484.43), hasGrossValue("EUR", 3016.20), //
-                                        hasTaxes("EUR", 504.06 + 27.71), hasFees("EUR", 0.00)))));
+                                        hasTaxes("EUR", 504.06 + 27.71), hasFees("EUR", 0.00), //
+                                        hasExDate("2024-02-09T00:00")))));
     }
 
     @Test
@@ -6117,7 +6147,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr. : 4620331518"), //
                         hasAmount("EUR", 4.31), hasGrossValue("EUR", 5.79), //
                         hasForexGrossValue("USD", 6.70), //
-                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00), //
+                        hasExDate("2025-11-12T00:00"))));
     }
 
     @Test
@@ -6152,7 +6183,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende12.txt"), //
                         hasNote("Transaktion-Nr. : 4620331518"), //
                         hasAmount("EUR", 4.31), hasGrossValue("EUR", 5.79), //
-                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 1.48), hasFees("EUR", 0.00), //
+                        hasExDate("2025-11-12T00:00"))));
     }
 
     @Test
@@ -6190,7 +6222,8 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasSource("FlatExDegiroDividende13.txt"), //
                                         hasNote("Transaktion-Nr. : 6155515228"), //
                                         hasAmount("USD", 24.57), hasGrossValue("USD", 29.52), // Wrong gross value, is 33.00 USD
-                                        hasTaxes("USD", 4.95), hasFees("USD", 0.00))))); // Missing 2.99 EUR tax conversion
+                                        hasTaxes("USD", 4.95), hasFees("USD", 0.00), // Missing 2.99 EUR tax conversion
+                                        hasExDate("2025-11-14T00:00")))));
     }
 
     @Test
@@ -6224,7 +6257,8 @@ public class FinTechGroupBankPDFExtractorTest
                         hasSource("FlatExDegiroDividende14.txt"), //
                         hasNote("Transaktion-Nr. : 4741404453"), //
                         hasAmount("EUR", 12.68), hasGrossValue("EUR", 17.03), //
-                        hasTaxes("EUR", 4.35), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 4.35), hasFees("EUR", 0.00), //
+                        hasExDate("2026-01-02T00:00"))));
     }
 
     @Test
@@ -6295,7 +6329,8 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasSource("FlatExDegiroDividende16.txt"), //
                                         hasNote("Transaktion-Nr. : 4773716165"), //
                                         hasAmount("USD", 1.95), hasGrossValue("USD", 2.34), //
-                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00)))));
+                                        hasTaxes("USD", 0.39), hasFees("USD", 0.00), //
+                                        hasExDate("2026-01-09T00:00")))));
     }
 
     @Test
@@ -6331,7 +6366,8 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasSource("FlatExDegiroDividendeStorno01.txt"), //
                                         hasNote("Transaktion-Nr.: 1011111111"), //
                                         hasAmount("EUR", 19.99), hasGrossValue("EUR", 19.99), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                                        hasExDate("2024-12-16T00:00")))));
     }
 
     @Test
