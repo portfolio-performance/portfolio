@@ -36,8 +36,9 @@ public class PresetValues
      */
     public static LocalDate getLastTransactionDate()
     {
+        LocalDate today = LocalDate.now();
         LocalDate date = lastTransactionDate.get();
-        return date != null ? date : LocalDate.now();
+        return date != null && date.equals(today) ? date : today;
     }
 
     public static void setLastTransactionDate(LocalDate date)

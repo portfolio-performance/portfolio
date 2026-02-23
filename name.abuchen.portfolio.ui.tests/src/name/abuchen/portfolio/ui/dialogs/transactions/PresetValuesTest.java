@@ -30,7 +30,7 @@ public class PresetValuesTest
         PresetValues.setLastTransactionDate(testDate);
 
         LocalDate result = PresetValues.getLastTransactionDate();
-        assertThat(result, is(testDate));
+        assertThat(result, is(LocalDate.now()));
     }
 
     @Test
@@ -50,14 +50,34 @@ public class PresetValuesTest
     {
         LocalDate date1 = LocalDate.now().minusMonths(6);
         PresetValues.setLastTransactionDate(date1);
-        assertThat(PresetValues.getLastTransactionDate(), is(date1));
+        assertThat(PresetValues.getLastTransactionDate(), is(LocalDate.now()));
 
         LocalDate date2 = LocalDate.now().minusMonths(3);
         PresetValues.setLastTransactionDate(date2);
-        assertThat(PresetValues.getLastTransactionDate(), is(date2));
+        assertThat(PresetValues.getLastTransactionDate(), is(LocalDate.now()));
 
         LocalDate date3 = LocalDate.now().minusMonths(1);
         PresetValues.setLastTransactionDate(date3);
-        assertThat(PresetValues.getLastTransactionDate(), is(date3));
+        assertThat(PresetValues.getLastTransactionDate(), is(LocalDate.now()));
+    }
+
+    @Test
+    public void testStoredDateFromPreviousDayReturnsToday()
+    {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        PresetValues.setLastTransactionDate(yesterday);
+
+        LocalDate result = PresetValues.getLastTransactionDate();
+        assertThat(result, is(LocalDate.now()));
+    }
+
+    @Test
+    public void testStoredTodayDateReturnsTodaysDate()
+    {
+        LocalDate today = LocalDate.now();
+        PresetValues.setLastTransactionDate(today);
+
+        LocalDate result = PresetValues.getLastTransactionDate();
+        assertThat(result, is(today));
     }
 }
