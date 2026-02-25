@@ -179,6 +179,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/en/how-to/downloading-historical-prices/yahoo-finance/");  //$NON-NLS-1$
+    }
+
+    @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         LocalDate start = caculateStart(security);

@@ -63,6 +63,12 @@ public final class EODHistoricalDataQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/en/how-to/downloading-historical-prices/eodhd/");  //$NON-NLS-1$
+    }
+
+    @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         LocalDate quoteStartDate = null;

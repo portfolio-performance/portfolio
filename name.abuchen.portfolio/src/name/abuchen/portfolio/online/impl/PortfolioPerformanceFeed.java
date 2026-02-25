@@ -202,6 +202,12 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/en/how-to/downloading-historical-prices/portfolioperformance/"); //$NON-NLS-1$
+    }
+
+    @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)

@@ -101,7 +101,10 @@ public class GenericJSONQuoteFeed implements QuoteFeed
     @Override
     public Optional<String> getHelpURL()
     {
-        return Optional.of("https://help.portfolio-performance.info/de/how-to/kursdaten_laden/#json"); //$NON-NLS-1$
+        if (Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()))
+            return Optional.of("https://help.portfolio-performance.info/de/how-to/kursdaten_laden/#json"); //$NON-NLS-1$
+
+        return Optional.of("https://help.portfolio-performance.info/en/how-to/downloading-historical-prices/json/"); //$NON-NLS-1$
     }
 
     @Override

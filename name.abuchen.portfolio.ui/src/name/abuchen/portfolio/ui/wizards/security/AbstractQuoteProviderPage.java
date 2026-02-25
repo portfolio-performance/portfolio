@@ -380,6 +380,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         return security;
     }
 
+    private boolean isUrlInEnglish(String url)
+    {
+        return url.startsWith("https://help.portfolio-performance.info/en/"); //$NON-NLS-1$
+    }
+
     private void createProviderGroup(Composite container)
     {
         grpQuoteFeed = new Group(container, SWT.NONE);
@@ -421,7 +426,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 // Use Google translate for non-German users (as the help pages
                 // are currently only available in German). Taking care to
                 // encode the #.
-                if (!Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()))
+                if (!isUrlInEnglish(url) && !Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()))
                     url = MessageFormat.format(Messages.HelpURL, URLEncoder.encode(url, StandardCharsets.UTF_8.name()));
 
                 DesktopAPI.browse(url);

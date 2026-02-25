@@ -155,6 +155,12 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/en/how-to/downloading-historical-prices/alpha-vantage/"); //$NON-NLS-1$
+    }
+
+    @Override
     public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         OutputSize outputSize = OutputSize.FULL;
