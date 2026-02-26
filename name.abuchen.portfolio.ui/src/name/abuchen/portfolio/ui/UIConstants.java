@@ -78,7 +78,7 @@ public interface UIConstants
     }
 
     /**
-     * Command names defined in application.e4xmi
+     * Command names defined in Application.e4xmi
      */
     interface Command // NOSONAR
     {
@@ -94,7 +94,7 @@ public interface UIConstants
     }
 
     /**
-     * Parameter keys used in application.e4xmi
+     * Parameter keys used in Application.e4xmi
      */
     interface Parameter // NOSONAR
     {
@@ -114,7 +114,7 @@ public interface UIConstants
     }
 
     /**
-     * Well-known element ids from the application e4xmi file
+     * Well-known element ids from the Application.e4xmi file
      */
     interface ElementId // NOSONAR
     {
